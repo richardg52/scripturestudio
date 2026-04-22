@@ -905,6 +905,10 @@
         @media (max-width: 768px) {
             .mobile-menu-btn { display: flex; }
 
+            /* Hide desktop nav links and full nav-buttons */
+            .nav-links { display: none !important; }
+            .nav-buttons { display: none !important; }
+
             .hero-content h1 { font-size: 2rem !important; }
             .hero-content p  { font-size: 1rem !important; }
 
@@ -930,9 +934,6 @@
                 grid-template-columns: 1fr !important;
             }
 
-            /* Nav links hidden — show hamburger */
-            .nav-links { display: none !important; }
-
             /* CTA banner text */
             .cta-banner-title { font-size: 1.6rem !important; }
 
@@ -955,6 +956,64 @@
             #tutorials-modal > div {
                 border-radius: 14px !important;
             }
+        }
+
+        /* ── Mobile Dropdown Menu ──────────────────── */
+        #mobile-nav-menu {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: rgba(15,23,42,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+        }
+        #mobile-nav-menu.open { display: flex; }
+        .mobile-nav-close {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(255,255,255,0.1); border: none;
+            color: white; font-size: 22px; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mobile-nav-link {
+            font-size: 1.6rem; font-weight: 700; color: white;
+            text-decoration: none; padding: 16px 40px;
+            letter-spacing: -0.02em; transition: color 0.2s;
+            display: block; text-align: center;
+        }
+        .mobile-nav-link:hover { color: #60a5fa; }
+        .mobile-nav-divider {
+            width: 40px; height: 1px;
+            background: rgba(255,255,255,0.15); margin: 8px auto;
+        }
+        .mobile-nav-btns {
+            display: flex; flex-direction: column; gap: 12px;
+            margin-top: 20px; padding: 0 40px; width: 100%;
+        }
+        .mobile-nav-btns a {
+            display: block; text-align: center;
+            padding: 14px 24px; border-radius: 12px;
+            font-size: 1rem; font-weight: 700;
+            text-decoration: none;
+        }
+        .mobile-nav-btn-login {
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        .mobile-nav-btn-trial {
+            background: #2563eb;
+            color: white !important;
+        }
+        .mobile-nav-btn-book {
+            background: linear-gradient(135deg,#d4a820,#f0cc50);
+            color: #0a0810 !important;
         }
 
         /* ── Small phones (≤480px) ─────────────────── */
@@ -1010,163 +1069,6 @@
             input, select, textarea { font-size: 16px !important; }
         }
 
-        /* ══════════════════════════════════════════════
-           MOBILE & TABLET RESPONSIVE — iPhone / iPad
-           ══════════════════════════════════════════════ */
-
-        /* Hamburger menu for mobile nav */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .mobile-menu-btn span {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: #1e293b;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        /* Testimonial cards responsive */
-        .testimonial-grid-wrap {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        /* Two-column feature blocks responsive */
-        .two-col-feature {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 72px;
-            align-items: center;
-        }
-
-        /* ── iPad (≤1024px) ────────────────────────── */
-        @media (max-width: 1024px) {
-            .testimonial-grid-wrap {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .two-col-feature {
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
-            }
-        }
-
-        /* ── Tablet / large phone (≤768px) ────────── */
-        @media (max-width: 768px) {
-            .mobile-menu-btn { display: flex; }
-
-            .hero-content h1 { font-size: 2rem \!important; }
-            .hero-content p  { font-size: 1rem \!important; }
-
-            .testimonial-grid-wrap {
-                grid-template-columns: 1fr;
-                max-width: 480px;
-                margin: 0 auto;
-            }
-
-            .two-col-feature {
-                grid-template-columns: 1fr \!important;
-                gap: 32px \!important;
-            }
-
-            /* Inline grid sections — force single column */
-            [style*="grid-template-columns:1fr 1fr"],
-            [style*="grid-template-columns: 1fr 1fr"] {
-                grid-template-columns: 1fr \!important;
-            }
-
-            /* Features grid → 1 col on phone */
-            .features-grid {
-                grid-template-columns: 1fr \!important;
-            }
-
-            /* Nav links hidden — show hamburger */
-            .nav-links { display: none \!important; }
-
-            /* CTA banner text */
-            .cta-banner-title { font-size: 1.6rem \!important; }
-
-            /* Pricing */
-            .pricing-grid { max-width: 360px; margin: 0 auto; }
-
-            /* Footer bottom credit wraps cleanly */
-            .footer-bottom p { font-size: 0.78rem; text-align: center; }
-
-            /* Modal padding on phone */
-            #helpcenter-modal > div > div,
-            #blog-modal > div > div,
-            #tutorials-modal > div > div {
-                padding: 20px 16px \!important;
-            }
-
-            /* Modals full-width on phone */
-            #helpcenter-modal > div,
-            #blog-modal > div,
-            #tutorials-modal > div {
-                border-radius: 14px \!important;
-            }
-        }
-
-        /* ── Small phones (≤480px) ─────────────────── */
-        @media (max-width: 480px) {
-            .hero-content h1 { font-size: 1.7rem \!important; line-height: 1.25 \!important; }
-            .hero-buttons { flex-direction: column \!important; align-items: stretch \!important; }
-            .hero-buttons a, .hero-buttons button {
-                text-align: center \!important;
-                width: 100% \!important;
-            }
-
-            /* Section headings */
-            h2 { font-size: 1.5rem \!important; }
-
-            /* Testimony cards full width */
-            .testimonial-grid-wrap { grid-template-columns: 1fr; }
-
-            /* Inline 3-col grids → 1 col */
-            [style*="grid-template-columns:repeat(3"],
-            [style*="grid-template-columns: repeat(3"] {
-                grid-template-columns: 1fr \!important;
-            }
-
-            /* Sermon evaluator score card */
-            [style*="grid-template-columns:1fr 1fr 1fr"] {
-                grid-template-columns: 1fr 1fr \!important;
-            }
-
-            /* Video demo modal */
-            #video-demo-modal > div {
-                border-radius: 12px \!important;
-            }
-
-            /* Pricing buttons full width */
-            .pricing-card .btn { width: 100% \!important; }
-        }
-
-        /* ── iPhone SE / tiny screens (≤375px) ─────── */
-        @media (max-width: 375px) {
-            .hero-content h1 { font-size: 1.5rem \!important; }
-            nav { padding: 0.75rem 1rem \!important; }
-        }
-
-        /* Touch-friendly tap targets everywhere */
-        @media (hover: none) and (pointer: coarse) {
-            .btn, button, a, .nav-item, .tab,
-            [onclick], [role="button"] {
-                min-height: 44px;
-            }
-            /* Larger font for readability on mobile */
-            body { font-size: 16px; }
-            /* Prevent text zoom on input focus (iOS) */
-            input, select, textarea { font-size: 16px \!important; }
-        }
 </style>
 </head>
 <body>
@@ -1188,8 +1090,29 @@
                 <a href="https://scripturestudio.outseta.com/auth?widgetMode=login#o-anonymous" class="btn btn-ghost">Log In</a>
                 <a href="https://scripturestudio.outseta.com/auth?widgetMode=register#o-anonymous" class="btn btn-primary">Start Free Trial</a>
             </div>
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Full-Screen Dropdown Menu -->
+    <div id="mobile-nav-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">✕</button>
+        <a href="#book" class="mobile-nav-link" onclick="closeMobileNav()">📖 Book</a>
+        <div class="mobile-nav-divider"></div>
+        <a href="#about" class="mobile-nav-link" onclick="closeMobileNav()">About</a>
+        <div class="mobile-nav-divider"></div>
+        <a href="#features" class="mobile-nav-link" onclick="closeMobileNav()">Features</a>
+        <div class="mobile-nav-divider"></div>
+        <a href="#pricing" class="mobile-nav-link" onclick="closeMobileNav()">Pricing</a>
+        <div class="mobile-nav-btns">
+            <a href="https://scripturestudio.outseta.com/auth?widgetMode=login#o-anonymous" class="mobile-nav-btn-login" onclick="closeMobileNav()">Log In</a>
+            <a href="https://scripturestudio.outseta.com/auth?widgetMode=register#o-anonymous" class="mobile-nav-btn-trial" onclick="closeMobileNav()">Start Free Trial</a>
+            <a href="#book" class="mobile-nav-btn-book" onclick="closeMobileNav()">📖 Get Your Copy Today</a>
+        </div>
+    </div>
     
     <!-- Hero Section -->
     <section class="hero">
@@ -2524,6 +2447,28 @@
             if (e.key === 'Escape') window.closeVideoDemo();
         });
     })();
+    </script>
+
+    <!-- Mobile Nav Toggle -->
+    <script>
+        function toggleMobileNav() {
+            var menu = document.getElementById('mobile-nav-menu');
+            var isOpen = menu.classList.contains('open');
+            if (isOpen) {
+                closeMobileNav();
+            } else {
+                menu.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        function closeMobileNav() {
+            document.getElementById('mobile-nav-menu').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMobileNav();
+        });
     </script>
 
 </body>
