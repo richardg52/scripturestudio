@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scripture Studio Book Society — Live Audio with Dr. Richard G. Clark</title>
+  <meta name="description" content="A live monthly audio conversation about faith, scripture, and the books that shape ministry — hosted by Dr. Richard G. Clark.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Georgia&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #ffffff;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top:0; left:0; right:0;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e5e7eb;
+      z-index: 1000;
+    }
+    .nav-inner {
+      max-width: 1160px; margin:0 auto;
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 1.1rem; font-weight: 800; color: #1e40af;
+      text-decoration: none;
+    }
+    .nav-badge {
+      background: linear-gradient(135deg,#1e40af,#3b82f6);
+      color: white; font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; letter-spacing: 0.04em;
+    }
+    .nav-cta {
+      background: #1e40af; color: white;
+      padding: 8px 20px; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #1d4ed8; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 120px 24px 80px;
+      background: linear-gradient(160deg, #0a0810 0%, #0f1a3a 50%, #1e3a8a 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #93c5fd; font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 20px; margin-bottom: 28px;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.6);
+      animation: pulse-dot 1.8s infinite;
+    }
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+    .hero h1 {
+      font-family: Georgia, serif;
+      font-size: 3.4rem; font-weight: 800;
+      color: white; line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero h1 span { color: #60a5fa; }
+    .hero-sub {
+      color: rgba(255,255,255,0.65);
+      font-size: 1.05rem; line-height: 1.75;
+      max-width: 580px; margin: 0 auto 40px;
+    }
+
+    /* Session Card */
+    .session-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px;
+      padding: 28px 32px;
+      max-width: 600px; margin: 0 auto 40px;
+      text-align: left;
+    }
+    .session-label {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #60a5fa; margin-bottom: 12px;
+    }
+    .session-book {
+      font-family: Georgia, serif;
+      font-size: 1.45rem; font-weight: 800;
+      color: white; margin-bottom: 4px;
+    }
+    .session-author {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.88rem; margin-bottom: 20px;
+    }
+    .session-meta {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .session-meta-item {
+      display: flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.7); font-size: 0.88rem;
+    }
+    .session-meta-item i { width:16px; height:16px; color: #60a5fa; }
+
+    /* Countdown */
+    .countdown {
+      display: flex; gap: 12px; margin-bottom: 24px;
+    }
+    .countdown-unit {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 12px 18px;
+      text-align: center; min-width: 72px;
+    }
+    .countdown-num {
+      font-size: 1.8rem; font-weight: 800;
+      color: white; line-height: 1; display: block;
+    }
+    .countdown-lbl {
+      font-size: 0.65rem; font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-top: 4px; display: block;
+    }
+
+    .btn-enter {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg,#2563eb,#1e40af);
+      color: white; padding: 14px 32px;
+      border-radius: 12px; font-size: 1rem; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.25s; box-shadow: 0 8px 24px rgba(37,99,235,0.35);
+    }
+    .btn-enter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(37,99,235,0.45);
+    }
+    .btn-enter i { width:18px; height:18px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: white; padding: 14px 28px;
+      border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+      text-decoration: none; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.14); }
+    .btn-ghost i { width:16px; height:16px; }
+
+    .hero-btns {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    }
+
+    /* ── HOST STRIP ── */
+    .host-strip {
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 28px 24px;
+    }
+    .host-strip-inner {
+      max-width: 1000px; margin: 0 auto;
+      display: flex; align-items: center;
+      gap: 24px; flex-wrap: wrap; justify-content: center;
+    }
+    .host-photo {
+      width: 72px; height: 72px;
+      border-radius: 14px; object-fit: cover;
+      object-position: center top;
+      border: 3px solid white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    .host-info h3 {
+      font-size: 1.05rem; font-weight: 800; color: #111827;
+    }
+    .host-info p {
+      color: #6b7280; font-size: 0.85rem;
+    }
+    .host-creds {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+    }
+    .host-cred-tag {
+      background: #eff6ff; color: #1e40af;
+      font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .host-divider {
+      width: 1px; height: 60px;
+      background: #e5e7eb; flex-shrink: 0;
+    }
+    .host-stats {
+      display: flex; gap: 28px;
+    }
+    .host-stat { text-align: center; }
+    .host-stat-num {
+      font-size: 1.5rem; font-weight: 800; color: #1e40af;
+      display: block;
+    }
+    .host-stat-lbl {
+      font-size: 0.72rem; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .section { padding: 80px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #2563eb; margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 2.2rem; font-weight: 800;
+      color: #111827; line-height: 1.2; margin-bottom: 14px;
+    }
+    .section-sub {
+      color: #6b7280; font-size: 0.95rem;
+      line-height: 1.7; max-width: 520px; margin-bottom: 52px;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .how-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 28px 22px;
+      position: relative;
+    }
+    .how-num {
+      position: absolute; top: -14px; left: 22px;
+      width: 28px; height: 28px;
+      background: #1e40af; color: white;
+      border-radius: 50%; font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .how-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px; background: #eff6ff;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .how-icon i { width: 22px; height: 22px; color: #1e40af; }
+    .how-card h4 {
+      font-size: 0.95rem; font-weight: 700;
+      color: #111827; margin-bottom: 8px;
+    }
+    .how-card p {
+      font-size: 0.82rem; color: #6b7280; line-height: 1.6;
+    }
+
+    /* ── ROOM PREVIEW (audio UI mock) ── */
+    .room-section {
+      padding: 80px 24px;
+      background: #0a0810;
+    }
+    .room-inner {
+      max-width: 1000px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 56px; align-items: center;
+    }
+    .room-copy .section-tag { color: #60a5fa; }
+    .room-copy .section-title { color: white; }
+    .room-copy .section-sub { color: rgba(255,255,255,0.55); margin-bottom: 32px; }
+
+    .room-feature {
+      display: flex; align-items: flex-start;
+      gap: 14px; margin-bottom: 20px;
+    }
+    .room-feat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.25);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .room-feat-icon i { width: 18px; height: 18px; color: #60a5fa; }
+    .room-feat-text h5 {
+      font-size: 0.9rem; font-weight: 700;
+      color: white; margin-bottom: 4px;
+    }
+    .room-feat-text p {
+      font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.5;
+    }
+
+    /* Audio Room Mock UI */
+    .room-mock {
+      background: #111827;
+      border-radius: 20px;
+      border: 1px solid #1f2937;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+    .room-mock-header {
+      background: #1f2937;
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .room-mock-title {
+      font-size: 0.85rem; font-weight: 700; color: white;
+    }
+    .room-mock-live {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #22c55e; font-size: 0.7rem; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .room-mock-body { padding: 20px 18px; }
+
+    /* Host on stage */
+    .stage-host {
+      background: linear-gradient(135deg,#1e3a8a,#2563eb);
+      border-radius: 14px; padding: 16px;
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 14px;
+    }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: white; font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .avatar-info { flex: 1; }
+    .avatar-name { font-size: 0.85rem; font-weight: 700; color: white; }
+    .avatar-role { font-size: 0.72rem; color: rgba(255,255,255,0.6); }
+    .mic-active {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(34,197,94,0.2);
+      border: 1.5px solid #22c55e;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mic-active i { width: 14px; height: 14px; color: #22c55e; }
+
+    /* Guest rows */
+    .guest-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      background: #1f2937; margin-bottom: 8px;
+    }
+    .guest-avatar {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: white; font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .guest-name { font-size: 0.82rem; font-weight: 600; color: #d1d5db; flex: 1; }
+    .guest-hand {
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: #f59e0b; font-size: 0.68rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 6px;
+    }
+    .guest-muted { color: #4b5563; }
+    .guest-muted i { width: 14px; height: 14px; }
+
+    /* Q&A */
+    .qa-box {
+      background: #1f2937; border-radius: 10px;
+      padding: 12px 14px; margin-top: 14px;
+    }
+    .qa-lbl { font-size: 0.68rem; font-weight: 700; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .qa-item {
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid #374151;
+    }
+    .qa-item:last-child { border-bottom: none; }
+    .qa-dot { width: 6px; height: 6px; border-radius: 50%;
+      background: #3b82f6; margin-top: 6px; flex-shrink: 0; }
+    .qa-text { font-size: 0.78rem; color: #9ca3af; line-height: 1.5; }
+
+    /* Controls bar */
+    .room-controls {
+      background: #1f2937;
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .ctrl-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #374151; color: #d1d5db;
+      border: none; border-radius: 8px;
+      padding: 8px 14px; font-size: 0.78rem; font-weight: 600;
+      cursor: default;
+    }
+    .ctrl-btn i { width: 14px; height: 14px; }
+    .ctrl-btn.red { background: rgba(239,68,68,0.2); color: #f87171; }
+
+    /* ── RENTAL SECTION ── */
+    .rental-section {
+      padding: 80px 24px;
+      background: #f8fafc;
+    }
+    .rental-inner { max-width: 1100px; margin: 0 auto; }
+    .rental-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 24px; margin-top: 48px;
+    }
+    .rental-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .rental-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+    }
+    .rental-card.featured {
+      background: linear-gradient(145deg,#1e3a8a,#2563eb);
+      border-color: transparent;
+    }
+    .rental-popular {
+      position: absolute; top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: #f59e0b; color: white;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px;
+      white-space: nowrap;
+    }
+    .rental-tier {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #6b7280; margin-bottom: 10px;
+    }
+    .rental-card.featured .rental-tier { color: rgba(255,255,255,0.6); }
+    .rental-price {
+      font-size: 2.8rem; font-weight: 800;
+      color: #111827; line-height: 1; margin-bottom: 6px;
+    }
+    .rental-card.featured .rental-price { color: white; }
+    .rental-price span { font-size: 1rem; font-weight: 400; color: #9ca3af; }
+    .rental-card.featured .rental-price span { color: rgba(255,255,255,0.5); }
+    .rental-desc {
+      font-size: 0.85rem; color: #6b7280;
+      margin-bottom: 24px; line-height: 1.6;
+    }
+    .rental-card.featured .rental-desc { color: rgba(255,255,255,0.65); }
+    .rental-features { list-style: none; margin-bottom: 28px; }
+    .rental-features li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 0; font-size: 0.88rem; color: #374151;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .rental-features li:last-child { border-bottom: none; }
+    .rental-card.featured .rental-features li { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.1); }
+    .rental-features li i { width: 16px; height: 16px; color: #22c55e; flex-shrink: 0; }
+    .rental-card.featured .rental-features li i { color: #86efac; }
+
+    .btn-book {
+      display: block; width: 100%;
+      background: #1e40af; color: white;
+      padding: 13px 0; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700;
+      text-align: center; text-decoration: none;
+      border: none; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-book:hover { background: #1d4ed8; }
+    .rental-card.featured .btn-book {
+      background: white; color: #1e40af;
+    }
+    .rental-card.featured .btn-book:hover { background: #eff6ff; }
+
+    .rental-note {
+      text-align: center; margin-top: 28px;
+      color: #9ca3af; font-size: 0.82rem;
+    }
+
+    /* ── BOOKING MODAL ── */
+    #book-modal {
+      display: none; position: fixed; inset: 0;
+      z-index: 9999;
+      background: rgba(10,8,16,0.8);
+      backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    #book-modal.open { display: flex; }
+    .modal-box {
+      background: white; border-radius: 20px;
+      max-width: 520px; width: 100%;
+      padding: 40px; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: #f3f4f6; border: none; border-radius: 50%;
+      width: 36px; height: 36px; font-size: 1.1rem;
+      cursor: pointer; color: #374151;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-title {
+      font-family: Georgia, serif;
+      font-size: 1.5rem; font-weight: 800;
+      color: #111827; margin-bottom: 6px;
+    }
+    .modal-sub { color: #6b7280; font-size: 0.88rem; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #374151; margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      color: #111827; background: white;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #2563eb; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-submit {
+      width: 100%; padding: 14px;
+      background: #1e40af; color: white;
+      border: none; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; margin-top: 8px;
+    }
+    .btn-submit:hover { background: #1d4ed8; }
+
+    /* ── ENTER ROOM MODAL ── */
+    #room-modal {
+      display: none; position: fixed; inset: 0;
+      z-index: 9999;
+      background: #0a0810;
+      align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    #room-modal.open { display: flex; }
+    .room-modal-header {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 20px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .room-modal-logo {
+      font-size: 1rem; font-weight: 800; color: white;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .room-modal-close {
+      background: rgba(255,255,255,0.1); border: none;
+      color: white; border-radius: 8px;
+      padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .room-modal-close:hover { background: rgba(255,255,255,0.18); }
+    .daily-frame-wrap {
+      width: 100%; height: 100%;
+      padding-top: 64px;
+    }
+    #daily-iframe {
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .room-setup-msg {
+      text-align: center; padding: 40px 24px;
+    }
+    .room-setup-msg h2 {
+      font-family: Georgia, serif; font-size: 1.8rem;
+      color: white; margin-bottom: 14px;
+    }
+    .room-setup-msg p {
+      color: rgba(255,255,255,0.55); font-size: 0.95rem;
+      max-width: 420px; margin: 0 auto 28px; line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: #0a0810; padding: 48px 24px 28px;
+      text-align: center;
+    }
+    .footer-logo {
+      font-size: 1.1rem; font-weight: 800; color: white;
+      margin-bottom: 10px;
+    }
+    .footer-links {
+      display: flex; gap: 24px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .footer-links a {
+      color: #6b7280; text-decoration: none;
+      font-size: 0.85rem; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: white; }
+    .footer-copy {
+      color: #4b5563; font-size: 0.78rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .how-grid { grid-template-columns: repeat(2,1fr); }
+      .room-inner { grid-template-columns: 1fr; }
+      .rental-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+      .host-divider { display: none; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.2rem; }
+      .how-grid { grid-template-columns: 1fr; }
+      .countdown { gap: 8px; }
+      .countdown-unit { min-width: 60px; padding: 10px 12px; }
+      .countdown-num { font-size: 1.4rem; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="https://scripturestudio.app" class="nav-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" style="width:24px;height:24px;flex-shrink:0"><circle cx="40" cy="40" r="38" fill="#1e3a8a"/><rect x="37" y="13" width="6" height="30" rx="2" fill="#f59e0b"/><rect x="25" y="23" width="30" height="6" rx="2" fill="#f59e0b"/><path d="M 40 61 C 34 54, 17 47, 12 35 L 12 27 C 17 39, 33 47, 40 53 Z" fill="white"/><path d="M 40 61 C 46 54, 63 47, 68 35 L 68 27 C 63 39, 47 47, 40 53 Z" fill="rgba(255,255,255,0.88)"/></svg>
+        Scripture Studio
+      </a>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span class="nav-badge">Book Society</span>
+        <a href="#rental" class="nav-cta">Rent a Room</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div style="max-width:760px;margin:0 auto;position:relative;z-index:1">
+      <div class="hero-tag">
+        <span class="live-dot"></span>
+        Members Only &nbsp;·&nbsp; Live Audio Sessions
+      </div>
+      <h1>Scripture Studio<br><span>Book Society</span></h1>
+      <p class="hero-sub">A live monthly audio conversation about faith, scripture, and the books that shape ministry — moderated by Dr. Richard G. Clark.</p>
+
+      <!-- Session Card -->
+      <div class="session-card">
+        <div class="session-label">This Month's Session</div>
+        <div class="session-book">"The Push You Needed"</div>
+        <div class="session-author">by Dr. Richard G. Clark &nbsp;·&nbsp; Chapter Focus: Ch. 4–6</div>
+        <div class="session-meta">
+          <div class="session-meta-item">
+            <i data-lucide="calendar"></i>
+            <span id="session-date">Loading...</span>
+          </div>
+          <div class="session-meta-item">
+            <i data-lucide="clock"></i>
+            <span>7:00 PM CT &nbsp;·&nbsp; 90 min</span>
+          </div>
+          <div class="session-meta-item">
+            <i data-lucide="mic"></i>
+            <span>Audio Only</span>
+          </div>
+        </div>
+        <div class="countdown" id="countdown">
+          <div class="countdown-unit"><span class="countdown-num" id="cd-days">00</span><span class="countdown-lbl">Days</span></div>
+          <div class="countdown-unit"><span class="countdown-num" id="cd-hours">00</span><span class="countdown-lbl">Hours</span></div>
+          <div class="countdown-unit"><span class="countdown-num" id="cd-mins">00</span><span class="countdown-lbl">Mins</span></div>
+          <div class="countdown-unit"><span class="countdown-num" id="cd-secs">00</span><span class="countdown-lbl">Secs</span></div>
+        </div>
+      </div>
+
+      <div class="hero-btns">
+        <button class="btn-enter" onclick="openRoomModal()">
+          <i data-lucide="mic"></i>
+          Enter the Room
+        </button>
+        <a href="#rental" class="btn-ghost">
+          <i data-lucide="building-2"></i>
+          Rent This Room
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOST STRIP -->
+  <div class="host-strip">
+    <div class="host-strip-inner">
+      <img src="../author-photo.jpg" alt="Dr. Richard G. Clark" class="host-photo">
+      <div class="host-info">
+        <h3>Dr. Richard G. Clark</h3>
+        <p>Your Host &nbsp;·&nbsp; Senior Pastor, Ebenezer Baptist &nbsp;·&nbsp; Memphis, TN</p>
+        <div class="host-creds">
+          <span class="host-cred-tag">Th.D.</span>
+          <span class="host-cred-tag">J.M.</span>
+          <span class="host-cred-tag">MBA</span>
+          <span class="host-cred-tag">B.A.</span>
+          <span class="host-cred-tag">31+ Years Ministry</span>
+        </div>
+      </div>
+      <div class="host-divider"></div>
+      <div class="host-stats">
+        <div class="host-stat">
+          <span class="host-stat-num">13</span>
+          <span class="host-stat-lbl">Bible Versions</span>
+        </div>
+        <div class="host-stat">
+          <span class="host-stat-num">31+</span>
+          <span class="host-stat-lbl">Years Pastoring</span>
+        </div>
+        <div class="host-stat">
+          <span class="host-stat-num">Live</span>
+          <span class="host-stat-lbl">Monthly Sessions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" style="background:#ffffff">
+    <div class="section-inner">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Your voice matters.<br>We built the room for it.</h2>
+      <p class="section-sub">No camera, no pressure. Just a live audio conversation with real ministry leaders led by Dr. Clark.</p>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-num">1</div>
+          <div class="how-icon"><i data-lucide="log-in"></i></div>
+          <h4>Enter the Room</h4>
+          <p>Click "Enter the Room" on session day. You'll join muted by default — no video, just audio.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">2</div>
+          <div class="how-icon"><i data-lucide="hand"></i></div>
+          <h4>Raise Your Hand</h4>
+          <p>Tap the raise hand button when you want to speak or ask a question. Dr. Clark sees your request live.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">3</div>
+          <div class="how-icon"><i data-lucide="mic"></i></div>
+          <h4>Host Unmutes You</h4>
+          <p>Dr. Clark calls your name and unmutes you directly. You speak, the room hears you — then you return to muted.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">4</div>
+          <div class="how-icon"><i data-lucide="message-square"></i></div>
+          <h4>Send a Question</h4>
+          <p>Can't speak? Type your question in the chat panel. Dr. Clark reads and answers selected questions live.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOM PREVIEW SECTION -->
+  <section class="room-section">
+    <div class="room-inner">
+      <div class="room-copy">
+        <div class="section-tag">The Room</div>
+        <h2 class="section-title" style="color:white">A professional audio room.<br>Fully in your control.</h2>
+        <p class="section-sub">Dr. Clark sees every raised hand, every question. He controls who speaks, when, and for how long. The conversation never loses its flow.</p>
+        <div class="room-feature">
+          <div class="room-feat-icon"><i data-lucide="mic-off"></i></div>
+          <div class="room-feat-text">
+            <h5>Guests Muted by Default</h5>
+            <p>No accidental interruptions. Everyone joins muted and unmutes only when called on.</p>
+          </div>
+        </div>
+        <div class="room-feature">
+          <div class="room-feat-icon"><i data-lucide="list-ordered"></i></div>
+          <div class="room-feat-text">
+            <h5>Raise Hand Queue</h5>
+            <p>Dr. Clark sees a live list of who wants to speak and manages the order naturally.</p>
+          </div>
+        </div>
+        <div class="room-feature">
+          <div class="room-feat-icon"><i data-lucide="video-off"></i></div>
+          <div class="room-feat-text">
+            <h5>Audio Only</h5>
+            <p>No cameras required. Come as you are — your voice is what matters.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Mock UI -->
+      <div class="room-mock">
+        <div class="room-mock-header">
+          <div class="room-mock-title">📖 Book Society — Live Session</div>
+          <div class="room-mock-live">
+            <span class="live-dot"></span> LIVE
+          </div>
+        </div>
+        <div class="room-mock-body">
+          <!-- Host on stage -->
+          <div class="stage-host">
+            <div class="avatar">RC</div>
+            <div class="avatar-info">
+              <div class="avatar-name">Dr. Richard G. Clark</div>
+              <div class="avatar-role">Host · Speaking now</div>
+            </div>
+            <div class="mic-active"><i data-lucide="mic"></i></div>
+          </div>
+          <!-- Guests -->
+          <div class="guest-row">
+            <div class="guest-avatar" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">PM</div>
+            <div class="guest-name">Pastor Marcus</div>
+            <span class="guest-hand">✋ Raised</span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-avatar" style="background:linear-gradient(135deg,#059669,#065f46)">JT</div>
+            <div class="guest-name">Minister Janet T.</div>
+            <span class="guest-muted"><i data-lucide="mic-off"></i></span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-avatar" style="background:linear-gradient(135deg,#b45309,#78350f)">DW</div>
+            <div class="guest-name">Deacon Williams</div>
+            <span class="guest-hand">✋ Raised</span>
+          </div>
+          <!-- Q&A -->
+          <div class="qa-box">
+            <div class="qa-lbl">Questions</div>
+            <div class="qa-item">
+              <div class="qa-dot"></div>
+              <div class="qa-text">How do you preach through grief without making it about yourself?</div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-dot"></div>
+              <div class="qa-text">Chapter 4 really hit me — can you speak more on the valley seasons?</div>
+            </div>
+          </div>
+        </div>
+        <!-- Controls -->
+        <div class="room-controls">
+          <div class="ctrl-btn"><i data-lucide="mic-off"></i> Muted</div>
+          <div class="ctrl-btn"><i data-lucide="hand"></i> Raise Hand</div>
+          <div class="ctrl-btn red"><i data-lucide="phone-off"></i> Leave</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RENTAL SECTION -->
+  <section class="rental-section" id="rental">
+    <div class="rental-inner">
+      <div class="section-tag">Room Rentals</div>
+      <h2 class="section-title">Host your own audio room.</h2>
+      <p class="section-sub" style="margin-bottom:0">Pastors, authors, church groups, and ministry leaders — rent the Scripture Studio audio room for your own live event. Fully branded, professionally hosted, zero tech headaches.</p>
+
+      <div class="rental-grid">
+        <!-- Basic -->
+        <div class="rental-card">
+          <div class="rental-tier">Basic</div>
+          <div class="rental-price">$49<span>/session</span></div>
+          <p class="rental-desc">Perfect for small groups, Bible studies, and intimate ministry conversations.</p>
+          <ul class="rental-features">
+            <li><i data-lucide="check"></i> Up to 25 attendees</li>
+            <li><i data-lucide="check"></i> 60-minute session</li>
+            <li><i data-lucide="check"></i> Audio only</li>
+            <li><i data-lucide="check"></i> Host controls included</li>
+            <li><i data-lucide="check"></i> Raise hand + Q&A chat</li>
+            <li><i data-lucide="check"></i> Custom room link</li>
+          </ul>
+          <a href="#" class="btn-book" onclick="openBookModal('Basic – $49'); return false;">Book Basic Room</a>
+        </div>
+        <!-- Standard (featured) -->
+        <div class="rental-card featured">
+          <div class="rental-popular">Most Popular</div>
+          <div class="rental-tier">Standard</div>
+          <div class="rental-price">$99<span>/session</span></div>
+          <p class="rental-desc">Ideal for church events, book launches, and larger ministry gatherings.</p>
+          <ul class="rental-features">
+            <li><i data-lucide="check"></i> Up to 100 attendees</li>
+            <li><i data-lucide="check"></i> 90-minute session</li>
+            <li><i data-lucide="check"></i> Audio only</li>
+            <li><i data-lucide="check"></i> Host controls included</li>
+            <li><i data-lucide="check"></i> Raise hand + Q&A chat</li>
+            <li><i data-lucide="check"></i> Custom branded welcome page</li>
+            <li><i data-lucide="check"></i> Session recording</li>
+          </ul>
+          <a href="#" class="btn-book" onclick="openBookModal('Standard – $99'); return false;">Book Standard Room</a>
+        </div>
+        <!-- Premium -->
+        <div class="rental-card">
+          <div class="rental-tier">Premium</div>
+          <div class="rental-price">$199<span>/session</span></div>
+          <p class="rental-desc">For large conferences, denominational events, and high-attendance broadcasts.</p>
+          <ul class="rental-features">
+            <li><i data-lucide="check"></i> Up to 300 attendees</li>
+            <li><i data-lucide="check"></i> 2-hour session</li>
+            <li><i data-lucide="check"></i> Audio only</li>
+            <li><i data-lucide="check"></i> Host controls included</li>
+            <li><i data-lucide="check"></i> Raise hand + Q&A chat</li>
+            <li><i data-lucide="check"></i> Custom branded welcome page</li>
+            <li><i data-lucide="check"></i> Session recording + download</li>
+            <li><i data-lucide="check"></i> Priority setup support</li>
+          </ul>
+          <a href="#" class="btn-book" onclick="openBookModal('Premium – $199'); return false;">Book Premium Room</a>
+        </div>
+      </div>
+      <p class="rental-note">All sessions booked 48 hours in advance &nbsp;·&nbsp; Stripe secure payment &nbsp;·&nbsp; Questions? <a href="mailto:support@scripturestudio.app" style="color:#2563eb">support@scripturestudio.app</a></p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">Scripture Studio Book Society</div>
+    <div class="footer-links">
+      <a href="https://scripturestudio.app">Main Site</a>
+      <a href="https://scripturestudio.app/app/">App Login</a>
+      <a href="https://scripturestudio.app#pricing">Pricing</a>
+      <a href="mailto:support@scripturestudio.app">Contact</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Scripture Studio &middot; Dr. Richard G. Clark &middot; Memphis, TN</p>
+  </footer>
+
+
+  <!-- BOOKING MODAL -->
+  <div id="book-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeBookModal()">✕</button>
+      <div class="modal-title">Book a Room</div>
+      <p class="modal-sub" id="modal-tier-label">Reserve your session below.</p>
+      <form onsubmit="handleBooking(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Richard" required>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Clark" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@church.org" required>
+        </div>
+        <div class="form-group">
+          <label>Organization / Church</label>
+          <input type="text" placeholder="Ebenezer Baptist Church">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Preferred Date</label>
+            <input type="date" required>
+          </div>
+          <div class="form-group">
+            <label>Preferred Time (CT)</label>
+            <input type="time">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tell us about your event</label>
+          <textarea placeholder="Brief description of your session topic, expected attendance, etc."></textarea>
+        </div>
+        <input type="hidden" id="booking-tier" value="">
+        <button type="submit" class="btn-submit">Request Booking →</button>
+        <p style="text-align:center;font-size:0.75rem;color:#9ca3af;margin-top:10px">You won't be charged yet — we'll confirm availability and send a payment link.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ROOM MODAL (Daily.co embed) -->
+  <div id="room-modal">
+    <div class="room-modal-header">
+      <div class="room-modal-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" style="width:22px;height:22px"><circle cx="40" cy="40" r="38" fill="#1e3a8a"/><rect x="37" y="13" width="6" height="30" rx="2" fill="#f59e0b"/><rect x="25" y="23" width="30" height="6" rx="2" fill="#f59e0b"/><path d="M 40 61 C 34 54, 17 47, 12 35 L 12 27 C 17 39, 33 47, 40 53 Z" fill="white"/><path d="M 40 61 C 46 54, 63 47, 68 35 L 68 27 C 63 39, 47 47, 40 53 Z" fill="rgba(255,255,255,0.88)"/></svg>
+        Scripture Studio Book Society
+      </div>
+      <button class="room-modal-close" onclick="closeRoomModal()">✕ Leave Room</button>
+    </div>
+    <div class="daily-frame-wrap">
+      <!-- Once Daily.co is set up, replace the setup-msg div with:
+           <iframe id="daily-iframe" src="https://YOUR-DOMAIN.daily.co/book-society" allow="microphone; camera; autoplay; display-capture; fullscreen"></iframe>
+      -->
+      <div class="room-setup-msg">
+        <div style="font-size:3rem;margin-bottom:20px">🎙️</div>
+        <h2>Room Ready</h2>
+        <p>Your Daily.co room URL goes here. Once you create a free Daily.co account and set your room URL, this opens directly into the live audio session.</p>
+        <a href="https://www.daily.co" target="_blank" style="display:inline-block;background:#2563eb;color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.9rem;margin-top:8px">Set Up Daily.co →</a>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    lucide.createIcons();
+
+    /* ── Next session date (first Thursday of next month, 7 PM CT) ── */
+    function getNextSessionDate() {
+      const now = new Date();
+      let d = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      while (d.getDay() !== 4) d.setDate(d.getDate() + 1); // Thursday
+      d.setHours(19, 0, 0, 0); // 7 PM local — adjust for CT offset as needed
+      return d;
+    }
+
+    const sessionTarget = getNextSessionDate();
+
+    // Show readable date
+    document.getElementById('session-date').textContent = sessionTarget.toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+    });
+
+    // Countdown
+    function updateCountdown() {
+      const now = new Date();
+      const diff = sessionTarget - now;
+      if (diff <= 0) {
+        document.getElementById('countdown').innerHTML =
+          '<div style="color:#22c55e;font-weight:700;font-size:1rem;padding:12px 0">🔴 Session is Live — Enter Now</div>';
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000)  / 60000);
+      const secs  = Math.floor((diff % 60000)    / 1000);
+      document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+      document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+      document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* ── Room modal ── */
+    function openRoomModal() {
+      document.getElementById('room-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeRoomModal() {
+      document.getElementById('room-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    /* ── Booking modal ── */
+    function openBookModal(tier) {
+      document.getElementById('modal-tier-label').textContent = 'Selected: ' + tier;
+      document.getElementById('booking-tier').value = tier;
+      document.getElementById('book-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeBookModal() {
+      document.getElementById('book-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('book-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeBookModal();
+    });
+
+    function handleBooking(e) {
+      e.preventDefault();
+      // Wire to Stripe or email handler here
+      alert('Booking request received! We\'ll email you within 24 hours to confirm availability and send a payment link.');
+      closeBookModal();
+    }
+  </script>
+
+</body>
+</html>
