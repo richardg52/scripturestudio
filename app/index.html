@@ -3390,10 +3390,37 @@
                                     </div>
                                 </div>
                                 <!-- Get Your Copy CTA -->
-                                <div style="flex-shrink:0;padding:22px 24px 22px 0;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
-                                    <a href="https://scripturestudio.outseta.com/checkout?planUid=aWxoRq9V" target="_blank" style="display:block;background:linear-gradient(135deg,#d4a820,#f0cc50);color:#0a0810;font-size:0.78rem;font-weight:800;padding:10px 20px;border-radius:8px;text-decoration:none;text-align:center;box-shadow:0 4px 16px rgba(210,168,40,0.4);white-space:nowrap">&#128218; Get Your Copy Today</a>
-                                    <div style="font-size:0.65rem;color:rgba(255,255,255,0.45);text-align:right">Standard $14.99 &nbsp;·&nbsp; Signed $19.99</div>
+                                <div style="flex-shrink:0;padding:22px 24px 22px 0;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+                                    <a href="https://buy.stripe.com/dRm9AV6PdgUC9cW1FbgUM08" target="_blank" style="display:block;background:linear-gradient(135deg,#d4a820,#f0cc50);color:#0a0810;font-size:0.78rem;font-weight:800;padding:10px 20px;border-radius:8px;text-decoration:none;text-align:center;box-shadow:0 4px 16px rgba(210,168,40,0.4);white-space:nowrap">&#128218; Standard — $14.99</a>
+                                    <a href="https://buy.stripe.com/dRm14pflJgUC88S2JfgUM07" target="_blank" style="display:block;background:#0a0810;color:#d4a820;font-size:0.78rem;font-weight:800;padding:10px 20px;border-radius:8px;text-decoration:none;text-align:center;border:1px solid rgba(212,168,32,0.5);white-space:nowrap">&#9997; Signed Edition — $19.99</a>
                                 </div>
+                            </div>
+
+                            <!-- Countdown to May 23 -->
+                            <div style="background:linear-gradient(135deg,#0a0810,#1a1228);border:1px solid rgba(212,168,32,0.25);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+                              <div>
+                                <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#d4a820;margin-bottom:4px">&#128197; Next Live Session</div>
+                                <div style="font-size:0.88rem;font-weight:700;color:#fff">Saturday, May 23, 2026 &nbsp;&middot;&nbsp; 1:00 PM CT</div>
+                                <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px">The Push You Needed &mdash; Full Book Discussion</div>
+                              </div>
+                              <div id="bs-app-countdown" style="display:flex;gap:8px">
+                                <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:58px">
+                                  <span id="bscd-days" style="font-size:1.5rem;font-weight:800;color:#fff;display:block;line-height:1">00</span>
+                                  <span style="font-size:0.55rem;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em">Days</span>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:58px">
+                                  <span id="bscd-hours" style="font-size:1.5rem;font-weight:800;color:#fff;display:block;line-height:1">00</span>
+                                  <span style="font-size:0.55rem;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em">Hours</span>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:58px">
+                                  <span id="bscd-mins" style="font-size:1.5rem;font-weight:800;color:#fff;display:block;line-height:1">00</span>
+                                  <span style="font-size:0.55rem;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em">Mins</span>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:58px">
+                                  <span id="bscd-secs" style="font-size:1.5rem;font-weight:800;color:#fff;display:block;line-height:1">00</span>
+                                  <span style="font-size:0.55rem;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em">Secs</span>
+                                </div>
+                              </div>
                             </div>
 
                             <!-- Tabs -->
@@ -7655,6 +7682,33 @@
             if (guideTab) guideTab.style.display = BS_ADMIN_UNLOCKED ? 'inline-flex' : 'none';
             bsShowTab('book', document.querySelector('.bs-tab'));
         }
+
+        // ── Book Society countdown ──────────────────────────────────────────
+        (function() {
+            var sessionTarget = new Date('2026-05-23T18:00:00Z'); // 1 PM CT
+            var _bscdTimer = null;
+            function runBsCountdown() {
+                var diff = sessionTarget - new Date();
+                var el = document.getElementById('bs-app-countdown');
+                if (!el) return;
+                if (diff <= 0) {
+                    el.innerHTML = '<div style="color:#22c55e;font-weight:700;font-size:0.9rem;padding:8px 0">\uD83D\uDD34 Session is Live \u2014 Enter Now</div>';
+                    if (_bscdTimer) clearInterval(_bscdTimer);
+                    return;
+                }
+                var pad = function(n){ return String(Math.floor(n)).padStart(2,'0'); };
+                var d = document.getElementById('bscd-days'),
+                    h = document.getElementById('bscd-hours'),
+                    m = document.getElementById('bscd-mins'),
+                    s = document.getElementById('bscd-secs');
+                if(d) d.textContent = pad(diff/86400000);
+                if(h) h.textContent = pad((diff%86400000)/3600000);
+                if(m) m.textContent = pad((diff%3600000)/60000);
+                if(s) s.textContent = pad((diff%60000)/1000);
+            }
+            runBsCountdown();
+            _bscdTimer = setInterval(runBsCountdown, 1000);
+        })();
 
         function bsShowTab(tab, el) {
             document.querySelectorAll('.bs-tab').forEach(function(b){b.classList.remove('active');});

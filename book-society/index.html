@@ -778,6 +778,22 @@
 
   <!-- ROOM PREVIEW SECTION -->
   <section class="room-section">
+
+    <!-- Room Countdown Banner -->
+    <div style="max-width:1000px;margin:0 auto 52px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">📅 Next Session</div>
+        <div style="font-size:1rem;font-weight:700;color:white;">Saturday, May 23, 2026 &nbsp;·&nbsp; 1:00 PM CT</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:4px;">The Push You Needed — Live Full-Book Discussion</div>
+      </div>
+      <div class="countdown" id="countdown-room" style="margin-bottom:0;">
+        <div class="countdown-unit"><span class="countdown-num" id="cr-days">00</span><span class="countdown-lbl">Days</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cr-hours">00</span><span class="countdown-lbl">Hours</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cr-mins">00</span><span class="countdown-lbl">Mins</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cr-secs">00</span><span class="countdown-lbl">Secs</span></div>
+      </div>
+    </div>
+
     <div class="room-inner">
       <div class="room-copy">
         <div class="section-tag">The Room</div>
@@ -934,7 +950,7 @@
       <a href="https://scripturestudio.app#pricing">Pricing</a>
       <a href="mailto:support@scripturestudio.app">Contact</a>
     </div>
-    <p class="footer-copy">&copy; 2026 Scripture Studio &middot; Dr. Richard G. Clark &middot; Memphis, TN</p>
+    <p class="footer-copy">&copy; 2026 Scripture Studio &middot; Dr. Richard G. Clark &middot; Memphis, TN &middot; <span style="opacity:0.5">v1.0</span></p>
   </footer>
 
 
@@ -1024,8 +1040,24 @@
       document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
       document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
     }
+    function updateRoomCountdown() {
+      const diff = sessionTarget - new Date();
+      if (diff <= 0) {
+        const el = document.getElementById('countdown-room');
+        if (el) el.innerHTML = '<div style="color:#22c55e;font-weight:700;font-size:1rem;padding:12px 0">🔴 Session is Live — Enter Now</div>';
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000)  / 60000);
+      const secs  = Math.floor((diff % 60000)    / 1000);
+      const pad = n => String(n).padStart(2,'0');
+      const cr = id => { const el = document.getElementById(id); if(el) el.textContent = pad(id==='cr-days'?days:id==='cr-hours'?hours:id==='cr-mins'?mins:secs); };
+      cr('cr-days'); cr('cr-hours'); cr('cr-mins'); cr('cr-secs');
+    }
     updateCountdown();
-    setInterval(updateCountdown, 1000);
+    updateRoomCountdown();
+    setInterval(() => { updateCountdown(); updateRoomCountdown(); }, 1000);
 
     /* ── Room modal ── */
     function openRoomModal() {
