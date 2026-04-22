@@ -672,15 +672,15 @@
       <div class="session-card">
         <div class="session-label">This Month's Session</div>
         <div class="session-book">"The Push You Needed"</div>
-        <div class="session-author">by Dr. Richard G. Clark &nbsp;·&nbsp; Chapter Focus: Ch. 4–6</div>
+        <div class="session-author">by Dr. Richard G. Clark &nbsp;·&nbsp; Full Book Discussion</div>
         <div class="session-meta">
           <div class="session-meta-item">
             <i data-lucide="calendar"></i>
-            <span id="session-date">Loading...</span>
+            <span>Saturday, May 23, 2026</span>
           </div>
           <div class="session-meta-item">
             <i data-lucide="clock"></i>
-            <span>7:00 PM CT &nbsp;·&nbsp; 90 min</span>
+            <span>1:00 – 3:00 PM CT &nbsp;·&nbsp; 2 Hours</span>
           </div>
           <div class="session-meta-item">
             <i data-lucide="mic"></i>
@@ -1002,21 +1002,9 @@
   <script>
     lucide.createIcons();
 
-    /* ── Next session date (first Thursday of next month, 7 PM CT) ── */
-    function getNextSessionDate() {
-      const now = new Date();
-      let d = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      while (d.getDay() !== 4) d.setDate(d.getDate() + 1); // Thursday
-      d.setHours(19, 0, 0, 0); // 7 PM local — adjust for CT offset as needed
-      return d;
-    }
-
-    const sessionTarget = getNextSessionDate();
-
-    // Show readable date
-    document.getElementById('session-date').textContent = sessionTarget.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-    });
+    /* ── First Book Society session: Saturday May 23, 2026 · 1:00 PM CT ── */
+    // CT = UTC-5 in May (CDT), so 1:00 PM CT = 18:00 UTC
+    const sessionTarget = new Date('2026-05-23T18:00:00Z');
 
     // Countdown
     function updateCountdown() {
