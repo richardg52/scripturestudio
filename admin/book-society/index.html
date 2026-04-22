@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Society Admin — Token Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- No index — keep this page private -->
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      color: #1a1a2e;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+    .page { max-width: 780px; margin: 0 auto; }
+
+    .header {
+      background: linear-gradient(135deg,#1e3a8a,#2563eb);
+      border-radius: 16px; padding: 28px 32px;
+      margin-bottom: 28px; color: white;
+    }
+    .header-top {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 6px;
+    }
+    .header h1 { font-size: 1.4rem; font-weight: 800; }
+    .header p { font-size: 0.85rem; color: rgba(255,255,255,0.65); }
+    .admin-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white; font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    .card {
+      background: white; border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 28px; margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 1rem; font-weight: 700;
+      color: #111827; margin-bottom: 18px;
+      padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;
+    }
+
+    label {
+      display: block; font-size: 0.82rem;
+      font-weight: 600; color: #374151; margin-bottom: 6px;
+    }
+    input[type="password"],
+    textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      color: #111827; background: white;
+      outline: none; transition: border-color 0.2s;
+    }
+    input[type="password"]:focus,
+    textarea:focus { border-color: #2563eb; }
+    textarea { resize: vertical; min-height: 160px; }
+    .field-hint {
+      font-size: 0.75rem; color: #9ca3af;
+      margin-top: 6px; line-height: 1.5;
+    }
+    .form-group { margin-bottom: 18px; }
+
+    .session-info {
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .session-info p {
+      font-size: 0.85rem; color: #166534;
+      font-weight: 600;
+    }
+    .session-info span { color: #16a34a; }
+
+    .btn-generate {
+      width: 100%; padding: 14px;
+      background: #1e40af; color: white;
+      border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+    }
+    .btn-generate:hover { background: #1d4ed8; }
+    .btn-generate:disabled {
+      background: #93c5fd; cursor: not-allowed;
+    }
+
+    /* Results */
+    #results { display: none; }
+    .results-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 16px;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .results-header h2 {
+      font-size: 1rem; font-weight: 700; color: #111827;
+      border: none; padding: 0; margin: 0;
+    }
+    .btn-copy-all {
+      background: #f0fdf4; border: 1px solid #86efac;
+      color: #166534; font-size: 0.8rem; font-weight: 700;
+      padding: 7px 16px; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-copy-all:hover { background: #dcfce7; }
+
+    .result-row {
+      background: #f8fafc; border: 1px solid #e5e7eb;
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex; align-items: center;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .result-row.success { border-left: 4px solid #22c55e; }
+    .result-row.failed  { border-left: 4px solid #ef4444; background: #fef2f2; }
+    .result-email {
+      font-size: 0.85rem; font-weight: 600;
+      color: #374151; min-width: 200px;
+    }
+    .result-link {
+      font-size: 0.75rem; color: #2563eb;
+      word-break: break-all; flex: 1;
+      font-family: monospace;
+    }
+    .result-error { font-size: 0.8rem; color: #ef4444; }
+    .btn-copy-link {
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      color: #1e40af; font-size: 0.75rem; font-weight: 700;
+      padding: 5px 12px; border-radius: 6px; cursor: pointer;
+      white-space: nowrap; transition: background 0.2s; flex-shrink: 0;
+    }
+    .btn-copy-link:hover { background: #dbeafe; }
+    .btn-copy-link.copied { background: #dcfce7; border-color: #86efac; color: #166534; }
+
+    .summary-bar {
+      background: #1e40af; color: white;
+      border-radius: 10px; padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .summary-stat { text-align: center; }
+    .summary-num { font-size: 1.5rem; font-weight: 800; display: block; }
+    .summary-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+
+    .error-msg {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 10px; padding: 14px 16px;
+      color: #b91c1c; font-size: 0.88rem;
+      margin-bottom: 16px; display: none;
+    }
+
+    /* Instructions */
+    .instructions {
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .instructions h4 {
+      font-size: 0.85rem; font-weight: 700;
+      color: #92400e; margin-bottom: 8px;
+    }
+    .instructions ol {
+      margin-left: 18px; color: #78350f;
+      font-size: 0.82rem; line-height: 2;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <h1>📖 Book Society — Admin</h1>
+      <span class="admin-badge">Admin Only</span>
+    </div>
+    <p>Generate personalized room links for Book Society members · May 23, 2026</p>
+  </div>
+
+  <!-- Session Info -->
+  <div class="session-info">
+    <p>🗓 Session: <span>Saturday, May 23, 2026 · 1:00–3:00 PM CT</span> &nbsp;·&nbsp; Room: <span>scripturestudio.daily.co/book-society</span></p>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-msg" id="error-msg"></div>
+
+  <!-- Form Card -->
+  <div class="card">
+    <h2>Generate Member Room Links</h2>
+
+    <div class="form-group">
+      <label>Admin Password</label>
+      <input type="password" id="admin-password" placeholder="Enter admin password">
+    </div>
+
+    <div class="form-group">
+      <label>Member Email Addresses</label>
+      <textarea id="email-list" placeholder="Paste one email per line:&#10;pastor@church.org&#10;minister@fellowship.com&#10;deacon@example.org"></textarea>
+      <p class="field-hint">One email address per line. Copy your Book Society buyer list from Outseta and paste here.</p>
+    </div>
+
+    <button class="btn-generate" id="generate-btn" onclick="generateTokens()">
+      🔗 Generate Room Links
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div class="card" id="results">
+    <div class="results-header">
+      <h2>Generated Links</h2>
+      <button class="btn-copy-all" onclick="copyAll()">📋 Copy All as Email List</button>
+    </div>
+    <div class="summary-bar" id="summary-bar"></div>
+    <div id="results-list"></div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <h4>⚡ How to use this page</h4>
+    <ol>
+      <li>Go to Outseta → People → filter by Book Society plan → export email list</li>
+      <li>Paste the emails above (one per line)</li>
+      <li>Enter the admin password and click Generate</li>
+      <li>Copy each person's unique link and paste into your announcement email</li>
+      <li>Each link is valid only for that person and expires after the session ends</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+  async function generateTokens() {
+    const password = document.getElementById('admin-password').value.trim();
+    const rawEmails = document.getElementById('email-list').value.trim();
+    const errEl = document.getElementById('error-msg');
+    const btn = document.getElementById('generate-btn');
+
+    errEl.style.display = 'none';
+
+    if (!password) { showError('Please enter the admin password.'); return; }
+    if (!rawEmails) { showError('Please enter at least one email address.'); return; }
+
+    const emails = rawEmails.split('\n').map(e => e.trim()).filter(e => e && e.includes('@'));
+    if (emails.length === 0) { showError('No valid email addresses found.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generating links...';
+
+    try {
+      const response = await fetch('/.netlify/functions/generate-tokens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, emails })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(data.error || 'Something went wrong. Check your password and try again.');
+        return;
+      }
+
+      displayResults(data.results);
+
+    } catch(err) {
+      showError('Network error — make sure you are on scripturestudio.app to use this tool.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🔗 Generate Room Links';
+    }
+  }
+
+  function displayResults(results) {
+    const section = document.getElementById('results');
+    const list = document.getElementById('results-list');
+    const summary = document.getElementById('summary-bar');
+
+    const success = results.filter(r => r.status === 'success').length;
+    const failed  = results.filter(r => r.status === 'failed').length;
+
+    summary.innerHTML = `
+      <div class="summary-stat"><span class="summary-num">${results.length}</span><span class="summary-lbl">Total</span></div>
+      <div class="summary-stat"><span class="summary-num" style="color:#86efac">${success}</span><span class="summary-lbl">Generated</span></div>
+      <div class="summary-stat"><span class="summary-num" style="color:#fca5a5">${failed}</span><span class="summary-lbl">Failed</span></div>
+    `;
+
+    list.innerHTML = results.map((r, i) => {
+      if (r.status === 'success') {
+        return `
+          <div class="result-row success">
+            <div class="result-email">${r.email}</div>
+            <div class="result-link" id="link-${i}">${r.link}</div>
+            <button class="btn-copy-link" id="copy-btn-${i}" onclick="copyLink(${i}, '${r.link}')">Copy</button>
+          </div>`;
+      } else {
+        return `
+          <div class="result-row failed">
+            <div class="result-email">${r.email}</div>
+            <div class="result-error">Failed: ${r.error}</div>
+          </div>`;
+      }
+    }).join('');
+
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth' });
+
+    // Store results for copy-all
+    window._results = results;
+  }
+
+  function copyLink(i, link) {
+    navigator.clipboard.writeText(link).then(() => {
+      const btn = document.getElementById('copy-btn-' + i);
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyAll() {
+    if (!window._results) return;
+    const text = window._results
+      .filter(r => r.status === 'success')
+      .map(r => `${r.email}\n${r.link}`)
+      .join('\n\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-copy-all');
+      btn.textContent = '✓ Copied to clipboard!';
+      setTimeout(() => { btn.textContent = '📋 Copy All as Email List'; }, 2500);
+    });
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = '⚠️ ' + msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>
