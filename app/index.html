@@ -1823,7 +1823,7 @@
                     <div class="nav-section-title">Main</div>
                     <div class="nav-item active" data-page="dashboard">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span>Dashboard</span>
+                        <span>The Study</span>
                     </div>
                     <div class="nav-item" data-page="bible-reader">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -2049,133 +2049,136 @@
             <!-- Content Area -->
             <div class="content-area">
                 <!-- Dashboard Page -->
-                <div class="page active" id="page-dashboard">
+                <div class="page active" id="page-dashboard" style="background:#f5f5f7;margin:-1.5rem;padding:1.5rem;min-height:100vh">
 
-                    <!-- VERSE OF THE DAY HERO -->
-                    <div id="dash-votd" style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-radius:16px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden">
-                      <div style="position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent,transparent 80px,rgba(99,102,241,0.04) 80px,rgba(99,102,241,0.04) 81px);pointer-events:none"></div>
-                      <div style="position:relative;z-index:1">
-                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
-                          <div>
-                            <div style="font-size:0.62rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#818cf8;margin-bottom:4px">&#10024; Verse of the Day</div>
-                            <div id="dash-date" style="font-size:0.85rem;color:rgba(255,255,255,0.45)"></div>
+                    <!-- THE STUDY — HEADER -->
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+                      <div>
+                        <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#6e6e73;margin-bottom:4px">Scripture Studio</div>
+                        <h1 style="font-size:2rem;font-weight:800;color:#1d1d1f;letter-spacing:-0.03em;margin:0;line-height:1">The Study</h1>
+                        <div id="dash-date" style="font-size:0.85rem;color:#6e6e73;margin-top:4px"></div>
+                      </div>
+                      <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button onclick="openQuickCapture()" style="background:#1d1d1f;color:#fff;border:none;border-radius:980px;padding:9px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px">&#43; Quick Capture</button>
+                        <button onclick="navigateTo('bible-reader')" style="background:#0071e3;color:#fff;border:none;border-radius:980px;padding:9px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;letter-spacing:-0.01em">Open Bible &#8594;</button>
+                      </div>
+                    </div>
+
+                    <!-- VERSE OF THE DAY — APPLE CARD -->
+                    <div id="dash-votd" style="background:#fff;border-radius:20px;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.06)">
+                      <div style="position:absolute;top:0;left:0;width:5px;height:100%;background:linear-gradient(180deg,#0071e3,#30d158)"></div>
+                      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                        <div style="flex:1">
+                          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#0071e3;margin-bottom:10px">&#9670; Verse of the Day</div>
+                          <blockquote id="dash-verse-text" style="font-family:Georgia,serif;font-size:1.25rem;font-style:italic;color:#1d1d1f;line-height:1.75;margin:0 0 12px;padding:0"></blockquote>
+                          <div id="dash-verse-ref" style="font-size:0.8rem;font-weight:700;color:#0071e3;letter-spacing:0.02em"></div>
+                        </div>
+                        <button onclick="nextVotd()" style="background:#f5f5f7;border:none;border-radius:980px;padding:8px 18px;font-size:0.75rem;font-weight:600;color:#1d1d1f;cursor:pointer;flex-shrink:0;letter-spacing:-0.01em">Next &#8594;</button>
+                      </div>
+                    </div>
+
+                    <!-- STATS STRIP -->
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+                      <div style="background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.05);text-align:center">
+                        <div style="font-size:2rem;font-weight:800;color:#0071e3;line-height:1;letter-spacing:-0.02em" id="statChapters">0</div>
+                        <div style="font-size:0.7rem;font-weight:600;color:#6e6e73;margin-top:5px;letter-spacing:-0.01em">Chapters Read</div>
+                      </div>
+                      <div style="background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.05);text-align:center">
+                        <div style="font-size:2rem;font-weight:800;color:#30d158;line-height:1;letter-spacing:-0.02em" id="statStreak">0</div>
+                        <div style="font-size:0.7rem;font-weight:600;color:#6e6e73;margin-top:5px;letter-spacing:-0.01em">Day Streak</div>
+                      </div>
+                      <div style="background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.05);text-align:center">
+                        <div style="font-size:2rem;font-weight:800;color:#bf5af2;line-height:1;letter-spacing:-0.02em" id="statSermons">0</div>
+                        <div style="font-size:0.7rem;font-weight:600;color:#6e6e73;margin-top:5px;letter-spacing:-0.01em">Sermons Built</div>
+                      </div>
+                      <div style="background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.05);text-align:center">
+                        <div style="font-size:2rem;font-weight:800;color:#ff9f0a;line-height:1;letter-spacing:-0.02em" id="statPrayers">0</div>
+                        <div style="font-size:0.7rem;font-weight:600;color:#6e6e73;margin-top:5px;letter-spacing:-0.01em">Prayers Logged</div>
+                      </div>
+                    </div>
+
+                    <!-- QUICK ACTION PILLS -->
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+                      <button onclick="navigateTo('sermon-builder')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#9997;&#65039; Sermon Builder</button>
+                      <button onclick="navigateTo('prayer-journal')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#10084;&#65039; Prayer Journal</button>
+                      <button onclick="navigateTo('ai-sermon')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#127775; Sermon Studio</button>
+                      <button onclick="navigateTo('word-study')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#128220; Word Study</button>
+                      <button onclick="navigateTo('personal-diary')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#128221; My Diary</button>
+                      <button onclick="navigateTo('bible-study-builder')" style="background:#fff;border:1.5px solid #d2d2d7;border-radius:980px;padding:9px 18px;font-size:0.78rem;font-weight:600;color:#1d1d1f;cursor:pointer;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">&#128218; Bible Study</button>
+                    </div>
+
+                    <!-- MAIN CONTENT GRID -->
+                    <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:12px;margin-bottom:12px">
+
+                      <!-- TODAY'S READING -->
+                      <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06)">
+                        <div style="padding:20px 22px 16px">
+                          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#0071e3;margin-bottom:8px">Today&rsquo;s Reading</div>
+                          <div style="font-size:1.1rem;font-weight:700;color:#1d1d1f;margin-bottom:3px;letter-spacing:-0.02em">Bible in a Year</div>
+                          <div style="font-size:0.8rem;color:#6e6e73;margin-bottom:14px">Day 1 of 365</div>
+                          <div style="background:#f5f5f7;border-radius:8px;height:5px;margin-bottom:14px"><div style="background:linear-gradient(90deg,#0071e3,#30d158);height:5px;border-radius:8px;width:0.3%"></div></div>
+                          <div style="background:#f0f7ff;border-radius:12px;padding:14px 16px;margin-bottom:14px">
+                            <div style="font-size:0.65rem;font-weight:700;color:#0071e3;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px">Today</div>
+                            <div style="font-size:1rem;color:#1d1d1f;font-weight:700;letter-spacing:-0.01em">Genesis 1&ndash;3 &nbsp;&middot;&nbsp; Psalm 1</div>
                           </div>
-                          <button onclick="nextVotd()" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;font-size:0.75rem;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer">Next Verse &#8594;</button>
+                          <button onclick="navigateTo('bible-reader')" style="width:100%;background:#0071e3;color:#fff;border:none;border-radius:12px;padding:12px;font-size:0.82rem;font-weight:600;cursor:pointer;letter-spacing:-0.01em">Open in Bible Reader &#8594;</button>
                         </div>
-                        <blockquote id="dash-verse-text" style="font-family:Georgia,serif;font-size:1.35rem;font-style:italic;color:#f1f5f9;line-height:1.7;margin:0 0 10px;border-left:3px solid #6366f1;padding-left:18px"></blockquote>
-                        <div id="dash-verse-ref" style="font-size:0.82rem;font-weight:700;color:#818cf8;letter-spacing:0.04em"></div>
-                      </div>
-                    </div>
-
-                    <!-- COMMAND BAR -->
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
-                      <button onclick="navigateTo('bible-reader')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,0.35)">&#128214; Open Bible</button>
-                      <button onclick="navigateTo('sermon-builder')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(124,58,237,0.35)">&#9997;&#65039; Build Sermon</button>
-                      <button onclick="navigateTo('prayer-journal')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#be123c,#e11d48);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(190,18,60,0.35)">&#10084;&#65039; Prayer Journal</button>
-                      <button onclick="navigateTo('ai-sermon')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(14,165,233,0.35)">&#127775; AI Sermon Studio</button>
-                      <button onclick="navigateTo('word-study')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#065f46,#059669);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(5,150,105,0.35)">&#128220; Word Study</button>
-                      <button onclick="navigateTo('personal-diary')" style="flex:1;min-width:120px;background:linear-gradient(135deg,#92400e,#d97706);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(217,119,6,0.35)">&#128214; My Diary</button>
-                    </div>
-
-                    <!-- STATS ROW -->
-                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-top:3px solid #3b82f6">
-                        <div style="font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Chapters Read</div>
-                        <div class="stat-value" id="statChapters" style="font-size:2rem;font-weight:800;color:#1e40af;line-height:1">0</div>
-                        <div style="font-size:0.72rem;color:#64748b;margin-top:4px">Bible chapters completed</div>
-                      </div>
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-top:3px solid #10b981">
-                        <div style="font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Day Streak</div>
-                        <div class="stat-value" id="statStreak" style="font-size:2rem;font-weight:800;color:#065f46;line-height:1">0</div>
-                        <div style="font-size:0.72rem;color:#64748b;margin-top:4px">Consecutive days active</div>
-                      </div>
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-top:3px solid #8b5cf6">
-                        <div style="font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Sermons Built</div>
-                        <div class="stat-value" id="statSermons" style="font-size:2rem;font-weight:800;color:#6d28d9;line-height:1">0</div>
-                        <div style="font-size:0.72rem;color:#64748b;margin-top:4px">Sermons created</div>
-                      </div>
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;border-top:3px solid #f59e0b">
-                        <div style="font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Prayer Entries</div>
-                        <div class="stat-value" id="statPrayers" style="font-size:2rem;font-weight:800;color:#92400e;line-height:1">0</div>
-                        <div style="font-size:0.72rem;color:#64748b;margin-top:4px">Prayers recorded</div>
-                      </div>
-                    </div>
-
-                    <!-- MAIN GRID -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-
-                      <!-- TODAY'S FOCUS -->
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
-                        <div style="background:linear-gradient(135deg,#1e3a5f,#2d5986);padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
-                          <span style="font-size:0.82rem;font-weight:700;color:#fff">&#128197; Today\'s Reading Plan</span>
-                          <button onclick="navigateTo('reading-plans')" style="background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.72rem;cursor:pointer">View Plans</button>
-                        </div>
-                        <div style="padding:18px">
-                          <div style="font-size:1rem;font-weight:700;color:#1e3a5f;margin-bottom:4px">Bible in a Year</div>
-                          <div style="font-size:0.8rem;color:#64748b;margin-bottom:12px">Day 1 of 365</div>
-                          <div style="background:#f1f5f9;border-radius:6px;height:6px;margin-bottom:12px"><div style="background:linear-gradient(90deg,#3b82f6,#6366f1);height:6px;border-radius:6px;width:0.3%"></div></div>
-                          <div style="background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:0 8px 8px 0;padding:10px 14px">
-                            <div style="font-size:0.72rem;font-weight:700;color:#1e40af;margin-bottom:4px">TODAY\'S READING</div>
-                            <div style="font-size:0.9rem;color:#1e293b;font-weight:600">Genesis 1–3 &nbsp;·&nbsp; Psalm 1</div>
-                          </div>
-                          <button onclick="navigateTo('bible-reader')" style="width:100%;margin-top:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px;font-size:0.82rem;font-weight:700;cursor:pointer">Open in Bible Reader &#8594;</button>
+                        <div style="border-top:1px solid #f5f5f7;padding:12px 22px;display:flex;justify-content:space-between">
+                          <button onclick="navigateTo('reading-plans')" style="background:none;border:none;color:#0071e3;font-size:0.78rem;font-weight:600;cursor:pointer;letter-spacing:-0.01em">All Reading Plans &#8599;</button>
+                          <span style="font-size:0.75rem;color:#6e6e73">0% complete</span>
                         </div>
                       </div>
 
-                      <!-- MINISTRY TOOLS -->
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
-                        <div style="background:linear-gradient(135deg,#1e293b,#334155);padding:14px 18px">
-                          <span style="font-size:0.82rem;font-weight:700;color:#fff">&#128640; Ministry Tools</span>
-                        </div>
-                        <div style="padding:14px">
-                          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                            ${[
-                              ['sermon-builder','#dbeafe','#1d4ed8','&#9997;&#65039;','Sermon Builder'],
-                              ['ai-sermon','#e0f2fe','#0369a1','&#127775;','AI Sermon Studio'],
-                              ['bible-study-builder','#dcfce7','#166534','&#128218;','Bible Study Builder'],
-                              ['topical-finder','#fef9c3','#92400e','&#128269;','Topical Finder'],
-                              ['word-study','#f0fdf4','#065f46','&#128220;','Word Study'],
-                              ['lexicon','#faf5ff','#7c3aed','&#955;','Lexicon'],
-                              ['concordance','#fff7ed','#9a3412','&#128195;','Concordance'],
-                              ['illustrations','#fdf2f8','#86198f','&#127775;','Illustrations'],
-                              ['quotes','#f0f9ff','#0369a1','&#8220;','Quotes Library'],
-                              ['hymnal','#fef9c3','#78350f','&#9835;','Hymnal'],
-                              ['sermon-evaluator','#f0fdf4','#14532d','&#9989;','Sermon Evaluator'],
-                              ['development-studio','#1e293b','#94a3b8','&#128187;','Dev Studio'],
-                            ].map(function(t){ return '<button onclick="navigateTo(\''+t[0]+'\')" style="background:'+t[1]+';border:none;border-radius:8px;padding:10px;text-align:left;cursor:pointer;transition:opacity 0.15s" onmouseover="this.style.opacity=\'0.8\'" onmouseout="this.style.opacity=\'1\'"><div style="font-size:1rem;margin-bottom:3px">'+t[3]+'</div><div style="font-size:0.68rem;font-weight:700;color:'+t[2]+'">'+t[4]+'</div></button>'; }).join('')}
+                      <!-- MINISTRY TOOLS GRID -->
+                      <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06)">
+                        <div style="padding:16px 18px 12px">
+                          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#6e6e73;margin-bottom:12px">Ministry Tools</div>
+                          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                            <button onclick="navigateTo('sermon-builder')" style="background:#f0f7ff;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#e0f0ff'" onmouseout="this.style.background='#f0f7ff'"><div style="font-size:1.1rem">&#9997;&#65039;</div><div style="font-size:0.62rem;font-weight:600;color:#0071e3;margin-top:3px">Sermons</div></button>
+                            <button onclick="navigateTo('bible-study-builder')" style="background:#f0fdf4;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#dcfce7'" onmouseout="this.style.background='#f0fdf4'"><div style="font-size:1.1rem">&#128218;</div><div style="font-size:0.62rem;font-weight:600;color:#16a34a;margin-top:3px">Bible Study</div></button>
+                            <button onclick="navigateTo('topical-finder')" style="background:#fffbeb;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='#fffbeb'"><div style="font-size:1.1rem">&#128269;</div><div style="font-size:0.62rem;font-weight:600;color:#d97706;margin-top:3px">Topical</div></button>
+                            <button onclick="navigateTo('word-study')" style="background:#f0fdf4;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#dcfce7'" onmouseout="this.style.background='#f0fdf4'"><div style="font-size:1.1rem">&#128220;</div><div style="font-size:0.62rem;font-weight:600;color:#065f46;margin-top:3px">Word Study</div></button>
+                            <button onclick="navigateTo('lexicon')" style="background:#faf5ff;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#f3e8ff'" onmouseout="this.style.background='#faf5ff'"><div style="font-size:1.1rem">&#955;</div><div style="font-size:0.62rem;font-weight:600;color:#7c3aed;margin-top:3px">Lexicon</div></button>
+                            <button onclick="navigateTo('concordance')" style="background:#fff7ed;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#fed7aa'" onmouseout="this.style.background='#fff7ed'"><div style="font-size:1.1rem">&#128195;</div><div style="font-size:0.62rem;font-weight:600;color:#9a3412;margin-top:3px">Concordance</div></button>
+                            <button onclick="navigateTo('illustrations')" style="background:#fdf2f8;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#fce7f3'" onmouseout="this.style.background='#fdf2f8'"><div style="font-size:1.1rem">&#128161;</div><div style="font-size:0.62rem;font-weight:600;color:#86198f;margin-top:3px">Illustrations</div></button>
+                            <button onclick="navigateTo('quotes')" style="background:#f0f7ff;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#f0f7ff'"><div style="font-size:1.1rem">&#8220;</div><div style="font-size:0.62rem;font-weight:600;color:#0369a1;margin-top:3px">Quotes</div></button>
+                            <button onclick="navigateTo('hymnal')" style="background:#fffbeb;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='#fffbeb'"><div style="font-size:1.1rem">&#9835;</div><div style="font-size:0.62rem;font-weight:600;color:#78350f;margin-top:3px">Hymnal</div></button>
+                            <button onclick="navigateTo('sermon-evaluator')" style="background:#f0fdf4;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#dcfce7'" onmouseout="this.style.background='#f0fdf4'"><div style="font-size:1.1rem">&#9989;</div><div style="font-size:0.62rem;font-weight:600;color:#14532d;margin-top:3px">Evaluator</div></button>
+                            <button onclick="navigateTo('ai-sermon')" style="background:#f0f7ff;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#f0f7ff'"><div style="font-size:1.1rem">&#127775;</div><div style="font-size:0.62rem;font-weight:600;color:#0369a1;margin-top:3px">Studio</div></button>
+                            <button onclick="navigateTo('development-studio')" style="background:#1d1d1f;border:none;border-radius:12px;padding:11px 6px;cursor:pointer;text-align:center" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#1d1d1f'"><div style="font-size:1.1rem">&#128187;</div><div style="font-size:0.62rem;font-weight:600;color:#a1a1a6;margin-top:3px">Dev Studio</div></button>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- BOTTOM ROW -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
                       <!-- DEVOTIONAL THOUGHT -->
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
-                        <div style="background:linear-gradient(135deg,#78350f,#92400e);padding:14px 18px">
-                          <span style="font-size:0.82rem;font-weight:700;color:#fff">&#128161; Devotional Thought</span>
-                        </div>
-                        <div style="padding:18px" id="dash-devotional">
-                          <div style="font-size:0.95rem;font-style:italic;color:#374151;line-height:1.75;margin-bottom:12px" id="dash-dev-text"></div>
-                          <div style="font-size:0.75rem;font-weight:700;color:#92400e" id="dash-dev-author"></div>
-                          <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5f9;display:flex;gap:8px;align-items:center">
-                            <button onclick="nextDevotional()" style="background:rgba(146,64,14,0.08);border:1px solid rgba(146,64,14,0.2);color:#92400e;border-radius:8px;padding:7px 14px;font-size:0.75rem;font-weight:700;cursor:pointer">Next &#8594;</button>
-                            <button onclick="navigateTo('devotional')" style="background:#92400e;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:0.78rem;font-weight:700;cursor:pointer">Open Devotionals &#8594;</button>
+                      <div style="background:#1d1d1f;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.12)">
+                        <div style="padding:20px 22px">
+                          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#ff9f0a;margin-bottom:12px">&#128161; Devotional Thought</div>
+                          <div id="dash-devotional">
+                            <div style="font-family:Georgia,serif;font-size:0.95rem;font-style:italic;color:#f5f5f7;line-height:1.8;margin-bottom:10px" id="dash-dev-text"></div>
+                            <div style="font-size:0.72rem;font-weight:700;color:#ff9f0a;letter-spacing:0.02em" id="dash-dev-author"></div>
+                          </div>
+                          <div style="margin-top:16px;display:flex;gap:8px;align-items:center">
+                            <button onclick="nextDevotional()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#f5f5f7;border-radius:980px;padding:7px 16px;font-size:0.74rem;font-weight:600;cursor:pointer;letter-spacing:-0.01em">Next &#8594;</button>
+                            <button onclick="navigateTo('devotional')" style="background:#ff9f0a;color:#000;border:none;border-radius:980px;padding:8px 16px;font-size:0.74rem;font-weight:700;cursor:pointer;letter-spacing:-0.01em">Open Journal &#8594;</button>
                           </div>
                         </div>
                       </div>
 
                       <!-- RECENT ACTIVITY -->
-                      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
-                        <div style="background:linear-gradient(135deg,#1e293b,#334155);padding:14px 18px">
-                          <span style="font-size:0.82rem;font-weight:700;color:#fff">&#128336; Recent Activity</span>
-                        </div>
-                        <div style="padding:14px" id="recentActivity">
-                          <div style="text-align:center;padding:20px;color:#94a3b8">
-                            <div style="font-size:2rem;margin-bottom:8px">&#128336;</div>
-                            <div style="font-size:0.85rem;font-weight:600;color:#64748b;margin-bottom:4px">Your activity appears here</div>
-                            <div style="font-size:0.78rem;color:#94a3b8">Start reading, praying, or building to see your history</div>
+                      <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06)">
+                        <div style="padding:20px 22px 14px">
+                          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#6e6e73;margin-bottom:12px">&#128336; Recent Activity</div>
+                          <div id="recentActivity">
+                            <div style="text-align:center;padding:20px 0;color:#6e6e73">
+                              <div style="font-size:2rem;margin-bottom:8px">&#128336;</div>
+                              <div style="font-size:0.85rem;font-weight:600;color:#1d1d1f;margin-bottom:4px">Nothing yet today</div>
+                              <div style="font-size:0.78rem;color:#6e6e73">Start reading, praying, or building to see your history</div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2858,7 +2861,7 @@
                             <div style="background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
                                 <h4 style="margin-bottom: 0.5rem;">About Bishop's Commentary</h4>
                                 <p style="opacity: 0.9; font-size: 0.95rem;">
-                                    This AI-powered commentary tool provides scholarly yet accessible Bible commentary from a Baptist expository perspective. 
+                                    This scripture-intelligence commentary tool provides scholarly yet accessible Bible commentary from a Baptist expository perspective.
                                     Created by Richard G. Clark for Scripture Studio, it interprets Scripture with Scripture using sound hermeneutical principles, 
                                     pointing to Christ throughout all Scripture while providing practical application for believers today.
                                 </p>
@@ -2909,35 +2912,41 @@
 
                 <!-- Prayer Journal Page -->
                 <div class="page" id="page-prayer-journal">
+                    <!-- PRAYER JOURNAL HERO -->
+                    <div style="background:linear-gradient(135deg,#450a0a 0%,#7f1d1d 50%,#991b1b 100%);border-radius:20px;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;line-height:1;pointer-events:none">&#128591;</div>
+                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(252,165,165,0.7);margin-bottom:8px">Private Prayer</div>
+                      <h2 style="font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 6px;line-height:1">Prayer Journal</h2>
+                      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin:0 0 18px;line-height:1.6;max-width:420px">&ldquo;The effective, fervent prayer of a righteous man avails much.&rdquo; &mdash; James 5:16</p>
+                      <button onclick="showNewPrayerModal()" style="background:#fff;color:#991b1b;border:none;border-radius:980px;padding:10px 22px;font-size:0.82rem;font-weight:700;cursor:pointer">+ New Prayer Entry</button>
+                    </div>
                     <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Prayer Journal</h3>
-                            <button class="btn btn-primary" onclick="showNewPrayerModal()">New Entry</button>
-                        </div>
                         <div class="panel-body">
-                            <div class="tabs">
-                                <button class="tab active">All Prayers</button>
-                                <button class="tab">Answered</button>
-                                <button class="tab">Ongoing</button>
+                            <div class="tabs" style="margin-bottom:16px">
+                                <button class="tab pj-tab active" onclick="filterPrayers('all',this)">All Prayers</button>
+                                <button class="tab pj-tab" onclick="filterPrayers('answered',this)">&#9989; Answered</button>
+                                <button class="tab pj-tab" onclick="filterPrayers('ongoing',this)">&#128149; Ongoing</button>
+                                <button class="tab pj-tab" onclick="filterPrayers('personal',this)">Personal</button>
+                                <button class="tab pj-tab" onclick="filterPrayers('intercession',this)">Intercession</button>
                             </div>
-                            <div id="prayerList">
-                                <!-- Prayer entries loaded dynamically -->
-                            </div>
+                            <div id="prayerList"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Devotional Journal Page -->
                 <div class="page" id="page-devotional">
+                    <!-- DEVOTIONAL JOURNAL HERO -->
+                    <div style="background:linear-gradient(135deg,#431407 0%,#7c2d12 50%,#92400e 100%);border-radius:20px;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;line-height:1;pointer-events:none">&#128366;</div>
+                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(253,186,116,0.7);margin-bottom:8px">Daily Devotion</div>
+                      <h2 style="font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 6px;line-height:1">Devotional Journal</h2>
+                      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin:0 0 18px;line-height:1.6;max-width:420px">&ldquo;Your word is a lamp to my feet and a light to my path.&rdquo; &mdash; Psalm 119:105</p>
+                      <button onclick="showNewDevotionalModal()" style="background:#fff;color:#92400e;border:none;border-radius:980px;padding:10px 22px;font-size:0.82rem;font-weight:700;cursor:pointer">+ New Devotional Entry</button>
+                    </div>
                     <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Devotional Journal</h3>
-                            <button class="btn btn-primary" onclick="showNewDevotionalModal()">New Entry</button>
-                        </div>
                         <div class="panel-body">
-                            <div id="devotionalList">
-                                <!-- Devotional entries loaded dynamically -->
-                            </div>
+                            <div id="devotionalList"></div>
                         </div>
                     </div>
                 </div>
@@ -3127,11 +3136,39 @@
 
                 <!-- ===== PREACHING CALENDAR ===== -->
                 <div class="page" id="page-preaching-calendar">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Preaching Calendar</h3>
-                            <button class="btn btn-primary" onclick="showNewPreachingEventModal()">Add Preaching Date</button>
+                    <!-- PREACHING CALENDAR HERO -->
+                    <div style="background:linear-gradient(135deg,#0f2744 0%,#1e3a5f 60%,#1e40af 100%);border-radius:20px;padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.08;line-height:1;pointer-events:none">&#128197;</div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                        <div>
+                          <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(147,197,253,0.7);margin-bottom:6px">Ministry Planning</div>
+                          <h2 style="font-size:1.7rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 4px;line-height:1">Preaching Calendar</h2>
+                          <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin:0">Plan your messages weeks and months ahead</p>
                         </div>
+                        <button onclick="showNewPreachingEventModal()" style="background:#fff;color:#1e40af;border:none;border-radius:980px;padding:10px 22px;font-size:0.82rem;font-weight:700;cursor:pointer;flex-shrink:0">+ Add Preaching Date</button>
+                      </div>
+                    </div>
+                    <!-- FULL MONTH CALENDAR GRID -->
+                    <div style="background:#fff;border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
+                      <div style="background:#f5f5f7;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+                        <button onclick="preachCalPrev()" style="background:none;border:1px solid #d2d2d7;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">&#8249;</button>
+                        <div id="preachCalMonthLabel" style="font-size:1rem;font-weight:700;color:#1d1d1f;letter-spacing:-0.01em"></div>
+                        <button onclick="preachCalNext()" style="background:none;border:1px solid #d2d2d7;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">&#8250;</button>
+                      </div>
+                      <div style="padding:16px 20px">
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">SUN</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">MON</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">TUE</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">WED</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">THU</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">FRI</div>
+                          <div style="text-align:center;font-size:0.68rem;font-weight:700;color:#6e6e73;padding:6px 0">SAT</div>
+                        </div>
+                        <div id="preachCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
+                      </div>
+                    </div>
+                    <div class="panel">
                         <div class="panel-body">
                             <div class="tabs" style="margin-bottom:16px">
                                 <button class="tab preach-tab active" onclick="loadPreachingCalendar('upcoming',this)">Upcoming</button>
@@ -3192,12 +3229,22 @@
 
                 <!-- ===== HOMEGOING BUILDER ===== -->
                 <div class="page" id="page-homegoing-builder">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Homegoing Builder</h3>
+                    <!-- HOMEGOING HERO -->
+                    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f2744 100%);border-radius:20px;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 30px,rgba(255,255,255,0.01) 30px,rgba(255,255,255,0.01) 31px)"></div>
+                      <div style="position:relative;z-index:1">
+                        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(148,163,184,0.7);margin-bottom:8px">Pastoral Care</div>
+                        <h2 style="font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 6px;line-height:1">Homegoing Builder</h2>
+                        <p style="font-size:0.88rem;color:rgba(255,255,255,0.55);margin:0 0 18px;line-height:1.6;max-width:460px">Support for pastors and ministers preparing homegoing messages, eulogies, and comfort for grieving families. Built with compassion, rooted in Scripture.</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                          <button onclick="loadHomegoingSection('message',document.querySelector('.hg-tab'))" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:980px;padding:8px 18px;font-size:0.78rem;font-weight:600;cursor:pointer">&#9997; Message Builder</button>
+                          <button onclick="loadHomegoingSection('scriptures',null)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:980px;padding:8px 18px;font-size:0.78rem;font-weight:600;cursor:pointer">&#128214; Comfort Scriptures</button>
+                          <button onclick="loadHomegoingSection('eulogy',null)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:980px;padding:8px 18px;font-size:0.78rem;font-weight:600;cursor:pointer">&#128172; Eulogy Guide</button>
                         </div>
+                      </div>
+                    </div>
+                    <div class="panel">
                         <div class="panel-body">
-                            <p style="color:#64748b;margin-bottom:20px;font-size:0.95rem">Support for pastors, ministers, and lay members preparing homegoing messages, eulogies, and comfort scriptures.</p>
                             <div class="tabs" style="margin-bottom:16px">
                                 <button class="tab hg-tab active" onclick="loadHomegoingSection('message',this)">Message Builder</button>
                                 <button class="tab hg-tab" onclick="loadHomegoingSection('scriptures',this)">Comfort Scriptures</button>
@@ -3230,31 +3277,41 @@
 
                 <!-- ===== TOPICAL FINDER ===== -->
                 <div class="page" id="page-topical-finder">
+                    <!-- TOPICAL FINDER HERO -->
+                    <div style="background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 60%,#0369a1 100%);border-radius:20px;padding:32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
+                      <div style="position:absolute;right:40px;bottom:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.03)"></div>
+                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(165,210,255,0.7);margin-bottom:10px">Scripture Research</div>
+                      <h2 style="font-size:2rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 8px;line-height:1">Topical Finder</h2>
+                      <p style="font-size:0.9rem;color:rgba(255,255,255,0.65);margin:0 0 20px;max-width:460px;line-height:1.6">Every topic you need for ministry — instantly connected to the scriptures that speak to it.</p>
+                      <div style="display:flex;gap:10px">
+                        <input type="text" class="form-input" id="topicSearch" placeholder="Search any topic: fear, healing, grace, purpose..." style="flex:1;border-radius:12px;border:none;padding:12px 16px;font-size:0.9rem" onkeyup="if(event.key==='Enter') findTopic()">
+                        <button onclick="findTopic()" style="background:#fff;color:#1e40af;border:none;border-radius:12px;padding:12px 22px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap">Find &#8594;</button>
+                      </div>
+                    </div>
                     <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Topical Finder</h3>
-                        </div>
                         <div class="panel-body">
-                            <div class="form-group">
-                                <label class="form-label">Search by Topic</label>
-                                <div style="display:flex;gap:10px">
-                                    <input type="text" class="form-input" id="topicSearch" placeholder="e.g., forgiveness, healing, marriage, salvation..." style="flex:1" onkeyup="if(event.key==='Enter') findTopic()">
-                                    <button class="btn btn-primary" onclick="findTopic()">Find</button>
-                                </div>
-                            </div>
-                            <div style="margin:16px 0">
-                                <p style="color:#64748b;font-size:0.85rem;margin-bottom:10px">Popular topics:</p>
+                            <div style="margin-bottom:16px">
+                                <p style="color:#64748b;font-size:0.82rem;margin-bottom:10px;font-weight:600">Browse by topic:</p>
                                 <div style="display:flex;flex-wrap:wrap;gap:8px" id="topicTags">
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('faith')">Faith</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('love')">Love</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('prayer')">Prayer</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('salvation')">Salvation</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('forgiveness')">Forgiveness</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('healing')">Healing</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('hope')">Hope</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('marriage')">Marriage</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('wisdom')">Wisdom</span>
-                                    <span class="badge badge-blue" style="cursor:pointer;padding:6px 12px" onclick="quickTopic('anxiety')">Anxiety</span>
+                                    <span style="background:#dbeafe;color:#1e40af;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('faith')">Faith</span>
+                                    <span style="background:#dbeafe;color:#1e40af;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('love')">Love</span>
+                                    <span style="background:#dbeafe;color:#1e40af;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('prayer')">Prayer</span>
+                                    <span style="background:#dcfce7;color:#166534;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('salvation')">Salvation</span>
+                                    <span style="background:#dcfce7;color:#166534;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('forgiveness')">Forgiveness</span>
+                                    <span style="background:#fef3c7;color:#92400e;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('healing')">Healing</span>
+                                    <span style="background:#fef3c7;color:#92400e;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('hope')">Hope</span>
+                                    <span style="background:#fdf2f8;color:#86198f;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('marriage')">Marriage</span>
+                                    <span style="background:#fdf2f8;color:#86198f;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('wisdom')">Wisdom</span>
+                                    <span style="background:#fee2e2;color:#991b1b;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('anxiety')">Anxiety</span>
+                                    <span style="background:#fee2e2;color:#991b1b;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('grief')">Grief</span>
+                                    <span style="background:#f0fdf4;color:#065f46;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('obedience')">Obedience</span>
+                                    <span style="background:#f0fdf4;color:#065f46;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('repentance')">Repentance</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('resurrection')">Resurrection</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('covenant')">Covenant</span>
+                                    <span style="background:#dbeafe;color:#1e40af;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('identity')">Identity in Christ</span>
+                                    <span style="background:#fef3c7;color:#92400e;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('family')">Family</span>
+                                    <span style="background:#dcfce7;color:#166534;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickTopic('purpose')">Purpose</span>
                                 </div>
                             </div>
                             <div id="topicResults"></div>
@@ -3330,30 +3387,34 @@
 
                 <!-- ===== PRONUNCIATION TOOL ===== -->
                 <div class="page" id="page-pronunciation-tool">
+                    <!-- PRONUNCIATION HERO -->
+                    <div style="background:linear-gradient(135deg,#4a044e 0%,#6b21a8 60%,#7c3aed 100%);border-radius:20px;padding:32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:-10px;top:-10px;font-size:8rem;opacity:0.06;font-family:Georgia,serif;line-height:1;pointer-events:none">Aa</div>
+                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(220,180,255,0.7);margin-bottom:10px">Pulpit Confidence</div>
+                      <h2 style="font-size:2rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 8px;line-height:1">Pronunciation Tool</h2>
+                      <p style="font-size:0.9rem;color:rgba(255,255,255,0.65);margin:0 0 20px;max-width:460px;line-height:1.6">Never stumble over a biblical name in the pulpit again. Look up the correct pronunciation of any name, place, or Hebrew and Greek word.</p>
+                      <div style="display:flex;gap:10px">
+                        <input type="text" class="form-input" id="pronSearch" placeholder="e.g., Nebuchadnezzar, Gethsemane, Melchizedek..." style="flex:1;border-radius:12px;border:none;padding:12px 16px;font-size:0.9rem" onkeyup="if(event.key==='Enter') lookupPronunciation()">
+                        <button onclick="lookupPronunciation()" style="background:#fff;color:#6b21a8;border:none;border-radius:12px;padding:12px 22px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap">Look Up &#8594;</button>
+                      </div>
+                    </div>
                     <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Pronunciation Tool</h3>
-                        </div>
                         <div class="panel-body">
-                            <p style="color:#64748b;margin-bottom:16px;font-size:0.95rem">Look up the correct pronunciation of biblical names, places, and Hebrew/Greek words. Never stumble in the pulpit again.</p>
-                            <div class="form-group">
-                                <label class="form-label">Enter a biblical name or word</label>
-                                <div style="display:flex;gap:10px">
-                                    <input type="text" class="form-input" id="pronSearch" placeholder="e.g., Nebuchadnezzar, Gethsemane, Melchizedek..." style="flex:1" onkeyup="if(event.key==='Enter') lookupPronunciation()">
-                                    <button class="btn btn-primary" onclick="lookupPronunciation()">Look Up</button>
-                                </div>
-                            </div>
-                            <div style="margin:16px 0">
-                                <p style="color:#64748b;font-size:0.85rem;margin-bottom:10px">Common challenges:</p>
+                            <div style="margin-bottom:16px">
+                                <p style="color:#64748b;font-size:0.82rem;margin-bottom:10px;font-weight:600">Common pulpit challenges — click any name:</p>
                                 <div style="display:flex;flex-wrap:wrap;gap:8px">
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Nebuchadnezzar')">Nebuchadnezzar</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Melchizedek')">Melchizedek</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Gethsemane')">Gethsemane</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Ecclesiastes')">Ecclesiastes</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Deuteronomy')">Deuteronomy</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Habakkuk')">Habakkuk</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Zephaniah')">Zephaniah</span>
-                                    <span class="badge badge-purple" style="cursor:pointer;padding:6px 12px" onclick="quickPronounce('Thessalonians')">Thessalonians</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Nebuchadnezzar')">Nebuchadnezzar</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Melchizedek')">Melchizedek</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Gethsemane')">Gethsemane</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Ecclesiastes')">Ecclesiastes</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Deuteronomy')">Deuteronomy</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Habakkuk')">Habakkuk</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Zephaniah')">Zephaniah</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Thessalonians')">Thessalonians</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Philemon')">Philemon</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Methuselah')">Methuselah</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Zacchaeus')">Zacchaeus</span>
+                                    <span style="background:#f3e8ff;color:#6b21a8;font-size:0.78rem;font-weight:700;padding:7px 14px;border-radius:980px;cursor:pointer" onclick="quickPronounce('Caesarea Philippi')">Caesarea Philippi</span>
                                 </div>
                             </div>
                             <div id="pronunciationResult"></div>
@@ -3386,27 +3447,24 @@
                 </div>
 
                 <div class="page" id="page-word-studio-1b">
+                    <!-- WORD STUDIO 1B HERO -->
+                    <div style="background:linear-gradient(135deg,#0d2137 0%,#1e3a5f 50%,#1a5276 100%);border-radius:20px;padding:32px;margin-bottom:16px;position:relative;overflow:hidden">
+                      <div style="position:absolute;right:0;top:0;bottom:0;width:50%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02));pointer-events:none"></div>
+                      <div style="position:absolute;bottom:-20px;right:20px;font-size:7rem;opacity:0.07;line-height:1;pointer-events:none">&#128217;</div>
+                      <button onclick="navigateTo('dashboard')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:980px;padding:6px 14px;font-size:0.74rem;font-weight:600;cursor:pointer;margin-bottom:18px;display:inline-flex;align-items:center;gap:6px">&#8592; The Study</button>
+                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(147,210,255,0.7);margin-bottom:8px">Deep Word Research</div>
+                      <h2 style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:-0.04em;margin:0 0 6px;line-height:1">Word Studio <span style="color:#0ea5e9">1B</span></h2>
+                      <p style="font-size:0.92rem;color:rgba(255,255,255,0.6);margin:0 0 22px;max-width:480px;line-height:1.6">Look up any word &mdash; get its full definition, biblical context, original language roots, and save it to your personal word library.</p>
+                      <div style="display:flex;gap:10px">
+                        <input id="wsWordInput" placeholder="Type any word: grace, covenant, redemption, sanctify..." style="flex:1;border:none;border-radius:12px;padding:13px 16px;font-size:0.9rem;color:#1d1d1f" onkeydown="if(event.key==='Enter')wsLookup()" />
+                        <button onclick="wsLookup()" style="background:#0ea5e9;color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap">Look Up Word</button>
+                      </div>
+                    </div>
                     <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">&#128217; Word Studio 1B</h3>
-                        </div>
                         <div class="panel-body">
-                            <button class="btn btn-secondary" onclick="navigateTo('dashboard')" style="display:flex;align-items:center;gap:6px;margin-bottom:16px">&#8592; Back to Dashboard</button>
-                            <div style="background:linear-gradient(135deg,#1e3a5f,#2d5986);border-radius:12px;padding:20px;margin-bottom:20px;color:#fff;text-align:center">
-                                <div style="font-size:2rem;margin-bottom:8px">&#128217;</div>
-                                <h3 style="margin-bottom:4px">Word Studio 1B</h3>
-                                <p style="opacity:0.8;font-size:0.9rem">Look up any word — get its full definition, biblical references, and save it to your personal word library</p>
-                            </div>
 
-                            <!-- Word Lookup -->
-                            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px">
-                                <h4 style="margin-bottom:12px;color:#1e3a5f;font-size:1rem">&#128269; Word Lookup</h4>
-                                <div style="display:flex;gap:10px;flex-wrap:wrap">
-                                    <input id="wsWordInput" class="form-control" placeholder="Type any word (e.g. grace, covenant, redemption)..." style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter')wsLookup()" />
-                                    <button class="btn btn-primary" onclick="wsLookup()" style="white-space:nowrap">Look Up Word</button>
-                                </div>
-                                <div id="wsLookupResult" style="margin-top:16px"></div>
-                            </div>
+                            <!-- Word lookup result (input is in hero above) -->
+                            <div id="wsLookupResult" style="margin-bottom:16px"></div>
 
                             <!-- Tabs: Saved Words / Notes -->
                             <div class="tabs" style="margin-bottom:16px">
@@ -3533,17 +3591,34 @@
 
                 <!-- SERMON STUDIO 1A -->
                 <div class="page" id="page-sermon-studio-1a">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">&#127916; Sermon Studio 1A</h3>
+                    <!-- CINEMATIC STUDIO HERO -->
+                    <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:20px;min-height:200px;background:#000">
+                      <!-- Animated studio background -->
+                      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#0d1b2a 40%,#0a192f 100%)"></div>
+                      <!-- Animated light beams -->
+                      <div style="position:absolute;top:-60px;left:15%;width:3px;height:300px;background:linear-gradient(180deg,rgba(0,113,227,0.6),transparent);transform:rotate(-15deg);animation:studioBeam 3s ease-in-out infinite alternate"></div>
+                      <div style="position:absolute;top:-40px;left:35%;width:2px;height:260px;background:linear-gradient(180deg,rgba(48,209,88,0.4),transparent);transform:rotate(-5deg);animation:studioBeam 4s ease-in-out infinite alternate-reverse"></div>
+                      <div style="position:absolute;top:-50px;right:25%;width:3px;height:280px;background:linear-gradient(180deg,rgba(191,90,242,0.5),transparent);transform:rotate(10deg);animation:studioBeam 3.5s ease-in-out infinite alternate"></div>
+                      <div style="position:absolute;top:-30px;right:10%;width:2px;height:240px;background:linear-gradient(180deg,rgba(255,159,10,0.35),transparent);transform:rotate(20deg);animation:studioBeam 5s ease-in-out infinite alternate-reverse"></div>
+                      <!-- Floor glow -->
+                      <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(0deg,rgba(0,113,227,0.12),transparent)"></div>
+                      <!-- Content -->
+                      <div style="position:relative;z-index:2;padding:36px 32px">
+                        <button onclick="navigateTo('dashboard')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:980px;padding:6px 14px;font-size:0.74rem;font-weight:600;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;gap:6px">&#8592; The Study</button>
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+                          <div style="width:10px;height:10px;background:#ff3b30;border-radius:50%;animation:studioPulse 1.5s ease-in-out infinite;box-shadow:0 0 8px #ff3b30"></div>
+                          <span style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase">On Air · Sermon Studio</span>
                         </div>
+                        <h2 style="font-size:2.2rem;font-weight:800;color:#fff;letter-spacing:-0.04em;margin:0 0 6px;line-height:1">Studio 1A</h2>
+                        <p style="font-size:0.9rem;color:rgba(255,255,255,0.55);margin:0;max-width:480px;line-height:1.6">Schedule your sermons in advance &mdash; the current week&rsquo;s message loads automatically every Monday for your congregation</p>
+                      </div>
+                      <style>
+                        @keyframes studioBeam { 0%{opacity:0.4;transform:rotate(-15deg) scaleY(0.9)} 100%{opacity:1;transform:rotate(-15deg) scaleY(1.1)} }
+                        @keyframes studioPulse { 0%,100%{opacity:1;box-shadow:0 0 8px #ff3b30} 50%{opacity:0.5;box-shadow:0 0 2px #ff3b30} }
+                      </style>
+                    </div>
+                    <div class="panel" style="border-radius:16px">
                         <div class="panel-body">
-                            <button class="btn btn-secondary" onclick="navigateTo('dashboard')" style="display:flex;align-items:center;gap:6px;margin-bottom:16px">&#8592; Back to Dashboard</button>
-                            <div style="background:linear-gradient(135deg,#1e3a5f,#2d5986);border-radius:12px;padding:20px;margin-bottom:20px;color:#fff;text-align:center">
-                                <div style="font-size:2rem;margin-bottom:8px">&#127916;</div>
-                                <h3 style="margin-bottom:4px">Sermon Studio 1A</h3>
-                                <p style="opacity:0.8;font-size:0.9rem">Schedule your sermons in advance — the current week\'s message loads automatically every Monday for your congregation</p>
-                            </div>
                             <div class="tabs" style="margin-bottom:20px">
                                 <button class="tab ss1a-tab active" onclick="ss1aShowTab('stage',this)">&#127916; This Week\'s Sermon</button>
                                 <button class="tab ss1a-tab" onclick="ss1aShowTab('studio',this)">&#9997; Pastor Studio</button>
@@ -3655,7 +3730,7 @@
 
         // PAGE TITLES
         const pageTitles = {
-            'dashboard':'Dashboard','bible-reader':'Bible Reader','sermon-builder':'Sermon Builder',
+            'dashboard':'The Study','bible-reader':'Bible Reader','sermon-builder':'Sermon Builder',
             'ai-sermon':'Sermon Studio Generator','ai-commentary':"Bishop's Commentary",
             'reading-plans':'Reading Plans','word-study':'Word Study','lexicon':'Lexicon',
             'concordance':'Concordance','prayer-journal':'Prayer Journal','devotional':'Devotional Journal',
@@ -5092,6 +5167,45 @@
             renderDevotional();
         }
 
+        // ============================================================
+        // QUICK CAPTURE — floating idea catcher
+        // ============================================================
+        function openQuickCapture() {
+            openModal('&#43; Quick Capture',
+                '<p style="font-size:0.82rem;color:#6e6e73;margin-bottom:14px">Capture a thought, scripture, illustration, or prayer request instantly.</p>' +
+                '<div class="form-group"><label class="form-label">Type</label>' +
+                '<select class="form-select" id="qcType"><option value="note">Study Note</option><option value="prayer">Prayer Request</option><option value="illustration">Illustration / Story</option><option value="diary">Diary Entry</option></select></div>' +
+                '<div class="form-group"><label class="form-label">Reference (optional)</label>' +
+                '<input type="text" class="form-input" id="qcRef" placeholder="e.g., Romans 8:28"></div>' +
+                '<div class="form-group"><label class="form-label">Your Thought</label>' +
+                '<textarea class="form-textarea" id="qcContent" style="min-height:120px" placeholder="Write anything — scripture, illustration, prayer, insight..."></textarea></div>',
+                function() {
+                    var type    = (document.getElementById('qcType')    ||{}).value || 'note';
+                    var ref     = ((document.getElementById('qcRef')    ||{}).value || '').trim();
+                    var content = ((document.getElementById('qcContent')||{}).value || '').trim();
+                    if (!content) { showToast('Please write something first'); return; }
+                    var now = new Date().toISOString();
+                    if (type === 'note') {
+                        var notes = getNotes(); notes.push({id:Date.now(), ref:ref||'Quick Capture', text:'', content:content, date:now}); saveNotes(notes);
+                        showToast('Note captured! Find it in Notes.');
+                    } else if (type === 'prayer') {
+                        var prayers = getPrayers(); prayers.push({id:Date.now(), title:ref||'Quick Prayer', text:content, category:'personal', date:now, answered:false}); savePrayers(prayers);
+                        showToast('Prayer captured! Find it in Prayer Journal.');
+                    } else if (type === 'illustration') {
+                        var illus = getIllustrations(); illus.push({id:Date.now(), title:ref||'Quick Illustration', content:content, category:'story', date:now}); saveIllustrations(illus);
+                        showToast('Illustration captured! Find it in Illustrations.');
+                    } else if (type === 'diary') {
+                        var diary = getDiaryEntries(); diary.push({id:Date.now(), title:ref||'Quick Entry', content:content, category:'personal', mood:'', date:now}); saveDiaryEntries(diary);
+                        showToast('Diary entry captured! Find it in Personal Diary.');
+                    }
+                    updateDashboardStats();
+                    closeModal();
+                    addActivity('Quick capture: ' + (ref || type));
+                }
+            );
+            document.getElementById('modalAction').textContent = 'Save Capture';
+        }
+
         function loadDashboard() {
             // Date display
             var dd = document.getElementById('dash-date');
@@ -6308,9 +6422,58 @@
         // ============================================================
         // PREACHING CALENDAR
         // ============================================================
+        // ============================================================
+        // PREACHING CALENDAR GRID
+        // ============================================================
+        var _preachCalYear  = new Date().getFullYear();
+        var _preachCalMonth = new Date().getMonth();
+
+        function renderPreachCalGrid() {
+            var grid = document.getElementById('preachCalGrid');
+            var label = document.getElementById('preachCalMonthLabel');
+            if (!grid || !label) return;
+            var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            label.textContent = monthNames[_preachCalMonth] + ' ' + _preachCalYear;
+            var firstDay = new Date(_preachCalYear, _preachCalMonth, 1).getDay();
+            var daysInMonth = new Date(_preachCalYear, _preachCalMonth + 1, 0).getDate();
+            var today = new Date(); var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+            var events = getPreachingEvents();
+            var eventDates = {};
+            events.forEach(function(e){ if (e.date) { var d = e.date.slice(0,10); eventDates[d] = eventDates[d] || []; eventDates[d].push(e); } });
+            var cells = '';
+            for (var i = 0; i < firstDay; i++) cells += '<div></div>';
+            for (var d = 1; d <= daysInMonth; d++) {
+                var dateStr = _preachCalYear + '-' + String(_preachCalMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+                var isToday = dateStr === todayStr;
+                var isSun = (firstDay + d - 1) % 7 === 0;
+                var hasEvent = eventDates[dateStr] && eventDates[dateStr].length > 0;
+                var bg = isToday ? '#0071e3' : hasEvent ? '#dbeafe' : isSun ? '#fff7ed' : '#f9f9f9';
+                var color = isToday ? '#fff' : hasEvent ? '#1e40af' : isSun ? '#92400e' : '#1d1d1f';
+                var dotHtml = hasEvent ? '<div style="width:5px;height:5px;background:' + (isToday?'#fff':'#0071e3') + ';border-radius:50%;margin:1px auto 0"></div>' : '';
+                cells += '<div onclick="preachCalDayClick(\'' + dateStr + '\')" style="background:' + bg + ';border-radius:8px;padding:6px 4px;text-align:center;cursor:pointer;min-height:44px;transition:opacity 0.15s" onmouseover="this.style.opacity=\'0.75\'" onmouseout="this.style.opacity=\'1\'">' +
+                    '<div style="font-size:0.8rem;font-weight:' + (isToday?'800':'600') + ';color:' + color + '">' + d + '</div>' + dotHtml + '</div>';
+            }
+            grid.innerHTML = cells;
+        }
+
+        function preachCalPrev() { _preachCalMonth--; if (_preachCalMonth < 0) { _preachCalMonth = 11; _preachCalYear--; } renderPreachCalGrid(); }
+        function preachCalNext() { _preachCalMonth++; if (_preachCalMonth > 11) { _preachCalMonth = 0; _preachCalYear++; } renderPreachCalGrid(); }
+
+        function preachCalDayClick(dateStr) {
+            var events = getPreachingEvents().filter(function(e){ return (e.date||'').slice(0,10) === dateStr; });
+            if (events.length === 0) {
+                var d = new Date(dateStr + 'T12:00:00'); var opts = {weekday:'long',month:'long',day:'numeric',year:'numeric'};
+                showToast('No sermon on ' + d.toLocaleDateString('en-US', opts) + ' — click "Add Preaching Date" to schedule one.');
+                return;
+            }
+            var e = events[0];
+            openModal('&#128197; ' + (e.title || 'Sermon'), '<div style="font-size:0.9rem;color:#374151;line-height:1.7"><strong>Date:</strong> ' + new Date(e.date + 'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '<br>' + (e.scripture ? '<strong>Scripture:</strong> ' + e.scripture + '<br>' : '') + (e.series ? '<strong>Series:</strong> ' + e.series + '<br>' : '') + (e.notes ? '<br>' + e.notes : '') + '</div>', null, 'Close');
+        }
+
         function loadPreachingCalendar(filter, el) {
             var el = document.getElementById('preachingCalendarList');
             if (!el) return;
+            renderPreachCalGrid();
             document.querySelectorAll('.preach-tab').forEach(function(t){ t.classList.remove('active'); });
             if (el) el.classList.add('active');
             var events = getPreachingEvents();
