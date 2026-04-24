@@ -10787,6 +10787,10 @@
 
             root.innerHTML = html;
             window._smTab = tab;
+            requestAnimationFrame(function() {
+                var ca = document.querySelector('.content-area');
+                if (ca) ca.scrollTop = 0;
+            });
         }
 
         function smAddCard() {
