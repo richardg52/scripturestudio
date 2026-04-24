@@ -10774,7 +10774,7 @@
         }
 
         function smAddCard() {
-            var ref  = (document.getElementById(''<div style="position:relative;height:280px;overflow:hidden;margin:0 -2rem 0;width:calc(100% + 4rem);margin-bottom:24px">' +'<img src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1400&q=80&fit=crop" ''alt="Open Bible with light" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%">' +'<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(2,5,20,0.15) 0%,rgba(5,15,55,0.6) 50%,rgba(3,10,40,0.95) 100%)"></div>' +'<div style="position:relative;z-index:2;padding:0 32px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:28px">' +'<div style="font-size:0.58rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(212,168,32,0.9);margin-bottom:8px">&#9733; Scripture Studio</div>' +'<h2 style="font-size:2rem;font-weight:900;color:#fff;margin:0 0 6px;text-shadow:0 2px 8px rgba(0,0,0,0.5)">Scripture Memory</h2>' +'<p style="font-size:0.9rem;margin:0;color:rgba(255,255,255,0.82);text-shadow:0 1px 4px rgba(0,0,0,0.4)">Hide God\'s Word in your heart — memorize, review &amp; master Scripture</p>' +'</div></div>' +smRef')||{}).value||'';
+            var ref  = (document.getElementById('smRef')||{}).value||'';
             var text = (document.getElementById('smText')||{}).value||'';
             var cat  = (document.getElementById('smCat')||{}).value||'Other';
             ref = ref.trim(); text = text.trim();
@@ -11813,7 +11813,7 @@
             var chips = words.map(function(w) {
                 return '<button onclick="wsQuickSearch(\''+w+'\')">'+w+'</button>';
             }).join('');
-            el.innerHTML = '<div style="position:relative;height:280px;overflow:hidden;margin:0 -2rem 0;width:calc(100% + 4rem);margin-bottom:24px">' +'<img src="https://images.unsplash.com/photo-1513759565286-20e9c5fad06b?w=1400&q=80&fit=crop" ''alt="Colorful creative art" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%">' +'<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(30,5,50,0.15) 0%,rgba(70,10,100,0.6) 50%,rgba(50,5,80,0.95) 100%)"></div>' +'<div style="position:relative;z-index:2;padding:0 32px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:28px">' +'<div style="font-size:0.58rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(212,168,32,0.9);margin-bottom:8px">&#9733; Scripture Studio</div>' +'<h2 style="font-size:2rem;font-weight:900;color:#fff;margin:0 0 6px;text-shadow:0 2px 8px rgba(0,0,0,0.5)">Scripture Graphics</h2>' +'<p style="font-size:0.9rem;margin:0;color:rgba(255,255,255,0.82);text-shadow:0 1px 4px rgba(0,0,0,0.4)">Create beautiful verse cards to share on social media, print or send to others</p>' +'</div></div>' +<div style="text-align:center;padding:28px 16px">' +
+            el.innerHTML = '<div style="text-align:center;padding:28px 16px">' +
                 '<div style="font-size:2rem;margin-bottom:10px">&#128366;</div>' +
                 '<p style="color:#64748b;font-size:0.88rem;margin-bottom:16px">Type a word above or tap a suggestion to begin your word study</p>' +
                 '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center" id="wsChips">' + chips + '</div>' +
