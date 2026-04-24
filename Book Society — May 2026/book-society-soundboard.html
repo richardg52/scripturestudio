@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Society Soundboard — Dr. Clark</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a0a; font-family:Arial,sans-serif; color:#fff; min-height:100vh; padding:24px; }
+
+    .header { text-align:center; margin-bottom:20px; padding-bottom:16px; border-bottom:2px solid #c9a84c; }
+    .header h1 { font-size:1.4rem; font-weight:800; color:#c9a84c; letter-spacing:.06em; text-transform:uppercase; }
+    .header p { font-size:.78rem; color:#555; margin-top:5px; }
+
+    .tip { background:#1a1500; border:1px solid #c9a84c44; border-left:3px solid #c9a84c; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:.8rem; color:#e2c97e; line-height:1.7; }
+    .tip strong { color:#c9a84c; }
+    .tip a { color:#c9a84c; }
+
+    .download-guide {
+      background:#111; border:1px solid #222; border-radius:10px; padding:16px 18px; margin-bottom:20px;
+    }
+    .download-guide h3 { font-size:.82rem; font-weight:800; color:#c9a84c; letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
+    .download-guide p { font-size:.78rem; color:#888; margin-bottom:12px; line-height:1.6; }
+    .dl-table { width:100%; border-collapse:collapse; font-size:.76rem; }
+    .dl-table th { text-align:left; color:#c9a84c; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; padding:5px 8px; border-bottom:1px solid #222; }
+    .dl-table td { padding:6px 8px; color:#aaa; border-bottom:1px solid #1a1a1a; vertical-align:top; }
+    .dl-table td:first-child { color:#e2e2e2; font-weight:700; width:130px; }
+    .dl-table a { color:#c9a84c; text-decoration:none; font-size:.72rem; }
+    .dl-table a:hover { text-decoration:underline; }
+    .toggle-guide { background:none; border:1px solid #333; color:#888; font-size:.75rem; padding:6px 14px; border-radius:6px; cursor:pointer; margin-bottom:16px; }
+    .toggle-guide:hover { border-color:#c9a84c; color:#c9a84c; }
+
+    .controls { display:flex; align-items:center; gap:14px; background:#111; border:1px solid #222; border-radius:10px; padding:12px 18px; margin-bottom:20px; flex-wrap:wrap; }
+    .controls label { font-size:.8rem; color:#c9a84c; font-weight:700; white-space:nowrap; }
+    input[type=range] { flex:1; min-width:100px; accent-color:#c9a84c; }
+    .vol-val { font-size:.8rem; color:#888; min-width:34px; }
+    .stop-btn { background:#2a0a0a; border:1.5px solid #7f1d1d; color:#fca5a5; font-size:.75rem; font-weight:800; padding:8px 16px; border-radius:8px; cursor:pointer; text-transform:uppercase; letter-spacing:.06em; transition:background .15s; }
+    .stop-btn:hover { background:#450f0f; }
+
+    .cat-label { font-size:.7rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#c9a84c; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #1e1e1e; }
+    .section { margin-bottom:26px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px; }
+
+    .sound-btn {
+      background:#111; border:1.5px solid #252525; border-radius:14px; padding:0;
+      cursor:pointer; text-align:center; transition:all .14s ease; position:relative;
+      overflow:hidden; user-select:none; display:flex; flex-direction:column; align-items:center;
+      min-height:120px;
+    }
+    .sound-btn:hover { border-color:#c9a84c; background:#1a1500; transform:translateY(-2px); box-shadow:0 8px 20px rgba(201,168,76,.15); }
+    .sound-btn.playing { border-color:#c9a84c; background:#1a1500; box-shadow:0 0 0 2px #c9a84c55; }
+    .sound-btn.loaded { border-color:#1a3a1a; }
+    .sound-btn.loaded:hover { border-color:#22c55e; }
+    .btn-inner { padding:20px 12px 14px; flex:1; display:flex; flex-direction:column; align-items:center; }
+    .sound-btn .emoji { font-size:2.2rem; display:block; margin-bottom:8px; }
+    .sound-btn .label { font-size:.76rem; font-weight:800; color:#e2e2e2; text-transform:uppercase; letter-spacing:.07em; display:block; margin-bottom:3px; }
+    .sound-btn .sublabel { font-size:.64rem; color:#555; }
+
+    /* Drop zone state */
+    .drop-zone {
+      width:100%; padding:8px 10px; background:#0f0f0f; border-top:1px dashed #222;
+      font-size:.65rem; color:#444; text-align:center; cursor:pointer;
+      transition:all .15s; display:flex; align-items:center; justify-content:center; gap:4px;
+    }
+    .sound-btn.loaded .drop-zone { background:#0a1a0a; color:#22c55e; border-color:#1a3a1a; }
+    .sound-btn:hover .drop-zone { color:#c9a84c; border-color:#c9a84c44; }
+    .drop-zone input { display:none; }
+
+    /* Status dot */
+    .status-dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:5px; vertical-align:middle; }
+    .dot-empty { background:#333; }
+    .dot-loaded { background:#22c55e; }
+    .dot-playing { background:#c9a84c; animation:pulse 0.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* Progress bar */
+    .progress-bar { position:absolute; bottom:0; left:0; height:3px; background:#c9a84c; width:0; border-radius:0 0 12px 12px; }
+
+    .footer { text-align:center; font-size:.72rem; color:#2a2a2a; padding-top:20px; border-top:1px solid #111; margin-top:10px; }
+
+    /* Drag over highlight */
+    .sound-btn.drag-over { border-color:#c9a84c !important; background:#1a1500 !important; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📖 Book Society Soundboard</h1>
+  <p>Host tool · Scripture Studio Book Society · Dr. Clark</p>
+</div>
+
+<div class="tip">
+  <strong>How to use in the room:</strong> In Daily.co, click <strong>Share Screen</strong> → select this tab → check <strong>"Share tab audio"</strong>. Everyone hears it perfectly.<br>
+  <strong>To load sounds:</strong> Click the <strong>+ Load Sound</strong> strip at the bottom of each button and pick your MP3. Or drag an MP3 directly onto any button.
+</div>
+
+<button class="toggle-guide" onclick="toggleGuide()">📋 Show Free Sound Download Guide</button>
+
+<div class="download-guide" id="dl-guide" style="display:none">
+  <h3>Free Sound Download List — Pixabay.com (no account needed)</h3>
+  <p>Go to each link below, hit the green Download button, pick MP3, save to your Downloads folder, then load it into the matching button above.</p>
+  <table class="dl-table">
+    <tr><th>Button</th><th>Search on Pixabay</th><th>What to look for</th></tr>
+    <tr><td>👏 Applause</td><td><a href="https://pixabay.com/sound-effects/search/applause/" target="_blank">pixabay.com → applause</a></td><td>Long crowd clapping, 5–10 sec</td></tr>
+    <tr><td>🎉 Big Cheer</td><td><a href="https://pixabay.com/sound-effects/search/crowd+cheering/" target="_blank">pixabay.com → crowd cheering</a></td><td>Stadium-style cheer</td></tr>
+    <tr><td>🙌 Church Clap</td><td><a href="https://pixabay.com/sound-effects/search/clapping/" target="_blank">pixabay.com → clapping</a></td><td>Rhythmic hand clapping</td></tr>
+    <tr><td>😂 Laughter</td><td><a href="https://pixabay.com/sound-effects/search/laughter/" target="_blank">pixabay.com → laughter</a></td><td>Audience laughing</td></tr>
+    <tr><td>🎺 Fanfare</td><td><a href="https://pixabay.com/sound-effects/search/fanfare/" target="_blank">pixabay.com → fanfare</a></td><td>Trumpet victory fanfare</td></tr>
+    <tr><td>🔥 Hype Music</td><td><a href="https://pixabay.com/sound-effects/search/hype/" target="_blank">pixabay.com → hype music</a></td><td>Short energetic clip</td></tr>
+    <tr><td>🏆 Victory</td><td><a href="https://pixabay.com/sound-effects/search/victory/" target="_blank">pixabay.com → victory</a></td><td>Win moment sting</td></tr>
+    <tr><td>🎹 Gospel Sting</td><td><a href="https://pixabay.com/sound-effects/search/gospel+choir/" target="_blank">pixabay.com → gospel choir</a></td><td>Choir or piano sting</td></tr>
+    <tr><td>🥁 Drum Roll</td><td><a href="https://pixabay.com/sound-effects/search/drum+roll/" target="_blank">pixabay.com → drum roll</a></td><td>Real snare drum roll</td></tr>
+    <tr><td>🔔 Church Bell</td><td><a href="https://pixabay.com/sound-effects/search/church+bell/" target="_blank">pixabay.com → church bell</a></td><td>Single church bell toll</td></tr>
+    <tr><td>📣 Air Horn</td><td><a href="https://pixabay.com/sound-effects/search/air+horn/" target="_blank">pixabay.com → air horn</a></td><td>Loud air horn blast</td></tr>
+    <tr><td>✨ Chime</td><td><a href="https://pixabay.com/sound-effects/search/chime/" target="_blank">pixabay.com → chime</a></td><td>Soft wind chime or ding</td></tr>
+    <tr><td>⛪ Church Organ</td><td><a href="https://pixabay.com/sound-effects/search/church+organ/" target="_blank">pixabay.com → church organ</a></td><td>Organ chord or swell</td></tr>
+    <tr><td>🙏 Hallelujah</td><td><a href="https://pixabay.com/sound-effects/search/hallelujah/" target="_blank">pixabay.com → hallelujah</a></td><td>Choir hallelujah</td></tr>
+    <tr><td>⚡ Thunder</td><td><a href="https://pixabay.com/sound-effects/search/thunder/" target="_blank">pixabay.com → thunder</a></td><td>Single thunder crack</td></tr>
+    <tr><td>🌅 Soft Rise</td><td><a href="https://pixabay.com/sound-effects/search/ambient+peaceful/" target="_blank">pixabay.com → ambient peaceful</a></td><td>Soft ambient swell</td></tr>
+  </table>
+</div>
+
+<div class="controls">
+  <label>🔊 Volume</label>
+  <input type="range" id="vol" min="0" max="100" value="85" oninput="updateVol(this.value)">
+  <span class="vol-val" id="vol-val">85%</span>
+  <button class="stop-btn" onclick="stopAll()">⏹ Stop All</button>
+</div>
+
+<!-- CROWD & CELEBRATION -->
+<div class="section">
+  <div class="cat-label">👥 Crowd & Celebration</div>
+  <div class="grid">
+    <div class="sound-btn" id="btn-applause" draggable="false" onclick="playBtn('applause')">
+      <div class="btn-inner"><span class="emoji">👏</span><span class="label">Applause</span><span class="sublabel">Real crowd clapping</span></div>
+      <label class="drop-zone" onclick="e=>e.stopPropagation()">
+        <input type="file" accept="audio/*" onchange="loadFile('applause',this)">
+        <span id="dz-applause">+ Load Sound</span>
+      </label>
+      <div class="progress-bar" id="pb-applause"></div>
+    </div>
+    <div class="sound-btn" id="btn-cheer" onclick="playBtn('cheer')">
+      <div class="btn-inner"><span class="emoji">🎉</span><span class="label">Big Cheer</span><span class="sublabel">Arena crowd</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('cheer',this)"><span id="dz-cheer">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-cheer"></div>
+    </div>
+    <div class="sound-btn" id="btn-clap2" onclick="playBtn('clap2')">
+      <div class="btn-inner"><span class="emoji">🙌</span><span class="label">Church Clap</span><span class="sublabel">Rhythmic clapping</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('clap2',this)"><span id="dz-clap2">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-clap2"></div>
+    </div>
+    <div class="sound-btn" id="btn-laugh" onclick="playBtn('laugh')">
+      <div class="btn-inner"><span class="emoji">😂</span><span class="label">Laughter</span><span class="sublabel">Audience laughing</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('laugh',this)"><span id="dz-laugh">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-laugh"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MUSIC & STINGS -->
+<div class="section">
+  <div class="cat-label">🎵 Music & Stings</div>
+  <div class="grid">
+    <div class="sound-btn" id="btn-fanfare" onclick="playBtn('fanfare')">
+      <div class="btn-inner"><span class="emoji">🎺</span><span class="label">Fanfare</span><span class="sublabel">Big moment sting</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('fanfare',this)"><span id="dz-fanfare">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-fanfare"></div>
+    </div>
+    <div class="sound-btn" id="btn-hype" onclick="playBtn('hype')">
+      <div class="btn-inner"><span class="emoji">🔥</span><span class="label">Hype Music</span><span class="sublabel">Energy builder</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('hype',this)"><span id="dz-hype">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-hype"></div>
+    </div>
+    <div class="sound-btn" id="btn-victory" onclick="playBtn('victory')">
+      <div class="btn-inner"><span class="emoji">🏆</span><span class="label">Victory</span><span class="sublabel">Win moment</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('victory',this)"><span id="dz-victory">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-victory"></div>
+    </div>
+    <div class="sound-btn" id="btn-gospel" onclick="playBtn('gospel')">
+      <div class="btn-inner"><span class="emoji">🎹</span><span class="label">Gospel Sting</span><span class="sublabel">Soulful drop</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('gospel',this)"><span id="dz-gospel">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-gospel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITIONS -->
+<div class="section">
+  <div class="cat-label">🔔 Transitions & Cues</div>
+  <div class="grid">
+    <div class="sound-btn" id="btn-drumroll" onclick="playBtn('drumroll')">
+      <div class="btn-inner"><span class="emoji">🥁</span><span class="label">Drum Roll</span><span class="sublabel">Real snare roll</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('drumroll',this)"><span id="dz-drumroll">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-drumroll"></div>
+    </div>
+    <div class="sound-btn" id="btn-bell" onclick="playBtn('bell')">
+      <div class="btn-inner"><span class="emoji">🔔</span><span class="label">Church Bell</span><span class="sublabel">Chapter cue</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('bell',this)"><span id="dz-bell">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-bell"></div>
+    </div>
+    <div class="sound-btn" id="btn-airhorn" onclick="playBtn('airhorn')">
+      <div class="btn-inner"><span class="emoji">📣</span><span class="label">Air Horn</span><span class="sublabel">Wake 'em up!</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('airhorn',this)"><span id="dz-airhorn">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-airhorn"></div>
+    </div>
+    <div class="sound-btn" id="btn-chime" onclick="playBtn('chime')">
+      <div class="btn-inner"><span class="emoji">✨</span><span class="label">Chime</span><span class="sublabel">Soft transition</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('chime',this)"><span id="dz-chime">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-chime"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SPIRITUAL -->
+<div class="section">
+  <div class="cat-label">🕊 Spiritual Moments</div>
+  <div class="grid">
+    <div class="sound-btn" id="btn-organ" onclick="playBtn('organ')">
+      <div class="btn-inner"><span class="emoji">⛪</span><span class="label">Church Organ</span><span class="sublabel">Sacred moment</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('organ',this)"><span id="dz-organ">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-organ"></div>
+    </div>
+    <div class="sound-btn" id="btn-hallelujah" onclick="playBtn('hallelujah')">
+      <div class="btn-inner"><span class="emoji">🙏</span><span class="label">Hallelujah</span><span class="sublabel">Praise swell</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('hallelujah',this)"><span id="dz-hallelujah">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-hallelujah"></div>
+    </div>
+    <div class="sound-btn" id="btn-thunder" onclick="playBtn('thunder')">
+      <div class="btn-inner"><span class="emoji">⚡</span><span class="label">Thunder</span><span class="sublabel">God dropped the mic</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('thunder',this)"><span id="dz-thunder">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-thunder"></div>
+    </div>
+    <div class="sound-btn" id="btn-softrise" onclick="playBtn('softrise')">
+      <div class="btn-inner"><span class="emoji">🌅</span><span class="label">Soft Rise</span><span class="sublabel">Reflection moment</span></div>
+      <label class="drop-zone"><input type="file" accept="audio/*" onchange="loadFile('softrise',this)"><span id="dz-softrise">+ Load Sound</span></label>
+      <div class="progress-bar" id="pb-softrise"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Scripture Studio · Book Society Host Tool · scripturestudio.app</div>
+
+<script>
+  const sounds = {};   // key → Audio object
+  const urls   = {};   // key → blob URL
+  let volume   = 0.85;
+  let activeAudios = [];
+
+  function updateVol(v) {
+    volume = v / 100;
+    document.getElementById('vol-val').textContent = v + '%';
+    activeAudios.forEach(a => { try { a.volume = volume; } catch(e){} });
+  }
+
+  function stopAll() {
+    activeAudios.forEach(a => { try { a.pause(); a.currentTime = 0; } catch(e){} });
+    activeAudios = [];
+    document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('playing'));
+    document.querySelectorAll('.progress-bar').forEach(p => { p.style.width='0'; });
+  }
+
+  function loadFile(key, input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (urls[key]) URL.revokeObjectURL(urls[key]);
+    const url = URL.createObjectURL(file);
+    urls[key] = url;
+    const audio = new Audio(url);
+    audio.volume = volume;
+    sounds[key] = audio;
+
+    const btn = document.getElementById('btn-' + key);
+    btn.classList.add('loaded');
+    const dz = document.getElementById('dz-' + key);
+    dz.textContent = '✓ ' + file.name.replace(/\.[^/.]+$/, '').substring(0,18);
+  }
+
+  function playBtn(key) {
+    const audio = sounds[key];
+    if (!audio) {
+      // Flash the drop zone
+      const dz = document.getElementById('dz-' + key);
+      const orig = dz.textContent;
+      dz.style.color = '#c9a84c';
+      dz.textContent = '⬆ Load a sound first';
+      setTimeout(() => { dz.style.color=''; dz.textContent = orig; }, 2000);
+      return;
+    }
+    audio.pause(); audio.currentTime = 0;
+    audio.volume = volume;
+    audio.play();
+    activeAudios.push(audio);
+
+    const btn = document.getElementById('btn-' + key);
+    btn.classList.add('playing');
+
+    const pb = document.getElementById('pb-' + key);
+    pb.style.transition = 'none'; pb.style.width = '0';
+    requestAnimationFrame(() => {
+      pb.style.transition = `width ${audio.duration||5}s linear`;
+      pb.style.width = '100%';
+    });
+
+    audio.onended = () => {
+      btn.classList.remove('playing');
+      pb.style.width = '0';
+      activeAudios = activeAudios.filter(a => a !== audio);
+    };
+  }
+
+  // Drag-and-drop support
+  document.querySelectorAll('.sound-btn').forEach(btn => {
+    const key = btn.id.replace('btn-', '');
+    btn.addEventListener('dragover', e => { e.preventDefault(); btn.classList.add('drag-over'); });
+    btn.addEventListener('dragleave', () => btn.classList.remove('drag-over'));
+    btn.addEventListener('drop', e => {
+      e.preventDefault(); btn.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (!file || !file.type.startsWith('audio/')) return;
+      if (urls[key]) URL.revokeObjectURL(urls[key]);
+      const url = URL.createObjectURL(file);
+      urls[key] = url;
+      sounds[key] = new Audio(url);
+      sounds[key].volume = volume;
+      btn.classList.add('loaded');
+      const dz = document.getElementById('dz-' + key);
+      dz.textContent = '✓ ' + file.name.replace(/\.[^/.]+$/, '').substring(0, 18);
+    });
+  });
+
+  function toggleGuide() {
+    const g = document.getElementById('dl-guide');
+    const btn = document.querySelector('.toggle-guide');
+    if (g.style.display === 'none') {
+      g.style.display = 'block';
+      btn.textContent = '✕ Hide Download Guide';
+    } else {
+      g.style.display = 'none';
+      btn.textContent = '📋 Show Free Sound Download Guide';
+    }
+  }
+</script>
+</body>
+</html>
