@@ -457,6 +457,54 @@
         [data-theme="dark"] .parallel-col-title { color:#f1f5f9; }
         [data-theme="dark"] .parallel-verse { color:#cbd5e1; }
 
+
+        /* ── Scripture Memory Module ── */
+        .sm-card-scene { perspective: 1000px; width: 100%; }
+        .sm-card {
+            width: 100%; height: 220px;
+            transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            position: relative;
+        }
+        .sm-card.flipped { transform: rotateY(180deg); }
+        .sm-card-face {
+            position: absolute; inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 32px;
+            box-sizing: border-box;
+        }
+        .sm-card-front {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f1e4a 100%);
+            box-shadow: 0 12px 40px rgba(30,58,95,0.35);
+            color: #fff;
+        }
+        .sm-card-back {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+            transform: rotateY(180deg);
+            color: #1e293b;
+        }
+        .sm-rate-btn {
+            flex: 1; border: none; border-radius: 10px;
+            padding: 12px 10px; font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; transition: transform 0.1s, opacity 0.15s;
+            min-width: 60px;
+        }
+        .sm-rate-btn:hover { transform: translateY(-2px); opacity: 0.92; }
+        .sm-stat-card {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 14px; padding: 18px 20px;
+            text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
         /* Bible Reader Styles */
         .bible-header {
             display: flex;
@@ -511,6 +559,13 @@
             background: #f1f5f9;
         }
 
+        .verse.audio-active {
+            background: linear-gradient(90deg,rgba(59,130,246,0.12),rgba(59,130,246,0.04)) !important;
+            border-left: 3px solid #3b82f6 !important;
+            border-radius: 4px;
+            padding-left: 10px;
+            transition: background 0.3s;
+        }
         .verse.selected {
             background: #dbeafe;
         }
@@ -1956,6 +2011,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                         <span>Reading Room</span>
                     </div>
+                    <div class="nav-item" data-page="scripture-memory">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.04Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.04Z"/></svg>
+                        <span>Scripture Memory</span>
+                    </div>
                 </div>
             </nav>
 
@@ -2188,6 +2247,10 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18"></rect><rect x="14" y="3" width="7" height="18"></rect></svg>
                             Parallel
                         </button>
+                        <button class="btn btn-secondary" id="audioBibleBtn" onclick="audioBibleToggle()" title="Listen to this chapter aloud">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            Listen
+                        </button>
                     </div>
 
                     <!-- Parallel Controls Bar (shown when parallel mode is ON) -->
@@ -2258,6 +2321,28 @@
                                 <div class="parallel-col-body" id="parallelBody3"></div>
                             </div>
                         </div>
+
+                    <!-- Audio Bible Player Bar -->
+                    <div id="audioBibleBar" style="display:none;position:sticky;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f1e4a,#1e3a5f);color:#fff;padding:12px 18px;z-index:50;box-shadow:0 -4px 24px rgba(0,0,0,0.3);border-top:1px solid rgba(59,130,246,0.3);align-items:center;gap:12px;flex-wrap:wrap">
+                        <div style="font-size:1.4rem;line-height:1;flex-shrink:0">&#127911;</div>
+                        <div style="flex:1;min-width:120px">
+                            <div id="audioBarRef" style="font-size:0.82rem;font-weight:700;color:#93c5fd;margin-bottom:2px">Genesis 1</div>
+                            <div id="audioBarProgress" style="font-size:0.72rem;color:rgba(255,255,255,0.6)">Loading...</div>
+                        </div>
+                        <button id="audioPlayPauseBtn" onclick="audioBiblePause()" style="background:#3b82f6;border:none;color:#fff;border-radius:8px;padding:8px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;flex-shrink:0">
+                            <svg id="audioPauseIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                            <svg id="audioPlayIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span id="audioPlayLabel">Pause</span>
+                        </button>
+                        <button onclick="audioBibleStop()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;flex-shrink:0">&#9632; Stop</button>
+                        <select id="audioSpeedSel" onchange="audioBibleSetRate(parseFloat(this.value))" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:8px;padding:8px 10px;font-size:0.78rem;cursor:pointer;flex-shrink:0">
+                            <option value="0.75">0.75&#xD7;</option>
+                            <option value="1" selected>1&#xD7; Speed</option>
+                            <option value="1.25">1.25&#xD7;</option>
+                            <option value="1.5">1.5&#xD7;</option>
+                            <option value="2">2&#xD7;</option>
+                        </select>
+                        <a href="https://www.bible.is" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.8);border-radius:8px;padding:8px 12px;font-size:0.74rem;text-decoration:none;white-space:nowrap;flex-shrink:0">&#127908; Pro Audio &#8599;</a>
                     </div>
                 </div>
 
@@ -3611,6 +3696,12 @@
                     </div>
                 </div>
 
+
+                <!-- Scripture Memory Module -->
+                <div class="page" id="page-scripture-memory">
+                    <div id="sm-root" style="max-width:680px;margin:0 auto;padding-bottom:32px"></div>
+                </div>
+
                 <!-- SCRIPTURE STUDIO BOOK SOCIETY -->
                 <div class="page" id="page-book-society">
                     <div class="panel">
@@ -3835,7 +3926,7 @@
             'personal-diary':'Personal Diary',
             'heb-greek-lexicon':'Hebrew & Greek Lexicon',
             'pronunciation-tool':'Pronunciation Tool',
-            'development-studio':'Resource Builder','group-study':'Group Bible Study','word-studio-1b':'Word Studio 1B','sermon-studio-1a':'Sermon Studio 1A','book-society':'Scripture Studio Book Society','reading-room':'Reading Room',
+            'development-studio':'Resource Builder','group-study':'Group Bible Study','word-studio-1b':'Word Studio 1B','sermon-studio-1a':'Sermon Studio 1A','book-society':'Scripture Studio Book Society','reading-room':'Reading Room','scripture-memory':'Scripture Memory',
             'cross-references':'Cross-References',
             'commentaries':'Commentaries'
         };
@@ -3881,7 +3972,7 @@
                 'sermon-studio-1a': function() { ss1aRender(); setTimeout(initStudio1ACanvas,80); },
                 'ai-commentary': function() { setTimeout(initBishopCanvas,80); bcShowTab('lookup', document.querySelector('.bc-tab')); },
                 'book-society':     function() { bsRender(); },
-                'reading-room':     function() { rrRender(); },
+                'reading-room':     function() { rrRender(); },'scripture-memory':  function() { smRender(); },
                 'lexicon':              function() { searchLexicon(); },
                 'heb-greek-lexicon':    function() { searchHGLex(); },
                 'topical-finder':       function() {
@@ -9807,6 +9898,490 @@
             localStorage.setItem(RR_BOOKS_KEY, JSON.stringify(books));
             rrRender();
         }
+
+
+
+        // ════════════════════════════════════════════════════════════════════════
+        // SCRIPTURE MEMORY MODULE
+        // ════════════════════════════════════════════════════════════════════════
+        var SM_KEY = 'ss_scripture_memory';
+        var SM_STARTER = [
+            {id:'sms1',reference:'John 3:16',category:'Salvation',text:'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.'},
+            {id:'sms2',reference:'Psalm 23:1',category:'Faith & Trust',text:'The LORD is my shepherd; I shall not want.'},
+            {id:'sms3',reference:'Philippians 4:13',category:'Strength',text:'I can do all this through him who gives me strength.'},
+            {id:'sms4',reference:'Romans 8:28',category:'Faith & Trust',text:'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.'},
+            {id:'sms5',reference:'Proverbs 3:5-6',category:'Wisdom',text:'Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.'},
+            {id:'sms6',reference:'Isaiah 40:31',category:'Strength',text:'But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.'},
+            {id:'sms7',reference:'Jeremiah 29:11',category:'Hope',text:"For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future."},
+            {id:'sms8',reference:'Matthew 6:33',category:'Discipleship',text:'But seek first his kingdom and his righteousness, and all these things will be given to you as well.'}
+        ];
+        var _smTab = 'overview';
+        var _smFlipped = false;
+        var _smDueIdx = 0;
+        var _smSessionDone = 0;
+
+        function smGetCards() {
+            var cards = safeParse(SM_KEY, null);
+            if (!cards) {
+                // First launch — seed starter cards
+                var today = smToday();
+                cards = SM_STARTER.map(function(c) {
+                    return Object.assign({}, c, {
+                        interval: 1, repetitions: 0, easeFactor: 2.5,
+                        nextReview: today, lastRating: null, mastered: false,
+                        createdAt: today
+                    });
+                });
+                localStorage.setItem(SM_KEY, JSON.stringify(cards));
+            }
+            return cards;
+        }
+
+        function smSaveCards(cards) {
+            localStorage.setItem(SM_KEY, JSON.stringify(cards));
+        }
+
+        function smToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function smDueCards(cards) {
+            var today = smToday();
+            return cards.filter(function(c){ return c.nextReview <= today; });
+        }
+
+        function smReview(card, rating) {
+            // SM-2 simplified
+            if (rating === 1) {
+                card.interval = 1;
+                card.repetitions = 0;
+                card.easeFactor = Math.max(1.3, (card.easeFactor || 2.5) - 0.2);
+            } else {
+                var ef = card.easeFactor || 2.5;
+                var reps = card.repetitions || 0;
+                if (reps === 0)      card.interval = 1;
+                else if (reps === 1) card.interval = 6;
+                else                 card.interval = Math.round((card.interval || 1) * ef);
+                if (rating === 2) {
+                    card.interval = Math.max(1, Math.round(card.interval * 1.2));
+                    card.easeFactor = Math.max(1.3, ef - 0.15);
+                } else if (rating === 4) {
+                    card.interval = Math.round(card.interval * 1.3);
+                    card.easeFactor = Math.min(2.5, ef + 0.1);
+                } else {
+                    card.easeFactor = ef;
+                }
+                card.repetitions = reps + 1;
+            }
+            card.nextReview = new Date(Date.now() + card.interval * 86400000).toISOString().split('T')[0];
+            card.lastRating = rating;
+            card.mastered = (card.interval >= 21);
+            return card;
+        }
+
+        function smRender() {
+            var root = document.getElementById('sm-root');
+            if (!root) return;
+            var cards = smGetCards();
+            var due = smDueCards(cards);
+            var tab = _smTab;
+            var html = '';
+
+            // Hero banner
+            html += '<div style="background:linear-gradient(135deg,#0f1e4a,#1e3a5f);border-radius:0;padding:24px 26px;margin-bottom:0;color:#fff;display:flex;align-items:center;gap:16px">' +
+                '<div style="font-size:2.6rem;line-height:1;flex-shrink:0">&#128217;</div>' +
+                '<div>' +
+                '<div style="font-size:1.15rem;font-weight:800;margin-bottom:3px">Scripture Memory</div>' +
+                '<div style="font-size:0.82rem;opacity:0.75">Hide the Word in your heart — spaced repetition flashcards for lifelong retention.</div>' +
+                '</div>' +
+                (due.length > 0 ? '<div style="margin-left:auto;flex-shrink:0;background:#ef4444;color:#fff;font-size:0.75rem;font-weight:800;padding:6px 12px;border-radius:20px">' + due.length + ' due</div>' : '') +
+                '</div>';
+
+            // Tab nav
+            var tabs = [{key:'overview',label:'&#128202; Overview'},{key:'study',label:'&#127217; Study'},{key:'add',label:'&#43; Add Verse'},{key:'browse',label:'&#128269; Browse'}];
+            html += '<div style="display:flex;border-bottom:2px solid #e2e8f0;margin-bottom:22px;background:#fff;overflow-x:auto">';
+            tabs.forEach(function(t) {
+                var active = (tab === t.key);
+                html += '<button onclick="window._smTab=\'' + t.key + '\';smRender()" style="flex-shrink:0;background:none;border:none;border-bottom:' + (active ? '3px solid #1e3a5f' : '3px solid transparent') + ';color:' + (active ? '#1e3a5f' : '#64748b') + ';font-size:0.82rem;font-weight:' + (active ? '700' : '600') + ';padding:12px 18px;cursor:pointer;white-space:nowrap">' + t.label + '</button>';
+            });
+            html += '</div>';
+
+            // ── Overview ──────────────────────────────────────────────────────
+            if (tab === 'overview') {
+                var mastered = cards.filter(function(c){ return c.mastered; }).length;
+                var streak = safeParse('sm_streak',{today:smToday(),count:0});
+                var statCards = [
+                    {n:cards.length, label:'Total Verses', icon:'&#128214;', color:'#1e3a5f'},
+                    {n:due.length, label:'Due Today', icon:'&#9200;', color: due.length > 0 ? '#dc2626' : '#16a34a'},
+                    {n:mastered, label:'Mastered', icon:'&#11088;', color:'#d97706'},
+                    {n:streak.count||0, label:'Day Streak', icon:'&#128293;', color:'#7c3aed'}
+                ];
+                html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;margin-bottom:24px">';
+                statCards.forEach(function(s) {
+                    html += '<div class="sm-stat-card">' +
+                        '<div style="font-size:1.6rem;margin-bottom:6px">' + s.icon + '</div>' +
+                        '<div style="font-size:1.8rem;font-weight:800;color:' + s.color + ';line-height:1">' + s.n + '</div>' +
+                        '<div style="font-size:0.72rem;color:#64748b;margin-top:4px;font-weight:600">' + s.label + '</div>' +
+                        '</div>';
+                });
+                html += '</div>';
+
+                if (due.length > 0) {
+                    html += '<button onclick="window._smTab=\'study\';_smDueIdx=0;_smFlipped=false;_smSessionDone=0;smRender()" style="width:100%;background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff;border:none;border-radius:14px;padding:18px;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:20px;letter-spacing:-0.01em">&#127217; Start Review — ' + due.length + ' verse' + (due.length>1?'s':'') + ' due today</button>';
+                } else {
+                    html += '<div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #86efac;border-radius:14px;padding:20px;text-align:center;margin-bottom:20px">' +
+                        '<div style="font-size:2rem;margin-bottom:8px">&#127881;</div>' +
+                        '<div style="font-weight:800;color:#15803d;margin-bottom:4px">All caught up!</div>' +
+                        '<div style="font-size:0.82rem;color:#166534">No verses due today. Come back tomorrow to keep your streak going.</div>' +
+                        '</div>';
+                }
+
+                // Progress bars per category
+                var cats = {};
+                cards.forEach(function(c){ cats[c.category] = (cats[c.category]||0)+1; });
+                var catKeys = Object.keys(cats);
+                if (catKeys.length) {
+                    html += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;margin-bottom:20px">';
+                    html += '<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;margin-bottom:14px">By Category</div>';
+                    catKeys.forEach(function(cat) {
+                        var pct = Math.round(cats[cat]/cards.length*100);
+                        html += '<div style="margin-bottom:10px">' +
+                            '<div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:600;color:#334155;margin-bottom:4px">' +
+                            '<span>' + cat + '</span><span>' + cats[cat] + ' verse' + (cats[cat]>1?'s':'') + '</span></div>' +
+                            '<div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">' +
+                            '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1e3a5f,#3b82f6);border-radius:3px"></div>' +
+                            '</div></div>';
+                    });
+                    html += '</div>';
+                }
+
+                html += '<div style="background:linear-gradient(135deg,#fef3c7,#fffbeb);border:1px solid #fcd34d;border-radius:12px;padding:16px;font-size:0.8rem;color:#92400e;line-height:1.6">' +
+                    '<strong>&#128161; How it works:</strong> Tap <em>Study</em> to review today's verses. After each card, rate how well you remembered it — the app schedules your next review automatically. Verses you know well appear less often. Master a verse by reaching a 21-day interval.' +
+                    '</div>';
+            }
+
+            // ── Study ─────────────────────────────────────────────────────────
+            if (tab === 'study') {
+                if (due.length === 0) {
+                    html += '<div style="text-align:center;padding:48px 24px">' +
+                        '<div style="font-size:3rem;margin-bottom:12px">&#127881;</div>' +
+                        '<div style="font-size:1.1rem;font-weight:800;color:#1e293b;margin-bottom:8px">All caught up!</div>' +
+                        '<div style="font-size:0.85rem;color:#64748b;margin-bottom:20px">No verses due today. Add more verses to grow your library.</div>' +
+                        '<button onclick="window._smTab=\'add\';smRender()" style="background:#1e3a5f;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:0.88rem;font-weight:700;cursor:pointer">+ Add Verses</button>' +
+                        '</div>';
+                } else if (_smDueIdx >= due.length) {
+                    // Session complete
+                    html += '<div style="text-align:center;padding:48px 24px">' +
+                        '<div style="font-size:3.5rem;margin-bottom:14px">&#127942;</div>' +
+                        '<div style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:8px">Session Complete!</div>' +
+                        '<div style="font-size:0.9rem;color:#64748b;margin-bottom:6px">You reviewed <strong>' + _smSessionDone + ' verse' + (_smSessionDone>1?'s':'') + '</strong> this session.</div>' +
+                        '<div style="font-size:0.82rem;color:#94a3b8;margin-bottom:28px">Keep it up — consistency is how the Word gets hidden in your heart.</div>' +
+                        '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">' +
+                        '<button onclick="_smDueIdx=0;_smFlipped=false;_smSessionDone=0;smRender()" style="background:#1e3a5f;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-size:0.88rem;font-weight:700;cursor:pointer">Review Again</button>' +
+                        '<button onclick="window._smTab=\'add\';smRender()" style="background:#f1f5f9;color:#334155;border:none;border-radius:10px;padding:12px 20px;font-size:0.88rem;font-weight:600;cursor:pointer">+ Add Verses</button>' +
+                        '</div></div>';
+                } else {
+                    var card = due[_smDueIdx];
+                    var flipped = _smFlipped;
+                    html += '<div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">' +
+                        '<div style="font-size:0.78rem;color:#64748b;font-weight:600">Card ' + (_smDueIdx+1) + ' of ' + due.length + '</div>' +
+                        '<div style="background:#e2e8f0;border-radius:20px;height:6px;flex:1;margin:0 12px;overflow:hidden"><div style="height:100%;width:' + Math.round(_smDueIdx/due.length*100) + '%;background:#1e3a5f;border-radius:20px"></div></div>' +
+                        '<div style="font-size:0.75rem;color:#94a3b8">' + Math.round(_smDueIdx/due.length*100) + '%</div>' +
+                        '</div>';
+                    html += '<div class="sm-card-scene" style="margin-bottom:18px">' +
+                        '<div class="sm-card' + (flipped ? ' flipped' : '') + '" onclick="_smFlipped=!_smFlipped;smRender()" id="smCardEl">' +
+                        '<div class="sm-card-face sm-card-front">' +
+                        '<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:14px">' + (card.category||'Scripture') + '</div>' +
+                        '<div style="font-size:1.6rem;font-weight:900;color:#fff;text-align:center;line-height:1.2">' + card.reference + '</div>' +
+                        '<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:16px">Tap to reveal the verse &#8595;</div>' +
+                        '</div>' +
+                        '<div class="sm-card-face sm-card-back">' +
+                        '<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">' + card.reference + '</div>' +
+                        '<p style="font-size:0.95rem;line-height:1.65;color:#1e293b;text-align:center;margin:0;font-style:italic">&ldquo;' + card.text + '&rdquo;</p>' +
+                        '</div>' +
+                        '</div></div>';
+
+                    if (!flipped) {
+                        html += '<div style="text-align:center;color:#94a3b8;font-size:0.8rem;padding:12px 0">Read the reference above and try to recall the verse, then tap the card.</div>';
+                    } else {
+                        html += '<div style="margin-bottom:8px;text-align:center;font-size:0.78rem;font-weight:600;color:#64748b">How well did you remember it?</div>';
+                        html += '<div style="display:flex;gap:8px;margin-bottom:4px">' +
+                            '<button class="sm-rate-btn" onclick="smRate(\'' + card.id + '\',1)" style="background:#fee2e2;color:#dc2626">&#128581; Again<br><span style=\'font-weight:400;font-size:0.7rem\'>Forgot it</span></button>' +
+                            '<button class="sm-rate-btn" onclick="smRate(\'' + card.id + '\',2)" style="background:#ffedd5;color:#ea580c">&#128528; Hard<br><span style=\'font-weight:400;font-size:0.7rem\'>Struggled</span></button>' +
+                            '<button class="sm-rate-btn" onclick="smRate(\'' + card.id + '\',3)" style="background:#dbeafe;color:#1d4ed8">&#128516; Good<br><span style=\'font-weight:400;font-size:0.7rem\'>Got it</span></button>' +
+                            '<button class="sm-rate-btn" onclick="smRate(\'' + card.id + '\',4)" style="background:#dcfce7;color:#15803d">&#127775; Easy<br><span style=\'font-weight:400;font-size:0.7rem\'>Perfect!</span></button>' +
+                            '</div>';
+                    }
+                }
+            }
+
+            // ── Add Verse ─────────────────────────────────────────────────────
+            if (tab === 'add') {
+                var cats2 = ['Faith & Trust','Salvation','Prayer','Strength','Hope','Wisdom','Discipleship','Promises','Praise','Love','Prophecy','Other'];
+                html += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:20px">';
+                html += '<div style="font-size:0.85rem;font-weight:700;color:#1e293b;margin-bottom:18px">&#128218; Add a New Verse</div>';
+                html += '<div style="display:flex;flex-direction:column;gap:14px">';
+                html += '<div><label style="font-size:0.78rem;font-weight:700;color:#475569;display:block;margin-bottom:5px">Scripture Reference *</label>' +
+                    '<input id="smRef" type="text" placeholder="e.g. Romans 8:28" style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:0.88rem;box-sizing:border-box"></div>';
+                html += '<div><label style="font-size:0.78rem;font-weight:700;color:#475569;display:block;margin-bottom:5px">Verse Text *</label>' +
+                    '<textarea id="smText" placeholder="Type or paste the full verse here..." rows="4" style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:0.88rem;box-sizing:border-box;resize:vertical;font-family:inherit"></textarea></div>';
+                html += '<div><label style="font-size:0.78rem;font-weight:700;color:#475569;display:block;margin-bottom:5px">Category</label>' +
+                    '<select id="smCat" style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:0.88rem;box-sizing:border-box">';
+                cats2.forEach(function(c){ html += '<option>' + c + '</option>'; });
+                html += '</select></div>';
+                html += '</div>';
+                html += '<button onclick="smAddCard()" style="width:100%;background:#1e3a5f;color:#fff;border:none;border-radius:10px;padding:13px;font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:18px">Add to Memory Library</button>';
+                html += '</div>';
+
+                html += '<div style="background:#f8fafc;border-radius:12px;padding:16px;font-size:0.8rem;color:#64748b;line-height:1.6">' +
+                    '<strong>&#128161; Pro tip:</strong> Add 2-3 verses at a time rather than loading up all at once. The goal is long-term retention, not short-term bulk. Start with verses most meaningful to your walk.' +
+                    '</div>';
+            }
+
+            // ── Browse ────────────────────────────────────────────────────────
+            if (tab === 'browse') {
+                var today2 = smToday();
+                html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+                    '<div style="font-size:0.78rem;color:#64748b">' + cards.length + ' verse' + (cards.length!==1?'s':'') + ' in library</div>' +
+                    '<button onclick="smResetConfirm()" style="background:none;border:1px solid #fca5a5;color:#ef4444;border-radius:8px;padding:5px 10px;font-size:0.72rem;cursor:pointer">Reset All</button>' +
+                    '</div>';
+                if (cards.length === 0) {
+                    html += '<div style="text-align:center;padding:40px;color:#94a3b8">No verses yet. Add some!</div>';
+                } else {
+                    cards.forEach(function(c) {
+                        var isDue = c.nextReview <= today2;
+                        var nextStr = c.nextReview === today2 ? 'Due today' : (c.nextReview < today2 ? 'Overdue' : 'Next: ' + c.nextReview);
+                        html += '<div style="background:#fff;border:1px solid ' + (isDue?'#fca5a5':'#e2e8f0') + ';border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px">' +
+                            '<div style="flex:1;min-width:0">' +
+                            '<div style="font-weight:700;color:#1e293b;font-size:0.88rem;margin-bottom:2px">' + c.reference + '</div>' +
+                            '<div style="font-size:0.75rem;color:#94a3b8;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">' + c.text.substring(0,80) + (c.text.length>80?'…':'') + '</div>' +
+                            '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+                            '<span style="background:#dbeafe;color:#1e40af;font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:20px">' + (c.category||'Other') + '</span>' +
+                            '<span style="font-size:0.7rem;color:' + (isDue?'#dc2626':'#64748b') + ';font-weight:' + (isDue?'700':'400') + '">' + nextStr + '</span>' +
+                            (c.mastered?'<span style="background:#fef3c7;color:#d97706;font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:20px">&#11088; Mastered</span>':'') +
+                            '</div></div>' +
+                            '<button onclick="smDeleteCard(\'' + c.id + '\')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:1.1rem;flex-shrink:0;padding:2px 4px" title="Delete">&#10005;</button>' +
+                            '</div>';
+                    });
+                }
+            }
+
+            root.innerHTML = html;
+            window._smTab = tab;
+        }
+
+        function smAddCard() {
+            var ref  = (document.getElementById('smRef')||{}).value||'';
+            var text = (document.getElementById('smText')||{}).value||'';
+            var cat  = (document.getElementById('smCat')||{}).value||'Other';
+            ref = ref.trim(); text = text.trim();
+            if (!ref || !text) { showToast('Please fill in Reference and Verse Text.'); return; }
+            var cards = smGetCards();
+            if (cards.find(function(c){ return c.reference.toLowerCase()===ref.toLowerCase(); })) {
+                showToast('That reference is already in your library!'); return;
+            }
+            var today = smToday();
+            cards.push({ id:'sm_'+Date.now(), reference:ref, text:text, category:cat,
+                createdAt:today, interval:1, repetitions:0, easeFactor:2.5,
+                nextReview:today, lastRating:null, mastered:false });
+            smSaveCards(cards);
+            showToast('\u2728 ' + ref + ' added to your Memory Library!');
+            window._smTab = 'overview';
+            smRender();
+        }
+
+        function smRate(id, rating) {
+            var cards = smGetCards();
+            var idx = cards.findIndex(function(c){ return c.id===id; });
+            if (idx === -1) return;
+            cards[idx] = smReview(cards[idx], rating);
+            smSaveCards(cards);
+            _smDueIdx++;
+            _smFlipped = false;
+            _smSessionDone++;
+            // Update streak
+            var streak = safeParse('sm_streak',{today:'',count:0});
+            var today = smToday();
+            if (streak.today !== today) {
+                streak.count = (streak.today === new Date(Date.now()-86400000).toISOString().split('T')[0]) ? streak.count+1 : 1;
+                streak.today = today;
+                localStorage.setItem('sm_streak', JSON.stringify(streak));
+            }
+            smRender();
+        }
+
+        function smDeleteCard(id) {
+            if (!confirm('Remove this verse from your Memory Library?')) return;
+            var cards = smGetCards().filter(function(c){ return c.id!==id; });
+            smSaveCards(cards);
+            smRender();
+        }
+
+        function smResetConfirm() {
+            if (!confirm('Reset ALL progress and remove all cards? This cannot be undone.')) return;
+            localStorage.removeItem(SM_KEY);
+            localStorage.removeItem('sm_streak');
+            _smTab = 'overview'; _smDueIdx = 0; _smFlipped = false; _smSessionDone = 0;
+            smRender();
+        }
+        // ════════════════════════════════════════════════════════════════════════
+        // END SCRIPTURE MEMORY MODULE
+        // ════════════════════════════════════════════════════════════════════════
+
+        // ── Audio Bible ──────────────────────────────────────────────────────────
+        var _ab = {
+            playing: false,
+            paused:  false,
+            verses:  [],
+            idx:     0,
+            rate:    1.0
+        };
+
+        function audioBibleToggle() {
+            if (_ab.playing) {
+                audioBibleStop();
+            } else {
+                audioBibleStart();
+            }
+        }
+
+        function audioBibleStart() {
+            if (!('speechSynthesis' in window)) {
+                showToast('Audio is not supported in this browser. Try Chrome or Edge.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            var els = document.querySelectorAll('#versesContainer .verse');
+            if (!els.length) { showToast('Load a Bible chapter first.'); return; }
+            _ab.verses = Array.from(els).map(function(el) {
+                var textEl = el.querySelector('.verse-text');
+                return { num: el.dataset.verse, text: textEl ? textEl.textContent.trim() : '' };
+            }).filter(function(v){ return v.text; });
+            if (!_ab.verses.length) return;
+            _ab.idx = 0;
+            _ab.playing = true;
+            _ab.paused  = false;
+            var btn = document.getElementById('audioBibleBtn');
+            if (btn) { btn.style.background = '#1e3a5f'; btn.style.color = '#93c5fd'; btn.style.borderColor = '#3b82f6'; }
+            var bar = document.getElementById('audioBibleBar');
+            if (bar) bar.style.display = 'flex';
+            _abUpdateBar();
+            _abReadNext();
+        }
+
+        function _abReadNext() {
+            if (!_ab.playing || _ab.paused || _ab.idx >= _ab.verses.length) {
+                if (_ab.idx >= _ab.verses.length) audioBibleStop();
+                return;
+            }
+            var v = _ab.verses[_ab.idx];
+            _abHighlight(v.num);
+            _abUpdateBar();
+            var utt = new SpeechSynthesisUtterance(v.num + '. ' + v.text);
+            utt.rate = _ab.rate;
+            utt.pitch = 1.0;
+            utt.onend = function() {
+                if (_ab.playing && !_ab.paused) {
+                    _ab.idx++;
+                    _abReadNext();
+                }
+            };
+            utt.onerror = function(e) {
+                if (e.error !== 'interrupted' && e.error !== 'canceled') {
+                    _ab.idx++;
+                    _abReadNext();
+                }
+            };
+            window.speechSynthesis.speak(utt);
+        }
+
+        function audioBiblePause() {
+            if (!_ab.playing) return;
+            if (_ab.paused) {
+                _ab.paused = false;
+                window.speechSynthesis.resume();
+                var pi = document.getElementById('audioPauseIcon');
+                var pl = document.getElementById('audioPlayIcon');
+                var lb = document.getElementById('audioPlayLabel');
+                if (pi) pi.style.display = '';
+                if (pl) pl.style.display = 'none';
+                if (lb) lb.textContent = 'Pause';
+                var pb = document.getElementById('audioPlayPauseBtn');
+                if (pb) pb.style.background = '#3b82f6';
+            } else {
+                _ab.paused = true;
+                window.speechSynthesis.pause();
+                var pi = document.getElementById('audioPauseIcon');
+                var pl = document.getElementById('audioPlayIcon');
+                var lb = document.getElementById('audioPlayLabel');
+                if (pi) pi.style.display = 'none';
+                if (pl) pl.style.display = '';
+                if (lb) lb.textContent = 'Resume';
+                var pb = document.getElementById('audioPlayPauseBtn');
+                if (pb) pb.style.background = '#10b981';
+            }
+        }
+
+        function audioBibleStop() {
+            _ab.playing = false;
+            _ab.paused  = false;
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('#versesContainer .verse.audio-active').forEach(function(el){
+                el.classList.remove('audio-active');
+            });
+            var bar = document.getElementById('audioBibleBar');
+            if (bar) bar.style.display = 'none';
+            var btn = document.getElementById('audioBibleBtn');
+            if (btn) { btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }
+            // Reset play button state
+            var pi = document.getElementById('audioPauseIcon');
+            var pl = document.getElementById('audioPlayIcon');
+            var lb = document.getElementById('audioPlayLabel');
+            if (pi) pi.style.display = '';
+            if (pl) pl.style.display = 'none';
+            if (lb) lb.textContent = 'Pause';
+            var pb = document.getElementById('audioPlayPauseBtn');
+            if (pb) pb.style.background = '#3b82f6';
+        }
+
+        function audioBibleSetRate(r) {
+            _ab.rate = r;
+            if (_ab.playing && !_ab.paused) {
+                // Restart current verse at new rate
+                window.speechSynthesis.cancel();
+                setTimeout(_abReadNext, 80);
+            }
+        }
+
+        function _abHighlight(num) {
+            document.querySelectorAll('#versesContainer .verse.audio-active').forEach(function(el){
+                el.classList.remove('audio-active');
+            });
+            var el = document.getElementById('verse-' + num);
+            if (el) {
+                el.classList.add('audio-active');
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function _abUpdateBar() {
+            var ref = document.getElementById('audioBarRef');
+            var prog = document.getElementById('audioBarProgress');
+            if (ref) ref.textContent = (AppState.currentBook || 'Bible') + ' ' + (AppState.currentChapter || '');
+            if (prog) prog.textContent = 'Verse ' + (_ab.idx + 1) + ' of ' + _ab.verses.length;
+        }
+
+        // Stop audio when navigating away from Bible Reader
+        (function() {
+            var _origNav = window.navigateTo;
+            if (typeof _origNav === 'function') {
+                window.navigateTo = function(page) {
+                    if (page !== 'bible-reader' && _ab.playing) audioBibleStop();
+                    return _origNav.apply(this, arguments);
+                };
+            }
+        })();
+        // ── end Audio Bible ──────────────────────────────────────────────────────
 
         // ── end Reading Room ──
 
