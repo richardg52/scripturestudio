@@ -12868,16 +12868,11 @@
         }
 
         function doSignIn() {
-            // Show hint button immediately so user knows to come back
-            var hint = document.getElementById('auth-already-signed-in');
-            if (hint) hint.style.display = 'block';
-            window.open('https://scripturestudio.outseta.com/auth?widgetMode=login', '_blank');
+            window.location.href = 'https://scripturestudio.outseta.com/auth?widgetMode=login&redirectUri=' + encodeURIComponent(window.location.origin + '/app/');
         }
 
         function doSignUp() {
-            var hint = document.getElementById('auth-already-signed-in');
-            if (hint) hint.style.display = 'block';
-            window.open('https://scripturestudio.outseta.com/auth?widgetMode=register', '_blank');
+            window.location.href = 'https://scripturestudio.outseta.com/auth?widgetMode=register&redirectUri=' + encodeURIComponent(window.location.origin + '/app/');
         }
 
         // Legacy aliases kept in case anything else calls them
