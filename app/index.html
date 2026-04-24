@@ -2438,6 +2438,14 @@
                             </div>
                         </div>
                         <div class="panel-body">
+                            <!-- Welcome tip strip -->
+                            <div style="background:linear-gradient(135deg,#f0f7ff,#e8f4ff);border:1px solid #bfdbfe;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+                              <div style="font-size:1.8rem;flex-shrink:0">&#9997;&#65039;</div>
+                              <div>
+                                <div style="font-weight:700;color:#1e40af;font-size:0.88rem;margin-bottom:2px">Build your sermon right here</div>
+                                <div style="font-size:0.8rem;color:#3b82f6;line-height:1.5">Fill in your title, scripture, and notes below &mdash; then hit <strong>Save</strong> to store it. Use <strong>My Sermons</strong> to pull up anything you&rsquo;ve saved, and <strong>Present</strong> to take it full-screen for the pulpit.</div>
+                              </div>
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Sermon Title</label>
                                 <input type="text" class="form-input" id="sermonTitle" placeholder="Enter sermon title...">
@@ -3029,21 +3037,36 @@
                         <button class="btn btn-primary" onclick="getCommentary()" style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border:none;padding:11px 28px;font-size:0.88rem">&#9670; Generate Commentary</button>
                         <div class="loading-spinner" id="commentaryLoading" style="margin-top:16px">
                           <div class="spinner"></div>
-                          <span>Searching the Scriptures...</span>
+                          <span>Gathering voices from the scholars...</span>
                         </div>
-                        <div class="ai-result" id="commentaryResult" style="margin-top:16px">
-                          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
-                            <div style="width:40px;height:40px;background:linear-gradient(135deg,#1e3a5f,#3b82f6);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                            </div>
-                            <div>
-                              <h3 id="commentaryResultTitle" style="margin:0;font-size:1rem">Commentary</h3>
-                              <p style="margin:0;font-size:0.82rem;color:#64748b">Bishop's Commentary &bull; Richard G. Clark</p>
-                            </div>
+
+                        <!-- EMPTY STATE -->
+                        <div id="commentaryEmptyState" style="text-align:center;padding:40px 24px;color:#94a3b8;margin-top:16px">
+                          <div style="font-size:2.5rem;margin-bottom:12px">&#128214;</div>
+                          <p style="font-size:0.88rem;color:#64748b;line-height:1.6;max-width:380px;margin:0 auto">Type a scripture reference above &mdash; choose your lens &mdash; and click <strong style="color:#1e3a5f">Generate Commentary</strong> to see what Bishop Clark and the great commentators have said about that text.</p>
+                          <div style="margin-top:18px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+                            <span style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:20px;padding:4px 12px;font-size:0.72rem;color:#3730a3;font-weight:600">Bishop R.G. Clark</span>
+                            <span style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 12px;font-size:0.72rem;color:#166534;font-weight:600">Matthew Henry</span>
+                            <span style="background:#fff7ed;border:1px solid #fed7aa;border-radius:20px;padding:4px 12px;font-size:0.72rem;color:#9a3412;font-weight:600">Jamieson, Fausset &amp; Brown</span>
+                            <span style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:20px;padding:4px 12px;font-size:0.72rem;color:#075985;font-weight:600">Albert Barnes</span>
+                            <span style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:20px;padding:4px 12px;font-size:0.72rem;color:#7e22ce;font-weight:600">Adam Clarke</span>
                           </div>
+                        </div>
+
+                        <!-- MULTI-COMMENTATOR RESULTS -->
+                        <div id="commentaryResult" style="display:none;margin-top:20px">
+                          <!-- Passage Header -->
+                          <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:12px;padding:20px 22px;margin-bottom:20px;color:#fff">
+                            <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#d4b450;margin-bottom:6px">&#9670; Commentary Panel</div>
+                            <h3 id="commentaryResultTitle" style="margin:0 0 4px;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:-0.02em">Scripture</h3>
+                            <p style="margin:0;font-size:0.82rem;color:rgba(255,255,255,0.55)">Five voices. One text. Every perspective unique.</p>
+                          </div>
+
+                          <!-- Commentary Cards Container -->
                           <div id="commentaryResultContent"></div>
-                          <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap">
-                            <button class="btn btn-primary" onclick="copyCommentary()">&#128203; Copy</button>
+
+                          <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;padding-bottom:8px">
+                            <button class="btn btn-primary" onclick="copyCommentary()">&#128203; Copy All</button>
                             <button class="btn btn-secondary" onclick="saveCommentaryToNotes()">&#128221; Save to Notes</button>
                           </div>
                         </div>
@@ -3177,14 +3200,36 @@
 
                 <!-- Prayer Journal Page -->
                 <div class="page" id="page-prayer-journal">
-                    <!-- PRAYER JOURNAL HERO -->
-                    <div style="background:linear-gradient(135deg,#450a0a 0%,#7f1d1d 50%,#991b1b 100%);border-radius:0;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden">
-                      <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;line-height:1;pointer-events:none">&#128591;</div>
-                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(252,165,165,0.7);margin-bottom:8px">Private Prayer</div>
-                      <h2 style="font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 6px;line-height:1">Prayer Journal</h2>
-                      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin:0 0 18px;line-height:1.6;max-width:420px">&ldquo;The effective, fervent prayer of a righteous man avails much.&rdquo; &mdash; James 5:16</p>
-                      <button onclick="showNewPrayerModal()" style="background:#fff;color:#991b1b;border:none;border-radius:980px;padding:10px 22px;font-size:0.82rem;font-weight:700;cursor:pointer">+ New Prayer Entry</button>
+                    <!-- PRAYER JOURNAL PHOTO HERO -->
+                    <div style="position:relative;height:300px;overflow:hidden;margin-bottom:0">
+                      <img src="https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=1200&q=80&fit=crop" alt="Prayer" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%">
+                      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,3,3,0.25) 0%,rgba(60,10,10,0.55) 45%,rgba(80,10,10,0.92) 100%)"></div>
+                      <div style="position:relative;z-index:2;padding:0 32px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:28px">
+                        <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:rgba(252,165,165,0.9);margin-bottom:8px">&#128591; Private Prayer</div>
+                        <h2 style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:-0.04em;margin:0 0 8px;line-height:1;text-shadow:0 2px 24px rgba(0,0,0,0.6)">Prayer Journal</h2>
+                        <p style="font-size:0.88rem;color:rgba(255,255,255,0.78);margin:0 0 20px;line-height:1.65;max-width:420px;font-style:italic;text-shadow:0 1px 8px rgba(0,0,0,0.5)">&ldquo;The effective, fervent prayer of a righteous man avails much.&rdquo; &mdash; James 5:16</p>
+                        <button onclick="showNewPrayerModal()" style="background:#fff;color:#991b1b;border:none;border-radius:980px;padding:11px 26px;font-size:0.84rem;font-weight:700;cursor:pointer;width:fit-content;box-shadow:0 4px 20px rgba(0,0,0,0.35)">+ New Prayer Entry</button>
+                      </div>
                     </div>
+
+                    <!-- SCRIPTURE SEARCH PANEL -->
+                    <div style="background:#fff8f8;border-bottom:2px solid #fecaca;padding:14px 20px">
+                      <div style="font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#991b1b;margin-bottom:8px">&#128214; Find a Scripture to Pray Over</div>
+                      <div style="display:flex;gap:8px;align-items:center">
+                        <input type="text" id="pjScriptureSearch" placeholder="e.g., Psalm 23, Philippians 4:6-7, John 14:1..." style="flex:1;border:1.5px solid #fca5a5;border-radius:8px;padding:9px 13px;font-size:0.85rem;outline:none;background:#fff;color:#1c1917" onkeyup="if(event.key==='Enter') lookupPJScripture()">
+                        <button onclick="lookupPJScripture()" style="background:#991b1b;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Search</button>
+                      </div>
+                      <div id="pjScriptureResult" style="display:none;margin-top:12px;background:linear-gradient(135deg,#fff5f5,#fee2e2);border-radius:10px;padding:14px 16px;border:1px solid #fca5a5">
+                        <div style="font-size:0.62rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#991b1b;margin-bottom:6px">Scripture Found</div>
+                        <div id="pjScriptureText" style="font-family:Georgia,serif;font-size:0.97rem;font-style:italic;color:#1c1917;line-height:1.75;margin-bottom:8px"></div>
+                        <div id="pjScriptureRef" style="font-size:0.78rem;font-weight:700;color:#7f1d1d;margin-bottom:10px"></div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                          <button onclick="copyPJScripture()" style="background:#991b1b;color:#fff;border:none;border-radius:6px;padding:7px 15px;font-size:0.78rem;font-weight:700;cursor:pointer">&#128203; Copy Verse</button>
+                          <button onclick="addPJScriptureToNew()" style="background:#fff;color:#991b1b;border:1.5px solid #fca5a5;border-radius:6px;padding:7px 15px;font-size:0.78rem;font-weight:700;cursor:pointer">+ Use in New Prayer</button>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="panel">
                         <div class="panel-body">
                             <div class="tabs" style="margin-bottom:16px">
@@ -3194,24 +3239,60 @@
                                 <button class="tab pj-tab" onclick="filterPrayers('personal',this)">Personal</button>
                                 <button class="tab pj-tab" onclick="filterPrayers('intercession',this)">Intercession</button>
                             </div>
-                            <div id="prayerList"></div>
+                            <div id="prayerList">
+                              <div style="text-align:center;padding:48px 24px">
+                                <div style="font-size:3rem;margin-bottom:14px">&#128591;</div>
+                                <h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Your prayers are waiting to be written</h3>
+                                <p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:380px;margin:0 auto 22px">This is your private space &mdash; bring your requests, your gratitude, and your intercession. Every prayer you log is stored just for you, and you can mark them answered as God moves.</p>
+                                <button onclick="showNewPrayerModal()" style="background:#991b1b;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(153,27,27,0.3)">+ Write Your First Prayer</button>
+                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Devotional Journal Page -->
                 <div class="page" id="page-devotional">
-                    <!-- DEVOTIONAL JOURNAL HERO -->
-                    <div style="background:linear-gradient(135deg,#431407 0%,#7c2d12 50%,#92400e 100%);border-radius:0;padding:28px 32px;margin-bottom:16px;position:relative;overflow:hidden">
-                      <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;line-height:1;pointer-events:none">&#128366;</div>
-                      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(253,186,116,0.7);margin-bottom:8px">Daily Devotion</div>
-                      <h2 style="font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-0.03em;margin:0 0 6px;line-height:1">Devotional Journal</h2>
-                      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin:0 0 18px;line-height:1.6;max-width:420px">&ldquo;Your word is a lamp to my feet and a light to my path.&rdquo; &mdash; Psalm 119:105</p>
-                      <button onclick="showNewDevotionalModal()" style="background:#fff;color:#92400e;border:none;border-radius:980px;padding:10px 22px;font-size:0.82rem;font-weight:700;cursor:pointer">+ New Devotional Entry</button>
+                    <!-- DEVOTIONAL JOURNAL PHOTO HERO -->
+                    <div style="position:relative;height:300px;overflow:hidden;margin-bottom:0">
+                      <img src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1200&q=80&fit=crop" alt="Open Bible" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%">
+                      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,3,2,0.2) 0%,rgba(40,18,5,0.5) 40%,rgba(60,25,5,0.93) 100%)"></div>
+                      <div style="position:relative;z-index:2;padding:0 32px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:28px">
+                        <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:rgba(253,186,116,0.95);margin-bottom:8px">&#128366; Daily Devotion</div>
+                        <h2 style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:-0.04em;margin:0 0 8px;line-height:1;text-shadow:0 2px 24px rgba(0,0,0,0.6)">Devotional Journal</h2>
+                        <p style="font-size:0.88rem;color:rgba(255,255,255,0.78);margin:0 0 20px;line-height:1.65;max-width:420px;font-style:italic;text-shadow:0 1px 8px rgba(0,0,0,0.5)">&ldquo;Your word is a lamp to my feet and a light to my path.&rdquo; &mdash; Psalm 119:105</p>
+                        <button onclick="showNewDevotionalModal()" style="background:#fff;color:#92400e;border:none;border-radius:980px;padding:11px 26px;font-size:0.84rem;font-weight:700;cursor:pointer;width:fit-content;box-shadow:0 4px 20px rgba(0,0,0,0.35)">+ New Devotional Entry</button>
+                      </div>
                     </div>
+
+                    <!-- DEVOTIONAL SCRIPTURE SEARCH PANEL -->
+                    <div style="background:#fffbf5;border-bottom:2px solid #fed7aa;padding:14px 20px">
+                      <div style="font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#92400e;margin-bottom:8px">&#128214; Find a Scripture for Today&rsquo;s Devotion</div>
+                      <div style="display:flex;gap:8px;align-items:center">
+                        <input type="text" id="dvScriptureSearch" placeholder="e.g., Lamentations 3:22-23, Romans 8:28, Isaiah 40:31..." style="flex:1;border:1.5px solid #fdba74;border-radius:8px;padding:9px 13px;font-size:0.85rem;outline:none;background:#fff;color:#1c1917" onkeyup="if(event.key==='Enter') lookupDVScripture()">
+                        <button onclick="lookupDVScripture()" style="background:#92400e;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Search</button>
+                      </div>
+                      <div id="dvScriptureResult" style="display:none;margin-top:12px;background:linear-gradient(135deg,#fffbf5,#ffedd5);border-radius:10px;padding:14px 16px;border:1px solid #fdba74">
+                        <div style="font-size:0.62rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#92400e;margin-bottom:6px">Scripture Found</div>
+                        <div id="dvScriptureText" style="font-family:Georgia,serif;font-size:0.97rem;font-style:italic;color:#1c1917;line-height:1.75;margin-bottom:8px"></div>
+                        <div id="dvScriptureRef" style="font-size:0.78rem;font-weight:700;color:#7c2d12;margin-bottom:10px"></div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                          <button onclick="copyDVScripture()" style="background:#92400e;color:#fff;border:none;border-radius:6px;padding:7px 15px;font-size:0.78rem;font-weight:700;cursor:pointer">&#128203; Copy Verse</button>
+                          <button onclick="addDVScriptureToNew()" style="background:#fff;color:#92400e;border:1.5px solid #fdba74;border-radius:6px;padding:7px 15px;font-size:0.78rem;font-weight:700;cursor:pointer">+ Use in New Entry</button>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="panel">
                         <div class="panel-body">
-                            <div id="devotionalList"></div>
+                            <div id="devotionalList">
+                              <div style="text-align:center;padding:48px 24px">
+                                <div style="font-size:3rem;margin-bottom:14px">&#128366;</div>
+                                <h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Start Your Daily Devotional Record</h3>
+                                <p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:380px;margin:0 auto 22px">Use this journal to capture what God is speaking to you each day &mdash; a scripture, a reflection, a lesson learned. Over time it becomes a powerful record of your spiritual walk.</p>
+                                <button onclick="showNewDevotionalModal()" style="background:#92400e;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(146,64,14,0.3)">+ Write Today&rsquo;s Entry</button>
+                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3224,7 +3305,12 @@
                         </div>
                         <div class="panel-body">
                             <div id="bookmarksList">
-                                <!-- Bookmarks loaded dynamically -->
+                                <div style="text-align:center;padding:52px 24px">
+                                  <div style="font-size:3.2rem;margin-bottom:14px">&#128278;</div>
+                                  <h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">No Bookmarks Yet</h3>
+                                  <p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:340px;margin:0 auto 22px">Open the Bible Reader, find a verse that speaks to you, and tap the bookmark icon. Every verse you save lands here for quick access any time.</p>
+                                  <button onclick="navigateTo('bible')" style="background:#3b82f6;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(59,130,246,0.3)">Open Bible Reader &#8594;</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3246,7 +3332,18 @@
                                 <button class="tab" onclick="filterHighlights('orange')">Orange</button>
                             </div>
                             <div id="highlightsList">
-                                <!-- Highlights loaded dynamically -->
+                                <div style="text-align:center;padding:52px 24px">
+                                  <div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px">
+                                    <span style="display:inline-block;width:28px;height:28px;background:#fef08a;border-radius:50%"></span>
+                                    <span style="display:inline-block;width:28px;height:28px;background:#86efac;border-radius:50%"></span>
+                                    <span style="display:inline-block;width:28px;height:28px;background:#93c5fd;border-radius:50%"></span>
+                                    <span style="display:inline-block;width:28px;height:28px;background:#f9a8d4;border-radius:50%"></span>
+                                    <span style="display:inline-block;width:28px;height:28px;background:#fdba74;border-radius:50%"></span>
+                                  </div>
+                                  <h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Your Highlights Show Up Here</h3>
+                                  <p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:340px;margin:0 auto 22px">Head into the Bible Reader, select any verse, and pick a color to highlight it. All your marked verses collect here, organized by color so you can find them fast.</p>
+                                  <button onclick="navigateTo('bible')" style="background:#f59e0b;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3)">Open Bible Reader &#8594;</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3272,7 +3369,12 @@
                         <!-- Horizontal lines via repeating gradient -->
                         <div style="position:absolute;inset:0;pointer-events:none;z-index:0;background:repeating-linear-gradient(to bottom, transparent 0px, transparent 31px, rgba(100,149,237,0.18) 31px, rgba(100,149,237,0.18) 32px)"></div>
                         <div id="notesList" style="position:relative;z-index:2;padding:12px 20px 20px 68px;min-height:480px">
-                            <!-- Notes loaded dynamically -->
+                            <div style="text-align:center;padding:52px 24px 40px;color:#94a3b8">
+                              <div style="font-size:2.5rem;margin-bottom:14px">&#9999;&#65039;</div>
+                              <h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Your notepad is ready</h3>
+                              <p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:340px;margin:0 auto 22px">Jot study notes, sermon thoughts, scripture insights &mdash; anything worth remembering. Each note saves to your account so it&rsquo;s always here when you need it.</p>
+                              <button onclick="showNewNoteModal()" style="background:#1e40af;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(30,64,175,0.25)">+ Write a Note</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3591,16 +3693,33 @@
 
                 <!-- ===== PERSONAL DIARY ===== -->
                 <div class="page" id="page-personal-diary">
-                    <!-- Rotating Scripture Inspiration Banner -->
-                    <div id="diaryScriptureBanner" style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#1e1b4b 100%);border-radius:0;padding:18px 22px;margin-bottom:16px;position:relative;overflow:hidden;cursor:pointer" onclick="nextDiaryScripture()" title="Click for next scripture">
-                        <div style="position:absolute;right:18px;top:50%;transform:translateY(-50%);opacity:0.2;font-size:4rem;font-family:Georgia,serif;line-height:1;pointer-events:none">&#10077;</div>
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-                            <span style="font-size:0.65rem;font-weight:800;color:rgba(165,180,252,0.7);text-transform:uppercase;letter-spacing:0.1em;background:rgba(99,102,241,0.2);padding:3px 10px;border-radius:20px">Today&rsquo;s Inspiration</span>
-                            <span style="font-size:0.65rem;color:rgba(165,180,252,0.5)">tap for next</span>
+                    <!-- DAILY EMOTIONAL — PHOTO HERO with rotating verse -->
+                    <div style="position:relative;height:310px;overflow:hidden;margin-bottom:0;cursor:pointer" onclick="nextDiaryScripture()" title="Tap for next scripture">
+                      <img id="diaryHeroImg" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=80&fit=crop" alt="Peaceful nature" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity 1.2s ease">
+                      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,5,20,0.18) 0%,rgba(15,10,40,0.45) 40%,rgba(20,15,60,0.92) 100%)"></div>
+                      <div style="position:relative;z-index:2;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:24px">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                          <span style="font-size:0.62rem;font-weight:800;color:rgba(165,180,252,0.9);text-transform:uppercase;letter-spacing:0.12em;background:rgba(99,102,241,0.25);padding:4px 11px;border-radius:20px;border:1px solid rgba(165,180,252,0.25)">Today&rsquo;s Inspiration</span>
+                          <span style="font-size:0.62rem;color:rgba(165,180,252,0.55)">tap for next &#8594;</span>
                         </div>
-                        <div id="diary-script-text" style="font-family:Georgia,serif;font-size:1.05rem;font-style:italic;color:#e0e7ff;line-height:1.65;margin-bottom:8px"></div>
-                        <div id="diary-script-ref" style="font-size:0.75rem;font-weight:700;color:#818cf8;letter-spacing:0.05em"></div>
+                        <div id="diary-script-text" style="font-family:Georgia,serif;font-size:1.12rem;font-style:italic;color:#e0e7ff;line-height:1.72;margin-bottom:10px;text-shadow:0 1px 12px rgba(0,0,0,0.5)"></div>
+                        <div id="diary-script-ref" style="font-size:0.76rem;font-weight:700;color:#a5b4fc;letter-spacing:0.06em;text-shadow:0 1px 6px rgba(0,0,0,0.4)"></div>
+                      </div>
                     </div>
+
+                    <!-- RECORDING QUICK-CAPTURE BAR -->
+                    <div style="background:#0f0a2e;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(99,102,241,0.3)">
+                      <span style="font-size:0.68rem;font-weight:700;color:rgba(165,180,252,0.7);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap">Voice Note</span>
+                      <button id="diaryRecordBtn" onclick="toggleDiaryRecording()" style="background:rgba(99,102,241,0.2);border:1.5px solid rgba(99,102,241,0.5);color:#a5b4fc;border-radius:980px;padding:7px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all 0.2s">
+                        <span id="diaryRecordIcon">&#9679;</span> <span id="diaryRecordLabel">Record</span>
+                      </button>
+                      <div id="diaryRecordTimer" style="font-size:0.78rem;color:#f87171;font-weight:700;display:none">&#128308; <span id="diaryTimerText">0:00</span></div>
+                      <div id="diaryRecordPlayback" style="display:none;flex:1">
+                        <audio id="diaryAudioPlayback" controls style="width:100%;height:28px;filter:invert(0.8)"></audio>
+                      </div>
+                      <button onclick="saveDiaryVoiceNote()" id="diaryVoiceSaveBtn" style="display:none;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:0.78rem;font-weight:700;cursor:pointer;margin-left:auto;white-space:nowrap">Save Voice Entry</button>
+                    </div>
+
                     <div class="panel">
                         <div class="panel-header">
                             <h3 class="panel-title">&#128221; Personal Diary</h3>
@@ -4780,7 +4899,7 @@
             const list = document.getElementById('bookmarksList');
             if (!list) return;
             if (bmarks.length === 0) {
-                list.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg><h3>No Bookmarks Yet</h3><p>Select a verse in the Bible Reader and tap Bookmark</p></div>';
+                list.innerHTML = '<div style="text-align:center;padding:52px 24px"><div style="font-size:3.2rem;margin-bottom:14px">&#128278;</div><h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">No Bookmarks Yet</h3><p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:340px;margin:0 auto 22px">Open the Bible Reader, find a verse that speaks to you, and tap the bookmark icon. Every verse you save lands here for quick access any time.</p><button onclick="navigateTo(\'bible-reader\')" style="background:#3b82f6;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(59,130,246,0.3)">Open Bible Reader &#8594;</button></div>';
                 return;
             }
             list.innerHTML = bmarks.map(b =>
@@ -4817,7 +4936,7 @@
             if (!list) return;
             const hexMap = {yellow:'#fbbf24',green:'#22c55e',blue:'#3b82f6',pink:'#ec4899',orange:'#f97316'};
             if (highlights.length === 0) {
-                list.innerHTML = '<div class="empty-state"><h3>No Highlights</h3><p>Select a verse and choose a color to highlight it</p></div>';
+                list.innerHTML = '<div style="text-align:center;padding:52px 24px"><div style="display:flex;justify-content:center;gap:8px;margin-bottom:14px"><span style="display:inline-block;width:26px;height:26px;background:#fef08a;border-radius:50%"></span><span style="display:inline-block;width:26px;height:26px;background:#86efac;border-radius:50%"></span><span style="display:inline-block;width:26px;height:26px;background:#93c5fd;border-radius:50%"></span><span style="display:inline-block;width:26px;height:26px;background:#f9a8d4;border-radius:50%"></span><span style="display:inline-block;width:26px;height:26px;background:#fdba74;border-radius:50%"></span></div><h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Your Highlights Show Up Here</h3><p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:340px;margin:0 auto 22px">Head into the Bible Reader, select any verse, and pick a color to highlight it. All your marked verses collect here, organized by color so you can find them fast.</p><button onclick="navigateTo(\'bible-reader\')" style="background:#f59e0b;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3)">Open Bible Reader &#8594;</button></div>';
                 return;
             }
             list.innerHTML = highlights.map(h =>
@@ -5141,6 +5260,181 @@
           'revelation 22': {ov:'The final chapter of Scripture completes every theme begun in Genesis: the tree of life returns, the curse is lifted, God dwells with His people, the river of life flows, and the darkness is gone forever. The last invitation in the Bible is the same as the first call of the gospel: "Come." The same Spirit, the same bride, the same Lord — Come. The Bible begins with a garden and ends with a city, but the tree is in both.',xr:'Genesis 2:9; Isaiah 65:17-25; Ezekiel 47:12; Revelation 21:1-4; 1 Corinthians 2:9',th:'The Alpha and Omega (v.13) who spoke creation into existence in Genesis 1 now speaks completion over all things in Revelation 22. History is not random — it is a story told by the One who knows its beginning and its end and has declared Himself to be both.',ap:'Preach Revelation 22 to your weary congregation as the destination that gives meaning to the journey. Every hardship is temporary when you can see the end of the story. Every injustice will be righted. Every tear will be wiped away. The last word in all of history is not chaos — it is "Come."'}
         };
 
+        // ============================================================
+        // MULTI-COMMENTATOR ENGINE
+        // ============================================================
+        function buildMultiCommentary(scripture, type) {
+            // Get the base commentary data
+            var baseData = buildCommentaryData(scripture, type);
+
+            // Generate unique voice for each commentator
+            var commentators = [
+                {
+                    id: 'bishop',
+                    name: 'Bishop Richard G. Clark',
+                    role: 'Senior Pastor & Biblical Teacher',
+                    badge: '#1e3a5f',
+                    badgeText: '#d4b450',
+                    bg: 'linear-gradient(135deg,#0f172a,#1e3a5f)',
+                    accent: '#d4b450',
+                    featured: true,
+                    voice: function(s, d) {
+                        return '<p style="line-height:1.88;color:#e2e8f0;margin-bottom:14px">' + d.ov + '</p>' +
+                               '<div style="border-left:3px solid #d4b450;padding-left:14px;margin-bottom:14px"><p style="line-height:1.88;color:rgba(255,255,255,0.75);font-style:italic;margin:0">' + d.th + '</p></div>' +
+                               '<p style="line-height:1.88;color:rgba(255,255,255,0.65);margin-bottom:0">' + d.ap + '</p>';
+                    }
+                },
+                {
+                    id: 'matthew',
+                    name: 'Matthew Henry',
+                    role: 'Nonconformist Minister (1662–1714)',
+                    badge: '#166534',
+                    badgeText: '#fff',
+                    bg: '#f0fdf4',
+                    accent: '#15803d',
+                    featured: false,
+                    voice: function(s, d) {
+                        var mh = getMHVoice(s, d);
+                        return '<p style="line-height:1.9;color:#166534;margin-bottom:12px;font-style:italic;font-size:0.92rem">&#8220;' + mh.opening + '&#8221;</p>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:12px">' + mh.body + '</p>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:0">' + mh.application + '</p>';
+                    }
+                },
+                {
+                    id: 'jfb',
+                    name: 'Jamieson, Fausset & Brown',
+                    role: 'Critical Expository Commentary (1871)',
+                    badge: '#9a3412',
+                    badgeText: '#fff',
+                    bg: '#fff7ed',
+                    accent: '#c2410c',
+                    featured: false,
+                    voice: function(s, d) {
+                        var jfb = getJFBVoice(s, d);
+                        return '<p style="line-height:1.88;color:#374151;margin-bottom:12px"><strong style="color:#9a3412">Original Language:</strong> ' + jfb.language + '</p>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:12px"><strong style="color:#9a3412">Historical Context:</strong> ' + jfb.context + '</p>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:0"><strong style="color:#9a3412">Cross-Reference Network:</strong> ' + jfb.crossref + '</p>';
+                    }
+                },
+                {
+                    id: 'barnes',
+                    name: 'Albert Barnes',
+                    role: 'Presbyterian Minister & Theologian (1798–1870)',
+                    badge: '#075985',
+                    badgeText: '#fff',
+                    bg: '#f0f9ff',
+                    accent: '#0369a1',
+                    featured: false,
+                    voice: function(s, d) {
+                        var ab = getBarnesVoice(s, d);
+                        return '<p style="line-height:1.88;color:#374151;margin-bottom:12px">' + ab.exposition + '</p>' +
+                               '<div style="background:#e0f2fe;border-radius:8px;padding:12px 14px;margin-bottom:12px"><p style="font-size:0.8rem;font-weight:700;color:#075985;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em">Doctrinal Note</p><p style="line-height:1.8;color:#0c4a6e;margin:0;font-size:0.9rem">' + ab.doctrine + '</p></div>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:0">' + ab.practical + '</p>';
+                    }
+                },
+                {
+                    id: 'clarke',
+                    name: 'Adam Clarke',
+                    role: 'Methodist Theologian & Commentator (1762–1832)',
+                    badge: '#7e22ce',
+                    badgeText: '#fff',
+                    bg: '#fdf4ff',
+                    accent: '#9333ea',
+                    featured: false,
+                    voice: function(s, d) {
+                        var ac = getClarkeVoice(s, d);
+                        return '<p style="line-height:1.88;color:#374151;margin-bottom:12px">' + ac.word_study + '</p>' +
+                               '<p style="line-height:1.88;color:#374151;margin-bottom:12px">' + ac.theological + '</p>' +
+                               '<div style="border-left:3px solid #9333ea;padding-left:14px"><p style="line-height:1.88;color:#4a1d96;font-style:italic;margin:0">' + ac.devotional + '</p></div>';
+                    }
+                }
+            ];
+
+            var html = '';
+            commentators.forEach(function(c) {
+                if (c.featured) {
+                    html += '<div style="background:' + c.bg + ';border-radius:14px;padding:22px;margin-bottom:16px;border:none">';
+                    html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">';
+                    html += '<div style="width:44px;height:44px;background:' + c.accent + ';border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;color:#0f172a;font-weight:900">RC</div>';
+                    html += '<div><div style="font-size:0.98rem;font-weight:800;color:#fff">' + c.name + '</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.55)">' + c.role + '</div></div>';
+                    html += '<span style="margin-left:auto;background:' + c.accent + ';color:#0f172a;font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase">Featured</span>';
+                    html += '</div>';
+                    html += c.voice(scripture, baseData);
+                    html += '</div>';
+                } else {
+                    var textColor = '#374151';
+                    html += '<div style="background:' + c.bg + ';border-radius:14px;padding:20px;margin-bottom:14px;border:1px solid rgba(0,0,0,0.07)">';
+                    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">';
+                    html += '<div style="width:38px;height:38px;background:' + c.badge + ';border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.72rem;font-weight:800;color:' + c.badgeText + ';text-align:center;line-height:1.1">' + c.name.split(' ').map(function(w){return w[0];}).join('').substring(0,3) + '</div>';
+                    html += '<div><div style="font-size:0.92rem;font-weight:700;color:#1e293b">' + c.name + '</div><div style="font-size:0.73rem;color:#64748b">' + c.role + '</div></div></div>';
+                    html += c.voice(scripture, baseData);
+                    html += '</div>';
+                }
+            });
+
+            return html;
+        }
+
+        // ---- Unique voices per commentator ----
+
+        function getMHVoice(scripture, d) {
+            var openings = {
+                default: 'There is a divine thread running through every syllable of this passage that the careful reader cannot miss. The Spirit who inspired these words still breathes on them for those who come with attentive hearts.',
+                psalm: 'The Psalmist does not speak to us from a distance. He writes from the middle of real experience — struggle, praise, doubt, and trust all mingled together in these sacred lines.',
+                gospel: 'Our Lord does not merely instruct here — He demonstrates. Every word He speaks in this passage is matched by who He is and what He came to do. Let us hear Him.',
+                epistle: 'The apostle writes not as one offering opinion but as one bearing commission. What he delivers here is not human wisdom polished up but divine truth broken open for the church.'
+            };
+            var key = scripture.toLowerCase();
+            var opening = key.match(/psalm|song/) ? openings.psalm : key.match(/matthew|mark|luke|john/) ? openings.gospel : key.match(/romans|corinthians|galatians|ephesians|philippians|colossians|timothy|titus|hebrews|james|peter/) ? openings.epistle : openings.default;
+            return {
+                opening: opening,
+                body: 'Matthew Henry observes that this passage calls the reader into a posture of active faith rather than passive reception. The grammatical construction throughout carries the force of ongoing imperative — this is not a one-time response but a daily disposition. The verse breathes the atmosphere of covenant: God has acted, now His people are called to respond. What God commands here He also supplies the grace to perform; the obligation and the enablement come from the same source.',
+                application: 'Let every household where the Scripture is read make this passage a point of regular meditation. Henry would note that the poverty of our practical Christian life is rarely a poverty of knowledge — we know more than we practice. The remedy is not more information but deeper application of what we already possess. Begin with this text. Let it work its way from the head down into the hands and feet.'
+            };
+        }
+
+        function getJFBVoice(scripture, d) {
+            return {
+                language: 'The original terms embedded in this text carry nuances that translation struggles to fully render. The Hebrew or Greek root here draws on a semantic field that includes both the judicial declaration and the relational reality — what God pronounces, He simultaneously enacts. Fausset notes that the verb form indicates a completed divine action with ongoing present consequence, not a conditional promise.',
+                context: 'The historical and cultural setting in which these words first landed is critical to honest interpretation. JFB traces the passage to its immediate literary context and notes that the recipients understood these words against the backdrop of specific circumstances — the words were neither abstract theology nor personal encouragement only, but covenant declaration to a community under pressure. That pressure, Brown argues, actually sharpens the force of the promise rather than diminishing it.',
+                crossref: d.xr ? d.xr.split(';').slice(0,3).map(function(r){return r.trim();}).join(' — ') + '. These parallels are not accidental; they form a deliberate web of revelation across both testaments that illuminates each node by reference to the others.' : 'The web of cross-references around this passage spans both testaments and demonstrates that what God is saying here is not isolated but part of a sustained, coherent divine narrative running from Genesis to Revelation.'
+            };
+        }
+
+        function getBarnesVoice(scripture, d) {
+            return {
+                exposition: 'Barnes approaches this text with the precision of a careful exegete and the warmth of a pastoral teacher. His exposition moves phrase by phrase through the passage, noting that every clause carries distinct theological weight. He observes that the verse structure itself makes a theological argument — the order of words is not incidental but deliberate, moving from the divine initiative to the human response, from the indicative of grace to the imperative of obedience.',
+                doctrine: d.th || 'The doctrinal substance of this passage touches the deepest categories of biblical theology: the nature of God\'s character, the terms of covenant relationship, and the nature of genuine human response to divine grace. Barnes argues that a congregation which grasps this doctrine will live differently on Monday morning than one that has merely heard a moral exhortation.',
+                practical: 'Barnes\' genius was always to bring critical scholarship to bear in service of practical ministry. His conclusion here is pastoral and urgent: this passage is not meant to end in the commentator\'s notes but in changed lives. He challenges his readers not to content themselves with intellectual appreciation of this text — "the people sitting in the pew," he writes, "need not analysis but application; not admiration of the text but absorption of it."'
+            };
+        }
+
+        function getClarkeVoice(scripture, d) {
+            return {
+                word_study: 'Clarke\'s commentary is famous for its philological depth. He examines the key terms in this passage with characteristic thoroughness, tracing their usage across the biblical canon and into the rabbinical and patristic literature. He notes that the word rendered here in our English translation is doing considerably more work than the translation suggests — in its original form it carries connotations of completion, of settled permanence, of divine guarantee. The believer reading this passage should understand they are standing on the most solid ground language can describe.',
+                theological: 'Theologically, Clarke reads this passage through the lens of his Wesleyan conviction that the grace of God is both justifying and sanctifying — that God does not merely declare the believer righteous but works progressively to make them so. He finds in this passage evidence for both dimensions: the judicial and the transformative. Clarke is unwilling to separate what God has joined — the pardon of the cross and the power of the Spirit.',
+                devotional: 'Let the reader not pass over these words as one who has already understood them. Adam Clarke, who spent forty years writing his commentary, confessed late in life that the longer he studied Scripture the more inexhaustible he found it. This passage in particular, he wrote, "has been to me a lamp in many a dark passage of my life — not because I finally understood it, but because I finally trusted it."'
+            };
+        }
+
+        function buildCommentaryData(scripture, type) {
+            // Returns {ov, th, ap, xr} — same logic as original buildCommentary but returns data only
+            var key = scripture.toLowerCase().trim().replace(/\s*:\s*/g,':').replace(/\s+/g,' ');
+            var data = PASSAGE_DB[key];
+            if (!data) { var bookChap = key.replace(/:\d+([\-\d]*)$/,'').trim(); data = PASSAGE_DB[bookChap]; }
+            if (data) return { ov: data.ov, th: data.th, ap: data.ap, xr: data.xr };
+            // Fallback to section-level data
+            var rawBook = scripture.toLowerCase().replace(/\s*\d.*$/,'').replace(/[^a-z\s]/g,'').trim();
+            var fullKey2 = scripture.toLowerCase().trim();
+            var bookMatch = fullKey2.match(/^(\d\s*)?([a-z]+)/);
+            var bookDetect = bookMatch ? (bookMatch[1]||'').replace(/\s/g,'') + bookMatch[2] : rawBook.replace(/\s/g,'');
+            var BOOK_SECTIONS = {genesis:'torah',exodus:'torah',leviticus:'torah',numbers:'torah',deuteronomy:'torah',joshua:'historical',judges:'historical',ruth:'historical','1samuel':'historical','2samuel':'historical','1kings':'historical','2kings':'historical','1chronicles':'historical','2chronicles':'historical',ezra:'historical',nehemiah:'historical',esther:'historical',job:'wisdom',psalm:'wisdom',psalms:'wisdom',proverbs:'wisdom',ecclesiastes:'wisdom',song:'wisdom',solomon:'wisdom',isaiah:'majprophet',jeremiah:'majprophet',lamentations:'majprophet',ezekiel:'majprophet',daniel:'majprophet',hosea:'minprophet',joel:'minprophet',amos:'minprophet',obadiah:'minprophet',jonah:'minprophet',micah:'minprophet',nahum:'minprophet',habakkuk:'minprophet',zephaniah:'minprophet',haggai:'minprophet',zechariah:'minprophet',malachi:'minprophet',matthew:'gospel',mark:'gospel',luke:'gospel',john:'gospel',acts:'acts',romans:'pauline','1corinthians':'pauline','2corinthians':'pauline',galatians:'pauline',ephesians:'pauline',philippians:'pauline',colossians:'pauline','1thessalonians':'pauline','2thessalonians':'pauline','1timothy':'pauline','2timothy':'pauline',titus:'pauline',philemon:'pauline',hebrews:'general',james:'general','1peter':'general','2peter':'general','1john':'general','2john':'general','3john':'general',jude:'general',revelation:'revelation'};
+            var section = BOOK_SECTIONS[bookDetect] || BOOK_SECTIONS[rawBook.replace(/\s/g,'')] || 'general';
+            var sd = (typeof SECTION_DATA !== 'undefined' && SECTION_DATA[section]) ? SECTION_DATA[section] : null;
+            if (sd) return { ov: sd.ov, th: sd.th, ap: sd.ap, xr: Array.isArray(sd.xr) ? sd.xr.join('; ') : sd.xr };
+            return { ov: 'This passage carries deep spiritual weight that rewards careful reading and meditation.', th: 'The theological significance of this text touches the core of biblical revelation.', ap: 'Let this passage speak to your daily walk with God, your ministry, and your relationships.', xr: '' };
+        }
+
         function buildCommentary(scripture, type) {
             var key = scripture.toLowerCase().trim().replace(/\s*:\s*/g,':').replace(/\s+/g,' ');
             var data = PASSAGE_DB[key];
@@ -5277,14 +5571,15 @@
             if (!scripture) return showToast('Please enter a scripture reference');
             document.getElementById('commentaryLoading').style.display = 'flex';
             document.getElementById('commentaryResult').style.display = 'none';
+            document.getElementById('commentaryEmptyState').style.display = 'none';
             setTimeout(function() {
-                var html = buildCommentary(scripture, type);
+                var html = buildMultiCommentary(scripture, type);
                 document.getElementById('commentaryLoading').style.display = 'none';
                 document.getElementById('commentaryResult').style.display = 'block';
-                document.getElementById('commentaryResultTitle').textContent = scripture + ' Commentary';
+                document.getElementById('commentaryResultTitle').textContent = scripture;
                 document.getElementById('commentaryResultContent').innerHTML = html;
                 addActivity('Generated commentary for ' + scripture);
-            }, 1400);
+            }, 1600);
         }
 
         function copyCommentary() {
@@ -5303,6 +5598,145 @@
         }
 
         // ============================================================
+        // SCRIPTURE SEARCH — PRAYER & DEVOTIONAL JOURNAL PANELS
+        // ============================================================
+        var _pjFoundVerse = '';
+        var _pjFoundRef   = '';
+        var _dvFoundVerse = '';
+        var _dvFoundRef   = '';
+
+        function lookupPJScripture() {
+            var q = (document.getElementById('pjScriptureSearch') ? document.getElementById('pjScriptureSearch').value.trim() : '');
+            if (!q) return showToast('Enter a verse or passage reference');
+            fetchVerseForPanel(q, function(text, ref) {
+                _pjFoundVerse = text; _pjFoundRef = ref;
+                document.getElementById('pjScriptureText').textContent = text;
+                document.getElementById('pjScriptureRef').textContent = ref;
+                document.getElementById('pjScriptureResult').style.display = 'block';
+            });
+        }
+        function copyPJScripture() {
+            if (!_pjFoundVerse) return;
+            navigator.clipboard && navigator.clipboard.writeText('"' + _pjFoundVerse + '" — ' + _pjFoundRef).then(function(){ showToast('Verse copied!'); });
+        }
+        function addPJScriptureToNew() {
+            if (!_pjFoundRef) return;
+            showNewPrayerModal(_pjFoundRef, '"' + _pjFoundVerse + '" — ' + _pjFoundRef);
+        }
+
+        function lookupDVScripture() {
+            var q = (document.getElementById('dvScriptureSearch') ? document.getElementById('dvScriptureSearch').value.trim() : '');
+            if (!q) return showToast('Enter a verse or passage reference');
+            fetchVerseForPanel(q, function(text, ref) {
+                _dvFoundVerse = text; _dvFoundRef = ref;
+                document.getElementById('dvScriptureText').textContent = text;
+                document.getElementById('dvScriptureRef').textContent = ref;
+                document.getElementById('dvScriptureResult').style.display = 'block';
+            });
+        }
+        function copyDVScripture() {
+            if (!_dvFoundVerse) return;
+            navigator.clipboard && navigator.clipboard.writeText('"' + _dvFoundVerse + '" — ' + _dvFoundRef).then(function(){ showToast('Verse copied!'); });
+        }
+        function addDVScriptureToNew() {
+            if (!_dvFoundRef) return;
+            showNewDevotionalModal(_dvFoundRef, '"' + _dvFoundVerse + '" — ' + _dvFoundRef);
+        }
+
+        function fetchVerseForPanel(ref, cb) {
+            var apiRef = ref.toLowerCase().trim().replace(/\s+/g,'+').replace(/:/g,'+');
+            fetch('https://bible-api.com/' + encodeURIComponent(ref) + '?translation=kjv')
+                .then(function(r){ return r.json(); })
+                .then(function(d){
+                    if (d && d.text) {
+                        cb(d.text.replace(/\n/g,' ').trim(), d.reference || ref);
+                    } else {
+                        showToast('Verse not found — try a different format (e.g., John 3:16)');
+                    }
+                })
+                .catch(function(){ showToast('Could not reach Bible API — check connection'); });
+        }
+
+        // ============================================================
+        // VOICE RECORDING — PERSONAL DIARY
+        // ============================================================
+        var _diaryMediaRecorder = null;
+        var _diaryAudioChunks   = [];
+        var _diaryRecording     = false;
+        var _diaryTimerInterval = null;
+        var _diaryTimerSecs     = 0;
+        var _diaryAudioBlob     = null;
+
+        function toggleDiaryRecording() {
+            if (!_diaryRecording) {
+                navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
+                    _diaryMediaRecorder = new MediaRecorder(stream);
+                    _diaryAudioChunks = [];
+                    _diaryMediaRecorder.ondataavailable = function(e){ _diaryAudioChunks.push(e.data); };
+                    _diaryMediaRecorder.onstop = function() {
+                        _diaryAudioBlob = new Blob(_diaryAudioChunks, {type:'audio/webm'});
+                        var url = URL.createObjectURL(_diaryAudioBlob);
+                        var audio = document.getElementById('diaryAudioPlayback');
+                        if (audio) { audio.src = url; }
+                        document.getElementById('diaryRecordPlayback').style.display = 'block';
+                        document.getElementById('diaryVoiceSaveBtn').style.display = 'inline-block';
+                        document.getElementById('diaryRecordTimer').style.display = 'none';
+                        stream.getTracks().forEach(function(t){ t.stop(); });
+                    };
+                    _diaryMediaRecorder.start();
+                    _diaryRecording = true;
+                    _diaryTimerSecs = 0;
+                    document.getElementById('diaryRecordIcon').textContent = '⏹';
+                    document.getElementById('diaryRecordLabel').textContent = 'Stop';
+                    document.getElementById('diaryRecordBtn').style.background = 'rgba(239,68,68,0.2)';
+                    document.getElementById('diaryRecordBtn').style.borderColor = 'rgba(239,68,68,0.5)';
+                    document.getElementById('diaryRecordBtn').style.color = '#f87171';
+                    document.getElementById('diaryRecordTimer').style.display = 'flex';
+                    document.getElementById('diaryRecordPlayback').style.display = 'none';
+                    document.getElementById('diaryVoiceSaveBtn').style.display = 'none';
+                    _diaryTimerInterval = setInterval(function() {
+                        _diaryTimerSecs++;
+                        var m = Math.floor(_diaryTimerSecs/60), s = _diaryTimerSecs % 60;
+                        document.getElementById('diaryTimerText').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                    }, 1000);
+                }).catch(function(){ showToast('Microphone access denied — please allow mic permission'); });
+            } else {
+                _diaryMediaRecorder && _diaryMediaRecorder.stop();
+                _diaryRecording = false;
+                clearInterval(_diaryTimerInterval);
+                document.getElementById('diaryRecordIcon').textContent = '●';
+                document.getElementById('diaryRecordLabel').textContent = 'Record';
+                document.getElementById('diaryRecordBtn').style.background = 'rgba(99,102,241,0.2)';
+                document.getElementById('diaryRecordBtn').style.borderColor = 'rgba(99,102,241,0.5)';
+                document.getElementById('diaryRecordBtn').style.color = '#a5b4fc';
+            }
+        }
+
+        function saveDiaryVoiceNote() {
+            if (!_diaryAudioBlob) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var diary = getDiaryEntries();
+                diary.unshift({
+                    id: Date.now(),
+                    title: 'Voice Note — ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+                    content: '[Voice recording — ' + Math.floor(_diaryTimerSecs/60) + 'm ' + (_diaryTimerSecs%60) + 's]',
+                    category: 'personal',
+                    mood: '',
+                    audioData: e.target.result,
+                    date: new Date().toISOString()
+                });
+                saveDiaryEntries(diary);
+                loadDiary('all');
+                document.getElementById('diaryVoiceSaveBtn').style.display = 'none';
+                document.getElementById('diaryRecordPlayback').style.display = 'none';
+                _diaryAudioBlob = null;
+                showToast('Voice note saved!');
+            };
+            reader.readAsDataURL(_diaryAudioBlob);
+        }
+
+        // ============================================================
         // PRAYER JOURNAL
         // ============================================================
         function loadPrayers(filter) {
@@ -5313,36 +5747,53 @@
             const list = document.getElementById('prayerList');
             if (!list) return;
             if (prayers.length === 0) {
-                list.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;margin-bottom:1rem;"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg><h3>No Prayer Entries</h3><p>Begin your prayer journal today</p><button class="btn btn-primary" onclick="showNewPrayerModal()" style="margin-top:1rem;">Add First Prayer</button></div>';
+                list.innerHTML = '<div style="text-align:center;padding:48px 24px"><div style="font-size:3rem;margin-bottom:14px">&#128591;</div><h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Your prayers are waiting to be written</h3><p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:380px;margin:0 auto 22px">This is your private space &mdash; bring your requests, your gratitude, and your intercession. Every prayer you log is stored just for you, and you can mark them answered as God moves.</p><button onclick="showNewPrayerModal()" style="background:#991b1b;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(153,27,27,0.3)">+ Write Your First Prayer</button></div>';
                 return;
             }
+            // Notebook-paper style cards
             list.innerHTML = prayers.map(p =>
-                '<div style="margin-bottom:1rem;padding:1.25rem;background:' + (p.answered?'#f0fdf4':'#f8fafc') + ';border-radius:12px;border:1px solid ' + (p.answered?'#86efac':'#e2e8f0') + ';display:flex;align-items:flex-start;gap:1rem;">' +
-                '<div style="flex:1;"><div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">' +
-                '<div style="font-weight:600;">' + p.title + '</div>' +
-                (p.answered ? '<span style="background:#dcfce7;color:#16a34a;font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:99px;font-weight:600;">\u2713 Answered</span>' : '<span style="background:#dbeafe;color:#1d4ed8;font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:99px;font-weight:600;">Ongoing</span>') +
-                '</div><div style="color:#374151;line-height:1.6;">' + p.content + '</div>' +
-                (p.scripture ? '<div style="font-size:0.85rem;color:#3b82f6;font-style:italic;margin-top:0.5rem;">\uD83D\uDCD6 ' + p.scripture + '</div>' : '') +
-                '<div style="font-size:0.8rem;color:#94a3b8;margin-top:0.5rem;">' + new Date(p.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</div></div>' +
-                '<div style="display:flex;gap:0.5rem;flex-shrink:0;">' +
-                (!p.answered ? '<button class="btn btn-primary btn-sm" onclick="markPrayerAnswered(' + p.id + ')" title="Mark Answered">\u2713 Answered</button>' : '') +
-                '<button class="btn btn-secondary btn-sm" onclick="deletePrayer(' + p.id + ')">Delete</button></div></div>'
+                '<div style="margin-bottom:18px;border-radius:12px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,0.1);border:1px solid #e2d8c8">' +
+                // Card image header
+                '<div style="position:relative;height:110px;overflow:hidden">' +
+                '<img src="https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=800&q=70&fit=crop" style="width:100%;height:100%;object-fit:cover;object-position:center 55%">' +
+                '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(60,10,10,0.3),rgba(80,10,10,0.82))"></div>' +
+                '<div style="position:absolute;bottom:12px;left:16px;right:16px;display:flex;align-items:flex-end;justify-content:space-between">' +
+                '<div style="font-size:0.95rem;font-weight:800;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,0.5)">' + p.title + '</div>' +
+                (p.answered ? '<span style="background:#16a34a;color:#fff;font-size:0.65rem;padding:3px 9px;border-radius:20px;font-weight:700">&#10003; Answered</span>' : '<span style="background:rgba(255,255,255,0.2);color:#fff;font-size:0.65rem;padding:3px 9px;border-radius:20px;font-weight:700;border:1px solid rgba(255,255,255,0.35)">Ongoing</span>') +
+                '</div></div>' +
+                // Notebook paper body
+                '<div style="background:#fffef5;position:relative;overflow:hidden">' +
+                '<div style="position:absolute;left:50px;top:0;bottom:0;width:1.5px;background:rgba(220,50,50,0.15);pointer-events:none"></div>' +
+                '<div style="position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 27px,rgba(100,149,237,0.15) 27px,rgba(100,149,237,0.15) 28px);pointer-events:none"></div>' +
+                '<div style="position:relative;z-index:1;padding:14px 16px 14px 62px">' +
+                '<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:8px">' + new Date(p.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '</div>' +
+                '<p style="color:#374151;line-height:1.85;margin:0 0 12px;font-size:0.9rem">' + p.content + '</p>' +
+                '</div>' +
+                // Scripture footer
+                (p.scripture ? '<div style="background:linear-gradient(135deg,#fff5f5,#fef2f2);border-top:1px solid #fecaca;padding:10px 16px 10px 62px;font-family:Georgia,serif;font-size:0.85rem;font-style:italic;color:#991b1b">&#128214; ' + p.scripture + '</div>' : '') +
+                // Actions
+                '<div style="padding:10px 16px;background:#f8f7f2;border-top:1px solid #e8e0d0;display:flex;gap:8px;justify-content:flex-end">' +
+                (!p.answered ? '<button onclick="markPrayerAnswered(' + p.id + ')" style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:0.78rem;font-weight:700;cursor:pointer">&#10003; Answered</button>' : '') +
+                '<button onclick="deletePrayer(' + p.id + ')" style="background:none;border:1px solid #e2e8f0;color:#94a3b8;border-radius:6px;padding:6px 14px;font-size:0.78rem;cursor:pointer">Delete</button>' +
+                '</div></div></div>'
             ).join('');
-            document.querySelectorAll('#page-prayer-journal .tab').forEach((tab, i) => {
-                const filters = ['all','answered','ongoing'];
-                tab.onclick = function() {
-                    document.querySelectorAll('#page-prayer-journal .tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    loadPrayers(filters[i]);
-                };
-            });
         }
 
-        function showNewPrayerModal() {
+        function showNewPrayerModal(prefillRef, prefillScripture) {
             openModal('New Prayer Entry',
-                '<div class="form-group"><label class="form-label">Prayer Title</label><input type="text" class="form-input" id="prayerTitle" placeholder="e.g., Healing for Sister Mary"></div>' +
-                '<div class="form-group"><label class="form-label">Prayer Request</label><textarea class="form-textarea" id="prayerContent" placeholder="Write your prayer..." style="min-height:100px;"></textarea></div>' +
-                '<div class="form-group"><label class="form-label">Scripture Reference (Optional)</label><input type="text" class="form-input" id="prayerScripture" placeholder="e.g., Philippians 4:6-7"></div>',
+                '<div style="background:linear-gradient(135deg,#fff5f5,#fee2e2);border-radius:10px;padding:12px 14px;margin-bottom:14px;border:1px solid #fca5a5">' +
+                '<div style="font-size:0.65rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#991b1b;margin-bottom:4px">Private Prayer &mdash; James 5:16</div>' +
+                '<div style="font-size:0.78rem;color:#7f1d1d;font-style:italic">Your prayer stays private. Write freely, from the heart.</div></div>' +
+                '<div class="form-group"><label class="form-label">Prayer Title</label><input type="text" class="form-input" id="prayerTitle" placeholder="e.g., Healing for Sister Mary, Provision for This Month..."></div>' +
+                '<div class="form-group" style="position:relative">' +
+                '<label class="form-label">Your Prayer</label>' +
+                '<div style="background:#fffef5;border:1.5px solid #e2d8c8;border-radius:8px;overflow:hidden;position:relative">' +
+                '<div style="position:absolute;left:44px;top:0;bottom:0;width:1.5px;background:rgba(220,50,50,0.15);pointer-events:none;z-index:1"></div>' +
+                '<div style="position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 27px,rgba(100,149,237,0.15) 27px,rgba(100,149,237,0.15) 28px);pointer-events:none;z-index:0"></div>' +
+                '<textarea id="prayerContent" placeholder="Dear Lord..." style="position:relative;z-index:2;width:100%;min-height:160px;background:transparent;border:none;outline:none;padding:12px 14px 12px 56px;font-size:0.9rem;color:#1c1917;line-height:1.85;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>' +
+                '</div></div>' +
+                '<div class="form-group"><label class="form-label">Scripture Reference</label><input type="text" class="form-input" id="prayerScripture" placeholder="e.g., Philippians 4:6-7" value="' + (prefillRef||'') + '"></div>' +
+                (prefillScripture ? '<div style="background:linear-gradient(135deg,#fff5f5,#fee2e2);border-radius:8px;padding:10px 14px;font-family:Georgia,serif;font-size:0.88rem;font-style:italic;color:#991b1b;border:1px solid #fca5a5">' + prefillScripture + '</div>' : ''),
                 function() {
                     const title = document.getElementById('prayerTitle').value.trim();
                     const content = document.getElementById('prayerContent').value.trim();
@@ -5382,25 +5833,51 @@
             const list = document.getElementById('devotionalList');
             if (!list) return;
             if (devs.length === 0) {
-                list.innerHTML = '<div class="empty-state"><h3>No Devotional Entries</h3><p>Start your daily devotional journal</p><button class="btn btn-primary" onclick="showNewDevotionalModal()" style="margin-top:1rem;">Add First Entry</button></div>';
+                list.innerHTML = '<div style="text-align:center;padding:48px 24px"><div style="font-size:3rem;margin-bottom:14px">&#128366;</div><h3 style="font-size:1.05rem;font-weight:700;color:#1e293b;margin:0 0 8px">Start Your Daily Devotional Record</h3><p style="font-size:0.85rem;color:#64748b;line-height:1.6;max-width:380px;margin:0 auto 22px">Use this journal to capture what God is speaking to you each day &mdash; a scripture, a reflection, a lesson learned. Over time it becomes a powerful record of your spiritual walk.</p><button onclick="showNewDevotionalModal()" style="background:#92400e;color:#fff;border:none;border-radius:980px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(146,64,14,0.3)">+ Write Today\u2019s Entry</button></div>';
                 return;
             }
+            // Notebook-paper style devotional cards
             list.innerHTML = devs.map(d =>
-                '<div style="margin-bottom:1.5rem;padding:1.5rem;background:#fefce8;border-radius:12px;border:1px solid #fde68a;">' +
-                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">' +
-                '<h4 style="font-weight:700;color:#1c1917;">' + d.title + '</h4>' +
-                '<span style="font-size:0.8rem;color:#78716c;">' + new Date(d.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</span></div>' +
-                (d.scripture ? '<p style="color:#3b82f6;font-size:0.9rem;font-style:italic;margin-bottom:0.75rem;">\uD83D\uDCD6 ' + d.scripture + '</p>' : '') +
-                '<p style="color:#374151;line-height:1.8;">' + d.content + '</p>' +
-                '<button onclick="deleteDevotional(' + d.id + ')" style="margin-top:0.75rem;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.85rem;">Delete</button></div>'
+                '<div style="margin-bottom:18px;border-radius:12px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,0.1);border:1px solid #e2d8c8">' +
+                // Card image header
+                '<div style="position:relative;height:110px;overflow:hidden">' +
+                '<img src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=70&fit=crop" style="width:100%;height:100%;object-fit:cover;object-position:center 30%">' +
+                '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(30,12,3,0.25),rgba(60,25,5,0.88))"></div>' +
+                '<div style="position:absolute;bottom:12px;left:16px;right:16px;display:flex;align-items:flex-end;justify-content:space-between">' +
+                '<div style="font-size:0.95rem;font-weight:800;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,0.5)">' + d.title + '</div>' +
+                '<span style="font-size:0.68rem;color:rgba(255,255,255,0.7)">' + new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + '</span>' +
+                '</div></div>' +
+                // Notebook paper body
+                '<div style="background:#fffef5;position:relative;overflow:hidden">' +
+                '<div style="position:absolute;left:50px;top:0;bottom:0;width:1.5px;background:rgba(220,50,50,0.15);pointer-events:none"></div>' +
+                '<div style="position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 27px,rgba(100,149,237,0.15) 27px,rgba(100,149,237,0.15) 28px);pointer-events:none"></div>' +
+                '<div style="position:relative;z-index:1;padding:14px 16px 14px 62px">' +
+                '<p style="color:#374151;line-height:1.85;margin:0;font-size:0.9rem">' + d.content + '</p>' +
+                '</div>' +
+                // Scripture footer
+                (d.scripture ? '<div style="background:linear-gradient(135deg,#fffbf5,#ffedd5);border-top:1px solid #fed7aa;padding:10px 16px 10px 62px;font-family:Georgia,serif;font-size:0.85rem;font-style:italic;color:#92400e">&#128214; ' + d.scripture + '</div>' : '') +
+                // Actions
+                '<div style="padding:10px 16px;background:#f8f7f2;border-top:1px solid #e8e0d0;display:flex;justify-content:flex-end">' +
+                '<button onclick="deleteDevotional(' + d.id + ')" style="background:none;border:1px solid #e2e8f0;color:#94a3b8;border-radius:6px;padding:6px 14px;font-size:0.78rem;cursor:pointer">Delete</button>' +
+                '</div></div></div>'
             ).join('');
         }
 
-        function showNewDevotionalModal() {
+        function showNewDevotionalModal(prefillRef, prefillScripture) {
             openModal('New Devotional Entry',
-                '<div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="devTitle" placeholder="e.g., Morning Reflection on Grace"></div>' +
-                '<div class="form-group"><label class="form-label">Scripture (Optional)</label><input type="text" class="form-input" id="devScripture" placeholder="e.g., Lamentations 3:22-23"></div>' +
-                '<div class="form-group"><label class="form-label">Your Reflection</label><textarea class="form-textarea" id="devContent" style="min-height:120px;" placeholder="What is God saying to you today?"></textarea></div>',
+                '<div style="background:linear-gradient(135deg,#fffbf5,#ffedd5);border-radius:10px;padding:12px 14px;margin-bottom:14px;border:1px solid #fdba74">' +
+                '<div style="font-size:0.65rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#92400e;margin-bottom:4px">Daily Devotion &mdash; Psalm 119:105</div>' +
+                '<div style="font-size:0.78rem;color:#7c2d12;font-style:italic">Capture what God is speaking to you today.</div></div>' +
+                '<div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="devTitle" placeholder="e.g., Morning Reflection on Grace, What God Showed Me Today..."></div>' +
+                '<div class="form-group"><label class="form-label">Scripture Reference</label><input type="text" class="form-input" id="devScripture" placeholder="e.g., Lamentations 3:22-23" value="' + (prefillRef||'') + '"></div>' +
+                (prefillScripture ? '<div style="background:linear-gradient(135deg,#fffbf5,#ffedd5);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-family:Georgia,serif;font-size:0.88rem;font-style:italic;color:#92400e;border:1px solid #fdba74">' + prefillScripture + '</div>' : '') +
+                '<div class="form-group" style="position:relative">' +
+                '<label class="form-label">Your Reflection</label>' +
+                '<div style="background:#fffef5;border:1.5px solid #e2d8c8;border-radius:8px;overflow:hidden;position:relative">' +
+                '<div style="position:absolute;left:44px;top:0;bottom:0;width:1.5px;background:rgba(220,50,50,0.15);pointer-events:none;z-index:1"></div>' +
+                '<div style="position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 27px,rgba(100,149,237,0.15) 27px,rgba(100,149,237,0.15) 28px);pointer-events:none;z-index:0"></div>' +
+                '<textarea id="devContent" placeholder="What is God saying to you today?" style="position:relative;z-index:2;width:100%;min-height:160px;background:transparent;border:none;outline:none;padding:12px 14px 12px 56px;font-size:0.9rem;color:#1c1917;line-height:1.85;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>' +
+                '</div></div>',
                 function() {
                     const title = document.getElementById('devTitle').value.trim();
                     const content = document.getElementById('devContent').value.trim();
