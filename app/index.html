@@ -4180,22 +4180,33 @@
             AppState.currentPage = page;
             const titleEl = document.getElementById('pageTitle');
             if (titleEl) titleEl.textContent = pageTitles[page] || page;
-            window.scrollTo(0,0);
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-            var _ca = document.querySelector('.content-area');
-            if (_ca) _ca.scrollTop = 0;
-            function _resetScroll() {
-                window.scrollTo(0,0);
+            // ── Scroll reset ─────────────────────────────────────────────
+            function _hardScrollReset() {
+                window.scrollTo(0, 0);
                 document.documentElement.scrollTop = 0;
                 document.body.scrollTop = 0;
                 var ca = document.querySelector('.content-area');
-                if (ca) ca.scrollTop = 0;
+                if (ca) {
+                    // Overflow-toggle trick: forces browser to drop stored scroll position
+                    ca.style.overflowY = 'hidden';
+                    ca.scrollTop = 0;
+                    ca.style.overflowY = '';
+                    ca.scrollTop = 0;
+                }
+                var mc = document.querySelector('.main-content');
+                if (mc) mc.scrollTop = 0;
+                var app = document.getElementById('main-app');
+                if (app) app.scrollTop = 0;
             }
+            _hardScrollReset();
             requestAnimationFrame(function() {
-                _resetScroll();
-                requestAnimationFrame(function() { _resetScroll(); });
+                _hardScrollReset();
+                requestAnimationFrame(function() { _hardScrollReset(); });
             });
+            // Catch async loaders (canvas init, calendar render, etc.)
+            setTimeout(function() { _hardScrollReset(); }, 0);
+            setTimeout(function() { _hardScrollReset(); }, 150);
+            setTimeout(function() { _hardScrollReset(); }, 400);
             closeVerseActions();
             // Page-specific loaders
             const loaders = {
