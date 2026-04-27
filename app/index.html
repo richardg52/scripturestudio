@@ -1814,8 +1814,8 @@
                 <div class="auth-title" id="auth-greeting">Welcome to Scripture Studio</div>
                 <div class="auth-subtitle">Sign in to access your Bible study workspace, sermon builder, and ministry tools.</div>
 
-                <!-- Green "already signed in" notice — shown after a few seconds if sign-in was done in another tab -->
-                <div id="auth-already-signed-in" style="display:none;margin-bottom:0.85rem">
+                <!-- Green "already signed in" notice — always visible so redirect users can tap in -->
+                <div id="auth-already-signed-in" style="display:block;margin-bottom:0.85rem">
                     <button onclick="checkAuthNow()" style="width:100%;padding:0.7rem 1rem;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:0.88rem;font-weight:600;cursor:pointer;position:relative;z-index:1">
                         &#10003; Already signed in? Tap here to enter
                     </button>
@@ -12944,15 +12944,33 @@
 
         // Returns the current Outseta access token if one exists
         function getOutsetaToken() {
-            if (!window.Outseta) return null;
             try {
-                if (window.Outseta.auth && window.Outseta.auth.getAccessToken)
-                    return window.Outseta.auth.getAccessToken();
-                // Fallback: check localStorage for outseta token
+                // 1. Official Outseta API
+                if (window.Outseta) {
+                    if (window.Outseta.auth && window.Outseta.auth.getAccessToken) {
+                        var t = window.Outseta.auth.getAccessToken();
+                        if (t && typeof t === 'string' && t.length > 10) return t;
+                    }
+                }
+                // 2. Broad localStorage scan — catches oidc.user:... keys Outseta uses
                 for (var i = 0; i < localStorage.length; i++) {
                     var k = localStorage.key(i);
-                    if (k && k.indexOf('outseta') >= 0 && k.indexOf('token') >= 0)
-                        return localStorage.getItem(k);
+                    if (!k) continue;
+                    var kl = k.toLowerCase();
+                    if (kl.indexOf('outseta') >= 0 || kl.indexOf('oidc') >= 0) {
+                        var v = localStorage.getItem(k);
+                        if (v && v.length > 10) return v;
+                    }
+                }
+                // 3. Check sessionStorage too
+                for (var j = 0; j < sessionStorage.length; j++) {
+                    var sk = sessionStorage.key(j);
+                    if (!sk) continue;
+                    var skl = sk.toLowerCase();
+                    if (skl.indexOf('outseta') >= 0 || skl.indexOf('oidc') >= 0) {
+                        var sv = sessionStorage.getItem(sk);
+                        if (sv && sv.length > 10) return sv;
+                    }
                 }
             } catch(e) {}
             return null;
@@ -12965,11 +12983,15 @@
             if ((u && u.Email) || t) {
                 showApp(u);
             } else {
+                // Try re-running full Outseta init in case it hasn't loaded yet
+                if (window.Outseta && window.Outseta.auth) {
+                    try { window.Outseta.auth.authorize(); } catch(e) {}
+                }
                 var btn = document.getElementById('auth-already-signed-in');
                 if (btn) {
-                    btn.innerHTML = '<p style="color:#ef4444;font-size:0.82rem;margin:0">Session not detected yet — please wait a moment and try again.</p>';
+                    btn.innerHTML = '<p style="color:#ef4444;font-size:0.82rem;margin:0">Session not found yet — please wait a moment and try again.</p>';
                     setTimeout(function() {
-                        btn.innerHTML = '<button onclick="checkAuthNow()" class="auth-btn" style="background:#16a34a;font-size:0.9rem;padding:0.65rem 1rem">&#10003; I\'ve signed in — tap here to continue</button>';
+                        btn.innerHTML = '<button onclick="checkAuthNow()" style="width:100%;padding:0.7rem 1rem;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:0.88rem;font-weight:600;cursor:pointer">&#10003; Already signed in? Tap here to enter</button>';
                     }, 2500);
                 }
             }
@@ -12978,15 +13000,21 @@
         function initAuthGate() {
             var _authEventsAttached = false;
             var _pollTimer = null;
+            var _resolved = false;
 
             function attachEvents() {
                 if (_authEventsAttached) return;
                 _authEventsAttached = true;
+                // Fire when Outseta hands back a token (redirect login or embedded widget)
                 window.addEventListener('outseta.onAccessTokenAdded', function() {
+                    if (_resolved) return;
+                    _resolved = true;
+                    clearInterval(_pollTimer);
                     var u = getOutsetaUser();
                     showApp(u);
                 });
                 window.addEventListener('outseta.onAccessTokenRemoved', function() {
+                    _resolved = false;
                     showAuthGate();
                 });
             }
@@ -12995,46 +13023,64 @@
                 var u = getOutsetaUser();
                 var t = getOutsetaToken();
                 if ((u && u.Email) || t) {
+                    _resolved = true;
                     showApp(u);
                 } else {
-                    showAuthGate();
+                    // Don't show gate immediately — give Outseta time to process redirect token.
+                    // Wait up to 8 seconds with fast polling before conceding.
+                    var quickCount = 0;
+                    var quickTimer = setInterval(function() {
+                        quickCount++;
+                        var qu = getOutsetaUser();
+                        var qt = getOutsetaToken();
+                        if ((qu && qu.Email) || qt) {
+                            clearInterval(quickTimer);
+                            _resolved = true;
+                            showApp(qu);
+                            return;
+                        }
+                        if (quickCount >= 16) { // 16 × 500ms = 8 seconds
+                            clearInterval(quickTimer);
+                            if (!_resolved) {
+                                showAuthGate();
+                                // Show the manual "already signed in" button right away
+                                var hintBtn = document.getElementById('auth-already-signed-in');
+                                if (hintBtn) hintBtn.style.display = 'block';
+                            }
+                        }
+                    }, 500);
                 }
                 attachEvents();
             }
 
-            // Periodic re-check for new-tab login (fires every 2s for up to 5 min)
+            // Ongoing polling after first resolve — catches logins in another tab
             function startPolling() {
-                var pollCount = 0;
                 _pollTimer = setInterval(function() {
-                    pollCount++;
+                    if (_resolved) return;
                     var u = getOutsetaUser();
                     var t = getOutsetaToken();
                     if ((u && u.Email) || t) {
                         clearInterval(_pollTimer);
+                        _resolved = true;
                         showApp(u);
-                        return;
                     }
-                    // After 4s, show the "I've signed in" manual button
-                    if (pollCount === 2) {
-                        var hintBtn = document.getElementById('auth-already-signed-in');
-                        if (hintBtn) hintBtn.style.display = 'block';
-                    }
-                    // Stop polling after 5 minutes
-                    if (pollCount >= 150) clearInterval(_pollTimer);
                 }, 2000);
+                // Stop after 10 minutes to save resources
+                setTimeout(function() { clearInterval(_pollTimer); }, 600000);
             }
 
-            // Wait for Outseta to load (max 12 seconds)
+            // Wait for Outseta JS to load (max 12 seconds)
             var waitCount = 0;
             function waitForOutseta() {
                 waitCount++;
                 if (window.Outseta) {
+                    attachEvents();
                     resolveAuth();
                     startPolling();
                     return;
                 }
                 if (waitCount >= 80) {
-                    // Outseta failed to load — still show gate so user can try admin bypass
+                    // Outseta failed to load — show gate with manual button visible
                     showAuthGate();
                     var hintBtn = document.getElementById('auth-already-signed-in');
                     if (hintBtn) hintBtn.style.display = 'block';
