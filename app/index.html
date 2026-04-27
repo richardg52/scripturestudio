@@ -2137,6 +2137,8 @@
 
             <!-- Content Area -->
             <div class="content-area">
+                <!-- Permanent scroll-to-top anchor — always at y=0, never display:none -->
+                <div id="ss-scroll-top" style="height:0;line-height:0;font-size:0;overflow:hidden;padding:0;margin:0;border:none;"></div>
                 <!-- Dashboard Page -->
                 <div class="page active" id="page-dashboard" style="background:#f5f5f7;margin:-1.5rem;padding:1.5rem;min-height:100vh">
 
@@ -4190,25 +4192,25 @@
             if (titleEl) titleEl.textContent = pageTitles[page] || page;
 
             // ── Step 3: Scroll to top ─────────────────────────────────────────────────────
-            // scrollIntoView is the most reliable method — it tells the browser exactly
-            // which element to bring to the top, bypassing any scroll restoration logic.
+            // We scroll the permanent anchor (#ss-scroll-top) into view — it always lives
+            // at y=0 inside content-area and is never display:none, so Chrome can't restore
+            // a cached scroll position for it.  This defeats element-level scroll restoration.
             var _ca = document.querySelector('.content-area');
-            if (_ca) _ca.scrollTop = 0;
-            if (pageEl) {
-                // Use scrollIntoView to snap the page to the top of the viewport
-                try {
-                    pageEl.scrollIntoView({ behavior: 'instant', block: 'start' });
-                } catch(e) {
-                    // Fallback for browsers that don't support 'instant'
-                    pageEl.scrollIntoView(true);
+            var _anchor = document.getElementById('ss-scroll-top');
+            function _goTop() {
+                if (_ca) _ca.scrollTop = 0;
+                if (_anchor) {
+                    try { _anchor.scrollIntoView({ behavior: 'instant', block: 'start' }); }
+                    catch(e) { if (_anchor) _anchor.scrollIntoView(true); }
                 }
             }
-            // Safety net resets in case the browser overrides us
+            _goTop();
             requestAnimationFrame(function() {
-                if (_ca) _ca.scrollTop = 0;
+                _goTop();
                 requestAnimationFrame(function() {
-                    if (_ca) _ca.scrollTop = 0;
-                    setTimeout(function() { if (_ca) _ca.scrollTop = 0; }, 150);
+                    _goTop();
+                    setTimeout(_goTop, 100);
+                    setTimeout(_goTop, 300);
                 });
             });
 
