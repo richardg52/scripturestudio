@@ -270,6 +270,7 @@
             flex: 1;
             padding: 0 2rem 2rem 2rem;
             overflow-y: auto;
+            overflow-x: hidden;
             min-height: 0;
             overflow-anchor: none;
             scroll-behavior: auto;
@@ -278,10 +279,12 @@
         /* Page Styles */
         .page {
             display: none;
+            overflow-x: hidden;
         }
 
         .page.active {
             display: block;
+            overflow-x: hidden;
         }
 
         /* Dashboard Styles */
@@ -4173,6 +4176,11 @@
         // ============================================================
         function navigateTo(page) {
             if (!page) return;
+
+            // ── Step 1: Kill any focused element so the browser has nothing to scroll to ──
+            try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e) {}
+
+            // ── Step 2: Switch pages ───────────────────────────────────────────────────────
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const pageEl = document.getElementById('page-' + page);
@@ -4182,49 +4190,25 @@
             AppState.currentPage = page;
             const titleEl = document.getElementById('pageTitle');
             if (titleEl) titleEl.textContent = pageTitles[page] || page;
-            // ── Scroll reset ──────────────────────────────────────────────
-            // Clean up any previous lock
-            if (window._ssLockedEl && window._ssScrollLocker) {
-                window._ssLockedEl.removeEventListener('scroll', window._ssScrollLocker, { capture: true });
-            }
-            if (window._ssWinLocker) {
-                window.removeEventListener('scroll', window._ssWinLocker, { capture: true });
-            }
-            clearTimeout(window._ssLockTimer);
-            clearTimeout(window._ssResetTimer);
+
+            // ── Step 3: Scroll to top — clean, reliable, no lock needed ───────────────────
             var _ca = document.querySelector('.content-area');
-            // Overflow-toggle: temporarily hide overflow so the browser is forced to drop scrollTop to 0
-            if (_ca) {
-                _ca.style.overflowY = 'hidden';
-                _ca.scrollTop = 0;
-                // Restore on next paint so content renders properly
+            function _resetScroll() {
+                if (_ca) _ca.scrollTop = 0;
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            }
+            _resetScroll();                                    // immediately
+            requestAnimationFrame(function() {
+                _resetScroll();                                // after first paint
                 requestAnimationFrame(function() {
-                    _ca.scrollTop = 0;
-                    _ca.style.overflowY = '';
-                    // One final reset after browser has had a chance to do scroll restoration
-                    requestAnimationFrame(function() {
-                        _ca.scrollTop = 0;
-                    });
+                    _resetScroll();                            // after second paint
+                    setTimeout(_resetScroll, 80);              // after any late focus-scroll
+                    setTimeout(_resetScroll, 200);             // final safety net
                 });
-            }
-            window.scrollTo(0, 0);
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-            // Lock content-area at capture phase — fires BEFORE Chrome scroll restoration
-            if (_ca) {
-                window._ssLockedEl = _ca;
-                window._ssScrollLocker = function() { _ca.scrollTop = 0; };
-                _ca.addEventListener('scroll', window._ssScrollLocker, { capture: true, passive: false });
-                window._ssWinLocker = function() { window.scrollTo(0, 0); };
-                window.addEventListener('scroll', window._ssWinLocker, { capture: true, passive: false });
-                window._ssLockTimer = setTimeout(function() {
-                    _ca.removeEventListener('scroll', window._ssScrollLocker, { capture: true });
-                    window.removeEventListener('scroll', window._ssWinLocker, { capture: true });
-                    window._ssScrollLocker = null;
-                    window._ssWinLocker = null;
-                    window._ssLockedEl = null;
-                }, 800);
-            }
+            });
+
             closeVerseActions();
             // Page-specific loaders
             const loaders = {
@@ -13093,6 +13077,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Tell the browser to never restore scroll position on its own
+            if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
             // Nav item click handlers
             document.querySelectorAll('.nav-item').forEach(function(item) {
                 item.addEventListener('click', function() { navigateTo(item.dataset.page); });
