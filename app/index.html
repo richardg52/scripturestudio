@@ -279,12 +279,10 @@
         /* Page Styles */
         .page {
             display: none;
-            overflow-x: hidden;
         }
 
         .page.active {
             display: block;
-            overflow-x: hidden;
         }
 
         /* Dashboard Styles */
@@ -4191,21 +4189,26 @@
             const titleEl = document.getElementById('pageTitle');
             if (titleEl) titleEl.textContent = pageTitles[page] || page;
 
-            // ── Step 3: Scroll to top — clean, reliable, no lock needed ───────────────────
+            // ── Step 3: Scroll to top ─────────────────────────────────────────────────────
+            // scrollIntoView is the most reliable method — it tells the browser exactly
+            // which element to bring to the top, bypassing any scroll restoration logic.
             var _ca = document.querySelector('.content-area');
-            function _resetScroll() {
-                if (_ca) _ca.scrollTop = 0;
-                window.scrollTo(0, 0);
-                document.documentElement.scrollTop = 0;
-                document.body.scrollTop = 0;
+            if (_ca) _ca.scrollTop = 0;
+            if (pageEl) {
+                // Use scrollIntoView to snap the page to the top of the viewport
+                try {
+                    pageEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                } catch(e) {
+                    // Fallback for browsers that don't support 'instant'
+                    pageEl.scrollIntoView(true);
+                }
             }
-            _resetScroll();                                    // immediately
+            // Safety net resets in case the browser overrides us
             requestAnimationFrame(function() {
-                _resetScroll();                                // after first paint
+                if (_ca) _ca.scrollTop = 0;
                 requestAnimationFrame(function() {
-                    _resetScroll();                            // after second paint
-                    setTimeout(_resetScroll, 80);              // after any late focus-scroll
-                    setTimeout(_resetScroll, 200);             // final safety net
+                    if (_ca) _ca.scrollTop = 0;
+                    setTimeout(function() { if (_ca) _ca.scrollTop = 0; }, 150);
                 });
             });
 
