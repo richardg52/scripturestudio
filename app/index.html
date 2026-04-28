@@ -3922,7 +3922,7 @@
                 <!-- ===== BIBLE BOOK LIBRARY ===== -->
                 <div class="page" id="page-bible-book-library">
                   <div style="position:relative;height:320px;overflow:hidden;margin:0 -2rem 0;width:calc(100% + 4rem)">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&q=80&fit=crop" alt="Library of ancient books" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1400&q=80&fit=crop&crop=faces,top" alt="Group Bible study discussion" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%">
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,8,20,0.15) 0%,rgba(10,20,50,0.5) 45%,rgba(5,10,30,0.95) 100%)"></div>
                     <div style="position:relative;z-index:2;padding:0 32px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:28px">
                       <div style="font-size:0.58rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(212,168,32,0.9);margin-bottom:8px">&#9733; Scripture Studio</div>
@@ -9354,6 +9354,33 @@
             else if (tab==='studio') ss1aRenderStudio();
             else ss1aRenderQueue();
         }
+
+        // Seed a sample sermon if none exist so the stage never opens blank
+        (function ss1aSeedIfEmpty() {
+            var existing = safeParse('ss1a_sermons', []);
+            if (existing.length) return;
+            var today = new Date();
+            var dow = today.getDay();
+            var diff = dow === 1 ? 0 : (dow === 0 ? -6 : 1 - dow);
+            var lastMon = new Date(today);
+            lastMon.setDate(today.getDate() + diff);
+            var goLive = lastMon.toISOString().split('T')[0];
+            var seed = [{
+                id: 'seed-001',
+                title: 'The Push You Needed',
+                subtitle: 'When God Shoves You Forward',
+                scripture: '1 Samuel 16:1',
+                speaker: 'Bishop Richard G. Clark',
+                goLive: goLive,
+                points: [
+                    'God doesn\'t waste closed doors — He uses them as launchpads.',
+                    'The tension of the "nothing season" is the training ground of the ready.',
+                    'Samuel had to stop mourning what was over before he could anoint what was next.'
+                ],
+                notes: 'Opening thought: Samuel is still weeping over Saul when God shows up and says — "How long will you mourn?" There is a moment in every leader\'s journey when grief becomes a hindrance to the next assignment.\n\nMain development:\nDavid wasn\'t even invited to the lineup. He was in the field doing the work nobody noticed. But obscurity is not the same as insignificance. God was watching. The very field David was faithful in became the preparation room for the palace.\n\nClosing: Your next chapter hasn\'t been announced yet, but it\'s already been written. Trust the push — it\'s not a setback, it\'s a setup.'
+            }];
+            localStorage.setItem('ss1a_sermons', JSON.stringify(seed));
+        })();
 
         function ss1aGetCurrentSermon() {
             var sermons = safeParse('ss1a_sermons',[]);
