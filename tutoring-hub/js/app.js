@@ -2,7 +2,7 @@
    Copyright (c) 2026 Dr. Richard G. Clark. All rights reserved. */
 /* =====================================================================
    JAGUAR ASCEND HUB — application
-   State lives in this browser (localStorage). The tutor view can export
+   State lives in this browser (localStorage). The Parent Portal can export
    a backup file and import it on another device.
    ===================================================================== */
 const KEY = 'jaguarAscendHub.v2';
@@ -18,7 +18,7 @@ const STAGES = ['Warm-up', 'Learn (I do)', 'Together (We do)', 'On your own (You
 const DEFAULTS = () => ({
   student: { name: 'Ezekiel Wilson', first: 'Ezekiel', school: 'DeSoto Central High School', grade: 9, start: mondayOf(new Date()).toISOString().slice(0, 10) },
   team: { principal: 'Shane Jones', aps: 'Jermal Brown', counselor: '', mathTeacher: '', engTeacher: '', tutor: '' },
-  settings: { pin: '1234', extTime: false, readAloud: true, calcOnTests: false },
+  settings: { pin: '1234', extTime: false, readAloud: true, calcOnTests: false, skipPlacement: false },
   results: [], log: [], time: {}, lessons: {}, writing: [], streak: { last: '', count: 0, best: 0 }, inProgress: null, tutorNotes: { math: '', eng: '', read: '' }, seenWelcome: false
 });
 
@@ -213,7 +213,7 @@ function tick() {
   if (el) { el.textContent = String(Math.floor(left / 60000)).padStart(2, '0') + ':' + String(Math.floor(left / 1000) % 60).padStart(2, '0'); el.classList.toggle('low', left < 120000); }
   if (left <= 0) { stopRunTimer(); alert('Time is up — your test is being submitted.'); submitRun(); }
 }
-function pauseTest() { if (!RUN || RUN.practice || RUN.embedded) return; saveCur(); stopRunTimer(); const { host, onDone, ...rest } = RUN; ST.inProgress = rest; save(); }
+function pauseTest() { clearTimeout(autosaveT); if (!RUN || RUN.practice || RUN.embedded) return; saveCur(); stopRunTimer(); const { host, onDone, ...rest } = RUN; ST.inProgress = rest; save(); }
 function resumeTest() {
   const p = ST.inProgress; if (!p) return; ST.inProgress = null; save();
   RUN = Object.assign(p, { host: '#app', embedded: false, onDone: null }); activeSubj = p.subj;
@@ -277,7 +277,7 @@ function renderQ() {
   if (RUN.embedded) host.scrollIntoView({ block: 'nearest' });
 }
 let autosaveT = 0;
-function autosave() { if (!RUN || RUN.practice || RUN.embedded) return; clearTimeout(autosaveT); autosaveT = setTimeout(() => { const { host, onDone, ...rest } = RUN; ST.inProgress = rest; save(); }, 300); }
+function autosave() { if (!RUN || RUN.practice || RUN.embedded) return; clearTimeout(autosaveT); autosaveT = setTimeout(() => { if (!RUN || RUN.practice || RUN.embedded) return; const { host, onDone, ...rest } = RUN; ST.inProgress = rest; save(); }, 300); }
 
 function logAttempt(it, ok, mode) { ST.log.push({ t: Date.now(), s: it.subj, std: it.std, ok: ok ? 1 : 0, m: mode }); if (ST.log.length > 8000) ST.log = ST.log.slice(-8000); save(); }
 
@@ -294,7 +294,7 @@ function finishPractice() {
   activeSubj = R0.embedded ? R0.subj : null;
 }
 function submitRun() {
-  stopRunTimer(); const R0 = RUN; ST.inProgress = null;
+  stopRunTimer(); clearTimeout(autosaveT); const R0 = RUN; ST.inProgress = null;
   const byStd = {}, bySubj = {}; let c = 0;
   R0.items.forEach((it, k) => { const ok = isRight(it, R0.resp[k]); if (ok) c++; (byStd[it.std] = byStd[it.std] || [0, 0]); byStd[it.std][1]++; if (ok) byStd[it.std][0]++; (bySubj[it.subj] = bySubj[it.subj] || [0, 0]); bySubj[it.subj][1]++; if (ok) bySubj[it.subj][0]++; logAttempt(it, ok, R0.kind); });
   const pct = Math.round(c / R0.items.length * 100);
@@ -316,12 +316,18 @@ function showResults(rec, R0) {
     ${rec.kind === 'ascend' ? `<div class="grid g3" style="margin-top:12px">${Object.entries(rec.bySubj).map(([s, [a, b]]) => `<div class="card subj-card" style="--c:${SUBJ[s].c}"><b>${SUBJ[s].name}</b><div class="big">${Math.round(a / b * 100)}%</div><span class="small muted">${a} / ${b}</span></div>`).join('')}</div>` : ''}
     <h3>Results by skill</h3>${Object.entries(rec.byStd).sort((x, y) => x[1][0] / x[1][1] - y[1][0] / y[1][1]).map(([s, [a, b]]) => masteryRow(s, a, b)).join('')}
     ${missed.length ? `<div class="callout" style="margin-top:14px"><b>Your practice plan:</b> ${missed.slice(0, 4).map(s => `<button class="btn sm" data-prac="${unitSubj(s)}|${s}">${s} · ${HUB.std[s]}</button>`).join(' ')}</div>` : ''}
-    <div class="row" style="margin-top:16px">${R0.embedded ? '' : '<button class="btn primary" onclick="go(\'report\')">Report card</button><button class="btn" onclick="go(\'tests\')">All tests</button><button class="btn" onclick="go(\'home\')">Dashboard</button>'}</div></div>
+    ${rec.kind === 'pre' ? placementNext() : ''}${rec.kind === 'exit' && rec.lessonId ? `<div class="row" style="margin-top:12px"><button class="btn primary" onclick="openLesson('${rec.lessonId}')">← Back to the lesson</button></div>` : ''}
+    <div class="row" style="margin-top:16px">${R0.embedded ? '' : '<button class="btn ' + (rec.kind === 'pre' ? '' : 'primary') + '" onclick="go(\'report\')">Report card</button><button class="btn" onclick="go(\'tests\')">All tests</button><button class="btn" onclick="go(\'home\')">Dashboard</button>'}</div></div>
   <h2 style="margin-top:24px">Answer review</h2>
   ${R0.items.map((it, k) => { const ok = isRight(it, R0.resp[k]); const yours = R0.resp[k] == null || R0.resp[k] === '' ? '(no answer)' : it.type === 'num' ? esc(R0.resp[k]) : L[R0.resp[k]] + '. ' + it.choices[R0.resp[k]];
     return `<div class="card review ${ok ? 'ok' : 'no'}"><div class="small muted">${k + 1}. ${it.std} · ${HUB.std[it.std] || ''}${it.passage ? ' · ' + HUB.passages[it.passage].title : ''}</div><div class="stem">${it.stem}</div><div class="small">Your answer: <b>${yours}</b> ${ok ? '✓' : ''}</div>${ok ? `<details class="small"><summary>Why</summary>${it.explain}</details>` : fbHTML(it, false)}</div>`; }).join('')}`;
   host.querySelectorAll('[data-prac]').forEach(b => b.onclick = () => { const [s, std] = b.dataset.prac.split('|'); practiceStd(s, std); });
   if (!R0.embedded) scrollTo(0, 0);
+}
+function placementNext() {
+  const next = SUBJS.find(s => !latest('pre', s));
+  if (next) return `<div class="callout"><b>Placement: ${SUBJS.filter(s => latest('pre', s)).length} of 3 done.</b> Take a short break if you need one, then continue. <div class="row" style="margin-top:10px"><button class="btn primary" onclick="startTest('pre','${next}')">Next: ${SUBJ[next].name} placement →</button><button class="btn" onclick="go('placement')">Placement overview</button></div></div>`;
+  return `<div class="callout good"><b>Placement complete. Great work!</b> Coach J now knows exactly where to start you. <div class="row" style="margin-top:10px"><button class="btn primary" onclick="go('placement')">See my Placement Report →</button></div></div>`;
 }
 function unitSubj(std) { for (const s of SUBJS) if (HUB.units[s].some(u => u.stds.includes(std))) return s; return 'math'; }
 function masteryRow(s, a, b) {
@@ -329,8 +335,13 @@ function masteryRow(s, a, b) {
   return `<div class="mastery"><div><b>${s}</b> <span class="muted">${HUB.std[s] || ''}</span></div><div class="bar ${t[1]}"><i style="width:${Math.max(p, 3)}%"></i></div><div class="small tag-${t[1]}">${p}% <span class="muted">(${a}/${b})</span></div></div>`;
 }
 
+/* ---------------- placement gate ---------------- */
+const placementDone = () => ST.settings.skipPlacement || SUBJS.every(s => latest('pre', s));
+function gated() { if (placementDone()) return false; go('placement'); return true; }
+
 /* ---------------- launching activities ---------------- */
 function startTest(kind, subj, unit) {
+  if ((kind === 'quiz' || kind === 'post') && gated()) return;
   if (ST.inProgress && !confirm('You have a paused test. Starting a new one will discard it. Continue?')) return;
   ST.inProgress = null;
   let items, title;
@@ -340,6 +351,7 @@ function startTest(kind, subj, unit) {
   startRun({ kind, subj, title, items, unit });
 }
 function startPractice(subj, opts, title, n = 10, host) {
+  if (!host && gated()) return;
   const make = () => startRun({ kind: 'practice', subj, title, items: opts.items ? opts.items() : pickFrom(subj, n, opts), host, onDone: opts.onDone });
   make(); RUN.again = make;
 }

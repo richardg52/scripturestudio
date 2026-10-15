@@ -1,0 +1,11 @@
+{
+  "appId": "com.drrichardclark.jaguarascend",
+  "appName": "Jaguar Ascend",
+  "webDir": "www",
+  "backgroundColor": "#24124c",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 1200, "backgroundColor": "#24124c", "showSpinner": false, "androidScaleType": "CENTER_CROP" }
+  }
+}

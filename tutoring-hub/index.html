@@ -15,7 +15,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233a2270'/%3E%3Cg fill='%23f2b51d'%3E%3Cellipse cx='32' cy='41' rx='12' ry='10'/%3E%3Cellipse cx='17' cy='27' rx='5' ry='6.5'/%3E%3Cellipse cx='26' cy='18' rx='5' ry='6.5'/%3E%3Cellipse cx='38' cy='18' rx='5' ry='6.5'/%3E%3Cellipse cx='47' cy='27' rx='5' ry='6.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jaguar Ascend">
 <style>
 /* ============================== TOKENS ============================== */
 :root{
@@ -79,7 +85,7 @@ p{margin:0 0 .8em} a{color:var(--purple-ink)} button{font:inherit;cursor:pointer
 .me b{display:block;font-size:.9rem} .me span{font-size:.75rem;opacity:.75}
 .credit{font-size:.7rem;line-height:1.45;opacity:.7;padding:0 6px}
 .main{min-width:0;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:12px 28px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.6) blur(12px);border-bottom:1px solid var(--line)}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 28px 12px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.6) blur(12px);border-bottom:1px solid var(--line)}
 .topbar .crumb{font-weight:700;font-size:1rem} .topbar .crumb span{color:var(--ink-3);font-weight:500}
 .topbar .spacer{flex:1}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:.82rem;font-weight:700;box-shadow:var(--shadow-sm)}
@@ -88,7 +94,8 @@ p{margin:0 0 .8em} a{color:var(--purple-ink)} button{font:inherit;cursor:pointer
 .iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
 .iconbtn svg{width:20px;height:20px}
 #menuBtn{display:none}
-main#app{padding:26px 28px 90px;max-width:1240px;width:100%;margin:0 auto}
+main#app{padding:26px 92px 90px 28px;max-width:1300px;width:100%;margin:0 auto}
+body.testing:not(.calc-ok) main#app{padding-right:28px}
 .foot{padding:20px 28px 28px;color:var(--ink-3);font-size:.78rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .scrim{display:none}
 @media (max-width:980px){
@@ -97,7 +104,7 @@ main#app{padding:26px 28px 90px;max-width:1240px;width:100%;margin:0 auto}
   body.nav-open .sidebar{transform:none}
   body.nav-open .scrim{display:block;position:fixed;inset:0;background:rgba(10,6,20,.45);z-index:35}
   #menuBtn{display:grid}
-  .topbar{padding:10px 16px} main#app{padding:18px 16px 96px} .foot{padding:18px 16px 90px}
+  .topbar{padding:calc(10px + env(safe-area-inset-top)) 16px 10px} main#app{padding:18px 76px 110px 16px} body.testing:not(.calc-ok) main#app{padding-right:16px} .foot{padding:18px 16px 90px}
   .topbar .hide-sm{display:none}
 }
 body.testing .sidebar,body.testing #menuBtn,body.testing .toolbar{display:none}
@@ -267,6 +274,7 @@ textarea{resize:vertical;min-height:90px}
 .grade{font-size:3rem;font-weight:800;line-height:1;color:var(--purple-ink)}
 .review{border-left:5px solid var(--good)} .review.no{border-left-color:var(--bad)}
 .mastery{display:grid;grid-template-columns:minmax(0,1fr) 140px 110px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.mastery.stack{grid-template-columns:1fr auto;gap:4px 12px}.mastery.stack>div:first-child{grid-column:1/-1}
 @media (max-width:620px){.mastery{grid-template-columns:1fr 80px}.mastery>div:last-child{grid-column:1/-1}}
 
 /* ============================== PLAN / LESSONS ============================== */
@@ -336,8 +344,30 @@ pre{white-space:pre-wrap;font-family:inherit;margin:6px 0}
 .calc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .calc-keys button{padding:11px 0;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700}
 .calc-keys button.op{background:var(--purple-soft);color:var(--purple-ink)}
-@media (max-width:620px){.toolbar{flex-direction:row;right:12px;bottom:12px}.toolbar button{width:46px;height:46px}.drawer{right:12px;bottom:70px;width:calc(100vw - 24px)}}
+@media (max-width:620px){main#app,body.testing main#app{padding-right:16px!important}.toolbar{flex-direction:row;right:12px;bottom:calc(12px + env(safe-area-inset-bottom))}.toolbar button{width:46px;height:46px}.drawer{right:12px;bottom:70px;width:calc(100vw - 24px)}}
 
+
+/* ============================== SPLASH ============================== */
+#splash{position:fixed;inset:0;z-index:1000;background:var(--hero);color:#fff;display:grid;place-items:center;text-align:center;padding:24px;transition:opacity .5s ease,visibility .5s}
+#splash.gone{opacity:0;visibility:hidden}
+#splash::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(242,181,29,.28),transparent 62%);animation:glow 3s ease-in-out infinite}
+#splash .sp{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+#splash .mark{width:128px;height:128px;border-radius:36px;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 30px 60px -20px rgba(0,0,0,.5);display:grid;place-items:center;animation:rise .8s cubic-bezier(.2,.9,.3,1.3) both}
+#splash .mark svg{width:80px;height:80px;color:var(--gold);animation:paw 1.6s ease-in-out .6s infinite}
+#splash h1{color:#fff;font-size:clamp(2rem,6vw,3.2rem);margin:26px 0 4px;animation:fade .8s .25s both;letter-spacing:-.03em}
+#splash h1 span{color:var(--gold)}
+#splash .tag{opacity:.8;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem;animation:fade .8s .4s both}
+#splash .load{width:220px;height:6px;border-radius:99px;background:rgba(255,255,255,.15);margin:34px 0 14px;overflow:hidden;animation:fade .6s .5s both}
+#splash .load i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-2));animation:loadbar 1.9s .5s ease forwards}
+#splash .by{font-size:.82rem;opacity:.78;animation:fade .8s .7s both;line-height:1.5}
+#splash .skip{margin-top:20px;font-size:.75rem;opacity:.5}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes paw{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes glow{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.12);opacity:1}}
+@keyframes loadbar{to{width:100%}}
+@media (prefers-reduced-motion:reduce){#splash *,#splash::before{animation-duration:.01s!important;animation-delay:0s!important}}
+@media print{#splash{display:none}}
 @media print{
   .sidebar,.topbar,.toolbar,.drawer,.noprint,.foot .noprint{display:none!important}
   .shell{display:block} main#app{padding:0} .card{box-shadow:none;break-inside:avoid} body{background:#fff}
@@ -370,6 +400,26 @@ pre{white-space:pre-wrap;font-family:inherit;margin:6px 0}
   <symbol id="i-formula" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5H7l6 7-6 7h11"/></g></symbol>
 </svg>
 
+<div id="splash" role="status" aria-label="Loading Jaguar Ascend Hub">
+  <div class="sp">
+    <div class="mark"><svg><use href="#paw"/></svg></div>
+    <h1>Jaguar <span>Ascend</span></h1>
+    <div class="tag">Grade 9 Tutoring Hub · Algebra I · English I · Reading</div>
+    <div class="load"><i></i></div>
+    <div class="by">Designed &amp; created by <b>Dr. Richard G. Clark</b><br>© <span class="yr">2026</span> All rights reserved.</div>
+    <div class="skip">Tap to continue</div>
+  </div>
+</div>
+<script>
+(function () {
+  var sp = document.getElementById('splash'), seen = false;
+  try { seen = sessionStorage.getItem('jah.splash') === '1'; sessionStorage.setItem('jah.splash', '1'); } catch (e) {}
+  function hide() { if (!sp || sp.classList.contains('gone')) return; sp.classList.add('gone'); setTimeout(function () { sp.remove(); }, 600); }
+  if (seen) { sp.remove(); return; }
+  sp.addEventListener('click', hide);
+  setTimeout(hide, 2700);
+})();
+</script>
 <div class="shell">
   <aside class="sidebar" aria-label="Main navigation">
     <div class="brand"><div class="logo"><svg><use href="#paw"/></svg></div><div><b>Jaguar Ascend</b><span>Grade 9 Tutoring Hub</span></div></div>
@@ -380,6 +430,7 @@ pre{white-space:pre-wrap;font-family:inherit;margin:6px 0}
       <button data-view="learn"><svg><use href="#i-lessons"/></svg>Lessons with Coach J</button>
       <button data-view="practice"><svg><use href="#i-practice"/></svg>Practice</button>
       <div class="label">Measure</div>
+      <button data-view="placement"><svg><use href="#i-target"/></svg>Placement</button>
       <button data-view="tests"><svg><use href="#i-tests"/></svg>Tests &amp; the Ascend</button>
       <button data-view="report"><svg><use href="#i-report"/></svg>Report Card</button>
       <div class="label">Help</div>
@@ -448,5 +499,10 @@ pre{white-space:pre-wrap;font-family:inherit;margin:6px 0}
 <script src="js/app.js"></script>
 <script src="js/coach.js"></script>
 <script src="js/views.js"></script>
+<script>
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.Capacitor) {
+  addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
 </body>
 </html>

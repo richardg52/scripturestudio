@@ -1,0 +1,38 @@
+# Builds the Jaguar Ascend Android app (installable APK) in the cloud.
+# Download the APK from the run's "Artifacts" section on GitHub.
+name: Jaguar Ascend – Android build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tutoring-hub/**'
+      - 'tutoring-hub-app/**'
+      - '.github/workflows/jaguar-ascend-android.yml'
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tutoring-hub-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install dependencies
+        run: npm ci
+      - name: Copy web app and sync native project
+        run: npm run sync
+      - name: Build debug APK
+        working-directory: tutoring-hub-app/android
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JaguarAscend-debug-apk
+          path: tutoring-hub-app/android/app/build/outputs/apk/debug/*.apk

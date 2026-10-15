@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jaguar Ascend</string>
+    <string name="title_activity_main">Jaguar Ascend</string>
+    <string name="package_name">com.drrichardclark.jaguarascend</string>
+    <string name="custom_url_scheme">com.drrichardclark.jaguarascend</string>
+</resources>

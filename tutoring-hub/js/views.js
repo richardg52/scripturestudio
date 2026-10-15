@@ -22,7 +22,7 @@ views.home = () => {
   const minsW = SUBJS.reduce((a, s) => a + minsWeek(s), 0), goalW = SUBJS.reduce((a, s) => a + SUBJ[s].goal, 0);
   const practiced = ST.log.filter(a => a.m === 'practice').length, om = overallMastery();
   const coachMsg = diagDone < 4
-    ? `Hi ${esc(first())}, I'm <b>Coach J</b>, your personal tutor. I'll show you how every kind of problem works, step by step, before you ever try one alone. First, let's see what you already know. Take the Week 1 check-ins below. They're <b>not graded</b>.`
+    ? `Hi ${esc(first())}, I'm <b>Coach J</b>, your personal tutor. I'll show you how every kind of problem works, step by step, before you ever try one alone. ${placementDone() ? 'Finish the Baseline Ascend below when you\'re ready.' : 'First, a short <b>placement assessment</b> so I know what you already know. It\'s not graded.'}`
     : `${motto()} Today's mission is below. I'll walk you through each new skill first, then it's your turn.`;
   $('#app').innerHTML = `
   ${ST.inProgress ? `<div class="callout warn row between"><span>⏸ Paused test: <b>${esc(ST.inProgress.title)}</b> · ${Math.ceil(ST.inProgress.remaining / 60000)} min left</span><button class="btn primary sm" id="resume">Resume test</button></div>` : ''}
@@ -31,7 +31,7 @@ views.home = () => {
       <div class="row"><span class="pill gold">Week ${w} of ${WEEKS}</span>${WEEK_EVENTS[w] ? `<span class="pill">${WEEK_EVENTS[w]}</span>` : ''}</div>
       <h1>${greeting()}, ${esc(first())}.</h1>
       ${coachSays(coachMsg)}
-      <div class="row">${diagDone < 4 ? `<button class="btn gold lg" id="startDiag">Start Week 1 check-ins (${diagDone}/4)</button>` : `<button class="btn gold lg" id="goMission">Start today's mission</button>`}<button class="btn lg" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)" onclick="go('plan')">View my plan</button></div>
+      <div class="row">${!placementDone() ? `<button class="btn gold lg" onclick="go('placement')">${preDone ? 'Continue' : 'Start'} placement assessment (${preDone}/3)</button>` : diagDone < 4 ? `<button class="btn gold lg" id="startDiag">Finish Week 1 check-ins (${diagDone}/4)</button>` : `<button class="btn gold lg" id="goMission">Start today's mission</button>`}<button class="btn lg" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)" onclick="go('plan')">View my plan</button></div>
     </div>
     <div class="hero-rings">${SUBJS.map(s => `<div class="ringbox">${ring(Math.round(lessonsDone(s) / lessonsAll(s) * 100), RING_C[s])}<b>${SUBJ[s].name}</b><span>${lessonsDone(s)}/${lessonsAll(s)} lessons</span></div>`).join('')}</div>
   </section>
@@ -48,8 +48,8 @@ views.home = () => {
       ${diagDone < 4 ? `<div class="card" id="diagCard" style="margin-bottom:18px"><div class="row between"><h2>Week 1 check-ins</h2><span class="pill gold">${diagDone}/4 done</span></div><p class="muted">These show Coach J exactly where to start. Do your best and skip nothing. A low score is fine; it just tells us what to teach.</p>
         <div class="mission">${SUBJS.map(s => `<div class="mission-item ${latest('pre', s) ? 'done' : ''}" style="--c:${SUBJ[s].c}"><div class="sico">${ico(ICON[s])}</div><div><b>${SUBJ[s].name} pre-assessment</b><div class="meta">${s === 'read' ? '3 short passages' : '32 questions'} · about ${TIME.pre[s]} min · not graded</div></div><div class="row"><button class="btn sm ${latest('pre', s) ? 'done' : 'primary'}" data-pre="${s}">${latest('pre', s) ? '✓ Done' : 'Begin'}</button></div></div>`).join('')}
         <div class="mission-item ${ascDone ? 'done' : ''}" style="--c:var(--all)"><div class="sico">${ico('i-trophy')}</div><div><b>The Ascend: Baseline</b><div class="meta">All three subjects together · 75 min · your starting line</div></div><div class="row"><button class="btn sm ${ascDone ? 'done' : 'primary'}" id="ascBase">${ascDone ? '✓ Done' : 'Begin'}</button></div></div></div></div>` : ''}
-      <div class="card" id="missionCard"><div class="row between"><h2>Today's mission · ${DAYS[day]}</h2><span class="small muted">≈ ${SUBJS.reduce((a, s) => a + SUBJ[s].mins.reduce((x, y) => x + y, 0), 0)} minutes</span></div>
-        <div class="mission">${SUBJS.map(s => missionItem(s, w, day)).join('')}</div></div>
+      ${!placementDone() ? `<div class="card" id="missionCard"><div class="row between"><h2>Today's mission</h2><span class="pill">🔒 Unlocks after placement</span></div><p class="muted">Lessons, practice, and quizzes open as soon as you finish the three placement check-ins. Coach J uses them to build your plan.</p><button class="btn primary" onclick="go('placement')">Go to placement</button></div>` : `<div class="card" id="missionCard"><div class="row between"><h2>Today's mission · ${DAYS[day]}</h2><span class="small muted">≈ ${SUBJS.reduce((a, s) => a + SUBJ[s].mins.reduce((x, y) => x + y, 0), 0)} minutes</span></div>
+        <div class="mission">${SUBJS.map(s => missionItem(s, w, day)).join('')}</div></div>`}
       <h2 class="sec">Focus skills <span class="small muted">Coach J's picks: your lowest-scoring skills right now</span></h2>
       <div class="grid g3">${SUBJS.map(s => { const wk = weakest(s, 3); return `<div class="card subj-card" style="--c:${SUBJ[s].c}"><div class="row"><div class="subj-ico" style="--c:${SUBJ[s].c}">${ico(ICON[s])}</div><h3 style="margin:0">${SUBJ[s].name}</h3></div>${wk.length ? wk.map(x => `<div class="focus"><span><b>${x.std}</b> ${HUB.std[x.std]}</span><span class="tag-${x.p >= 60 ? 'd' : 'n'}">${x.p}%</span><button class="btn sm" data-prac="${s}|${x.std}">Practice</button></div>`).join('') : '<p class="small muted" style="margin-top:10px">Take the pre-assessment and Coach J will find your focus skills.</p>'}
         <button class="btn sm ghost" data-smart="${s}" style="margin-top:8px">⚡ Smart Review</button></div>`; }).join('')}</div>
@@ -105,11 +105,32 @@ function welcome() {
   const d = document.createElement('div'); d.className = 'modal';
   d.innerHTML = `<div class="card modal-card"><div class="row"><div class="badge-paw" style="width:64px;height:64px;border-radius:20px"><svg style="width:38px;height:38px"><use href="#paw"/></svg></div><div><div class="eyebrow">Jaguar Ascend Hub</div><h2 style="margin:0">Welcome, ${esc(first())}!</h2></div></div>
   ${coachSays(`I'm <b>Coach J</b>, your personal tutor for <b>Algebra I</b>, <b>English I</b> and <b>Reading</b>. Here's how we'll work together:`)}
-  <ol class="step-list"><li><b>I show you first.</b> For every new kind of problem, I solve one step by step while you watch.</li><li><b>Then it's your turn</b> with new numbers. If you miss it, we walk through <i>your</i> problem together and try a similar one.</li><li><b>Follow "Today's mission"</b> on the dashboard, about 1 hour 45 minutes a day.</li><li><b>Tests show your growth.</b> Tools lock during tests, and your report card updates automatically.</li></ol>
+  <ol class="step-list"><li><b>First, a placement assessment.</b> Three short check-ins (not graded) show me what you already know, so I can start you in the right place.</li><li><b>I show you first.</b> For every new kind of problem, I solve one step by step while you watch.</li><li><b>Then it's your turn</b> with new numbers. If you miss it, we walk through <i>your</i> problem together and try a similar one.</li><li><b>Follow "Today's mission"</b> on the dashboard, about 1 hour 45 minutes a day.</li><li><b>Tests show your growth.</b> Tools lock during tests, and your report card updates automatically.</li></ol>
   <p class="small muted">Parents: the Parent Portal is PIN-protected (default <b>1234</b>; change it there).<br>Designed and created by Dr. Richard G. Clark · © ${new Date().getFullYear()} All rights reserved.</p>
-  <button class="btn primary lg" id="wcl">Let's go</button></div>`;
-  document.body.appendChild(d); d.querySelector('#wcl').onclick = () => { ST.seenWelcome = true; save(); d.remove(); };
+  <button class="btn primary lg" id="wcl">${placementDone() ? "Let's go" : 'Start with placement →'}</button></div>`;
+  document.body.appendChild(d); d.querySelector('#wcl').onclick = () => { ST.seenWelcome = true; save(); d.remove(); if (!placementDone()) go('placement'); };
 }
+
+/* ---------------- PLACEMENT ---------------- */
+views.placement = () => {
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.view === 'placement')); $('#crumb').textContent = 'Placement Assessment';
+  const done = SUBJS.filter(s => latest('pre', s)), all = done.length === 3;
+  const step = (s, i) => { const r = latest('pre', s); return `<div class="mission-item ${r ? 'done' : ''}" style="--c:${SUBJ[s].c}"><div class="sico">${ico(ICON[s])}</div><div><span class="small" style="color:${SUBJ[s].c};font-weight:800">STEP ${i + 1}</span><br><b>${SUBJ[s].name} placement</b><div class="meta">${s === 'read' ? '3 short passages · about 30 questions' : '32 questions covering every unit'} · ${TIME.pre[s]} min · not graded · you can pause</div></div><div class="row">${r ? `<span class="pill ok">✓ ${r.pct}%</span><button class="btn sm" data-pre="${s}">Retake</button>` : `<button class="btn primary sm" data-pre="${s}">Begin</button>`}</div></div>`; };
+  const unitRows = s => { const r = latest('pre', s); if (!r) return ''; return HUB.units[s].map(u => { let a = 0, b = 0; u.stds.forEach(x => { if (r.byStd[x]) { a += r.byStd[x][0]; b += r.byStd[x][1]; } }); if (!b) return ''; const p = Math.round(a / b * 100), t = p >= 80 ? ['Strong', 'm'] : p >= 60 ? ['Developing', 'd'] : ['Start here', 'n']; return `<div class="mastery stack"><div><b>Unit ${u.n}</b> <span class="muted">${u.title}</span></div><div class="bar ${t[1]}"><i style="width:${Math.max(p, 3)}%"></i></div><div class="small tag-${t[1]}">${p}% · ${t[0]}</div></div>`; }).join(''); };
+  const startUnit = s => { const r = latest('pre', s); if (!r) return null; for (const u of HUB.units[s]) { let a = 0, b = 0; u.stds.forEach(x => { if (r.byStd[x]) { a += r.byStd[x][0]; b += r.byStd[x][1]; } }); if (b && a / b < .8) return u; } return null; };
+  $('#app').innerHTML = `<section class="hero" style="grid-template-columns:1fr">
+    <div style="position:relative;z-index:1"><span class="pill gold">${all ? 'Placement complete' : 'Step 1 · Before any lessons'}</span>
+      <h1>${all ? 'Your Placement Report' : 'Placement Assessment'}</h1>
+      ${coachSays(all ? `Thank you, ${esc(first())}. I now know your strengths and exactly where to start. Units marked <b>Start here</b> are where we'll focus first. Units marked <b>Strong</b> will move faster.` : `Before we start learning, I need to see what you already know so I can teach <i>you</i>, not just the average student. There are three short check-ins. They are <b>not graded</b>, and you can pause any time. Just do your honest best. It's okay to not know something yet.`)}
+      ${all ? '' : `<div class="row"><button class="btn gold lg" id="nextPre">${done.length ? 'Continue placement' : 'Begin placement'} (${done.length}/3)</button></div>`}</div></section>
+  <div class="card" style="margin-top:18px"><div class="row between"><h2>The three check-ins</h2><span class="pill gold">${done.length}/3 complete</span></div><div class="mission">${SUBJS.map(step).join('')}
+    <div class="mission-item ${ST.results.some(r => r.kind === 'ascend') ? 'done' : ''}" style="--c:var(--all)"><div class="sico">${ico('i-trophy')}</div><div><span class="small" style="color:var(--all);font-weight:800">OPTIONAL · RECOMMENDED</span><br><b>The Ascend: Baseline</b><div class="meta">All three subjects in one sitting. This is your starting line for measuring growth in Weeks 9 and 18.</div></div><div class="row"><button class="btn sm" id="ascB">${ST.results.some(r => r.kind === 'ascend') ? 'Retake' : 'Begin'}</button></div></div></div></div>
+  ${done.length ? `<h2 class="sec">Results by unit</h2><div class="grid g3">${done.map(s => { const su = startUnit(s); return `<div class="card subj-card" style="--c:${SUBJ[s].c}"><div class="row between"><div class="row"><div class="subj-ico" style="--c:${SUBJ[s].c}">${ico(ICON[s])}</div><h3 style="margin:0">${SUBJ[s].name}</h3></div><span class="grade-chip">${latest('pre', s).pct}%</span></div>${unitRows(s)}<div class="callout small"><b>Coach J's plan:</b> ${su ? `begin with <b>Unit ${su.n}: ${su.title}</b> and build from there.` : 'strong across the board. Move quickly and use Smart Review to stay sharp.'}</div></div>`; }).join('')}</div>` : ''}
+  ${all ? `<div class="row" style="margin-top:18px"><button class="btn primary lg" onclick="go('home')">Start learning with Coach J →</button><button class="btn lg" onclick="go('plan')">See my 18-week plan</button></div>` : ''}`;
+  $$('[data-pre]').forEach(b => b.onclick = () => startTest('pre', b.dataset.pre));
+  const n = $('#nextPre'); if (n) n.onclick = () => startTest('pre', SUBJS.find(s => !latest('pre', s)));
+  $('#ascB').onclick = () => startTest('ascend');
+};
 
 /* ---------------- SEMESTER PLAN ---------------- */
 views.plan = () => {
@@ -123,7 +144,7 @@ views.plan = () => {
     return `<a href="#" data-lesson="${l.id}">${esc(l.title)}</a> ${st.done ? `<span class="pill ok">✓ ${st.exitPct}%</span>` : ''}<div class="small muted">${l.stds.join(', ')}</div>${wk === 1 ? '<span class="pill">Pre-test</span> ' : ''}${q ? `<a href="#" class="pill quiz" data-quiz="${s}|${q.n}">Unit ${q.n} Quiz${qb != null ? ' · ' + qb + '%' : ''}</a>` : ''}`;
   };
   $('#app').innerHTML = `<div class="page-head"><div><div class="eyebrow">My Semester Plan</div><h1>18 weeks to the Ascend</h1></div></div>
-  <p class="muted">Sequenced to the Mississippi College &amp; Career Readiness Standards for Algebra I and Grade 9 English Language Arts. Because ${esc(first())} is rebuilding skills, Algebra begins with a 3-week Foundations Bootcamp and English with Grammar Foundations before grade-level content. Plan start: <b>${new Date(ST.student.start + 'T00:00:00').toLocaleDateString()}</b> (change in Tutor view).</p>
+  <p class="muted">Sequenced to the Mississippi College &amp; Career Readiness Standards for Algebra I and Grade 9 English Language Arts. Because ${esc(first())} is rebuilding skills, Algebra begins with a 3-week Foundations Bootcamp and English with Grammar Foundations before grade-level content. Plan start: <b>${new Date(ST.student.start + 'T00:00:00').toLocaleDateString()}</b> (change in the Parent Portal).</p>
   <div class="grid g4" style="margin:16px 0">
     <div class="card"><b>Weekly time goal</b><p class="small">Algebra I 180 min · English 120 · Reading 120 (≈ 7 hours / week)</p></div>
     <div class="card"><b>Daily rhythm</b><p class="small">Mon: lesson (Learn + We do) · Tue: finish lesson + exit ticket · Wed: skill practice · Thu: Smart Review · Fri: unit quiz or review</p></div>
@@ -138,6 +159,7 @@ views.plan = () => {
 
 /* ---------------- LESSONS ---------------- */
 views.learn = (subj = 'math') => {
+  if (!placementDone()) return views.placement();
   const ls = HUB.lessons.filter(l => l.subj === subj).sort((a, b) => a.week - b.week);
   $('#app').innerHTML = `<div class="page-head"><div><div class="eyebrow">Lessons with Coach J</div><h1>Learn it step by step</h1></div></div>
   ${coachSays('Every lesson works the same way. <b>Warm-up</b> → <b>Learn</b> (I explain and show worked examples) → <b>Together</b> (I demonstrate, then you try) → <b>On your own</b> → <b>Exit ticket</b>. Pick up where you left off any time.')}
@@ -150,7 +172,7 @@ views.learn = (subj = 'math') => {
   $$('[data-quiz]').forEach(b => b.onclick = () => { const [s, u] = b.dataset.quiz.split('|'); startTest('quiz', s, +u); });
 };
 function openLesson(id) {
-  const l = HUB.lessons.find(x => x.id === id); if (!l) return;
+  const l = HUB.lessons.find(x => x.id === id); if (!l) return; if (gated()) return;
   go('learn', l.subj); $('#app').innerHTML = ''; activeSubj = l.subj; touchStreak();
   const rec = ST.lessons[id] = ST.lessons[id] || {}; let st = rec.done ? 0 : rec.stage || 0;
   const mins = SUBJ[l.subj].mins;
@@ -206,6 +228,7 @@ function saveWriting(l, type, text, prompt) { text = text.trim(); if (!text) ret
 
 /* ---------------- PRACTICE ---------------- */
 views.practice = (subj = 'math') => {
+  if (!placementDone()) return views.placement();
   const m = mastery(subj);
   $('#app').innerHTML = `<div class="page-head"><div><div class="eyebrow">Practice with Coach J</div><h1>Build mastery, one skill at a time</h1></div></div>
   ${coachSays('Pick a skill. For each new type of problem I\'ll <b>solve one first while you watch</b>, then you try one with new numbers. Hints are always on, and practice never lowers your grade.')}
@@ -291,7 +314,8 @@ views.tutor = () => {
      <label class="check-row"><input type="checkbox" id="fExt" ${set.extTime ? 'checked' : ''}> Extended time on tests (1.5×)</label>
      <label class="check-row"><input type="checkbox" id="fRead" ${set.readAloud ? 'checked' : ''}> Read-aloud buttons (questions &amp; passages)</label>
      <label class="check-row"><input type="checkbox" id="fCalc" ${set.calcOnTests ? 'checked' : ''}> Allow calculator on Algebra tests (the MAAP Algebra I test provides one)</label>
-     ${inp('fPin', 'Tutor PIN', set.pin)}</div>
+     <label class="check-row"><input type="checkbox" id="fSkip" ${set.skipPlacement ? 'checked' : ''}> Unlock lessons before the placement assessment is finished (not recommended)</label>
+     ${inp('fPin', 'Parent Portal PIN', set.pin)}</div>
    <div class="card"><h3>DeSoto Central team</h3><p class="small muted">Names were gathered from public school web pages and may be out of date — please confirm with the front office, (662) 536-3612.</p>
      ${inp('tPrin', 'Principal', t.principal)}${inp('tAp', 'Assistant Principal(s)', t.aps)}${inp('tCoun', 'School Counselor', t.counselor)}${inp('tMath', 'Algebra I Teacher', t.mathTeacher)}${inp('tEng', 'English I Teacher', t.engTeacher)}${inp('tTut', 'Mentor / parent contact', t.tutor)}
      <h3>Report card comments</h3>${SUBJS.map(x => `<label class="field"><span>${SUBJ[x].name}</span><textarea id="n_${x}" rows="2">${esc(ST.tutorNotes[x])}</textarea></label>`).join('')}</div>
@@ -305,7 +329,7 @@ views.tutor = () => {
    <div class="row"><button class="btn" id="exp">Export backup</button><label class="btn">Import backup<input type="file" id="imp" accept="application/json" hidden></label><button class="btn danger" id="reset">Reset all data</button><button class="btn" id="lock">Lock portal</button></div></div>`;
   $('#saveSet').onclick = () => {
     Object.assign(ST.student, { name: $('#fName').value.trim() || 'Student', first: $('#fFirst').value.trim(), school: $('#fSchool').value.trim(), start: $('#fStart').value || ST.student.start });
-    Object.assign(ST.settings, { extTime: $('#fExt').checked, readAloud: $('#fRead').checked, calcOnTests: $('#fCalc').checked, pin: $('#fPin').value.trim() || '1234' });
+    Object.assign(ST.settings, { extTime: $('#fExt').checked, readAloud: $('#fRead').checked, calcOnTests: $('#fCalc').checked, skipPlacement: $('#fSkip').checked, pin: $('#fPin').value.trim() || '1234' });
     Object.assign(ST.team, { principal: $('#tPrin').value.trim(), aps: $('#tAp').value.trim(), counselor: $('#tCoun').value.trim(), mathTeacher: $('#tMath').value.trim(), engTeacher: $('#tEng').value.trim(), tutor: $('#tTut').value.trim() });
     SUBJS.forEach(x => ST.tutorNotes[x] = $('#n_' + x).value.trim()); save(); $('#saveMsg').textContent = 'Saved.';
   };
