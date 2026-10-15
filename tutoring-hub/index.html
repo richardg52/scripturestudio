@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascend Tutoring Hub</title>
+<meta name="description" content="Prototype 9th-grade tutoring hub: Algebra I, English I and Reading aligned to the Mississippi College & Career Readiness Standards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --surface-2:#efeee8; --ink:#1d2330; --ink-2:#4a5262; --ink-3:#7a8191;
+  --line:#dcdad2; --brand:#1f4e79; --brand-ink:#ffffff; --brand-soft:#e3ecf5;
+  --math:#2f6fb3; --eng:#8a4fb0; --read:#1f8a6b; --ascend:#c07a12;
+  --good:#1f8a4c; --good-soft:#e1f3e8; --warn:#b5770c; --warn-soft:#fbf0d9; --bad:#b83a3a; --bad-soft:#f8e3e3;
+  --shadow:0 1px 2px rgba(20,25,35,.06),0 4px 14px rgba(20,25,35,.06); --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13161c; --surface:#1b1f27; --surface-2:#232833; --ink:#e8eaf0; --ink-2:#b4bac6; --ink-3:#8a91a0;
+    --line:#2e3441; --brand:#6aa6e0; --brand-ink:#0d1420; --brand-soft:#1d2a3a;
+    --math:#6aa6e0; --eng:#b88ad8; --read:#4fc2a0; --ascend:#e2a94a;
+    --good:#55c486; --good-soft:#18301f; --warn:#e2b04f; --warn-soft:#33290f; --bad:#e57878; --bad-soft:#3a1c1c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13161c; --surface:#1b1f27; --surface-2:#232833; --ink:#e8eaf0; --ink-2:#b4bac6; --ink-3:#8a91a0;
+  --line:#2e3441; --brand:#6aa6e0; --brand-ink:#0d1420; --brand-soft:#1d2a3a;
+  --math:#6aa6e0; --eng:#b88ad8; --read:#4fc2a0; --ascend:#e2a94a;
+  --good:#55c486; --good-soft:#18301f; --warn:#e2b04f; --warn-soft:#33290f; --bad:#e57878; --bad-soft:#3a1c1c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;line-height:1.2;margin:0 0 .5em}
+h1{font-size:1.9rem} h2{font-size:1.45rem} h3{font-size:1.12rem}
+p{margin:0 0 .8em}
+a{color:var(--brand)}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:62px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:"Source Serif 4",serif;font-weight:700;font-size:1.2rem}
+.logo svg{width:30px;height:30px}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.tabs button{background:none;border:0;padding:8px 12px;border-radius:9px;color:var(--ink-2);font-weight:500}
+nav.tabs button.on{background:var(--brand-soft);color:var(--brand)}
+body.testing nav.tabs, body.testing .toolbar{display:none}
+main{padding:24px 0 80px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.muted{color:var(--ink-3)} .small{font-size:.88rem}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:600;background:var(--surface-2);color:var(--ink-2)}
+.pill.math{background:color-mix(in srgb,var(--math) 16%,transparent);color:var(--math)}
+.pill.eng{background:color-mix(in srgb,var(--eng) 16%,transparent);color:var(--eng)}
+.pill.read{background:color-mix(in srgb,var(--read) 16%,transparent);color:var(--read)}
+.pill.ascend{background:color-mix(in srgb,var(--ascend) 18%,transparent);color:var(--ascend)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:10px;font-weight:600}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn.sm{padding:6px 11px;font-size:.88rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.subj-card{border-top:5px solid var(--c)}
+.subj-card .big{font-size:2rem;font-weight:700;font-family:"Source Serif 4",serif}
+.bar{height:9px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--c,var(--brand));border-radius:99px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)}
+.tablewrap{overflow-x:auto}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+@media (max-width:800px){.hero{grid-template-columns:1fr}}
+.step-list{counter-reset:s;list-style:none;padding:0;margin:0}
+.step-list li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+.step-list li::before{content:counter(s);position:absolute;left:0;top:9px;width:30px;height:30px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700}
+.callout{border-left:4px solid var(--brand);background:var(--brand-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+.callout.good{border-color:var(--good);background:var(--good-soft)}
+.callout.bad{border-color:var(--bad);background:var(--bad-soft)}
+/* test */
+.test-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.1rem;padding:6px 12px;border-radius:9px;background:var(--surface-2)}
+.qnav{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.qnav button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:.85rem;color:var(--ink-2)}
+.qnav button.ans{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.qnav button.cur{outline:2px solid var(--ink);outline-offset:1px}
+.qnav button.flag{box-shadow:inset 0 -4px 0 var(--warn)}
+.stem{font-size:1.08rem;margin:6px 0 14px}
+.choices{display:grid;gap:8px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink)}
+.choice .L{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-weight:700}
+.choice.sel{border-color:var(--brand);background:var(--brand-soft)}
+.choice.sel .L{background:var(--brand);color:var(--brand-ink)}
+.choice.right{border-color:var(--good);background:var(--good-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.passage{background:var(--surface-2);border-radius:11px;padding:14px 18px;margin-bottom:14px;max-height:340px;overflow:auto;font-family:"Source Serif 4",serif;font-size:1.02rem}
+.passage h4{margin:0 0 6px;font-family:Inter,sans-serif}
+.passage p{text-indent:1.4em}
+input.num,textarea,select{font:inherit;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+input.num{width:150px}
+input.blank{width:70px;text-align:center;font:inherit;padding:6px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+textarea{width:100%;min-height:80px;resize:vertical}
+.showwork{margin-top:14px}
+.showwork summary{cursor:pointer;color:var(--ink-2);font-weight:600}
+.feedback{margin-top:12px}
+.math{font-family:"Source Serif 4",serif;font-size:1.15em;white-space:nowrap}
+/* tools */
+.toolbar{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:30}
+.toolbar button{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);display:grid;place-items:center}
+.toolbar svg{width:22px;height:22px}
+.drawer{position:fixed;right:76px;bottom:16px;width:min(340px,calc(100vw - 92px));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;z-index:31;display:none;max-height:80vh;overflow:auto}
+.drawer.open{display:block}
+.calc-screen{width:100%;font:600 1.3rem/1.2 ui-monospace,monospace;text-align:right;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);margin-bottom:8px}
+.calc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.calc-keys button{padding:10px 0;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600}
+.calc-keys button.op{background:var(--brand-soft);color:var(--brand)}
+.locked-note{display:none}
+body.testing .locked-note{display:block}
+.lesson-stage{display:none}.lesson-stage.on{display:block}
+.stagebar{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 18px}
+.stagebar span{padding:6px 12px;border-radius:99px;background:var(--surface-2);font-size:.85rem;color:var(--ink-3);font-weight:600}
+.stagebar span.on{background:var(--brand);color:var(--brand-ink)}
+.stagebar span.done{background:var(--good-soft);color:var(--good)}
+.sentence{cursor:pointer;border-radius:4px;padding:1px 2px}
+.sentence:hover{background:color-mix(in srgb,var(--read) 18%,transparent)}
+.sentence.picked{background:color-mix(in srgb,var(--read) 30%,transparent)}
+.sentence.correct{background:var(--good-soft);outline:2px solid var(--good)}
+.week{display:grid;grid-template-columns:70px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--line)}
+.week>div{padding:10px;font-size:.88rem}
+.week.hd>div{font-weight:700;font-size:.78rem;text-transform:uppercase;color:var(--ink-3)}
+.week.test{background:color-mix(in srgb,var(--ascend) 10%,transparent)}
+@media (max-width:700px){.week{grid-template-columns:1fr}.week.hd{display:none}.week>div:first-child{font-weight:700;padding-bottom:0}}
+.grade{font-family:"Source Serif 4",serif;font-size:2.6rem;font-weight:700;line-height:1}
+.mastery{display:grid;grid-template-columns:1fr 120px 64px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.tag-m{color:var(--good)}.tag-d{color:var(--warn)}.tag-n{color:var(--bad)}
+.hide{display:none!important}
+@media print{header.top,.toolbar,.drawer,.noprint{display:none!important}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--brand)"/><path d="M7 23 L14 12 L18 18 L21 14 L25 23 Z" fill="var(--brand-ink)"/><circle cx="22" cy="9" r="2.4" fill="var(--ascend)"/></svg>
+      Ascend Hub <span class="pill">Grade 9 · Prototype</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-view="home" class="on">Dashboard</button>
+      <button data-view="plan">Semester Plan</button>
+      <button data-view="learn">Lessons</button>
+      <button data-view="practice">Practice</button>
+      <button data-view="tests">Tests</button>
+      <button data-view="report">Report Card</button>
+      <button data-view="guide">Guide</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<!-- Study tools: hidden during tests -->
+<div class="toolbar" id="toolbar">
+  <button title="Calculator" data-tool="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg></button>
+  <button title="Formula sheet" data-tool="formula"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg></button>
+  <button title="Grammar & reading guide" data-tool="ref"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></button>
+  <button title="Study timer" data-tool="timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></button>
+</div>
+<div class="drawer" id="drawer-calc">
+  <h3>Calculator</h3>
+  <input class="calc-screen" id="calcScreen" placeholder="0" autocomplete="off">
+  <div class="calc-keys" id="calcKeys"></div>
+  <p class="small muted" style="margin-top:8px">Use ^ for powers and √( ) for square roots. Calculator closes automatically when a test starts.</p>
+</div>
+<div class="drawer" id="drawer-formula">
+  <h3>Algebra I Formula Sheet</h3>
+  <table class="small">
+    <tr><td>Slope</td><td class="math">m = (y₂ − y₁) / (x₂ − x₁)</td></tr>
+    <tr><td>Slope-intercept</td><td class="math">y = mx + b</td></tr>
+    <tr><td>Point-slope</td><td class="math">y − y₁ = m(x − x₁)</td></tr>
+    <tr><td>Standard form</td><td class="math">Ax + By = C</td></tr>
+    <tr><td>Exponential</td><td class="math">y = a(1 ± r)<sup>t</sup></td></tr>
+    <tr><td>Quadratic formula</td><td class="math">x = (−b ± √(b² − 4ac)) / 2a</td></tr>
+    <tr><td>Vertex x-value</td><td class="math">x = −b / 2a</td></tr>
+    <tr><td>Product of powers</td><td class="math">x<sup>a</sup>·x<sup>b</sup> = x<sup>a+b</sup></td></tr>
+    <tr><td>Power of a power</td><td class="math">(x<sup>a</sup>)<sup>b</sup> = x<sup>ab</sup></td></tr>
+    <tr><td>Mean</td><td class="math">sum ÷ count</td></tr>
+  </table>
+</div>
+<div class="drawer" id="drawer-ref">
+  <h3>Writer's &amp; Reader's Guide</h3>
+  <p class="small"><b>Semicolon ( ; )</b> joins two complete sentences that are closely related.<br><b>Colon ( : )</b> follows a complete sentence to introduce a list, quote or explanation.<br><b>Parallel structure</b>: items in a series share the same grammatical form.<br><b>Independent clause</b> = subject + verb + complete thought.<br><b>Central idea</b>: what the whole text is mostly about — not one detail.<br><b>Theme</b>: the message about life, usually stated as a full sentence, never one word.<br><b>Tone</b>: the author's attitude (e.g., nostalgic, critical, hopeful).<br><b>RACE</b> for written answers: Restate · Answer · Cite evidence · Explain.</p>
+</div>
+<div class="drawer" id="drawer-timer">
+  <h3>Study Session Timer</h3>
+  <p class="small muted">Time is logged to the subject and shows on the dashboard against the weekly goal.</p>
+  <div class="row"><select id="timerSubj"><option value="math">Algebra I</option><option value="eng">English I</option><option value="read">Reading</option></select>
+  <select id="timerMin"><option>15</option><option selected>25</option><option>45</option></select></div>
+  <div class="timer" id="timerShow" style="margin:12px 0;text-align:center;font-size:1.8rem">25:00</div>
+  <div class="row"><button class="btn primary sm" id="timerStart">Start</button><button class="btn sm" id="timerStop">Stop &amp; log</button></div>
+</div>
+
+<script>
+/* =========================================================
+   STATE (local to this browser — prototype only)
+   ========================================================= */
+const KEY='ascendHub.v1';
+const blank={student:{name:'Student',school:'DeSoto Central High School',grade:9},results:[],time:{},lessons:{},teachback:[]};
+let S=load();
+function load(){try{return Object.assign(structuredClone(blank),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return structuredClone(blank)}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const SUBJ={math:{name:'Algebra I',c:'var(--math)',goal:180},eng:{name:'English I',c:'var(--eng)',goal:120},read:{name:'Reading',c:'var(--read)',goal:120},all:{name:'The Ascend',c:'var(--ascend)'}};
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const nz=(a,b)=>{let v;do{v=rnd(a,b)}while(v===0);return v};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const sg=n=>n<0?'− '+Math.abs(n):'+ '+n;           // signed term " + 5" / " − 5"
+const neg=n=>n<0?'−'+Math.abs(n):''+n;
+const term=(n,v='x')=>(n<0?'− ':'+ ')+(Math.abs(n)===1?v:Math.abs(n)+v);  // " + 3x", " − x"
+const coef=(a,v='x')=>a===1?v:a===-1?'−'+v:neg(a)+v;
+function weekKey(d=new Date()){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()-((t.getDay()+6)%7));return t.toISOString().slice(0,10)}
+function frac(n,d){if(d<0){n=-n;d=-d}const g=gcd(Math.abs(n),d);n/=g;d/=g;return d===1?neg(n):neg(n)+'/'+d}
+function gcd(a,b){return b?gcd(b,a%b):a}
+
+/* Standards (Mississippi College & Career Readiness Standards codes) */
+const STD={
+ 'N-RN.2':'Properties of exponents','N-Q.1':'Units & quantities',
+ 'A-SSE.2':'Structure of expressions / factoring','A-CED.2':'Write equations from context','A-CED.4':'Literal equations',
+ 'A-REI.3':'Solve linear equations & inequalities','A-REI.6':'Systems of equations','A-REI.4':'Solve quadratics',
+ 'F-IF.2':'Evaluate functions','F-IF.6':'Rate of change / slope','F-LE.1':'Linear vs. exponential','S-ID.2':'Center & spread of data',
+ 'L.9.1':'Grammar & usage','L.9.2':'Punctuation & conventions','L.9.4':'Vocabulary in context','L.9.5':'Figurative language & nuance',
+ 'W.9.1':'Argument writing','W.9.2':'Informative writing','W.9.8':'Research & sources',
+ 'RL.9.1':'Cite textual evidence (lit.)','RL.9.2':'Theme','RL.9.3':'Character development','RL.9.4':'Word choice & tone (lit.)','RL.9.5':'Text structure (lit.)',
+ 'RI.9.1':'Cite textual evidence (info.)','RI.9.2':'Central idea','RI.9.4':'Word meaning (info.)','RI.9.6':'Author\'s purpose','RI.9.8':'Evaluate an argument'
+};
+
+/* =========================================================
+   ITEM BANK
+   Math items are GENERATORS: every call creates a new problem with new numbers,
+   so the student never sees the same question twice. Distractors are built from
+   the specific mistakes students make (sign errors, skipped steps, etc.).
+   ========================================================= */
+function distinct(correct,cands,fill){const out=[];const seen=new Set([String(correct)]);
+  for(const c of cands.concat(fill||[])){const s=String(c);if(!seen.has(s)&&s!=='NaN'&&out.length<3){seen.add(s);out.push(s)}}
+  const base=Number(String(correct).replace(/−/g,'-'));
+  let k=1;while(out.length<3&&k<50){const s=fmt(base+Math.ceil(k/2)*(k%2?1:-1));if(!seen.has(s)){seen.add(s);out.push(s)}k++}return out}
+const fmt=n=>Number.isInteger(n)?neg(n):neg(+n.toFixed(2));
+
+const MATH=[
+ {std:'A-REI.3',make(){const x=nz(-9,9),a=rnd(2,9),b=nz(-15,15),c=a*x+b;
+   return {stem:`Solve for <i>x</i>: <span class="math">${a}x ${sg(b)} = ${neg(c)}</span>`,correct:neg(x),
+   distractors:distinct(neg(x),[fmt((c+b)/a),neg(-x),fmt(c/a-b)].map(String)),type:Math.random()<.35?'num':'mc',answer:x,
+   explain:`Undo the constant first: ${a}x = ${neg(c)} ${sg(-b)} = ${neg(c-b)}. Then divide by ${a}: x = ${neg(x)}.`}}},
+ {std:'A-REI.3',make(){const x=nz(-8,8),a=rnd(2,6),b=nz(-7,7),k=rnd(1,4),c=a*(x+b)+k*x;
+   return {stem:`Solve: <span class="math">${a}(x ${sg(b)}) + ${coef(k)} = ${neg(c)}</span>`,correct:neg(x),
+   distractors:distinct(neg(x),[fmt((c-b)/(a+k)),fmt((c-a*b)/a),fmt((c+a*b)/(a+k))]),type:'mc',answer:x,
+   explain:`Distribute: ${a}x ${sg(a*b)} + ${coef(k)} = ${neg(c)}. Combine like terms: ${a+k}x ${sg(a*b)} = ${neg(c)}. Subtract: ${a+k}x = ${neg(c-a*b)}. Divide: x = ${neg(x)}.`}}},
+ {std:'A-REI.3',make(){const a=rnd(2,6),k=nz(-6,6),b=rnd(1,12),c=b-a*k; // -a x + b > c  =>  x < k
+   const op=pick(['>','<']),flip=op==='>'?'<':'>';
+   return {stem:`Solve the inequality: <span class="math">−${a}x + ${b} ${op} ${neg(c)}</span>`,correct:`x ${flip} ${neg(k)}`,
+   distractors:[`x ${op} ${neg(k)}`,`x ${flip} ${neg(-k)}`,`x ${op} ${neg(-k)}`],type:'mc',
+   explain:`Subtract ${b}: −${a}x ${op} ${neg(c-b)}. Dividing by a NEGATIVE number flips the sign: x ${flip} ${neg(k)}.`}}},
+ {std:'F-IF.6',make(){const m=nz(-5,5),x1=rnd(-6,3),dx=rnd(1,5),y1=rnd(-8,8),x2=x1+dx,y2=y1+m*dx;
+   return {stem:`What is the slope of the line through <span class="math">(${neg(x1)}, ${neg(y1)})</span> and <span class="math">(${neg(x2)}, ${neg(y2)})</span>?`,correct:neg(m),
+   distractors:distinct(neg(m),[neg(-m),frac(1,m),frac(-1,m),neg(m*2)]),type:Math.random()<.3?'num':'mc',answer:m,
+   explain:`m = (y₂ − y₁)/(x₂ − x₁) = (${neg(y2)} − ${neg(y1)})/(${neg(x2)} − ${neg(x1)}) = ${neg(m*dx)}/${dx} = ${neg(m)}.`}}},
+ {std:'F-IF.2',make(){const a=nz(-3,3),b=nz(-6,6),c=nz(-9,9),k=nz(-4,4),v=a*k*k+b*k+c,wrong=-a*k*k+b*k+c;
+   return {stem:`If <span class="math">f(x) = ${coef(a,'x²')} ${term(b)} ${sg(c)}</span>, find <span class="math">f(${neg(k)})</span>.`,correct:neg(v),
+   distractors:distinct(neg(v),[neg(wrong),neg(a*2*k+b*k+c),neg(a*k*k-b*k+c)]),type:'mc',answer:v,
+   explain:`Substitute ${neg(k)} for every x, using parentheses: ${a}(${neg(k)})² ${sg(b)}(${neg(k)}) ${sg(c)} = ${neg(a*k*k)} ${sg(b*k)} ${sg(c)} = ${neg(v)}. Remember (${neg(k)})² is positive.`}}},
+ {std:'N-RN.2',make(){const a=rnd(2,9),b=rnd(2,9),t=pick(['prod','pow','quot']);
+   if(t==='prod')return {stem:`Simplify: <span class="math">x<sup>${a}</sup> · x<sup>${b}</sup></span>`,correct:`x<sup>${a+b}</sup>`,distractors:[`x<sup>${a*b}</sup>`,`2x<sup>${a+b}</sup>`,`x<sup>${Math.abs(a-b)||a+b+1}</sup>`],type:'mc',explain:`Same base, multiplying → ADD exponents: ${a} + ${b} = ${a+b}.`};
+   if(t==='pow')return {stem:`Simplify: <span class="math">(x<sup>${a}</sup>)<sup>${b}</sup></span>`,correct:`x<sup>${a*b}</sup>`,distractors:[`x<sup>${a+b}</sup>`,`${b}x<sup>${a}</sup>`,`x<sup>${a**2}</sup>`],type:'mc',explain:`Power of a power → MULTIPLY exponents: ${a} × ${b} = ${a*b}.`};
+   const hi=a+b;return {stem:`Simplify: <span class="math">x<sup>${hi}</sup> ÷ x<sup>${b}</sup></span>`,correct:`x<sup>${a}</sup>`,distractors:[`x<sup>${hi+b}</sup>`,`x<sup>${hi*b}</sup>`,a!==b?`x<sup>${b}</sup>`:`x<sup>${a+1}</sup>`],type:'mc',explain:`Same base, dividing → SUBTRACT exponents: ${hi} − ${b} = ${a}.`}}},
+ {std:'A-REI.6',make(){const x=nz(-7,7),y=nz(-7,7),s=x+y,d=x-y; if(x===y)return MATH[6].make();
+   return {stem:`Solve the system: <span class="math">x + y = ${neg(s)}</span> and <span class="math">x − y = ${neg(d)}</span>`,correct:`(${neg(x)}, ${neg(y)})`,
+   distractors:[`(${neg(y)}, ${neg(x)})`,`(${neg(x)}, ${neg(-y)})`,`(${neg(-x)}, ${neg(y)})`],type:'mc',
+   explain:`Add the equations to eliminate y: 2x = ${neg(s+d)}, so x = ${neg(x)}. Substitute: ${neg(x)} + y = ${neg(s)}, so y = ${neg(y)}. Check in BOTH equations.`}}},
+ {std:'A-SSE.2',make(){let p,q;do{p=nz(-8,8);q=nz(-8,8)}while(p+q===0||p===q||p===-q);const B=p+q,C=p*q;
+   const f=(u,v)=>`(x ${sg(u)})(x ${sg(v)})`;
+   return {stem:`Factor completely: <span class="math">x² ${term(B)} ${sg(C)}</span>`,correct:f(p,q),
+   distractors:[f(-p,-q),f(p,-q)===f(p,q)?f(p+1,q):f(p,-q),f(-p,q)===f(p,q)?f(p,q+1):f(-p,q)],type:'mc',
+   explain:`Find two numbers that MULTIPLY to ${neg(C)} and ADD to ${neg(B)}: ${neg(p)} and ${neg(q)}. So the factors are ${f(p,q)}. Check by FOIL.`}}},
+ {std:'F-LE.1',make(){const a=pick([200,500,1200,1500,2400,800]),r=pick([3,4,5,6,8,12,15]),t=rnd(3,10),grow=Math.random()<.6,thing=grow?pick([['A town of ',' people'],['A savings account with $',''],['A bacteria culture of ',' cells']]):pick([['A car worth $',''],['A lake with ',' fish'],['A phone worth $','']]);
+   const R=(r/100).toFixed(2),eq=grow?`y = ${a}(1 + ${R})<sup>t</sup>`:`y = ${a}(1 − ${R})<sup>t</sup>`;
+   return {stem:`${thing[0]}${a.toLocaleString()}${thing[1]} ${grow?'grows':'decreases'} by ${r}% each year. Which equation models the amount <i>y</i> after <i>t</i> years?`,correct:eq,
+   distractors:[grow?`y = ${a}(1 − ${R})<sup>t</sup>`:`y = ${a}(1 + ${R})<sup>t</sup>`,`y = ${a} ${grow?'+':'−'} ${r}t`,`y = ${a}(${r})<sup>t</sup>`],type:'mc',
+   explain:`A constant PERCENT change is exponential: y = a(1 ${grow?'+':'−'} r)<sup>t</sup>, with r written as a decimal (${r}% = ${R}). A constant AMOUNT of change would be linear.`}}},
+ {std:'S-ID.2',make(){const n=rnd(5,7);let d=Array.from({length:n},()=>rnd(60,100));const tot=d.reduce((a,b)=>a+b,0),fix=n-(tot%n);if(fix!==n)d[0]+=fix;if(d[0]>100){d[0]-=n}
+   const m=d.reduce((a,b)=>a+b,0)/n;if(!Number.isInteger(m))return MATH[9].make();const sorted=d.slice().sort((a,b)=>a-b);
+   return {stem:`Quiz scores: <b>${d.join(', ')}</b>. What is the mean score?`,correct:neg(m),distractors:distinct(neg(m),[sorted[Math.floor(n/2)],sorted[n-1]-sorted[0],m+2].map(String)),type:Math.random()<.4?'num':'mc',answer:m,
+   explain:`Add all ${n} scores (${d.reduce((a,b)=>a+b,0)}) and divide by ${n}: mean = ${m}.`}}},
+ {std:'A-CED.2',make(){const f=pick([25,30,40,49,50,75]),m=pick([15,18,20,22,25,35]),place=pick(['A gym charges a $'+f+' sign-up fee plus $'+m+' per month.','A phone plan costs $'+f+' to activate plus $'+m+' each month.','A band pays $'+f+' to rent a stage plus $'+m+' per hour of sound tech.']);
+   const unit=place.includes('hour')?'h':'n';
+   return {stem:`${place} Which equation gives the total cost <i>C</i> for <i>${unit}</i> ${unit==='h'?'hours':'months'}?`,correct:`C = ${m}${unit} + ${f}`,
+   distractors:[`C = ${f}${unit} + ${m}`,`C = ${m+f}${unit}`,`C = ${m}(${unit} + ${f})`],type:'mc',
+   explain:`The amount that repeats (${m} per ${unit==='h'?'hour':'month'}) is the slope and multiplies the variable. The one-time fee (${f}) is the y-intercept.`}}},
+ {std:'A-CED.4',make(){const t=pick([['A = lw','w','w = A / l',['w = A − l','w = lA','w = l / A']],['P = 2l + 2w','l','l = (P − 2w) / 2',['l = P − w','l = (P − w) / 2','l = P / 2 − 2w']],['d = rt','t','t = d / r',['t = dr','t = r / d','t = d − r']],['y = mx + b','x','x = (y − b) / m',['x = y / m − b','x = (y + b) / m','x = m(y − b)']]]);
+   return {stem:`Solve <span class="math">${t[0]}</span> for <i>${t[1]}</i>.`,correct:t[2],distractors:t[3],type:'mc',explain:`Treat the other letters like numbers and use inverse operations to isolate ${t[1]}: ${t[2]}.`}}},
+ {std:'A-REI.4',make(){const r=rnd(2,9);const sq=r*r;return {stem:`Solve: <span class="math">x² = ${sq}</span>`,correct:`x = ${r} or x = −${r}`,distractors:[`x = ${r} only`,`x = ${sq/2}`,`x = ${sq*2} or x = −${sq*2}`],type:'mc',explain:`Take the square root of both sides and remember BOTH roots: x = ±${r}.`}}},
+ {std:'N-Q.1',make(){const mph=pick([30,45,50,60,65,70]),h=pick([2,3,4,1.5,2.5]);const d=mph*h;
+   return {stem:`A bus travels from Southaven to Jackson at ${mph} miles per hour for ${h} hours. How many miles does it travel?`,correct:fmt(d),distractors:distinct(fmt(d),[fmt(mph/h),fmt(mph+h),fmt(d/2)]),type:Math.random()<.4?'num':'mc',answer:d,
+   explain:`(miles/hour) × hours = miles. ${mph} × ${h} = ${fmt(d)} miles. The units tell you to multiply.`}}}
+];
+
+/* English I — static items (the full build expands this to 150+). */
+const ENG=[
+ {std:'L.9.2',stem:'Which sentence uses a semicolon correctly?',correct:'The storm knocked out the power; we finished our homework by flashlight.',distractors:['The storm knocked out the power; and we finished our homework.','The storm; knocked out the power, so we used flashlights.','Because the storm knocked out the power; we used flashlights.'],explain:'A semicolon joins two COMPLETE sentences without a conjunction. Each side must be able to stand alone.'},
+ {std:'L.9.2',stem:'Which sentence uses a colon correctly?',correct:'Coach gave us three rules: show up early, work hard, and support your teammates.',distractors:['Coach gave us: three rules for the season.','Coach said that: we should show up early.','The rules were: early, hard work, and support.'],explain:'A colon must follow a COMPLETE sentence. "Coach gave us three rules" is complete, so a colon can introduce the list.'},
+ {std:'L.9.1',stem:'Which sentence has correct parallel structure?',correct:'Over the summer, Marcus liked fishing, swimming, and hiking.',distractors:['Over the summer, Marcus liked fishing, to swim, and hiking.','Over the summer, Marcus liked to fish, swimming, and hikes.','Over the summer, Marcus liked fishing, swim, and to hike.'],explain:'Items in a list should match in form. "Fishing, swimming, hiking" are all -ing words.'},
+ {std:'L.9.1',stem:'In the sentence "<i>After the game ended, the fans rushed onto the field</i>," the underlined part "<u>After the game ended</u>" is a(n) —',correct:'dependent clause',distractors:['independent clause','prepositional phrase','complete sentence'],explain:'It has a subject (game) and verb (ended) but begins with "After," so it cannot stand alone. That makes it a dependent (subordinate) clause.'},
+ {std:'L.9.1',stem:'Which sentence is a run-on (fused sentence)?',correct:'The library closes at eight I need to leave soon.',distractors:['The library closes at eight, so I need to leave soon.','Because the library closes at eight, I need to leave soon.','The library closes at eight; I need to leave soon.'],explain:'Two complete thoughts are joined with no punctuation or conjunction.'},
+ {std:'L.9.1',stem:'Choose the sentence with correct subject–verb agreement.',correct:'Each of the players has a new jersey.',distractors:['Each of the players have a new jersey.','Each of the players are getting a new jersey.','Each of the players were given new jerseys.'],explain:'"Each" is the singular subject; "of the players" is just a phrase. Singular subject → singular verb "has."'},
+ {std:'L.9.1',stem:'Which sentence uses a pronoun correctly?',correct:'Jamal and I studied for the Algebra test together.',distractors:['Jamal and me studied for the Algebra test together.','Me and Jamal studied for the Algebra test together.','Him and Jamal studied for the Algebra test together.'],explain:'Remove the other person: "I studied" (not "me studied"). Subjects use I, he, she, we, they.'},
+ {std:'L.9.4',stem:'Read: "<i>The coach was <b>adamant</b> that no one would skip practice, refusing every excuse.</i>" What does <b>adamant</b> mean?',correct:'firm and unwilling to change',distractors:['confused and unsure','angry and loud','tired and bored'],explain:'The clue "refusing every excuse" shows the coach would not change her mind.'},
+ {std:'L.9.4',stem:'The prefix <b>bene-</b> means "good." Which word most likely means "a person who receives something good"?',correct:'beneficiary',distractors:['benign','benediction','benefactor'],explain:'A benefactor GIVES help; a beneficiary RECEIVES it. The suffix -ary can mean "one who."'},
+ {std:'L.9.4',stem:'Read: "<i>Her answer was so <b>ambiguous</b> that half the class thought she said yes and half thought she said no.</i>" <b>Ambiguous</b> means —',correct:'open to more than one meaning',distractors:['very loud','completely correct','spoken quickly'],explain:'The class understood it two different ways, so the answer was unclear — ambiguous.'},
+ {std:'L.9.5',stem:'"<i>The hallway was a river of students rushing to lunch.</i>" This sentence is an example of —',correct:'metaphor',distractors:['simile','onomatopoeia','alliteration'],explain:'It compares the hallway to a river WITHOUT "like" or "as" — a metaphor.'},
+ {std:'L.9.5',stem:'Which word has the most NEGATIVE connotation?',correct:'stubborn',distractors:['determined','persistent','dedicated'],explain:'All four describe not giving up, but "stubborn" suggests being unreasonable — a negative feeling.'},
+ {std:'W.9.1',stem:'Which sentence would be the strongest CLAIM for an argument essay?',correct:'Mississippi high schools should start no earlier than 8:30 a.m. because teenagers need more sleep to learn well.',distractors:['Some schools start early and some start late.','I think school is sometimes too early, maybe.','Sleep is something that everyone does every night.'],explain:'A strong claim takes a clear, arguable position and previews the reason.'},
+ {std:'W.9.1',stem:'A student argues that cell phones should be allowed at lunch. Which piece of evidence BEST supports the claim?',correct:'A district survey found 78% of parents want to be able to reach their child during the day.',distractors:['My friend says phones are really fun.','Phones were invented many years ago.','Some students have phones that are blue.'],explain:'Strong evidence is specific, credible and directly connected to the claim.'},
+ {std:'W.9.1',stem:'What is a COUNTERCLAIM?',correct:'An opposing argument that the writer acknowledges and then answers',distractors:['A second claim that agrees with the first','The final sentence of a conclusion','A quote from an expert that supports the thesis'],explain:'Addressing a counterclaim shows you understand the other side and makes your argument stronger.'},
+ {std:'W.9.2',stem:'Which transition best connects these ideas? "<i>The river flooded the farmland. ____, many families had to move.</i>"',correct:'As a result',distractors:['However','For example','In contrast'],explain:'The second sentence is an EFFECT of the first, so a cause-and-effect transition fits.'},
+ {std:'W.9.2',stem:'Which sentence is most appropriate for a FORMAL informative essay?',correct:'The Civil Rights Movement led to major changes in federal voting law.',distractors:['The Civil Rights Movement was super huge and changed a ton of stuff.','Honestly, you guys, the Civil Rights Movement was a big deal.','So basically the Civil Rights Movement changed laws and stuff.'],explain:'Formal style avoids slang, filler and addressing the reader as "you guys."'},
+ {std:'W.9.8',stem:'Which source would be MOST credible for a report on Mississippi River flooding?',correct:'A report from the U.S. Army Corps of Engineers',distractors:['An anonymous social media post','A fiction novel set on the river','A blog selling river cruise tickets'],explain:'Credible sources are expert, factual and have no reason to mislead.'},
+ {std:'W.9.8',stem:'Why do writers cite their sources?',correct:'To give credit to others\' ideas and let readers check the information',distractors:['To make the essay longer','Because teachers like long lists','To hide where the information came from'],explain:'Citing gives credit (avoiding plagiarism) and builds the writer\'s credibility.'},
+ {std:'L.9.2',stem:'Which sentence is punctuated correctly?',correct:'Before the bell rang, Tasha finished her essay.',distractors:['Before the bell rang Tasha, finished her essay.','Before, the bell rang Tasha finished her essay.','Before the bell, rang Tasha finished her essay.'],explain:'Use a comma after an introductory dependent clause ("Before the bell rang").'}
+];
+
+/* Reading — original passages written for this hub, with standards-tagged questions. */
+const PASSAGES={
+ delmar:{title:'The Last Shift at Delmar\'s',kind:'Literary',html:`
+<p>The bell over the door at Delmar's Hardware had rung for forty-one years, and tonight Andre was the one who would silence it. Granddad had said it was time to sell. "Big stores out by the highway," he'd shrugged, as if that explained everything. It didn't.</p>
+<p>Andre swept the aisles slowly. He knew where every bolt lived, every bin of washers, every coil of rope. When he was seven, Granddad had let him count nails into paper bags, and he had felt like the most important person in Mississippi. Now the shelves were half empty, and the dust showed in squares where the paint cans used to stand.</p>
+<p>Mrs. Pruitt came in at five till nine, the way she had every Thursday for as long as Andre could remember. "Just one hinge, baby," she said. "The cabinet door's crying again." Andre found the last brass hinge in the drawer and refused her money. She pressed two dollars into his hand anyway and held it there a moment longer than she needed to.</p>
+<p>After she left, Andre climbed the stepladder and unhooked the bell. It was lighter than he expected. He thought about leaving it for the new owners, then slipped it into his jacket pocket instead. Some things, he decided, weren't for sale.</p>`},
+ river:{title:'A River That Wants to Move',kind:'Informational',html:`
+<p>For thousands of years, the Mississippi River has not stayed in one place. Like a garden hose left running on the ground, a river that carries huge amounts of sediment slowly builds up its own bed and eventually breaks out toward a shorter, steeper path to the sea. Geologists have found evidence that the lower Mississippi has shifted its main channel several times over the last seven thousand years.</p>
+<p>By the twentieth century, engineers noticed the river was trying to do it again. A nearby river, the Atchafalaya, offered a shorter route to the Gulf, and each year it captured a larger share of the Mississippi's water. If the main flow switched completely, cities and industries that depend on the current channel, including Baton Rouge and New Orleans, could be left beside a slow, salty estuary.</p>
+<p>Congress responded by directing the U.S. Army Corps of Engineers to stop the change. The result was the Old River Control Structure, completed in 1963, a system of gates and dams that holds the split of water at roughly seventy percent to the Mississippi and thirty percent to the Atchafalaya.</p>
+<p>Not everyone believes the structure is a permanent answer. A major flood in 1973 badly damaged it, and some scientists warn that holding a river in place requires constant, costly effort. Still, for now, people have chosen to manage the river rather than let nature decide its course. The debate over how long that choice can last is far from over.</p>`}
+};
+const READ=[
+ {std:'RL.9.2',passage:'delmar',stem:'Which statement best expresses a THEME of the story?',correct:'Some memories and connections are worth more than money.',distractors:['Big stores are always better than small stores.','Hard work always leads to success.','Young people should not work at stores.'],explain:'Andre refuses Mrs. Pruitt\'s money and keeps the bell because "some things weren\'t for sale." The theme is about value beyond money.'},
+ {std:'RL.9.1',passage:'delmar',stem:'Which detail BEST shows Andre\'s close connection to the store?',correct:'"He knew where every bolt lived, every bin of washers, every coil of rope."',distractors:['"Big stores out by the highway," he\'d shrugged.','Mrs. Pruitt came in at five till nine.','It was lighter than he expected.'],explain:'Knowing where "every bolt lived" shows years of familiarity and care. The other details don\'t reveal his feelings.'},
+ {std:'RL.9.3',passage:'delmar',stem:'How does Andre change from the beginning to the end of the story?',correct:'He moves from quiet sadness to a decision to hold on to what matters to him.',distractors:['He moves from excitement to anger at his grandfather.','He moves from boredom to wanting to own a big store.','He does not change at all.'],explain:'At first he sweeps "slowly" and disagrees with the sale; at the end he makes a decision and keeps the bell.'},
+ {std:'RL.9.4',passage:'delmar',stem:'Mrs. Pruitt says the cabinet door is "crying again." This phrase suggests the door —',correct:'squeaks when it moves',distractors:['is wet from a leak','is broken in half','makes her feel sad'],explain:'This is personification. A door that "cries" makes a whining, squeaking sound — which is why she needs a hinge.'},
+ {std:'RL.9.5',passage:'delmar',stem:'Why does the author include the memory of Andre counting nails when he was seven?',correct:'To show how long and how deeply the store has mattered to him',distractors:['To explain how hardware stores price nails','To show that Andre was bad at math','To introduce a new character'],explain:'The flashback gives history to his feelings, so the reader understands what he is losing.'},
+ {std:'RL.9.4',passage:'delmar',stem:'The overall TONE of the story is best described as —',correct:'bittersweet',distractors:['humorous','furious','frightening'],explain:'It is sad (the store is closing) but also warm (memories, Mrs. Pruitt, keeping the bell) — bittersweet.'},
+ {std:'RI.9.2',passage:'river',stem:'What is the CENTRAL IDEA of the passage?',correct:'People are working to keep the Mississippi River in its current channel, but whether that can last is debated.',distractors:['The Atchafalaya River is longer than the Mississippi River.','Garden hoses work the same way rivers do.','New Orleans was founded in 1963.'],explain:'Each paragraph builds toward the effort to control the river and the debate over it. The other answers are details or incorrect.'},
+ {std:'RI.9.4',passage:'river',stem:'In paragraph 1, the word <b>sediment</b> most likely means —',correct:'sand, soil and small rocks carried by water',distractors:['fast-moving water','a type of fish','the bottom of a boat'],explain:'The river "carries huge amounts" of it and it "builds up" the riverbed — so it is material like sand and soil.'},
+ {std:'RI.9.6',passage:'river',stem:'Why does the author compare the river to "a garden hose left running on the ground"?',correct:'To help readers picture how a river can shift on its own',distractors:['To argue that people waste water','To describe how dams are built','To show that the river is small'],explain:'A familiar image helps explain a complex scientific process.'},
+ {std:'RI.9.1',passage:'river',stem:'Which detail from the passage supports the idea that controlling the river is difficult?',correct:'A major flood in 1973 badly damaged the structure.',distractors:['The structure was completed in 1963.','The Atchafalaya offered a shorter route to the Gulf.','Baton Rouge depends on the current channel.'],explain:'Damage from a flood is direct evidence that holding the river in place is hard.'},
+ {std:'RI.9.8',passage:'river',stem:'Which statement from the passage is an OPINION or claim rather than a fact?',correct:'Some scientists warn that holding a river in place requires constant, costly effort.',distractors:['The Old River Control Structure was completed in 1963.','The flow is held at roughly seventy percent to the Mississippi.','Congress directed the Corps of Engineers to stop the change.'],explain:'It reports a warning — a judgment some scientists make — while the others are verifiable facts.'},
+ {std:'RI.9.6',passage:'river',stem:'What is the author\'s main PURPOSE in the last paragraph?',correct:'To show that the solution is still being questioned',distractors:['To persuade readers to move away from the river','To explain how to build a dam','To praise the Army Corps of Engineers'],explain:'Phrases like "not everyone believes" and "the debate…is far from over" show the purpose is to present the ongoing question.'}
+];
+
+const BANK={math:MATH,eng:ENG,read:READ};
+function instantiate(subj,f){
+  let it=subj==='math'?f.make():Object.assign({},f);
+  // guarantee 4 different answer choices (regenerate if numbers collide)
+  for(let tries=0;subj==='math'&&tries<30;tries++){const all=[it.correct,...it.distractors.slice(0,3)].map(String);if(new Set(all).size===4)break;it=f.make()}
+  return Object.assign({type:'mc'},it,{subj,std:f.std||it.std});
+}
+
+/* Build a test. Correct-answer letters are BALANCED and shuffled across the test,
+   so answers never pile up on one letter (no "always C"). */
+function buildItems(plan){ // plan: [[subj,count,stdFilter?]]
+  let items=[];
+  for(const [subj,n,filt] of plan){
+    let pool=BANK[subj].filter(f=>!filt||filt.includes(f.std));
+    if(subj==='math'){
+      // spread across standards, then fill randomly
+      const order=shuffle(pool);for(let i=0;i<n;i++)items.push(instantiate(subj,order[i%order.length]));
+    }else{
+      // keep reading passages grouped
+      const chosen=shuffle(pool).slice(0,n);
+      if(subj==='read')chosen.sort((a,b)=>a.passage.localeCompare(b.passage));
+      chosen.forEach(f=>items.push(instantiate(subj,f)));
+    }
+  }
+  const mc=items.filter(i=>i.type==='mc');
+  let slots=shuffle(mc.map((_,i)=>i%4));
+  mc.forEach((it,k)=>{const d=shuffle(it.distractors).slice(0,3);const pos=slots[k];const ch=d.slice();ch.splice(pos,0,it.correct);it.choices=ch;it.key=pos});
+  return items;
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+const views={};
+function go(v,arg){if(document.body.classList.contains('testing')&&!confirm('Leave the test? Your answers will not be saved.'))return;
+  stopTestTimer();document.body.classList.remove('testing');
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  $('#app').innerHTML='';views[v](arg);window.scrollTo(0,0)}
+document.getElementById('tabs').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.view)};
+
+function stats(subj){
+  const rs=S.results.filter(r=>r.subj===subj&&r.kind!=='practice');
+  const avg=rs.length?Math.round(rs.reduce((a,r)=>a+r.pct,0)/rs.length):null;
+  const pre=S.results.find(r=>r.subj===subj&&r.kind==='pre');
+  const post=[...S.results].reverse().find(r=>r.subj===subj&&r.kind==='post');
+  const mins=(S.time[subj]||{})[weekKey()]||0;
+  return {rs,avg,pre,post,mins};
+}
+function letter(p){if(p==null)return '—';return p>=90?'A':p>=80?'B':p>=70?'C':p>=65?'D':'F'}
+
+views.home=()=>{
+  const name=S.student.name;
+  $('#app').innerHTML=`
+  <div class="hero">
+    <div class="card">
+      <span class="pill">${S.student.school} · Grade 9 · Fall Semester</span>
+      <h1 style="margin-top:10px">Welcome back, <span id="stuName" contenteditable="true" spellcheck="false" title="Click to edit name" style="border-bottom:1px dashed var(--line)">${name}</span>.</h1>
+      <p class="muted">Today's plan follows the same routine every day so it's easy to follow: <b>Warm-up → Learn → Practice together → Practice alone → Exit ticket</b>.</p>
+      <ol class="step-list">
+        <li><b>Algebra I — 45 min.</b> Lesson: Solving Multi-Step Equations <span class="pill math">A-REI.3</span></li>
+        <li><b>Reading — 30 min.</b> Lesson: Central Idea &amp; Supporting Details <span class="pill read">RI.9.2</span></li>
+        <li><b>English I — 30 min.</b> Grammar practice: semicolons &amp; colons <span class="pill eng">L.9.2</span></li>
+      </ol>
+      <div class="row" style="margin-top:14px"><button class="btn primary" onclick="go('learn')">Start today's lesson</button><button class="btn" onclick="go('tests')">Take a pre-assessment</button></div>
+    </div>
+    <div class="card">
+      <h3>Where to begin</h3>
+      <p class="small">If this is the first session, start with the <b>three pre-assessments</b> (about 25 minutes each). They find strengths and gaps, and the hub builds the practice plan from the results.</p>
+      <div class="callout small"><b>The Ascend</b> is the combined exam across all three subjects. It's given at Week 1 (baseline), Week 9 (checkpoint) and Week 18 (final) so growth is measured the same way each time.</div>
+      <p class="small muted">Progress is saved in this browser. The full build adds student logins and a parent/tutor account.</p>
+    </div>
+  </div>
+  <h2 style="margin:28px 0 12px">This week</h2>
+  <div class="grid g3">${['math','eng','read'].map(s=>{const t=stats(s);const pct=Math.min(100,Math.round(t.mins/SUBJ[s].goal*100));return `
+    <div class="card subj-card" style="--c:${SUBJ[s].c}">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">${SUBJ[s].name}</h3><span class="pill ${s}">${letter(t.avg)}</span></div>
+      <div class="big">${t.avg==null?'—':t.avg+'%'}</div><p class="small muted">Average of graded assessments</p>
+      <div class="small" style="margin-bottom:4px">Study time: <b>${t.mins}</b> / ${SUBJ[s].goal} min this week</div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="row" style="margin-top:12px"><button class="btn sm" onclick="go('practice','${s}')">Practice</button><button class="btn sm" onclick="startTest('pre','${s}')">${t.pre?'Retake pre-test':'Pre-assessment'}</button></div>
+    </div>`}).join('')}
+  </div>`;
+  const n=$('#stuName');n.onblur=()=>{S.student.name=n.textContent.trim()||'Student';save()};
+};
+
+/* ---------- Semester plan ---------- */
+const PLAN=[
+ [1,'Baseline: Pre-assessment · Number sense & integers review','Baseline: Pre-assessment · Parts of speech review','Baseline: Pre-assessment · Reading strategies (annotate, RACE)','pre'],
+ [2,'Expressions & properties · Units (N-Q.1, A-SSE.1)','Phrases & clauses (L.9.1)','Citing textual evidence (RL/RI.9.1)'],
+ [3,'Solving multi-step equations (A-REI.1, A-REI.3)','Sentence types · fixing run-ons & fragments (L.9.1)','Citing evidence · inference'],
+ [4,'Inequalities · literal equations (A-REI.3, A-CED.4) · Unit Quiz 1','Parallel structure (L.9.1a) · Unit Quiz 1','Theme in literature (RL.9.2) · Unit Quiz 1','quiz'],
+ [5,'Functions: domain, range, notation (F-IF.1–2)','Semicolons, colons & commas (L.9.2)','Central idea & summary (RI.9.2)'],
+ [6,'Reading graphs & key features (F-IF.4–5)','Argument writing: claims & evidence (W.9.1)','Character development (RL.9.3)'],
+ [7,'Slope & rate of change (F-IF.6) · Unit Quiz 2','Argument: counterclaims & rebuttals (W.9.1) · Unit Quiz 2','Word choice, tone & figurative language (RL/RI.9.4) · Unit Quiz 2','quiz'],
+ [8,'Writing linear equations (A-CED.2, F-BF.1)','Timed argument essay #1','Author\'s purpose & point of view (RI.9.6)'],
+ [9,'THE ASCEND — Checkpoint (all subjects) · targeted re-teach','THE ASCEND — Checkpoint','THE ASCEND — Checkpoint','ascend'],
+ [10,'Systems of equations: graphing & substitution (A-REI.6)','Informative writing & transitions (W.9.2)','Text structure (RL/RI.9.5)'],
+ [11,'Systems: elimination · inequalities (A-REI.6, A-REI.12) · Unit Quiz 3','Vocabulary: context clues, roots & affixes (L.9.4) · Unit Quiz 3','Evaluating arguments & evidence (RI.9.8) · Unit Quiz 3','quiz'],
+ [12,'Statistics: center, spread, scatter plots (S-ID.1–3, 6)','Connotation & figurative language (L.9.5)','Paired passages: comparing texts (RL/RI.9.9)'],
+ [13,'Exponent rules · exponential functions (N-RN.2, F-LE.1)','Research skills & credible sources (W.9.7–8)','Poetry & drama analysis (RL.9.4–5)'],
+ [14,'Polynomials: add, subtract, multiply (A-APR.1) · Unit Quiz 4','Citations & avoiding plagiarism (W.9.8) · Unit Quiz 4','Informational: technical & historical texts · Unit Quiz 4','quiz'],
+ [15,'Factoring (A-SSE.2)','Narrative writing techniques (W.9.3)','Speed & stamina: timed passages'],
+ [16,'Quadratics: solving & graphing (A-REI.4, F-IF.8)','Timed argument essay #2 · revision','MAAP-style passage practice (prep for English II)'],
+ [17,'Post-assessment · MAAP Algebra I EOC review','Post-assessment · grammar & writing review','Post-assessment · mixed reading review','post'],
+ [18,'THE ASCEND — Final · Semester report card','THE ASCEND — Final','THE ASCEND — Final','ascend']
+];
+views.plan=()=>{
+  $('#app').innerHTML=`<h1>Semester Plan · 18 Weeks</h1>
+  <p class="muted">Sequenced to the Mississippi College &amp; Career Readiness Standards (MS CCRS). Algebra I content that appears on the MAAP Algebra I end-of-course test is front-loaded so the student is ready for the fall testing window.</p>
+  <div class="grid g4" style="margin:16px 0">
+    <div class="card"><b>Weekly time goal</b><p class="small" style="margin:6px 0 0">Algebra I 180 min · English 120 min · Reading 120 min (≈ 7 hrs/week)</p></div>
+    <div class="card"><b>Daily routine</b><p class="small" style="margin:6px 0 0">Mon–Thu: lessons. Friday: review, quiz or test.</p></div>
+    <div class="card"><b>Assessments</b><p class="small" style="margin:6px 0 0">3 pre-tests · 12 unit quizzes · 3 Ascend exams · 3 post-tests</p></div>
+    <div class="card"><b>Mastery rule</b><p class="small" style="margin:6px 0 0">80%+ to move on. Below 70% triggers re-teach + new practice set.</p></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="week hd"><div>Week</div><div>Algebra I</div><div>English I</div><div>Reading</div></div>
+    ${PLAN.map(w=>`<div class="week ${w[4]==='ascend'?'test':''}"><div>Wk ${w[0]}${w[4]?`<br><span class="pill ${w[4]==='ascend'?'ascend':''}" style="margin-top:4px">${w[4]==='ascend'?'Ascend':w[4]==='pre'?'Pre-test':w[4]==='post'?'Post-test':'Quiz'}</span>`:''}</div><div>${w[1]}</div><div>${w[2]}</div><div>${w[3]}</div></div>`).join('')}
+  </div>`;
+};
+
+/* ---------- Lessons ---------- */
+views.learn=()=>{
+  $('#app').innerHTML=`<h1>Lessons</h1><p class="muted">Every lesson uses the same five steps (gradual release: I do → We do → You do), with a time for each step.</p>
+  <div class="grid g2">
+    <div class="card subj-card" style="--c:var(--math)"><span class="pill math">Algebra I · Week 3 · A-REI.3</span><h3 style="margin-top:8px">Solving Multi-Step Equations</h3><p class="small">45 minutes · worked example, step-by-step guided practice, show-your-thinking, exit ticket.</p><button class="btn primary sm" onclick="mathLesson()">Open lesson</button></div>
+    <div class="card subj-card" style="--c:var(--read)"><span class="pill read">Reading · Week 5 · RI.9.2</span><h3 style="margin-top:8px">Central Idea &amp; Supporting Details</h3><p class="small">30 minutes · interactive passage: the student finds and proves the central idea, then writes a summary.</p><button class="btn primary sm" onclick="readLesson()">Open lesson</button></div>
+    <div class="card subj-card" style="--c:var(--eng)"><span class="pill eng">English I · Week 5 · L.9.2</span><h3 style="margin-top:8px">Semicolons &amp; Colons</h3><p class="small muted">Full lesson in the complete build. Practice set available now in the Practice tab.</p><button class="btn sm" onclick="go('practice','eng')">Practice now</button></div>
+  </div>`;
+};
+function stagebar(names,i){return `<div class="stagebar">${names.map((n,k)=>`<span class="${k<i?'done':k===i?'on':''}">${k+1}. ${n}</span>`).join('')}</div>`}
+
+function mathLesson(){
+  const names=['Warm-up · 5 min','Learn (I do) · 10 min','Together (We do) · 15 min','On your own · 10 min','Exit ticket · 5 min'];
+  let st=0;const W=[{q:'−3 + 8',a:5},{q:'4(−2)',a:-8},{q:'−12 ÷ −4',a:3}];
+  const render=()=>{
+    const body=[
+`<h3>Warm-up: integer facts</h3><p>Solve mentally. Signs matter in every equation this week.</p>
+${W.map((w,i)=>`<p><span class="math">${w.q} =</span> <input class="blank" data-w="${i}"> <span id="wf${i}"></span></p>`).join('')}
+<button class="btn primary sm" id="wchk">Check</button>`,
+`<h3>Learn: the 4-step method</h3>
+<div class="callout"><b>Goal:</b> get <i>x</i> alone by undoing operations in reverse order. Whatever you do to one side, do to the other.</div>
+<p>Example: <span class="math">3(x − 4) + 2x = 18</span></p>
+<ol class="step-list" id="ido"></ol><button class="btn sm" id="nextStep">Show next step</button>`,
+`<h3>Together: you do each step, I check it</h3><div id="wedo"></div>`,
+`<h3>On your own</h3><p class="small muted">New numbers each time. Feedback after each answer. Calculator allowed.</p><div id="youdo"></div>`,
+`<h3>Exit ticket</h3><p>3 questions, graded and saved to the report card. Tools are turned off.</p><button class="btn primary" onclick="startTest('quiz','math',['A-REI.3'],3,'Exit Ticket: Multi-Step Equations')">Start exit ticket</button>
+<div style="margin-top:18px"><h3>Show me your thinking</h3><p class="small">In your own words, explain how you would CHECK that x = 6 is correct for 3(x − 4) + 2x = 18. Your tutor will read this.</p>
+<textarea id="tb" placeholder="First I would…"></textarea><button class="btn sm" id="tbSave" style="margin-top:8px">Save explanation</button> <span id="tbMsg" class="small muted"></span></div>`][st];
+    $('#app').innerHTML=`<button class="btn sm noprint" onclick="go('learn')">← Lessons</button><h1 style="margin-top:12px">Solving Multi-Step Equations</h1><span class="pill math">MS CCRS A-REI.3</span>${stagebar(names,st)}<div class="card">${body}</div>
+    <div class="row" style="margin-top:14px;justify-content:space-between"><button class="btn" ${st===0?'disabled':''} id="prev">Back</button><button class="btn primary" ${st===4?'disabled':''} id="next">Next step →</button></div>`;
+    $('#prev').onclick=()=>{st--;render()};$('#next').onclick=()=>{st++;render()};
+    if(st===0)$('#wchk').onclick=()=>W.forEach((w,i)=>{const v=parseNum(document.querySelector(`[data-w="${i}"]`).value);$('#wf'+i).innerHTML=v===w.a?'<b class="tag-m">✓</b>':`<b class="tag-n">✗</b> <span class="small">answer: ${neg(w.a)}</span>`});
+    if(st===1){const steps=[['Distribute the 3','3x − 12 + 2x = 18'],['Combine like terms (3x + 2x)','5x − 12 = 18'],['Add 12 to both sides','5x = 30'],['Divide both sides by 5','x = 6'],['CHECK: substitute 6','3(6 − 4) + 2(6) = 6 + 12 = 18 ✓']];let k=0;
+      $('#nextStep').onclick=()=>{if(k<steps.length){$('#ido').insertAdjacentHTML('beforeend',`<li><b>${steps[k][0]}</b><br><span class="math">${steps[k][1]}</span></li>`);k++;if(k===steps.length)$('#nextStep').remove()}}}
+    if(st===2)weDo();
+    if(st===3)youDo();
+    if(st===4)$('#tbSave').onclick=()=>{const t=$('#tb').value.trim();if(!t)return;S.teachback.push({date:new Date().toISOString(),lesson:'Multi-Step Equations',text:t});S.lessons.mathMulti=true;save();$('#tbMsg').textContent='Saved — visible on the report card.'};
+  };render();
+}
+function weDo(){
+  const x=nz(-6,6),a=rnd(2,5),b=nz(-6,6),k=rnd(1,4),c=a*(x+b)+k*x,A=a+k,B=a*b;
+  const host=$('#wedo');
+  host.innerHTML=`<p>Solve <span class="math">${a}(x ${sg(b)}) + ${coef(k)} = ${neg(c)}</span>. Fill in each step, then check it.</p>
+  <div class="callout" id="s1">Step 1 — distribute and combine like terms: <span class="math"><input class="blank" id="i1"> x + <input class="blank" id="i2"> = ${neg(c)}</span> <button class="btn sm" id="c1">Check</button><div class="feedback" id="f1"></div></div>
+  <div class="callout hide" id="s2">Step 2 — undo the constant: <span class="math"><input class="blank" id="i3"> x = <input class="blank" id="i4"></span> <button class="btn sm" id="c2">Check</button><div class="feedback" id="f2"></div></div>
+  <div class="callout hide" id="s3">Step 3 — divide: <span class="math">x = <input class="blank" id="i5"></span> <button class="btn sm" id="c3">Check</button><div class="feedback" id="f3"></div></div>
+  <div class="row"><button class="btn sm" id="newWe">Try a new problem</button></div>`;
+  const ok=(id,msg)=>{$(id).innerHTML=`<span class="tag-m"><b>✓ Correct.</b></span> ${msg||''}`};
+  const no=(id,hint)=>{$(id).innerHTML=`<span class="tag-n"><b>Not yet.</b></span> Hint: ${hint}`};
+  $('#c1').onclick=()=>{if(parseNum($('#i1').value)===A&&parseNum($('#i2').value)===B){ok('#f1');$('#s2').classList.remove('hide')}else no('#f1',`${a} × x = ${a}x and ${a} × ${neg(b)} = ?. Then add the ${coef(k)} to the ${a}x.`)};
+  $('#c2').onclick=()=>{if(parseNum($('#i3').value)===A&&parseNum($('#i4').value)===c-B){ok('#f2');$('#s3').classList.remove('hide')}else no('#f2',`Do the opposite of ${sg(B).replace(' ','')}: ${B<0?'add':'subtract'} ${Math.abs(B)} on BOTH sides.`)};
+  $('#c3').onclick=()=>{if(parseNum($('#i5').value)===x)ok('#f3',`Check: ${a}(${neg(x)} ${sg(b)}) + ${k}(${neg(x)}) = ${neg(c)} ✓`);else no('#f3',`Divide ${neg(c-B)} by ${A}.`)};
+  $('#newWe').onclick=weDo;
+}
+function youDo(){
+  let n=0,right=0;const host=$('#youdo');
+  const next=()=>{if(n>=6){host.innerHTML=`<div class="callout ${right>=5?'good':'warn'}"><b>${right} / 6 correct.</b> ${right>=5?'Ready for the exit ticket.':'Go back to "Together" for one more guided problem, then try again.'}</div><button class="btn sm" id="again">New set of 6</button>`;$('#again').onclick=youDo;return}
+    const it=instantiate('math',pick(MATH.slice(0,2))); // two-step and multi-step generators
+    host.innerHTML=`<p class="small muted">Problem ${n+1} of 6</p><p class="stem">${it.stem}</p><span class="math">x = </span><input class="num" id="yd" inputmode="decimal"> <button class="btn primary sm" id="ydc">Check</button><div class="feedback" id="ydf"></div>`;
+    $('#ydc').onclick=()=>{const v=parseNum($('#yd').value);const good=v===it.answer;if(good)right++;n++;
+      $('#ydf').innerHTML=`<div class="callout ${good?'good':'bad'}"><b>${good?'Correct!':'Not quite — the answer is '+it.correct+'.'}</b><br>${it.explain}</div><button class="btn sm" id="ydn">Next →</button>`;$('#ydc').disabled=true;$('#ydn').onclick=next};
+  };next();
+}
+
+function readLesson(){
+  const names=['Learn · 5 min','Find it · 10 min','Prove it · 5 min','Summarize · 10 min'];let st=0;
+  const sents=['For thousands of years, the Mississippi River has not stayed in one place.','Engineers noticed the river was trying to change course toward the Atchafalaya.','The Old River Control Structure, completed in 1963, holds the water split at about 70/30.','People have chosen to manage the river, but the debate over how long that can last is far from over.'];
+  const render=()=>{
+    const body=[
+`<h3>What is a central idea?</h3><div class="callout">The <b>central idea</b> is what the WHOLE text is mostly about. It is bigger than any one detail. Test: does every paragraph support it?</div>
+<p><b>Strategy (3 questions):</b></p><ol><li>What is the topic? (one or two words)</li><li>What does the author keep saying about the topic?</li><li>Put it together in ONE sentence.</li></ol>
+<p class="small muted">Next, you'll read a passage and find the central idea yourself.</p>`,
+`<h3>Find it</h3><div class="passage"><h4>${PASSAGES.river.title}</h4>${PASSAGES.river.html}</div>
+<p>Below are four sentences that summarize each paragraph. <b>Click the one that comes closest to the central idea of the whole passage.</b></p>
+<div id="sents" style="line-height:2">${sents.map((s,i)=>`<span class="sentence" data-i="${i}">${i+1}. ${s}</span><br>`).join('')}</div><div class="feedback" id="sf"></div>`,
+`<h3>Prove it</h3><p>Pick the TWO details that best support the central idea.</p>
+${['A major flood in 1973 badly damaged the structure.','The river is compared to a garden hose.','Congress directed the Corps of Engineers to stop the change.','Baton Rouge is a city in Louisiana.'].map((d,i)=>`<label style="display:block;margin:6px 0"><input type="checkbox" value="${i}"> ${d}</label>`).join('')}
+<button class="btn primary sm" id="pchk">Check</button><div class="feedback" id="pf"></div>`,
+`<h3>Summarize (show me what you know)</h3><p>Write a 2–3 sentence objective summary. Use the checklist.</p>
+<textarea id="sum" placeholder="The passage explains…"></textarea>
+<div class="small" id="chk" style="margin-top:8px"></div>
+<button class="btn sm" id="sumSave" style="margin-top:8px">Save summary</button> <span class="small muted" id="sumMsg"></span>`][st];
+    $('#app').innerHTML=`<button class="btn sm noprint" onclick="go('learn')">← Lessons</button><h1 style="margin-top:12px">Central Idea &amp; Supporting Details</h1><span class="pill read">MS CCRS RI.9.2</span>${stagebar(names,st)}<div class="card">${body}</div>
+    <div class="row" style="margin-top:14px;justify-content:space-between"><button class="btn" ${st===0?'disabled':''} id="prev">Back</button><button class="btn primary" ${st===3?'disabled':''} id="next">Next step →</button></div>`;
+    $('#prev').onclick=()=>{st--;render()};$('#next').onclick=()=>{st++;render()};
+    if(st===1)$('#sents').onclick=e=>{const s=e.target.closest('.sentence');if(!s)return;document.querySelectorAll('.sentence').forEach(x=>x.classList.remove('picked','correct'));const i=+s.dataset.i;
+      if(i===3){s.classList.add('correct');$('#sf').innerHTML='<div class="callout good"><b>Yes.</b> It names the topic (managing the river) AND what the author keeps returning to (it\'s an ongoing struggle and debate). The others are single paragraphs — details.</div>'}
+      else{s.classList.add('picked');$('#sf').innerHTML=`<div class="callout warn"><b>That's a detail from paragraph ${i+1}.</b> Ask: does paragraph ${i===0?'4':'1'} support it too? Try again.</div>`}};
+    if(st===2)$('#pchk').onclick=()=>{const v=[...document.querySelectorAll('input[type=checkbox]:checked')].map(c=>+c.value).sort().join();$('#pf').innerHTML=v==='0,2'?'<div class="callout good"><b>Correct.</b> Both show the effort and the difficulty of controlling the river.</div>':'<div class="callout warn">Choose details that show the <i>effort</i> or the <i>difficulty</i> of keeping the river in place. A comparison or a fact about a city is not support.</div>'};
+    if(st===3){const upd=()=>{const t=$('#sum').value.toLowerCase();const c=[['Names the topic (river)',/river|mississippi/.test(t)],['Mentions the control effort',/control|structure|engineer|manage|gate|dam/.test(t)],['Mentions the debate / uncertainty',/debate|not everyone|question|last|uncertain|warn/.test(t)],['No "I think" (objective)',!/\bi think|\bi feel|\bin my opinion/.test(t)],['2–3 sentences',(t.match(/[.!?]/g)||[]).length>=2]];
+      $('#chk').innerHTML=c.map(x=>`${x[1]?'<b class="tag-m">✓</b>':'<span class="muted">○</span>'} ${x[0]}`).join('<br>')};$('#sum').oninput=upd;upd();
+      $('#sumSave').onclick=()=>{const t=$('#sum').value.trim();if(!t)return;S.teachback.push({date:new Date().toISOString(),lesson:'Central Idea summary',text:t});save();$('#sumMsg').textContent='Saved for tutor review.'}}
+  };render();
+}
+
+/* ---------- Practice ---------- */
+views.practice=(subj='math')=>{
+  const stds=[...new Set(BANK[subj].map(f=>f.std))];
+  $('#app').innerHTML=`<h1>Practice</h1><p class="muted">Untimed. Instant feedback with an explanation. Study tools are ON. Practice is tracked but does not count toward the grade.</p>
+  <div class="row" style="margin:12px 0">${['math','eng','read'].map(s=>`<button class="btn ${s===subj?'primary':''}" onclick="go('practice','${s}')">${SUBJ[s].name}</button>`).join('')}</div>
+  <div class="card"><h3>Choose a skill</h3><div class="row">
+   <button class="btn sm primary" onclick="startTest('practice','${subj}',null,10,'Mixed ${SUBJ[subj].name} practice')">Mixed (10)</button>
+   ${stds.map(s=>`<button class="btn sm" onclick="startTest('practice','${subj}',['${s}'],${subj==='math'?8:5},'${STD[s].replace(/'/g,'')}')">${s} · ${STD[s]}</button>`).join('')}</div>
+   ${subj==='math'?'<p class="small muted" style="margin-top:12px">Every Algebra I problem is generated with new numbers, so practice never repeats.</p>':''}</div>`;
+};
+
+/* ---------- Tests ---------- */
+views.tests=()=>{
+  const cards=[['math','Algebra I'],['eng','English I'],['read','Reading']];
+  $('#app').innerHTML=`<h1>Tests</h1><p class="muted">Tests are timed and graded. Calculator, formula sheet and guides are <b>turned off</b>. Answers are revealed only after submitting.</p>
+  <h2 style="margin-top:20px">Pre-assessments <span class="small muted">(Week 1)</span></h2>
+  <div class="grid g3">${cards.map(([s,n])=>`<div class="card subj-card" style="--c:${SUBJ[s].c}"><h3>${n} Pre-Assessment</h3><p class="small">${s==='math'?'14':'10'} questions · ${s==='math'?30:20} minutes${s==='read'?' · 2 passages':''}</p><p class="small muted">Prototype length. Full build: 30–40 questions.</p><button class="btn primary sm" onclick="startTest('pre','${s}')">Begin</button></div>`).join('')}</div>
+  <h2 style="margin-top:28px">Post-assessments <span class="small muted">(Week 17)</span></h2>
+  <div class="grid g3">${cards.map(([s,n])=>`<div class="card"><h3>${n} Post-Assessment</h3><p class="small">Same standards as the pre-test, new questions — measures real growth.</p><button class="btn sm" onclick="startTest('post','${s}')">Begin</button></div>`).join('')}</div>
+  <h2 style="margin-top:28px">The Ascend</h2>
+  <div class="card subj-card" style="--c:var(--ascend)"><div class="row" style="justify-content:space-between"><div><h3>The Ascend — Combined Exam</h3><p class="small">All three subjects in one sitting: Algebra I, English I and Reading. 30 questions · 45 minutes. Given in Weeks 1, 9 and 18.</p></div><button class="btn primary" onclick="startTest('ascend','all')">Begin the Ascend</button></div></div>`;
+};
+
+let T=null,testTimer=null;
+function stopTestTimer(){if(testTimer){clearInterval(testTimer);testTimer=null}}
+function startTest(kind,subj,stds,n,title){
+  let plan,mins;
+  if(kind==='ascend'){plan=[['math',12],['eng',9],['read',9]];mins=45}
+  else if(kind==='practice'){plan=[[subj,n||10,stds]];mins=0}
+  else if(kind==='quiz'){plan=[[subj,n||5,stds]];mins=10}
+  else{plan=[[subj,subj==='math'?14:10]];mins=subj==='math'?30:20}
+  const items=buildItems(plan);
+  T={kind,subj,title:title||(kind==='ascend'?'The Ascend':`${SUBJ[subj].name} ${kind==='pre'?'Pre-Assessment':kind==='post'?'Post-Assessment':kind==='quiz'?'Quiz':'Practice'}`),items,i:0,resp:items.map(()=>null),work:items.map(()=>''),flag:items.map(()=>false),checked:items.map(()=>false),end:mins?Date.now()+mins*60000:0};
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('on'));
+  if(kind!=='practice'){document.body.classList.add('testing');document.querySelectorAll('.drawer').forEach(d=>d.classList.remove('open'))}
+  stopTestTimer();if(T.end)testTimer=setInterval(tick,1000);
+  renderQ();
+}
+function tick(){const el=$('#tmr');if(!T||!T.end)return;const left=Math.max(0,T.end-Date.now());if(el){el.textContent=String(Math.floor(left/60000)).padStart(2,'0')+':'+String(Math.floor(left/1000)%60).padStart(2,'0');if(left<120000)el.style.color='var(--bad)'}if(left<=0){stopTestTimer();alert('Time is up — your test is being submitted.');submitTest()}}
+function renderQ(){
+  const it=T.items[T.i],pr=T.kind==='practice',L='ABCD';
+  const passage=it.passage?`<div class="passage"><h4>${PASSAGES[it.passage].title} <span class="pill">${PASSAGES[it.passage].kind}</span></h4>${PASSAGES[it.passage].html}</div>`:'';
+  const r=T.resp[T.i];
+  const answerUI=it.type==='num'
+   ?`<label class="small muted">Type your answer (numbers, negatives, or fractions like 7/2):</label><br><input class="num" id="numAns" inputmode="decimal" value="${r??''}" ${pr&&T.checked[T.i]?'disabled':''}>`
+   :`<div class="choices">${it.choices.map((c,k)=>{let cls=r===k?'sel':'';if(pr&&T.checked[T.i]){if(k===it.key)cls='right';else if(r===k)cls='wrong'}return `<button class="choice ${cls}" data-k="${k}" ${pr&&T.checked[T.i]?'disabled':''}><span class="L">${L[k]}</span><span>${c}</span></button>`}).join('')}</div>`;
+  $('#app').innerHTML=`
+  <div class="test-head"><div><span class="pill ${T.subj}">${T.kind==='ascend'?'Ascend':SUBJ[T.subj].name}</span><h2 style="margin:6px 0 0">${T.title}</h2></div>
+   <div class="row">${T.end?'<span class="timer" id="tmr">--:--</span>':''}${pr?'<button class="btn sm" onclick="go(\'practice\',\''+T.subj+'\')">Exit practice</button>':''}</div></div>
+  ${pr?'':'<div class="callout warn small locked-note">Test mode: calculator, formula sheet and guides are locked. Use the scratch-work box to show your steps.</div>'}
+  <div class="qnav">${T.items.map((_,k)=>`<button class="${T.resp[k]!=null&&T.resp[k]!==''?'ans':''} ${k===T.i?'cur':''} ${T.flag[k]?'flag':''}" data-q="${k}">${k+1}</button>`).join('')}</div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><span class="small muted">Question ${T.i+1} of ${T.items.length} · ${it.std} ${STD[it.std]||''}</span>${pr?'':`<button class="btn sm" id="flagBtn">${T.flag[T.i]?'★ Flagged':'☆ Flag for review'}</button>`}</div>
+    ${passage}<div class="stem">${it.stem}</div>${answerUI}
+    ${it.subj==='math'?`<details class="showwork" ${T.work[T.i]?'open':''}><summary>Show your work (your tutor will see this)</summary><textarea id="work" placeholder="Write each step…">${T.work[T.i]}</textarea></details>`:''}
+    <div class="feedback" id="fb">${pr&&T.checked[T.i]?fbHTML(it,isRight(it,T.resp[T.i])):''}</div>
+  </div>
+  <div class="row" style="margin-top:14px;justify-content:space-between">
+    <button class="btn" id="qPrev" ${T.i===0?'disabled':''}>← Previous</button>
+    <div class="row">${pr&&!T.checked[T.i]?'<button class="btn primary" id="qCheck">Check answer</button>':''}
+    ${T.i<T.items.length-1?'<button class="btn '+(pr&&!T.checked[T.i]?'':'primary')+'" id="qNext">Next →</button>':`<button class="btn primary" id="qSubmit">${pr?'Finish':'Submit test'}</button>`}</div>
+  </div>`;
+  tick();
+  const saveCur=()=>{const n=$('#numAns');if(n)T.resp[T.i]=n.value.trim()===''?null:n.value.trim();const w=$('#work');if(w)T.work[T.i]=w.value};
+  document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{saveCur();T.resp[T.i]=+b.dataset.k;renderQ()});
+  document.querySelectorAll('.qnav button').forEach(b=>b.onclick=()=>{saveCur();T.i=+b.dataset.q;renderQ()});
+  $('#qPrev').onclick=()=>{saveCur();T.i--;renderQ()};
+  if($('#qNext'))$('#qNext').onclick=()=>{saveCur();T.i++;renderQ()};
+  if($('#qCheck'))$('#qCheck').onclick=()=>{saveCur();if(T.resp[T.i]==null)return;T.checked[T.i]=true;renderQ()};
+  if($('#flagBtn'))$('#flagBtn').onclick=()=>{saveCur();T.flag[T.i]=!T.flag[T.i];renderQ()};
+  if($('#qSubmit'))$('#qSubmit').onclick=()=>{saveCur();const un=T.resp.filter(r=>r==null||r==='').length;if(!pr&&un&&!confirm(`${un} question(s) are unanswered. Submit anyway?`))return;submitTest()};
+}
+function parseNum(s){if(s==null)return NaN;s=String(s).replace(/−/g,'-').replace(/\s/g,'');if(/^-?\d+\/-?\d+$/.test(s)){const[a,b]=s.split('/').map(Number);return a/b}return s===''?NaN:Number(s)}
+function isRight(it,r){if(r==null)return false;if(it.type==='num')return Math.abs(parseNum(r)-it.answer)<1e-9;return r===it.key}
+function fbHTML(it,ok){return `<div class="callout ${ok?'good':'bad'}"><b>${ok?'Correct!':'Not quite.'}</b> ${ok?'':'Correct answer: <b>'+(it.type==='num'?neg(it.answer):'ABCD'[it.key]+'. '+it.correct)+'</b>'}<br>${it.explain}</div>`}
+
+function submitTest(){
+  stopTestTimer();
+  const byStd={},bySubj={};let c=0;
+  T.items.forEach((it,k)=>{const ok=isRight(it,T.resp[k]);if(ok)c++;(byStd[it.std]=byStd[it.std]||[0,0]);byStd[it.std][1]++;if(ok)byStd[it.std][0]++;
+    (bySubj[it.subj]=bySubj[it.subj]||[0,0]);bySubj[it.subj][1]++;if(ok)bySubj[it.subj][0]++});
+  const pct=Math.round(c/T.items.length*100);
+  const rec={id:Date.now(),date:new Date().toISOString(),kind:T.kind,subj:T.subj,title:T.title,score:c,total:T.items.length,pct,byStd,bySubj,
+    work:T.items.map((it,k)=>({stem:it.stem.replace(/<[^>]+>/g,''),resp:it.type==='num'?T.resp[k]:(T.resp[k]==null?null:'ABCD'[T.resp[k]]),key:it.type==='num'?neg(it.answer):'ABCD'[it.key],ok:isRight(it,T.resp[k]),work:T.work[k]})).filter(w=>w.work)};
+  S.results.push(rec);
+  // Ascend also records per-subject sub-scores so each subject's report card reflects it
+  if(T.kind==='ascend')for(const s in bySubj)S.results.push({id:rec.id+s,date:rec.date,kind:'ascend-part',subj:s,title:'Ascend — '+SUBJ[s].name,score:bySubj[s][0],total:bySubj[s][1],pct:Math.round(bySubj[s][0]/bySubj[s][1]*100),byStd:Object.fromEntries(Object.entries(byStd).filter(([k])=>T.items.some(i=>i.std===k&&i.subj===s)))});
+  save();document.body.classList.remove('testing');
+  const L='ABCD';
+  $('#app').innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><div><span class="pill ${T.subj}">${T.kind==='ascend'?'Ascend':SUBJ[T.subj].name}</span><h1 style="margin-top:8px">${T.title} — Results</h1></div>
+   <div style="text-align:right"><div class="grade">${letter(pct)}</div><div class="muted">${c} / ${T.items.length} · ${pct}%</div></div></div>
+   ${T.kind==='ascend'?`<div class="grid g3" style="margin-top:12px">${Object.entries(bySubj).map(([s,[a,b]])=>`<div class="card subj-card" style="--c:${SUBJ[s].c}"><b>${SUBJ[s].name}</b><div class="big">${Math.round(a/b*100)}%</div><span class="small muted">${a}/${b}</span></div>`).join('')}</div>`:''}
+   <h3 style="margin-top:18px">By standard</h3>${Object.entries(byStd).map(([s,[a,b]])=>masteryRow(s,a,b)).join('')}
+   <div class="row" style="margin-top:16px"><button class="btn primary" onclick="go('report')">Open report card</button><button class="btn" onclick="go('tests')">Back to tests</button></div></div>
+   <h2 style="margin-top:24px">Answer review</h2>
+   ${T.items.map((it,k)=>{const ok=isRight(it,T.resp[k]);const yours=T.resp[k]==null||T.resp[k]===''?'(no answer)':it.type==='num'?T.resp[k]:L[T.resp[k]]+'. '+it.choices[T.resp[k]];
+     return `<div class="card" style="margin-bottom:10px;border-left:5px solid ${ok?'var(--good)':'var(--bad)'}"><div class="small muted">${k+1}. ${it.std}</div><div class="stem">${it.stem}</div><div class="small">Your answer: <b>${yours}</b>${ok?' ✓':''}</div>${ok?'':fbHTML(it,false)}</div>`}).join('')}`;
+  window.scrollTo(0,0);
+}
+function masteryRow(s,a,b){const p=Math.round(a/b*100);const t=p>=80?['Mastered','m','var(--good)']:p>=60?['Developing','d','var(--warn)']:['Needs support','n','var(--bad)'];
+  return `<div class="mastery"><div><b>${s}</b> <span class="muted">${STD[s]||''}</span></div><div class="bar" style="--c:${t[2]}"><i style="width:${Math.max(p,3)}%"></i></div><div class="small tag-${t[1]}" style="text-align:right">${p}%</div></div>`}
+
+/* ---------- Report card ---------- */
+views.report=()=>{
+  const row=s=>{const t=stats(s);const agg={};S.results.filter(r=>r.subj===s&&r.kind!=='practice').forEach(r=>{for(const k in r.byStd){agg[k]=agg[k]||[0,0];agg[k][0]+=r.byStd[k][0];agg[k][1]+=r.byStd[k][1]}});
+    const arr=Object.entries(agg).map(([k,[a,b]])=>({k,p:Math.round(a/b*100),a,b})).sort((x,y)=>y.p-x.p);
+    const str=arr.filter(x=>x.p>=80),weak=arr.filter(x=>x.p<70);
+    const growth=t.pre&&t.post?t.post.pct-t.pre.pct:null;
+    return `<div class="card subj-card" style="--c:${SUBJ[s].c};margin-bottom:16px">
+     <div class="row" style="justify-content:space-between;align-items:flex-start"><div><h2 style="margin:0">${SUBJ[s].name}</h2><p class="small muted">${t.rs.length} graded assessment(s) · ${Object.values(S.time[s]||{}).reduce((a,b)=>a+b,0)} min studied</p></div>
+     <div style="text-align:right"><div class="grade">${letter(t.avg)}</div><div class="small muted">${t.avg==null?'No grades yet':t.avg+'%'}</div></div></div>
+     <div class="grid g3" style="margin:10px 0"><div><div class="small muted">Pre-assessment</div><b>${t.pre?t.pre.pct+'%':'—'}</b></div><div><div class="small muted">Post-assessment</div><b>${t.post?t.post.pct+'%':'—'}</b></div><div><div class="small muted">Growth</div><b>${growth==null?'—':(growth>=0?'+':'')+growth+' pts'}</b></div></div>
+     ${arr.length?`<div class="grid g2" style="margin-top:8px"><div><h3 class="tag-m">Strengths</h3>${str.length?str.map(x=>`<div class="small">✓ ${x.k} — ${STD[x.k]} (${x.p}%)</div>`).join(''):'<div class="small muted">None at 80%+ yet.</div>'}</div>
+       <div><h3 class="tag-n">Focus areas</h3>${weak.length?weak.map(x=>`<div class="small">• ${x.k} — ${STD[x.k]} (${x.p}%) <a href="#" onclick="startTest('practice','${s}',['${x.k}'],${s==='math'?8:5},'Focus: ${STD[x.k].replace(/'/g,'')}');return false">practice →</a></div>`).join(''):'<div class="small muted">No standards below 70%.</div>'}</div></div>
+       <h3 style="margin-top:14px">Standards mastery</h3>${arr.map(x=>masteryRow(x.k,x.a,x.b)).join('')}`:'<p class="small muted">Take the pre-assessment to populate this section.</p>'}
+    </div>`};
+  const tests=S.results.filter(r=>r.kind!=='ascend-part').slice().reverse();
+  $('#app').innerHTML=`<div class="row" style="justify-content:space-between"><div><h1>Report Card</h1><p class="muted">${S.student.name} · ${S.student.school} · Grade 9</p></div><div class="row noprint"><button class="btn sm" onclick="window.print()">Print</button><button class="btn sm" onclick="if(confirm('Erase all saved progress?')){localStorage.removeItem(KEY);S=load();go('report')}">Reset data</button></div></div>
+  <p class="small muted">Scale: A 90–100 · B 80–89 · C 70–79 · D 65–69 · F below 65. Mastery: 80%+ mastered · 60–79% developing · below 60% needs support. Practice does not affect grades.</p>
+  ${['math','eng','read'].map(row).join('')}
+  <div class="card" style="margin-bottom:16px"><h2>Assessment history</h2><div class="tablewrap"><table><tr><th>Date</th><th>Assessment</th><th>Type</th><th>Score</th><th>Grade</th></tr>
+  ${tests.length?tests.map(r=>`<tr><td>${new Date(r.date).toLocaleDateString()}</td><td>${r.title}</td><td>${r.kind}</td><td>${r.score}/${r.total} (${r.pct}%)</td><td>${letter(r.pct)}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No assessments yet.</td></tr>'}</table></div></div>
+  <div class="card"><h2>Student's own explanations</h2><p class="small muted">"Show me" responses and shown work, for the tutor or parent to review.</p>
+  ${S.teachback.length?S.teachback.slice().reverse().map(t=>`<div class="callout small"><b>${t.lesson}</b> · ${new Date(t.date).toLocaleDateString()}<br>${t.text.replace(/</g,'&lt;')}</div>`).join(''):'<p class="small muted">None yet.</p>'}
+  ${S.results.filter(r=>r.work&&r.work.length).slice(-3).reverse().map(r=>r.work.map(w=>`<div class="callout small ${w.ok?'good':'bad'}"><b>${r.title}</b>: ${w.stem}<br>Work: ${w.work.replace(/</g,'&lt;')}<br>Answered ${w.resp??'—'} (key ${w.key})</div>`).join('')).join('')}
+  </div>`;
+};
+
+/* ---------- Guide ---------- */
+views.guide=()=>{
+  $('#app').innerHTML=`<h1>How the Hub Works</h1>
+  <div class="grid g2">
+   <div class="card"><h3>For the student</h3><ol class="step-list"><li>Open the <b>Dashboard</b> and follow today's three items in order.</li><li>In each lesson, finish every step before clicking <b>Next</b>.</li><li>Use the tools (bottom right) during lessons and practice.</li><li>On tests, the tools are locked. Use the scratch box to show your work.</li><li>Check your <b>Report Card</b> every Friday and practice your focus areas.</li></ol></div>
+   <div class="card"><h3>For the tutor / parent</h3><ul class="small"><li><b>Mastery rule:</b> move on at 80%+. Below 70%: re-teach the lesson, then assign a new practice set (new numbers every time).</li><li>Read the <b>student's own explanations</b> on the report card. Being able to explain a step is the best sign of real understanding.</li><li>Keep the times steady. Short daily sessions work better than one long weekend session.</li><li>Answer letters are balanced across every test, so guessing one letter doesn't pay off.</li></ul></div>
+   <div class="card"><h3>Alignment</h3><p class="small">Built on the Mississippi College &amp; Career Readiness Standards for Algebra I and Grade 9 English Language Arts. Algebra I ends with the MAAP Algebra I end-of-course test. Mississippi's English EOC is English II (10th grade), so the reading strand also builds the skills that test needs.</p><p class="small muted">Before full release, check the pacing against the student's actual DeSoto County course syllabus and textbook.</p></div>
+   <div class="card"><h3>Prototype vs. full build</h3><table class="small"><tr><th></th><th>Prototype</th><th>Full</th></tr><tr><td>Algebra I items</td><td>14 generators (unlimited)</td><td>40+ generators + 150 fixed items</td></tr><tr><td>English I items</td><td>20</td><td>150+</td></tr><tr><td>Reading</td><td>2 passages · 12 items</td><td>25+ passages · 150+ items</td></tr><tr><td>Lessons</td><td>2</td><td>~70 (one per day of the plan)</td></tr><tr><td>Unit quizzes</td><td>Exit ticket</td><td>12 + writing rubrics</td></tr></table></div>
+  </div>`;
+};
+
+/* =========================================================
+   TOOLS
+   ========================================================= */
+document.getElementById('toolbar').onclick=e=>{const b=e.target.closest('button');if(!b||document.body.classList.contains('testing'))return;const d=$('#drawer-'+b.dataset.tool);const open=d.classList.contains('open');document.querySelectorAll('.drawer').forEach(x=>x.classList.remove('open'));if(!open)d.classList.add('open')};
+(function calc(){const keys=['7','8','9','÷','C','4','5','6','×','⌫','1','2','3','−','^','0','.','(',')','+','√(','x²','±','ans','='];const scr=$('#calcScreen');let ans=0;
+  $('#calcKeys').innerHTML=keys.map(k=>`<button class="${/[÷×−+=^]/.test(k)?'op':''}">${k}</button>`).join('');
+  const ev=()=>{let e=scr.value.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**').replace(/ans/g,'('+ans+')');
+    if(!/^[0-9+\-*/().\s]*$/.test(e.replace(/Math\.sqrt/g,'')))return scr.value='Error';try{const v=Function('"use strict";return ('+e+')')();ans=+v.toFixed(10);scr.value=String(ans)}catch(x){scr.value='Error'}};
+  $('#calcKeys').onclick=e=>{const k=e.target.textContent;if(e.target.tagName!=='BUTTON')return;
+    if(k==='C')scr.value='';else if(k==='⌫')scr.value=scr.value.slice(0,-1);else if(k==='=')ev();else if(k==='x²')scr.value+='^2';else if(k==='±')scr.value=scr.value.startsWith('-')?scr.value.slice(1):'-'+scr.value;else scr.value+=k};
+  scr.onkeydown=e=>{if(e.key==='Enter')ev()}})();
+(function timer(){let iv=null,left=0,started=0;const show=()=>{$('#timerShow').textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0')};
+  const log=()=>{if(!started)return;const m=Math.round((Date.now()-started)/60000);const s=$('#timerSubj').value;if(m>0){S.time[s]=S.time[s]||{};S.time[s][weekKey()]=(S.time[s][weekKey()]||0)+m;save()}started=0};
+  $('#timerMin').onchange=()=>{if(!iv){left=+$('#timerMin').value*60;show()}};
+  $('#timerStart').onclick=()=>{if(iv)return;left=left||+$('#timerMin').value*60;started=Date.now();iv=setInterval(()=>{left--;show();if(left<=0){clearInterval(iv);iv=null;log();left=0;alert('Study session complete — nice work. Take a 5-minute break.');if($('#tabs .on')?.dataset.view==='home')go('home')}},1000)};
+  $('#timerStop').onclick=()=>{clearInterval(iv);iv=null;log();left=+$('#timerMin').value*60;show();if($('#tabs .on')?.dataset.view==='home')go('home')};})();
+
+go('home');
+</script>
+</body>
+</html>
