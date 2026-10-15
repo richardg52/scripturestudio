@@ -10,3 +10,6 @@
 # Editor directories
 .vscode/
 .idea/
+
+# Netlify local state
+.netlify
