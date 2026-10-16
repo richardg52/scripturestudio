@@ -201,7 +201,7 @@ textarea.input{min-height:76px;resize:vertical}
 .invite .i-note{font-family:var(--f-display);font-style:italic;font-size:15px;color:#5b4a36}
 
 /* ---------- Sheet ---------- */
-#sheet-wrap{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+#sheet-wrap{position:fixed;inset:0;z-index:85;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 #sheet-wrap.open{opacity:1;pointer-events:auto}
 .sheet{width:100%;max-width:480px;max-height:90%;overflow-y:auto;background:var(--bg);border-radius:22px 22px 0 0;border:1px solid var(--line);border-bottom:0;padding-block:8px calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));transform:translateY(30px);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:grid;gap:16px;align-content:start}
 #sheet-wrap.open .sheet{transform:none}
@@ -251,9 +251,37 @@ textarea.input{min-height:76px;resize:vertical}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
 .seg button{border:0;background:none;padding:8px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface-2);color:var(--ink)}
-#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.3s;z-index:80;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.3s;z-index:95;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .proto{font-size:12px;color:var(--muted);text-align:center;padding:4px 8px}
+
+/* ---------- Live vote & welcome (full screen) ---------- */
+#live,#reveal{position:fixed;inset:0;z-index:70;overflow-y:auto;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+#reveal{background:radial-gradient(130% 60% at 50% 0%,color-mix(in srgb,var(--wine) 40%,var(--bg)) 0%,var(--bg) 65%)}
+.ov-inner{max-width:480px;margin:0 auto;display:grid;gap:18px}
+.ov-bar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.live-head{text-align:center;display:grid;gap:6px;justify-items:center}
+.cd{font-family:var(--f-display);font-size:68px;line-height:1;color:var(--brass);font-variant-numeric:tabular-nums}
+.cd.low{color:var(--bad)}
+.ballot{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px;display:grid;gap:10px}
+.ballot.mine{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+.ballot h3{font-size:24px;line-height:1.15}
+.ballot .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ballot .bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.ballot .bar i{display:block;height:100%;background:var(--brass);transition:width .4s}
+.rv-hero{text-align:center;display:grid;gap:8px;justify-items:center;padding-top:6px;animation:rise .8s both}
+.rv-hero h1{font-size:clamp(28px,8vw,38px);font-style:italic}
+.rv-name{font-family:var(--f-display);font-size:clamp(32px,9.5vw,46px);line-height:1.05;color:var(--brass);text-wrap:balance}
+.sup{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px}
+.sup .ic{color:var(--brass);text-align:center}
+.arr,.person{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.arr:last-child,.person:last-child{border-bottom:0}
+.person small,.arr small{color:var(--muted);display:block;overflow-wrap:anywhere}
+.livebar{display:flex;gap:12px;align-items:center;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--brass)}
+.livebar .grow{flex:1;min-width:0}
+.livebar .cd{font-size:30px}
+.dotlive{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
 @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -290,6 +318,8 @@ textarea.input{min-height:76px;resize:vertical}
 </div>
 
 <div id="sheet-wrap" aria-hidden="true"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="live" hidden></div>
+<div id="reveal" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -333,6 +363,47 @@ const RAW = [
  ["second-line","The Second Line","Memphis",["Creole"],"Midtown","2144 Monroe Ave, Memphis, TN 38104",2,[],"Casual po'boys, BBQ shrimp and beignets."],
  ["beauty-shop","The Beauty Shop","Memphis",["Eclectic"],"Cooper-Young","966 S Cooper St, Memphis, TN 38104",2,[],"Global menu served in a former 1960s beauty salon — dryer chairs and all."],
  ["mahogany","Mahogany Memphis","Memphis",["Southern","Fine Dining"],"Poplar Corridor","Poplar Ave, Memphis, TN",3,["new"],"Upscale Southern supper club — newer on the scene."],
+ // Memphis — steak & grill (casual to high end). Empty address = several locations; maps finds the nearest.
+ ["firebirds","Firebirds Wood Fired Grill","Memphis",["Steak","American"],"Several locations","",2,["lunch"],"Wood-fired steaks, seafood and a lodge-style room. A step up from casual without the big bill."],
+ ["longhorn","LongHorn Steakhouse","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Dependable grilled steaks at an easy price. Good with a big group."],
+ ["coltons","Colton's Steak House & Grill","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Hand-cut steaks and warm rolls with honey butter."],
+ ["texas-roadhouse","Texas Roadhouse","Memphis",["Steak","Casual"],"Several locations","",2,[],"Fresh-baked rolls, hand-cut steaks and a lively room."],
+ ["outback","Outback Steakhouse","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Bloomin' Onion and steak dinners that work for every age."],
+ ["houstons","Houston's","Memphis",["American","Steak"],"East Memphis","5000 Poplar Ave, Memphis, TN 38117",3,["lunch"],"Classic American: spinach dip, prime rib and a famous burger."],
+ ["seasons52","Seasons 52","Memphis",["American"],"East Memphis","",3,["lunch"],"Seasonal fresh grill with a deep wine-by-the-glass list."],
+ ["flemings","Fleming's Prime Steakhouse","Memphis",["Steak","Fine Dining"],"East Memphis","",4,[],"Prime steaks and a big wine list. Built for the high-end night."],
+ // casual family
+ ["chilis","Chili's Grill & Bar","Memphis",["American","Casual"],"Several locations","",1,["lunch"],"Fajitas, baby back ribs and a menu with something for everyone."],
+ ["olive-garden","Olive Garden","Memphis",["Italian","Casual"],"Several locations","",2,["lunch"],"Soup, salad and breadsticks. The easy-budget Italian night."],
+ ["red-lobster","Red Lobster","Memphis",["Seafood","Casual"],"Several locations","",2,["lunch"],"Cheddar Bay Biscuits and seafood platters."],
+ ["jack-pirtles","Jack Pirtle's Chicken","Memphis",["Southern","Casual"],"Several locations","",1,["lunch"],"A Memphis fried chicken institution. Quick and cheap."],
+ ["huey","Huey's","Memphis",["Burgers","American"],"Midtown","1927 Madison Ave, Memphis, TN 38104",1,["lunch"],"Famous burgers, live music and toothpicks in the ceiling."],
+ ["dyers","Dyer's Burgers","Memphis",["Burgers"],"Beale Street","205 Beale St, Memphis, TN 38103",1,["lunch"],"Burgers fried in century-old grease. A Beale Street legend."],
+ ["babalu","Babalu Tacos & Tapas","Memphis",["Mexican"],"Overton Square","2115 Madison Ave, Memphis, TN 38104",2,["lunch"],"Tableside guacamole and tacos to share."],
+ // hibachi & Italian
+ ["benihana","Benihana","Memphis",["Hibachi","Japanese"],"East Memphis","",3,[],"Teppanyaki chefs cook at your table. Birthdays get the full show."],
+ ["stix","Stix Hibachi & Sushi","Memphis",["Hibachi","Japanese"],"East Memphis","",3,["lunch"],"Hibachi grills and a sushi bar. A favorite for celebrations."],
+ ["grisanti","Ronnie Grisanti's","Memphis",["Italian"],"East Memphis","",3,[],"A Memphis Italian family name for generations. Ask for the Elfo special."],
+ ["pete-sams","Pete & Sam's","Memphis",["Italian","Casual"],"East Memphis","",2,[],"Old-school Memphis Italian: thin-crust pizza and spaghetti."],
+ // seafood & soul
+ ["soul-fish","Soul Fish Cafe","Memphis",["Seafood","Soul"],"Cooper-Young","862 S Cooper St, Memphis, TN 38104",2,["lunch"],"Fried catfish, po'boys and Southern sides."],
+ // more BBQ
+ ["corkys","Corky's BBQ","Memphis",["BBQ"],"East Memphis","5259 Poplar Ave, Memphis, TN 38119",2,["lunch"],"Slow-cooked ribs and pulled pork. A Memphis staple."],
+ ["interstate","Jim Neely's Interstate Bar-B-Que","Memphis",["BBQ"],"South Memphis","2265 S 3rd St, Memphis, TN 38109",1,["lunch"],"South Memphis pit: BBQ spaghetti and rib tips."],
+ ["ar-bbq","A&R Bar-B-Que","Memphis",["BBQ"],"Whitehaven","1802 Elvis Presley Blvd, Memphis, TN 38106",1,["lunch"],"Family-run hickory pit with standout rib tips."],
+ ["commissary","Germantown Commissary","Memphis",["BBQ"],"Germantown","2290 S Germantown Rd, Germantown, TN 38138",2,["lunch"],"Ribs and smoked sausage in an old country store."],
+ ["marlowes","Marlowe's Ribs & Restaurant","Memphis",["BBQ"],"Graceland area","4381 Elvis Presley Blvd, Memphis, TN 38116",2,[],"Ribs near Graceland, with a pink limo pickup."],
+ ["tops","Tops Bar-B-Q","Memphis",["BBQ","Casual"],"Several locations","",1,["lunch"],"Pork sandwiches and burgers since 1952. Easy on the wallet."],
+ ["elwoods","Elwood's Shack","Memphis",["BBQ","Breakfast"],"Summer Ave","4523 Summer Ave, Memphis, TN 38122",1,["breakfast","lunch"],"Wood-fired BBQ and breakfast from a tiny shack."],
+ // breakfast & brunch
+ ["broken-egg","Another Broken Egg Cafe","Memphis",["Breakfast"],"Germantown / Collierville","",2,["breakfast","lunch","nodinner"],"Brunch with a Southern twist: shrimp & grits, cinnamon roll French toast."],
+ ["brother-junipers","Brother Juniper's","Memphis",["Breakfast"],"University District","3519 Walker Ave, Memphis, TN 38111",1,["breakfast","lunch","nodinner"],"Beloved breakfast spot. Big omelets and homemade bread."],
+ ["bryants","Bryant's Breakfast","Memphis",["Breakfast"],"Summer Ave","3965 Summer Ave, Memphis, TN 38122",1,["breakfast","lunch","nodinner"],"Giant biscuits. Expect a line on weekends."],
+ ["arcade","The Arcade Restaurant","Memphis",["Breakfast","American"],"South Main","540 S Main St, Memphis, TN 38103",1,["breakfast","lunch","nodinner"],"Memphis' oldest café (1919). Get the sweet potato pancakes."],
+ ["sunrise","Sunrise Memphis","Memphis",["Breakfast"],"Downtown","670 Jefferson Ave, Memphis, TN 38105",1,["breakfast","lunch","nodinner"],"Big Southern breakfasts and biscuits."],
+ ["cafe-eclectic","Café Eclectic","Memphis",["Breakfast","American"],"Midtown","603 N McLean Blvd, Memphis, TN 38107",1,["breakfast","lunch"],"Neighborhood café for brunch, sandwiches and pastries."],
+ ["first-watch","First Watch","Memphis",["Breakfast","Casual"],"Several locations","",1,["breakfast","lunch","nodinner"],"Daytime menu: pancakes, bowls and fresh juice."],
+ ["blue-plate","Blue Plate Cafe","Memphis",["Breakfast","Southern"],"East Memphis","",1,["breakfast","lunch"],"Country breakfasts and Southern plate lunches."],
  ["husk-nash","Husk","Nashville",["Southern"],"Rutledge Hill","37 Rutledge St, Nashville, TN 37210",3,[],"Sean Brock's ingredient-driven Southern in a historic mansion."],
  ["kayne-prime","Kayne Prime","Nashville",["Steak"],"The Gulch","1103 McGavock St, Nashville, TN 37203",4,[],"Modern steakhouse with playful sides."],
  ["rolf","Rolf and Daughters","Nashville",["Italian"],"Germantown","700 Taylor St, Nashville, TN 37208",3,[],"Pasta-centric, communal tables, great energy."],
@@ -358,7 +429,15 @@ const RAW = [
 const R = RAW.map(([id,name,city,cuisine,hood,addr,price,flags,blurb]) => ({id,name,city,cuisine,hood,addr,price,flags,blurb}));
 const RBY = Object.fromEntries(R.map(r => [r.id, r]));
 const CITIES = ["Memphis","Nashville","Atlanta","New Orleans","Chicago","New York","Dallas","Los Angeles"];
-const CUISINES = ["All","Steak","Italian","Indian","BBQ","Soul","Southern","French","Creole","Mediterranean","Fine Dining","Thai","Vietnamese","American","Seafood"];
+const CUISINES = ["All","Steak","Italian","Hibachi","BBQ","Soul","Southern","Seafood","Breakfast","Burgers","Casual","Indian","French","Creole","Mediterranean","Fine Dining","Mexican","Thai","Vietnamese","American"];
+// Which meals a place serves. Default is dinner; flags/sets below add breakfast & lunch.
+const BRUNCH = new Set(["libro","owen-brennans","interim","paulettes"]);
+const LUNCH = new Set(["central-bbq","gus","four-way","alcenias","cozy-corner","saigon-le","india-palace","bhan-thai","libro","second-line","majestic","colettas","rendezvous","beauty-shop","felicia"]);
+const meals = r => ({breakfast: r.flags.includes("breakfast") || BRUNCH.has(r.id), lunch: r.flags.includes("lunch") || LUNCH.has(r.id) || BRUNCH.has(r.id), dinner: !r.flags.includes("nodinner")});
+const mealText = r => { const m = meals(r); return [m.breakfast&&(BRUNCH.has(r.id)?"Brunch":"Breakfast"), m.lunch&&"Lunch", m.dinner&&"Dinner"].filter(Boolean).join(" · "); };
+const COST = {1:"under $15",2:"$15–30",3:"$30–60",4:"$60+"};
+const costText = r => `${"$".repeat(r.price)} · ${COST[r.price]} per person`;
+const addrOf = r => r.addr || `${r.hood === "Several locations" ? "Several locations" : r.hood} · ${r.city}`;
 const CRIT = [["food","Food quality"],["service","Service"],["price","Price / value"],["selection","Selection"],["clean","Cleanliness"],["location","Location"]];
 const OCCASIONS = [
   {k:"sunday",label:"Sunday Dinner",mode:"vote"},
@@ -409,14 +488,19 @@ const $ = n => "$".repeat(n);
 const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 
 /* ================= State ================= */
-const KEY = "tableof5.v1";
+const KEY = "tableof5.v2";
+const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
-    {id:"m1",name:"Richard",color:COLORS[0]},
-    {id:"m2",name:"Angela",color:COLORS[1]},
-    {id:"m3",name:"Marcus",color:COLORS[2]},
-    {id:"m4",name:"Jasmine",color:COLORS[3]},
-    {id:"m5",name:"Cole",color:COLORS[4]}
+    {id:"m1",name:"Richard",color:COLORS[0],email:"",phone:""},
+    {id:"m2",name:"Angela",color:COLORS[1],email:"",phone:""},
+    {id:"m3",name:"Marcus",color:COLORS[2],email:"",phone:""},
+    {id:"m4",name:"Jasmine",color:COLORS[3],email:"",phone:""},
+    {id:"m5",name:"Cole",color:COLORS[4],email:"",phone:""}
+  ];
+  const contacts = [
+    {id:"c1",name:"Tasha",relation:"Marcus's friend",email:"tasha@example.com",phone:""},
+    {id:"c2",name:"Uncle Ray",relation:"Family friend",email:"ray@example.com",phone:""}
   ];
   const S = iso(nextSunday);
   const back = n => iso(add(today0,-n));
@@ -438,7 +522,7 @@ function seed(){
   const events = [
     {id:"e-sun",type:"sunday",mode:"vote",host:"m2",title:"Sunday Dinner",date:S,time:"17:30",dress:"Smart casual",
      options:["folks-folly","hog-hominy","india-palace"],chosen:null,votes:{m2:"hog-hominy",m3:"india-palace",m4:"hog-hominy"},
-     rsvp:{m2:"yes",m3:"yes",m4:"yes",m5:"maybe"},guests:[{id:"g1",name:"Tasha (Marcus's friend)",by:"m3",hands:["m3","m4"]}],
+     rsvp:{m2:"yes",m3:"yes",m4:"yes",m5:"maybe"},guests:[{id:"g1",name:"Tasha",email:"tasha@example.com",contactId:"c1",by:"m3",hands:["m3","m4"]}],
      reservation:{status:"none",by:null,conf:""},note:"Vote by Saturday noon so someone can book.",status:"open",created:back(1)},
     {id:"e-bday",type:"birthday",mode:"host",host:"m4",title:"Jasmine's Birthday",date:iso(add(today0,15)),time:"19:30",dress:"Cocktail attire",
      options:["chez-philippe"],chosen:"chez-philippe",votes:{},rsvp:{m4:"yes",m2:"yes",m3:"yes"},guests:[],
@@ -458,11 +542,11 @@ function seed(){
     {id:"n1",by:"m4",date:back(5),eventId:"e-past1",text:"Best Sunday in a while. Thank you Dad for treating! ❤"},
     {id:"n2",by:"m3",date:back(4),eventId:"e-past1",text:"Still thinking about that cobbler."}
   ];
-  return {v:1,fam,me:null,events,visits,reviews,ledger,notes,ui:{tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:""}};
+  return {v:2,fam,contacts,arrivals:{},me:null,events,visits,reviews,ledger,notes,ui:{...UI0}};
 }
 let st;
 try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
-if(!st.ui) st.ui = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:""};
+st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
 
 /* ================= Lookups ================= */
@@ -484,8 +568,9 @@ function critAvg(rid){
   return o;
 }
 const starStr = n => n == null ? "" : "★".repeat(Math.round(n)) + "☆".repeat(5-Math.round(n));
-const mapsDir = r => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ", " + r.addr)}`;
-const mapsPlace = r => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + ", " + r.addr)}`;
+const placeQ = r => r.name + ", " + (r.addr || (r.city === "Memphis" ? "Memphis, TN" : r.city));
+const mapsDir = r => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(placeQ(r))}`;
+const mapsPlace = r => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQ(r))}`;
 const menuLink = r => `https://www.google.com/search?q=${encodeURIComponent(r.name + " " + r.city + " menu")}`;
 const pairing = r => { for(const c of r.cuisine){ if(WINE[c]) return WINE[c]; } return WINE.American; };
 
@@ -503,7 +588,7 @@ function sundayPicks(target){
   const wk = Math.floor(target.getTime() / (7*DAY));
   const pool = R.filter(r => r.city === "Memphis").map(r => {
     const rs = rotationState(r.id, t);
-    if(rs.state === "resting") return null;
+    if(rs.state === "resting" || !meals(r).dinner) return null;
     const a = avgOf(r.id);
     let s = (a ?? 3.6);
     if(rs.state === "untried") s += .9;
@@ -608,6 +693,7 @@ function renderTabs(){
   document.getElementById("me-btn").innerHTML = av(st.me);
 }
 function render(){
+  if(!liveId) st.events.forEach(e => { if(e.status === "open" && e.voteEnds && e.voteEnds < Date.now()) lockEvent(e); });
   renderTabs();
   const fn = {home:vHome,explore:vExplore,plan:vPlan,feed:vFeed,table:vTable}[st.ui.tab] || vHome;
   view.innerHTML = fn();
@@ -638,6 +724,9 @@ function vHome(){
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="event" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
   </section>` : ""}
+
+  ${(() => { const ov = st.events.find(e => e.status === "open"); if(!ov) return "";
+    return `<div class="livebar">${ov.voteEnds?`<span class="cd num" data-cd="${ov.id}">${mmss(ov.voteEnds - Date.now())}</span>`:`<span class="dotlive"></span>`}<span class="grow"><b>${esc(ov.title)} vote</b><br><span class="small muted">${Object.keys(ov.votes).length} of ${st.fam.length} voted · ${ov.options.length} restaurants on the ballot</span></span><button class="btn wine sm" data-act="live" data-id="${ov.id}">${ov.voteEnds?"Join":"Start vote"}</button></div>`; })()}
 
   <section class="sec">
     <div class="sec-head"><h2>This Sunday</h2><span class="muted small">${fmtDate(iso(nextSunday))}</span></div>
@@ -678,6 +767,9 @@ function vExplore(){
   if(u.filter === "untried") list = list.filter(r => !lastVisit(r.id));
   if(u.filter === "new") list = list.filter(r => r.flags.includes("new"));
   if(u.filter === "favorites") list = list.filter(r => visitsOf(r.id).length >= 2);
+  if(u.budget === "light") list = list.filter(r => r.price <= 2);
+  if(u.budget === "high") list = list.filter(r => r.price >= 3);
+  if(u.meal !== "any") list = list.filter(r => meals(r)[u.meal]);
   if(u.q) { const q = u.q.toLowerCase(); list = list.filter(r => (r.name+" "+r.cuisine.join(" ")+" "+r.hood).toLowerCase().includes(q)); }
   list.sort((a,b) => (avgOf(b.id)??0) - (avgOf(a.id)??0) || a.name.localeCompare(b.name));
   const total = R.filter(r => r.city === u.city).length;
@@ -688,6 +780,10 @@ function vExplore(){
       <div class="field"><label for="city">City</label><select class="input" id="city" data-change="city">${CITIES.map(c => `<option ${c===u.city?"selected":""}>${c}</option>`).join("")}</select></div>
       <div class="field"><label for="flt">Show</label><select class="input" id="flt" data-change="filter">
         ${[["all","Everything"],["untried","Not tried yet"],["new","New openings"],["favorites","Our favorites"]].map(([k,l]) => `<option value="${k}" ${k===u.filter?"selected":""}>${l}</option>`).join("")}</select></div>
+      <div class="field"><label for="bud">Budget</label><select class="input" id="bud" data-change="budget">
+        ${[["any","Any budget"],["light","Lighter ($–$$)"],["high","High end ($$$+)"]].map(([k,l]) => `<option value="${k}" ${k===u.budget?"selected":""}>${l}</option>`).join("")}</select></div>
+      <div class="field"><label for="meal">Meal</label><select class="input" id="meal" data-change="meal">
+        ${[["any","Any meal"],["breakfast","Breakfast & brunch"],["lunch","Lunch"],["dinner","Dinner"]].map(([k,l]) => `<option value="${k}" ${k===u.meal?"selected":""}>${l}</option>`).join("")}</select></div>
     </div>
     <div class="search">${I.search}<input class="input" id="q" type="search" placeholder="Search restaurants, cuisines, neighborhoods" value="${esc(u.q)}" data-input="q"></div>
     <div class="chips" role="group" aria-label="Cuisine">${CUISINES.map(c => `<button class="chip" data-act="cuisine" data-c="${c}" aria-pressed="${c===u.cuisine}">${c}</button>`).join("")}</div>
@@ -707,7 +803,7 @@ function rRow(r,t){
   if(rs.state === "returning") tags.push('<span class="pill good">Back in rotation</span>');
   return `<button class="r-row" data-act="rest" data-rid="${r.id}">
     <h3>${esc(r.name)}</h3><span class="score">${a ? `<span class="stars">★</span> ${a.toFixed(1)}` : "—"}</span>
-    <span class="sub">${r.cuisine.join(" · ")} · ${esc(r.hood)} · ${$(r.price)}</span>
+    <span class="sub">${r.cuisine.join(" · ")} · ${esc(r.hood)}<br>${costText(r)} · ${mealText(r)}</span>
     ${tags.length ? `<span class="tags">${tags.join("")}</span>` : ""}
   </button>`;
 }
@@ -720,7 +816,9 @@ function sheetRest(rid){
     <div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">${r.cuisine.join(" · ")} · ${$(r.price)}</div><h2>${esc(r.name)}</h2></div>${a?`<div class="num" style="color:var(--brass);font-size:20px">★ ${a.toFixed(1)}</div>`:""}</div>
     <p style="margin:0">${esc(r.blurb)}</p>
     <dl class="kv">
-      <dt>Address</dt><dd><a href="${mapsPlace(r)}" target="_blank" rel="noopener">${esc(r.addr)}</a></dd>
+      <dt>Address</dt><dd><a href="${mapsPlace(r)}" target="_blank" rel="noopener">${esc(addrOf(r))}</a></dd>
+      <dt>Typical cost</dt><dd>${costText(r)}</dd>
+      <dt>Serves</dt><dd>${mealText(r)}</dd>
       <dt>Our visits</dt><dd>${vs.length ? `${vs.length}× · last ${fmtDate(vs[0].date)}` : "Not tried yet"}</dd>
       <dt>Sunday rotation</dt><dd>${rs.state==="resting"?`Resting until ${fmtDate(rs.back)}`:rs.state==="returning"?"Back in rotation":"Available"}</dd>
     </dl>
@@ -784,9 +882,11 @@ function vPlan(){
   </section>
   <section class="sec">
     <div class="field"><label for="p-note">Personal note</label><textarea class="input" id="p-note" data-d="note" placeholder="${isHost?"A line for your invitation":"Anything the family should know"}">${esc(d.note)}</textarea></div>
-    <div class="field"><label for="p-guest">Invite a guest (family approves with a show of hands)</label>
-      <div style="display:flex;gap:8px"><input class="input" id="p-guest" placeholder="Guest name"><button class="btn" data-act="add-guest">Add</button></div>
-      ${d.guests.length ? `<div class="actions">${d.guests.map((g,i) => `<span class="pill brass">${esc(g)} <button data-act="rm-guest" data-i="${i}" aria-label="Remove ${esc(g)}" style="background:none;border:0;color:inherit;padding:0 0 0 4px">×</button></span>`).join("")}</div>` : ""}
+    <div class="field"><span class="lbl">GUESTS (FAMILY APPROVES WITH A SHOW OF HANDS)</span>
+      ${st.contacts.length ? `<div class="chips" style="flex-wrap:wrap">${st.contacts.map(c => `<button class="chip" data-act="toggle-contact" data-cid="${c.id}" aria-pressed="${d.guests.some(g => g.contactId === c.id)}">${esc(c.name)}</button>`).join("")}</div>` : ""}
+      <div class="grid2"><input class="input" id="p-guest" placeholder="New guest name" aria-label="New guest name"><input class="input" id="p-guest-email" type="email" placeholder="Email (optional)" aria-label="New guest email"></div>
+      <button class="btn sm" data-act="add-guest" style="justify-self:start">+ Add guest &amp; save to contacts</button>
+      ${d.guests.length ? `<div class="actions">${d.guests.map((g,i) => `<span class="pill brass">${esc(g.name)} <button data-act="rm-guest" data-i="${i}" aria-label="Remove ${esc(g.name)}" style="background:none;border:0;color:inherit;padding:0 0 0 4px">×</button></span>`).join("")}</div>` : ""}
     </div>
   </section>
   ${isHost && d.options[0] ? `<section class="sec"><div class="lbl">INVITATION PREVIEW</div>${inviteCard({...d, host:st.me, chosen:d.options[0]})}</section>` : ""}
@@ -811,7 +911,7 @@ function inviteCard(e){
     <div class="i-title">${esc(e.title || occ)}</div>
     <div class="i-orn">◆ ◆ ◆</div>
     <div class="i-rest">${esc(r.name)}</div>
-    <div class="i-meta"><b>${fmtLong(e.date)}</b><br>${fmtTime(e.time)} · Dress: ${esc(e.dress)}<br>${esc(r.addr)}</div>
+    <div class="i-meta"><b>${fmtLong(e.date)}</b><br>${fmtTime(e.time)} · Dress: ${esc(e.dress)}<br>${esc(addrOf(r))}<br>Typical cost ${costText(r)}</div>
     ${e.note ? `<div class="i-note">“${esc(e.note)}”</div>` : ""}
     <div class="i-links"><a href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a><a href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a></div>
   </div>`;
@@ -864,7 +964,13 @@ function eventCard(e){
     body += `<div class="divider"></div><div class="sec" style="gap:10px"><div class="lbl">GUEST REQUESTS · ${majority()} HANDS NEEDED</div>${e.guests.map(g => { const ok = guestApproved(g); const up = g.hands.includes(st.me);
       return `<div class="guest"><span class="grow"><b>${esc(g.name)}</b><br><span class="small muted">asked by ${esc(F(g.by).name)}</span></span><span class="stack">${g.hands.map(m => av(m,"xs")).join("")}</span>${ok?`<span class="pill good">Welcome ✓</span>`:`<button class="hands" data-act="hand" data-id="${e.id}" data-g="${g.id}" aria-pressed="${up}">✋ ${g.hands.length}/${majority()}</button>`}</div>`; }).join("")}</div>`;
   }
+  if(e.status === "set"){
+    const ar = st.arrivals[e.id] || {}; const here = Object.values(ar).filter(a => a.s === "here").length;
+    body += `<div class="actions"><button class="btn primary" data-act="reveal" data-id="${e.id}">Open dinner card${here?` · ${here} arrived`:""}</button>
+      <a class="btn sm" href="${mailInvite(e)}">Email invitation</a><button class="btn sm ghost" data-act="copy-invite" data-id="${e.id}">Copy text</button></div>`;
+  }
   body += `<div class="actions" style="margin-top:2px">
+    ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:"Start 10-minute vote"}</button>`:""}
     <button class="btn sm" data-act="ask-guest" data-id="${e.id}">+ Ask to bring a guest</button>
     ${e.status==="set"?`<button class="btn sm" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button><button class="btn sm wine" data-act="wrap" data-id="${e.id}">We dined — wrap up</button>`:""}
     ${isHost?`<button class="btn sm ghost" data-act="cancel" data-id="${e.id}">Cancel</button>`:""}
@@ -910,10 +1016,25 @@ function vTable(){
     <div style="display:flex;flex-wrap:wrap;gap:12px">${st.fam.map(f => `<span style="display:flex;align-items:center;gap:6px">${av(f.id,"sm")}<span class="num">${treatCount(f.id)}</span></span>`).join("")}</div>
   </section>
   <section class="card">
-    <h2 style="font-size:20px">Family</h2>
-    <p class="small muted" style="margin:0">You've written ${myReviews} review${myReviews===1?"":"s"}. Names and seats can be changed any time.</p>
-    <div class="actions"><button class="btn sm" data-act="edit-fam">Edit family names</button><button class="btn sm" data-act="tips">Quick tip guide</button><button class="btn sm ghost" data-act="reset-all">Reset prototype data</button></div>
+    <div class="sec-head"><h2 style="font-size:20px">Family at the table</h2><span class="small muted num">${st.fam.length} seats</span></div>
+    <div>${st.fam.map(f => personRow("fam", f)).join("")}</div>
+    <button class="btn sm" data-act="person-new" data-kind="fam" style="justify-self:start">+ Add a seat</button>
+  </section>
+  <section class="card">
+    <div class="sec-head"><h2 style="font-size:20px">Contacts &amp; guests</h2><span class="small muted num">${st.contacts.length}</span></div>
+    <p class="small muted" style="margin:0">Friends and extended family you invite often. They get the invitation email once the family raises hands.</p>
+    <div>${st.contacts.map(c => personRow("contact", c)).join("") || `<div class="empty">No contacts yet.</div>`}</div>
+    <button class="btn sm" data-act="person-new" data-kind="contact" style="justify-self:start">+ Add a contact</button>
+  </section>
+  <section class="card">
+    <p class="small muted" style="margin:0">You've written ${myReviews} review${myReviews===1?"":"s"}.</p>
+    <div class="actions"><button class="btn sm" data-act="tips">Quick tip guide</button><button class="btn sm ghost" data-act="reset-all">Reset prototype data</button></div>
   </section>`;
+}
+function personRow(kind, p){
+  const lead = kind === "fam" ? av(p.id) : `<span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc((p.name||"?")[0])}</span>`;
+  const sub = [kind === "contact" ? p.relation : "", p.email, p.phone].filter(Boolean).join(" · ") || "No email or phone yet";
+  return `<div class="person">${lead}<span style="min-width:0"><b>${esc(p.name)}</b>${kind==="fam"&&p.id===st.me?' <span class="pill brass">you</span>':""}<small>${esc(sub)}</small></span><button class="btn sm ghost" data-act="person-edit" data-kind="${kind}" data-id="${p.id}">Edit</button></div>`;
 }
 
 /* ---------- Sheets ---------- */
@@ -927,8 +1048,11 @@ function sheetTips(){
   const tips = [
     ["Your seat","Tap your chair once. The app greets you by name and only shows what needs you."],
     ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
-    ["Voting","One vote each. Change it until the host locks it in. A tie? The host breaks it."],
-    ["Guests","Anyone can ask to bring a guest. It takes a show of hands from a majority of the family (✋ 3 of 5)."],
+    ["The 10-minute vote","Tap “Start 10-minute vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
+    ["Welcome to dinner","When the vote closes, the winner opens full screen with directions, the menu and tonight's highlights."],
+    ["Check in","Tap “I'm on my way”, then “I've arrived”. Everyone can see who's at the table."],
+    ["Guests","Pick guests from Contacts or add someone new. Each guest needs a show of hands from a majority of the family."],
+    ["Contacts","Our Table → add family seats and contacts with email and mobile. “Email invitation” addresses everyone at once."],
     ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Mark it booked with the confirmation number."],
     ["The 90-day rule","The Sunday pick never repeats a restaurant chosen in the last 3 months. After that it comes “back in rotation”."],
     ["Concierge","On the night, open Concierge & tip for wine ideas, a tax-aware bill splitter and a tip based on how the service felt."],
@@ -942,17 +1066,170 @@ function sheetSeat(){
     <p class="small muted" style="margin:0">Prototype only — see the app through each family member's eyes.</p>
     <div class="sec" style="gap:8px">${st.fam.map(f => `<button class="pick" data-act="be" data-id="${f.id}" aria-pressed="${f.id===st.me}">${av(f.id)}<span class="grow"><b>${esc(f.name)}</b><small>${pendingFor(f.id).length} open item(s)</small></span></button>`).join("")}</div>`);
 }
-function sheetEditFam(){
-  openSheet(`<div class="sheet-head"><h2>Family names</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:0">These are example names. Type your family's real names.</p>
-    ${st.fam.map(f => `<div class="field"><label for="fn-${f.id}">Seat ${f.id.slice(1)}</label><div style="display:flex;gap:8px;align-items:center">${av(f.id)}<input class="input" id="fn-${f.id}" value="${esc(f.name)}"></div></div>`).join("")}
-    <button class="btn primary block" data-act="save-fam">Save names</button>`);
+function sheetPerson(kind, id){
+  const list = kind === "fam" ? st.fam : st.contacts;
+  const p = list.find(x => x.id === id) || {name:"",email:"",phone:"",relation:""};
+  const isNew = !id;
+  openSheet(`<div class="sheet-head"><h2>${isNew ? (kind==="fam"?"Add a seat":"Add a contact") : esc(p.name)}</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    ${kind==="fam" && isNew ? `<p class="small muted" style="margin:0">A new seat at the family table. They get a vote and count toward guest approval.</p>` : ""}
+    <div class="field"><label for="pp-name">Name</label><input class="input" id="pp-name" value="${esc(p.name)}" placeholder="Full name"></div>
+    ${kind==="contact" ? `<div class="field"><label for="pp-rel">Relationship</label><input class="input" id="pp-rel" value="${esc(p.relation)}" placeholder="e.g. Cousin, Jasmine's fiancé"></div>` : ""}
+    <div class="field"><label for="pp-email">Email</label><input class="input" id="pp-email" type="email" value="${esc(p.email)}" placeholder="name@email.com"></div>
+    <div class="field"><label for="pp-phone">Mobile</label><input class="input" id="pp-phone" type="tel" value="${esc(p.phone)}" placeholder="(901) 555-0123"></div>
+    <button class="btn primary block" data-act="person-save" data-kind="${kind}" data-id="${id||""}">Save</button>
+    ${!isNew && !(kind==="fam" && id===st.me) ? `<button class="btn ghost block" data-act="person-del" data-kind="${kind}" data-id="${id}">Remove ${kind==="fam"?"from the table":"contact"}</button>` : ""}`);
 }
+let guestPick = new Set();
 function sheetAskGuest(id){
-  openSheet(`<div class="sheet-head"><h2>Bring a guest</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:0">The family will be asked to raise a hand. ${majority()} hands and they're in.</p>
-    <div class="field"><label for="g-name">Guest's name</label><input class="input" id="g-name" placeholder="e.g. Tasha (Marcus's friend)"></div>
+  const e = ev(id); guestPick = new Set();
+  const avail = st.contacts.filter(c => !e.guests.some(g => g.contactId === c.id));
+  openSheet(`<div class="sheet-head"><h2>Bring guests</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">Pick as many as you like. Each guest needs ${majority()} raised hands from the family.</p>
+    ${avail.length ? `<div class="sec" style="gap:8px">${avail.map(c => `<button class="pick" data-act="gpick" data-cid="${c.id}" aria-pressed="false"><span class="check"></span><span class="grow"><b>${esc(c.name)}</b><small>${esc([c.relation,c.email].filter(Boolean).join(" · "))}</small></span></button>`).join("")}</div>` : ""}
+    <div class="lbl">SOMEONE NEW</div>
+    <div class="grid2"><input class="input" id="g-name" placeholder="Name" aria-label="Guest name"><input class="input" id="g-email" type="email" placeholder="Email (optional)" aria-label="Guest email"></div>
     <button class="btn primary block" data-act="ask-guest-go" data-id="${id}">Ask the family</button>`);
+}
+
+/* Invitations by email / copy */
+function inviteText(e){
+  const r = RBY[e.chosen];
+  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 5.`;
+}
+function mailInvite(e){
+  const to = [...st.fam.filter(f => f.id !== st.me).map(f => f.email), ...e.guests.filter(guestApproved).map(g => g.email)].filter(Boolean);
+  return `mailto:?bcc=${encodeURIComponent(to.join(","))}&subject=${encodeURIComponent(`You're invited: ${e.title} at ${RBY[e.chosen].name}`)}&body=${encodeURIComponent(inviteText(e))}`;
+}
+
+/* ---------- Live 10-minute vote ---------- */
+const VOTE_MS = 10 * 60 * 1000;
+const mmss = ms => { const s = Math.max(0, Math.ceil(ms/1000)); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; };
+function lockEvent(e){
+  const tally = {}; e.options.forEach(o => tally[o] = 0); Object.values(e.votes).forEach(o => { if(o in tally) tally[o]++; });
+  const lead = Math.max(...Object.values(tally)); const leaders = e.options.filter(o => tally[o] === lead);
+  const hv = e.votes[e.host];
+  e.chosen = leaders.includes(hv) ? hv : leaders[0]; e.status = "set"; save();
+}
+const liveEl = document.getElementById("live"), revealEl = document.getElementById("reveal");
+let liveId = null, liveTimer = null, simOn = true;
+function openLive(id){
+  const e = ev(id); if(!e || e.status !== "open") return;
+  if(!e.voteEnds){ e.voteEnds = Date.now() + VOTE_MS; save(); toast("Vote is open — the family has 10 minutes"); }
+  liveId = id; liveEl.hidden = false; document.body.style.overflow = "hidden"; drawLive();
+  clearInterval(liveTimer); liveTimer = setInterval(tickLive, 1000);
+}
+function closeLive(){ clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = ""; render(); }
+function tickLive(){
+  const e = ev(liveId); if(!e){ closeLive(); return; }
+  if(simOn && Math.random() < .2){
+    const missing = st.fam.filter(f => f.id !== st.me && !e.votes[f.id]);
+    if(missing.length){ const m = missing[Math.floor(Math.random()*missing.length)]; e.votes[m.id] = e.options[Math.floor(Math.random()*e.options.length)]; save(); drawLive(); toast(`${m.name} voted`); }
+  }
+  const left = e.voteEnds - Date.now();
+  if(left <= 0 || Object.keys(e.votes).length >= st.fam.length){ finishLive(e); return; }
+  const c = document.getElementById("cd"); if(c){ c.textContent = mmss(left); c.classList.toggle("low", left < 60000); }
+}
+function finishLive(e){
+  if(e.status === "open") lockEvent(e);
+  clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = "";
+  render(); openReveal(e.id);
+}
+function drawLive(){
+  const e = ev(liveId); const n = Object.keys(e.votes).length; const left = e.voteEnds - Date.now();
+  const tally = {}; e.options.forEach(o => tally[o] = []); Object.entries(e.votes).forEach(([m,o]) => tally[o] && tally[o].push(m));
+  liveEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow"><span class="dotlive"></span> Live vote</span><button class="icon-btn" data-act="live-close" aria-label="Close">✕</button></div>
+    <div class="live-head">
+      <h2 style="font-size:26px">${esc(e.title)}</h2>
+      <div class="small muted">${fmtLong(e.date)} · ${fmtTime(e.time)}</div>
+      <div class="cd ${left<60000?"low":""}" id="cd">${mmss(left)}</div>
+      <div class="small">${n} of ${st.fam.length} voted <span class="stack" style="vertical-align:middle;margin-left:6px">${Object.keys(e.votes).map(m => av(m,"xs")).join("")}</span></div>
+      <div class="small muted">Waiting on ${st.fam.filter(f => !e.votes[f.id]).map(f => esc(f.name)).join(", ") || "no one"}</div>
+    </div>
+    ${e.options.map(o => { const r = RBY[o]; const mine = e.votes[st.me] === o; const a = avgOf(o);
+      return `<article class="ballot ${mine?"mine":""}">
+        <div class="eyebrow">${r.cuisine.join(" · ")} · ${esc(r.hood)}</div>
+        <h3>${esc(r.name)}</h3>
+        <div class="small"><b>${costText(r)}</b>${a?` · <span class="stars">★</span> ${a.toFixed(1)} family rating`:" · not tried yet"}</div>
+        <p class="small muted" style="margin:0">${esc(r.blurb)}</p>
+        <div class="row"><a class="btn sm" href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a class="btn sm" href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a><span class="small muted" style="min-width:0">${esc(addrOf(r))}</span></div>
+        <div class="bar"><i style="width:${tally[o].length/st.fam.length*100}%"></i></div>
+        <div class="row"><span class="num">${tally[o].length} vote${tally[o].length===1?"":"s"}</span><span class="stack">${tally[o].map(m => av(m,"xs")).join("")}</span>
+          <button class="btn ${mine?"primary":"wine"}" style="margin-left:auto" data-act="live-vote" data-rid="${o}">${mine?"Your vote ✓":"Vote for this"}</button></div>
+      </article>`; }).join("")}
+    ${e.options.length < 6 ? `<button class="btn block" data-act="live-add">+ Add a restaurant to the ballot</button>` : ""}
+    <label class="small muted" style="display:flex;gap:8px;align-items:center;justify-content:center"><input type="checkbox" id="sim" ${simOn?"checked":""}> Prototype: simulate the family's votes</label>
+    ${e.host === st.me ? `<button class="btn ghost block" data-act="live-end">End the vote now</button>` : `<p class="proto">The vote closes when everyone has voted or time runs out. A tie goes to ${esc(F(e.host).name)}'s pick.</p>`}
+  </div>`;
+}
+liveEl.addEventListener("change", e => { if(e.target.id === "sim") simOn = e.target.checked; });
+function sheetBallotAdd(){
+  const e = ev(liveId);
+  const pool = R.filter(r => r.city === "Memphis" && meals(r).dinner && !e.options.includes(r.id) && rotationState(r.id, e.date).state !== "resting").sort((a,b) => a.name.localeCompare(b.name));
+  openSheet(`<div class="sheet-head"><h2>Add to the ballot</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="search">${I.search}<input class="input" id="ba-q" type="search" placeholder="Search Memphis restaurants"></div>
+    <div class="pick-list" id="ba-list" style="max-height:55vh">${pool.map(r => `<button class="pick" data-act="ballot-add" data-rid="${r.id}" data-s="${esc((r.name+" "+r.cuisine.join(" ")).toLowerCase())}"><span class="grow"><b>${esc(r.name)}</b><small>${r.cuisine[0]} · ${costText(r)}</small></span></button>`).join("")}</div>`);
+  document.getElementById("ba-q").addEventListener("input", ev2 => { const q = ev2.target.value.toLowerCase(); document.querySelectorAll("#ba-list .pick").forEach(b => b.hidden = !b.dataset.s.includes(q)); });
+}
+
+/* ---------- Welcome to dinner (full screen) ---------- */
+let revealId = null;
+function superlatives(r){
+  const out = []; const v = visitsOf(r.id).length; const a = avgOf(r.id); const ca = critAvg(r.id); const rs = rotationState(r.id, iso(today0));
+  if(v >= 2) out.push(["♥", `Family favorite — chosen ${v} times`]);
+  if(!v) out.push(["✦", "A first for this table — nobody's been yet"]);
+  if(rs.state === "returning") out.push(["↺", "Back in rotation after 90+ days"]);
+  if(a && a >= 4.4) out.push(["★", `Top-rated by the family: ${a.toFixed(1)} of 5`]);
+  const best = CRIT.filter(([k]) => ca[k] && ca[k] >= 4.8).map(([,l]) => l.toLowerCase());
+  if(best.length) out.push(["◆", `Our highest marks: ${best.join(", ")}`]);
+  if(r.price <= 2) out.push(["$", "Easy on the wallet tonight"]);
+  if(r.price >= 4) out.push(["✧", "A special-occasion room. Dress the part"]);
+  out.push(["❝", r.blurb]);
+  return out;
+}
+function openReveal(id){ revealId = id; revealEl.hidden = false; document.body.style.overflow = "hidden"; drawReveal(); }
+function closeReveal(){ revealEl.hidden = true; revealId = null; document.body.style.overflow = ""; render(); }
+function drawReveal(){
+  const e = ev(revealId); const r = RBY[e.chosen]; const [wine, dish] = pairing(r);
+  const ar = st.arrivals[e.id] || {}; const mine = ar[st.me]?.s;
+  const tally = Object.values(e.votes).filter(o => o === e.chosen).length;
+  const coming = st.fam.filter(f => e.rsvp[f.id] !== "no");
+  const fmtClock = t => new Date(t).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+  revealEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow">${e.mode==="vote"&&tally?`The family chose · ${tally} of ${Object.keys(e.votes).length} votes`:`${esc(F(e.host).name)}'s choice`}</span><button class="icon-btn" data-act="reveal-close" aria-label="Close">✕</button></div>
+    <div class="rv-hero">
+      <div style="color:var(--brass);letter-spacing:.6em">◆ ◆ ◆</div>
+      <h1>Welcome to dinner, family.</h1>
+      <div class="rv-name">${esc(r.name)}</div>
+      <div class="small muted">${r.cuisine.join(" · ")} · ${esc(r.hood)}</div>
+      <div><b>${fmtLong(e.date)} · ${fmtTime(e.time)}</b><br><span class="small">Dress: ${esc(e.dress)} · ${costText(r)}</span></div>
+      <a class="small" href="${mapsPlace(r)}" target="_blank" rel="noopener">${esc(addrOf(r))}</a>
+    </div>
+    <div class="actions" style="justify-content:center">
+      <a class="btn primary" href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a>
+      <a class="btn" href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a>
+      <button class="btn" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button>
+    </div>
+    <section class="card">
+      <div class="lbl">CHECK IN</div>
+      <div class="seg" role="group" aria-label="My status">
+        <button data-act="arrive" data-s="way" aria-pressed="${mine==="way"}">I'm on my way</button>
+        <button data-act="arrive" data-s="here" aria-pressed="${mine==="here"}">I've arrived</button>
+      </div>
+      <div>${coming.map(f => { const a = ar[f.id];
+        const pill = !a ? '<span class="pill">Not left yet</span>' : a.s === "way" ? `<span class="pill warn">On the way · ${fmtClock(a.t)}</span>` : `<span class="pill good">Here · ${fmtClock(a.t)}</span>`;
+        return `<div class="arr">${av(f.id,"sm")}<span><b>${esc(F(f.id).name)}</b></span>${pill}</div>`; }).join("")}
+        ${e.guests.filter(guestApproved).map(g => `<div class="arr"><span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${esc(g.name[0])}</span><span><b>${esc(g.name)}</b><small>guest</small></span><span class="pill">Guest</span></div>`).join("")}
+      </div>
+      <div class="small muted">${Object.values(ar).filter(a => a.s==="here").length} of ${coming.length} family at the table</div>
+    </section>
+    <section class="card">
+      <div class="lbl">TONIGHT'S HIGHLIGHTS</div>
+      ${superlatives(r).map(([ic,t]) => `<div class="sup"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}
+    </section>
+    <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
+    <p class="proto">In the full app, “I've arrived” sends everyone a quick alert.</p>
+  </div>`;
 }
 function sheetBook(id){
   openSheet(`<div class="sheet-head"><h2>Reservation booked</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
@@ -1036,8 +1313,33 @@ document.addEventListener("click", e => {
     case "tips": sheetTips(); break;
     case "seat": sheetSeat(); break;
     case "be": st.me = id; save(); closeSheet(); draft = null; render(); toast(`You're now seated as ${ME().name}`); break;
-    case "edit-fam": sheetEditFam(); break;
-    case "save-fam": st.fam.forEach(f => { const v = document.getElementById("fn-"+f.id).value.trim(); if(v) f.name = v; }); save(); closeSheet(); render(); toast("Family names saved"); break;
+    case "person-new": sheetPerson(b.dataset.kind, null); break;
+    case "person-edit": sheetPerson(b.dataset.kind, id); break;
+    case "person-save": {
+      const kind = b.dataset.kind; const name = document.getElementById("pp-name").value.trim();
+      if(!name){ toast("Add a name to save"); return; }
+      const data = {name, email:document.getElementById("pp-email").value.trim(), phone:document.getElementById("pp-phone").value.trim()};
+      if(kind === "contact") data.relation = document.getElementById("pp-rel").value.trim();
+      const list = kind === "fam" ? st.fam : st.contacts;
+      const p = id && list.find(x => x.id === id);
+      if(p) Object.assign(p, data);
+      else if(kind === "fam") st.fam.push({id:uid("m"), color:COLORS[st.fam.length % COLORS.length], ...data});
+      else st.contacts.push({id:uid("c"), ...data});
+      save(); closeSheet(); render(); toast(p ? "Saved" : kind === "fam" ? `${name} has a seat at the table` : `${name} added to contacts`); break; }
+    case "person-del": if(b.dataset.armed){ if(b.dataset.kind === "fam") st.fam = st.fam.filter(f => f.id !== id); else st.contacts = st.contacts.filter(c => c.id !== id); save(); closeSheet(); render(); toast("Removed"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to remove"; } break;
+    case "toggle-contact": { const c = st.contacts.find(x => x.id === b.dataset.cid); const i = draft.guests.findIndex(g => g.contactId === c.id);
+      if(i >= 0) draft.guests.splice(i,1); else draft.guests.push({name:c.name, email:c.email, contactId:c.id}); render(); break; }
+    case "gpick": { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); b.querySelector(".check").textContent = on ? "✓" : ""; on ? guestPick.add(b.dataset.cid) : guestPick.delete(b.dataset.cid); break; }
+    case "live": openLive(id); break;
+    case "live-close": closeLive(); break;
+    case "live-vote": { const e2 = ev(liveId); e2.votes[st.me] = b.dataset.rid; save(); drawLive(); toast(`You voted for ${RBY[b.dataset.rid].name}`); break; }
+    case "live-add": sheetBallotAdd(); break;
+    case "ballot-add": { const e2 = ev(liveId); if(e2 && e2.options.length < 6) e2.options.push(b.dataset.rid); save(); closeSheet(); drawLive(); toast(`${RBY[b.dataset.rid].name} is on the ballot`); break; }
+    case "live-end": finishLive(ev(liveId)); break;
+    case "reveal": openReveal(id); break;
+    case "reveal-close": closeReveal(); break;
+    case "arrive": { const e2 = ev(revealId); st.arrivals[e2.id] ||= {}; st.arrivals[e2.id][st.me] = {s:b.dataset.s, t:Date.now()}; save(); drawReveal(); toast(b.dataset.s === "here" ? "Checked in. The family can see you're here" : "The family knows you're on the way"); break; }
+    case "copy-invite": { const txt = inviteText(ev(id)); navigator.clipboard?.writeText(txt).then(() => toast("Invitation copied — paste it into a text"), () => toast("Couldn't copy on this device")); break; }
     case "reset-all": if(b.dataset.armed){ localStorage.removeItem(KEY); st = seed(); st.me = "m1"; save(); draft = null; render(); toast("Prototype data reset"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to reset"; } break;
     case "rest": sheetRest(b.dataset.rid); break;
     case "explore-filter": st.ui.filter = b.dataset.f; st.ui.city = "Memphis"; go("explore"); break;
@@ -1053,25 +1355,30 @@ document.addEventListener("click", e => {
       else if(draft.mode === "host") draft.options = [rid];
       else if(draft.options.length < max) draft.options.push(rid); else { toast("Up to 3 choices for a vote"); return; }
       const sc = document.getElementById("pick-list")?.scrollTop; render(); const pl = document.getElementById("pick-list"); if(pl) pl.scrollTop = sc; break; }
-    case "add-guest": { const inp = document.getElementById("p-guest"); const v = inp.value.trim(); if(v){ draft.guests.push(v); render(); } break; }
+    case "add-guest": { const v = document.getElementById("p-guest").value.trim(); const em = document.getElementById("p-guest-email").value.trim();
+      if(!v){ toast("Type the guest's name first"); return; }
+      const c = {id:uid("c"), name:v, email:em, phone:"", relation:`Guest of ${ME().name}`}; st.contacts.push(c); save();
+      draft.guests.push({name:v, email:em, contactId:c.id}); render(); toast(`${v} saved to contacts`); break; }
     case "rm-guest": draft.guests.splice(+b.dataset.i,1); render(); break;
     case "reset-plan": newDraft(); render(); break;
     case "send": {
       const d = draft; if(!d.options.length) return;
       const e2 = {id:uid("e"),type:d.type,mode:d.mode,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
-        chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(n => ({id:uid("g"),name:n,by:st.me,hands:[st.me]})),
+        chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(g => ({id:uid("g"),name:g.name,email:g.email||"",contactId:g.contactId||null,by:st.me,hands:[st.me]})),
         reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
       st.events.push(e2); save(); draft = null; go("feed"); toast(d.mode==="host" ? "Invitation sent to the family" : "Vote sent — everyone's been alerted"); break; }
     // feed
     case "vote": { const e2 = ev(id); if(e2.status !== "open") return; e2.votes[st.me] = b.dataset.rid; save(); render(); toast(`Voted for ${RBY[b.dataset.rid].name}`); break; }
-    case "lock": { const e2 = ev(id); const tally = {}; e2.options.forEach(o => tally[o] = 0); Object.values(e2.votes).forEach(o => tally[o]++);
-      const lead = Math.max(...Object.values(tally)); const leaders = e2.options.filter(o => tally[o] === lead);
-      const win = leaders.includes(e2.votes[st.me]) ? e2.votes[st.me] : leaders[0];
-      e2.chosen = win; e2.status = "set"; save(); render(); toast(`Locked in: ${RBY[win].name}`); break; }
+    case "lock": { const e2 = ev(id); lockEvent(e2); render(); openReveal(id); break; }
     case "rsvp": ev(id).rsvp[st.me] = b.dataset.v; save(); render(); break;
     case "hand": { const g = ev(id).guests.find(x => x.id === b.dataset.g); const i = g.hands.indexOf(st.me); i >= 0 ? g.hands.splice(i,1) : g.hands.push(st.me); save(); render(); if(guestApproved(g)) toast(`${g.name} is welcome at the table`); break; }
     case "ask-guest": sheetAskGuest(id); break;
-    case "ask-guest-go": { const v = document.getElementById("g-name").value.trim(); if(!v) return; ev(id).guests.push({id:uid("g"),name:v,by:st.me,hands:[st.me]}); save(); closeSheet(); render(); toast("Asked the family — hands up!"); break; }
+    case "ask-guest-go": {
+      const e2 = ev(id); const v = document.getElementById("g-name").value.trim(); const em = document.getElementById("g-email").value.trim();
+      if(v){ const c = {id:uid("c"), name:v, email:em, phone:"", relation:`Guest of ${ME().name}`}; st.contacts.push(c); guestPick.add(c.id); }
+      if(!guestPick.size){ toast("Pick a contact or type a name"); return; }
+      guestPick.forEach(cid => { const c = st.contacts.find(x => x.id === cid); e2.guests.push({id:uid("g"),name:c.name,email:c.email||"",contactId:c.id,by:st.me,hands:[st.me]}); });
+      const n = guestPick.size; save(); closeSheet(); render(); toast(`Asked the family about ${n} guest${n>1?"s":""} — hands up!`); break; }
     case "res-claim": { const e2 = ev(id); if(e2.reservation.status !== "none"){ toast(`${F(e2.reservation.by).name} already has it`); return; } e2.reservation = {status:"claimed",by:st.me,conf:""}; save(); render(); toast("Everyone can see you're booking"); break; }
     case "res-release": ev(id).reservation = {status:"none",by:null,conf:""}; save(); render(); break;
     case "res-book": sheetBook(id); break;
@@ -1098,6 +1405,9 @@ document.addEventListener("click", e => {
     case "note": { const inp = document.getElementById("note-"+id); const v = inp.value.trim(); if(!v) return; st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:id,text:v}); save(); render(); break; }
   }
 });
+setInterval(() => {
+  document.querySelectorAll("[data-cd]").forEach(el => { const e = ev(el.dataset.cd); if(!e || !e.voteEnds) return; const left = e.voteEnds - Date.now(); el.textContent = mmss(left); if(left <= 0 && !liveId && app.hidden === false) render(); });
+}, 1000);
 document.addEventListener("change", e => {
   const c = e.target.dataset.change; if(!c) return;
   st.ui[c] = e.target.value; save(); render();
