@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Table of 5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0f1c18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Table of 5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one-column phone app shell (max 480px) — sticky header, scrolling view, fixed tab bar. Evening dining room: bottle green, brass, wine. */
+:root{
+  --bg:#0f1c18; --surface:#15261f; --surface-2:#1c3129; --line:rgba(222,200,150,.16);
+  --ink:#efe9dc; --muted:#a3b0a6; --brass:#cfab6c; --brass-ink:#1a160c; --wine:#9a3343; --wine-soft:rgba(154,51,67,.18);
+  --good:#86c596; --warn:#e3b45c; --bad:#e58474; --scrim:rgba(5,10,8,.62); --card-shadow:0 10px 30px rgba(0,0,0,.28);
+  --paper:#f6f1e6; --paper-ink:#2a1f14; --paper-line:#c9b083;
+  --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:14px; color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#edf0ec; --surface:#ffffff; --surface-2:#e2e8e2; --line:rgba(19,48,38,.13);
+  --ink:#13261f; --muted:#56675e; --brass:#8b6a2c; --brass-ink:#fffaf0; --wine:#8e2f3c; --wine-soft:rgba(142,47,60,.10);
+  --good:#2f7d48; --warn:#9a6a10; --bad:#b4442f; --scrim:rgba(10,20,16,.45); --card-shadow:0 8px 24px rgba(19,48,38,.10);
+  color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --bg:#edf0ec; --surface:#ffffff; --surface-2:#e2e8e2; --line:rgba(19,48,38,.13);
+  --ink:#13261f; --muted:#56675e; --brass:#8b6a2c; --brass-ink:#fffaf0; --wine:#8e2f3c; --wine-soft:rgba(142,47,60,.10);
+  --good:#2f7d48; --warn:#9a6a10; --bad:#b4442f; --scrim:rgba(10,20,16,.45); --card-shadow:0 8px 24px rgba(19,48,38,.10);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:6px}
+a{color:var(--brass)}
+h1,h2,h3{font-family:var(--f-display);font-weight:500;text-wrap:balance;margin:0;letter-spacing:.005em}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* ---------- Splash ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 80% at 50% 30%,#1d3a30 0%,#0b1512 70%);color:#efe9dc;display:grid;place-items:center;text-align:center;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));transition:opacity .7s ease}
+#splash.out{opacity:0;pointer-events:none}
+.mark{position:relative;width:min(220px,58vw);aspect-ratio:1;max-width:100%;margin:0 auto 28px}
+.mark svg{width:100%;height:100%;overflow:visible}
+.mark .ring{stroke:#cfab6c;stroke-width:1.2;fill:none;stroke-dasharray:640;stroke-dashoffset:640;animation:draw 1.6s .2s cubic-bezier(.6,.1,.2,1) forwards}
+.mark .seat{fill:#cfab6c;opacity:0;animation:pop .5s forwards}
+.mark .five{font-family:var(--f-display);font-style:italic;fill:#efe9dc;font-size:78px;opacity:0;animation:fade .9s 1.2s forwards}
+.splash-title{font-family:var(--f-display);font-size:clamp(34px,10vw,48px);letter-spacing:.06em;opacity:0;animation:rise .9s 1.4s forwards}
+.splash-tag{margin-top:10px;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#cfab6c;opacity:0;animation:fade .9s 1.9s forwards}
+.splash-hint{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));left:0;right:0;font-size:12px;color:rgba(239,233,220,.5);opacity:0;animation:fade .6s 2.6s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- Seat picker / greeting ---------- */
+#gate{position:fixed;inset:0;z-index:90;background:var(--bg);display:grid;place-items:center;text-align:center;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+.gate-inner{width:100%;max-width:420px;display:grid;gap:18px;justify-items:center}
+.round{position:relative;width:min(300px,82vw);aspect-ratio:1;max-width:100%}
+.round .tabletop{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--surface-2),var(--surface));border:1px solid var(--line);display:grid;place-items:center;font-family:var(--f-display);font-style:italic;color:var(--brass);font-size:42px}
+.round .chair{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;border:2px solid transparent;color:#fff;font-weight:600;font-size:20px;display:grid;place-items:center;box-shadow:var(--card-shadow);transition:transform .2s}
+.round .chair:hover{transform:scale(1.07)}
+.round .chair span{position:absolute;top:100%;margin-top:4px;font-size:12px;color:var(--ink);font-weight:500;white-space:nowrap}
+.greet{font-family:var(--f-display);font-size:clamp(30px,8vw,40px)}
+.greet em{color:var(--brass)}
+#gate.greeting .gate-inner{animation:rise .7s both}
+
+/* ---------- App shell ---------- */
+.app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px}
+.brand{font-family:var(--f-display);font-size:21px;letter-spacing:.04em;flex:1}
+.brand i{color:var(--brass)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--ink)}
+.avatar{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:600;font-size:13px;flex:none}
+.avatar.sm{width:24px;height:24px;font-size:11px}
+.avatar.xs{width:20px;height:20px;font-size:10px}
+.stack{display:inline-flex}
+.stack .avatar{border:2px solid var(--surface);margin-left:-6px}
+.stack .avatar:first-child{margin-left:0}
+main{flex:1;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px calc(96px + env(safe-area-inset-bottom,0px));display:grid;gap:22px;align-content:start}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .row{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{background:none;border:0;padding:9px 0 10px;display:grid;justify-items:center;gap:3px;font-size:11px;color:var(--muted);position:relative}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--brass)}
+nav.tabs .plan-btn span.disc{width:44px;height:44px;margin-top:-18px;border-radius:50%;background:var(--brass);color:var(--brass-ink);display:grid;place-items:center;box-shadow:var(--card-shadow)}
+.badge-dot{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--wine);color:#fff;font-size:10px;line-height:16px;font-weight:700}
+
+/* ---------- Sections & cards ---------- */
+.sec{display:grid;gap:12px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.sec-head h2{font-size:22px}
+.link-btn{background:none;border:0;color:var(--brass);font-weight:600;font-size:13px;padding:4px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:10px;min-width:0}
+.hello h1{font-size:32px;line-height:1.1}
+.hello h1 em{color:var(--brass)}
+.hello p{margin:6px 0 0;color:var(--muted)}
+.feature{position:relative;overflow:hidden;border-radius:18px;padding:20px;background:linear-gradient(150deg,var(--wine) 0%,color-mix(in srgb,var(--wine) 55%,var(--bg)) 100%);color:#fbeff0;display:grid;gap:8px;box-shadow:var(--card-shadow)}
+.feature .eyebrow{color:#f4d9a8}
+.feature h3{font-size:28px;line-height:1.1}
+.feature .meta{font-size:13px;opacity:.85}
+.feature .why{font-size:13px;background:rgba(0,0,0,.18);border-radius:10px;padding:8px 10px}
+.feature .actions .btn{background:#fbeff0;color:#5a1622;border-color:transparent}
+.feature .actions .btn.ghost{background:transparent;color:#fbeff0;border-color:rgba(251,239,240,.4)}
+.feature .plate{position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(244,217,168,.35);box-shadow:inset 0 0 0 14px rgba(244,217,168,.06)}
+.alts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left;display:grid;gap:2px;min-width:0}
+.alt b{font-family:var(--f-display);font-weight:500;font-size:17px;line-height:1.2}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);padding:9px 16px;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn.primary{background:var(--brass);color:var(--brass-ink);border-color:transparent}
+.btn.wine{background:var(--wine);color:#fff;border-color:transparent}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.pill.good{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.pill.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.pill.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.pill.brass{color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)}
+.pill.wine{color:#fff;background:var(--wine)}
+.todo{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-align:left;width:100%}
+.todo .ic{width:34px;height:34px;border-radius:50%;background:var(--wine-soft);color:var(--wine);display:grid;place-items:center;flex:none}
+:root .todo .ic{color:var(--bad)}
+.todo b{display:block;font-weight:600}
+.todo small{color:var(--muted)}
+.todo .chev{margin-left:auto;color:var(--muted)}
+.scroller{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-inline:-2px}
+.scroller > *{scroll-snap-align:start;flex:0 0 72%}
+
+/* ---------- Restaurant rows ---------- */
+.r-row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-align:left;width:100%}
+.r-row h3{font-size:18px;line-height:1.2}
+.r-row .sub{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.r-row .tags{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.r-row .score{text-align:right;font-family:var(--f-mono);font-size:13px;color:var(--brass)}
+.stars{color:var(--brass);letter-spacing:1px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:500;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--brass);border-color:transparent;color:var(--brass-ink)}
+.field{display:grid;gap:6px}
+.field label,.lbl{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+.input,select.input,textarea.input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-width:0}
+textarea.input{min-height:76px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.search{position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
+.search .input{padding-left:38px}
+
+/* ---------- Events ---------- */
+.event{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid}
+.event .ev-head{padding:14px 16px 0;display:flex;align-items:center;gap:10px}
+.event .ev-head .who{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.event .ev-head .who b{color:var(--ink);font-weight:600}
+.event .ev-body{padding:12px 16px 16px;display:grid;gap:14px}
+.event h3{font-size:22px}
+.opt{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);text-align:left;width:100%;position:relative;overflow:hidden}
+.opt.mine{border-color:var(--brass)}
+.opt .bar{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--brass) 12%,transparent);z-index:0;transition:width .4s}
+.opt > *:not(.bar){position:relative;z-index:1}
+.opt b{font-family:var(--f-display);font-weight:500;font-size:17px}
+.opt .count{font-family:var(--f-mono);font-size:13px}
+.strip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:13px;flex-wrap:wrap}
+.strip .grow{flex:1;min-width:150px}
+.rsvp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rsvp button{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 4px;font-weight:600;font-size:13px}
+.rsvp button[aria-pressed="true"].yes{background:var(--good);color:#0d1f14;border-color:transparent}
+.rsvp button[aria-pressed="true"].maybe{background:var(--warn);color:#241a05;border-color:transparent}
+.rsvp button[aria-pressed="true"].no{background:var(--bad);color:#2a0d08;border-color:transparent}
+.guest{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.guest .grow{flex:1;min-width:120px}
+.hands{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 12px;font-weight:600;font-size:13px}
+.hands[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink);border-color:transparent}
+.divider{height:1px;background:var(--line)}
+
+/* ---------- Invitation (deliberately paper, both themes) ---------- */
+.invite{background:var(--paper);color:var(--paper-ink);border-radius:6px;padding:26px 22px;text-align:center;position:relative;box-shadow:var(--card-shadow);display:grid;gap:10px}
+.invite::before{content:"";position:absolute;inset:8px;border:1px solid var(--paper-line);border-radius:3px;pointer-events:none}
+.invite .i-eyebrow{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#8a6a2c;font-weight:600}
+.invite .i-title{font-family:var(--f-display);font-style:italic;font-size:30px;line-height:1.1}
+.invite .i-rest{font-family:var(--f-display);font-size:22px;letter-spacing:.02em}
+.invite .i-orn{color:#8a6a2c;font-size:14px;letter-spacing:.6em}
+.invite .i-meta{font-size:13.5px;line-height:1.6}
+.invite .i-meta b{font-weight:600}
+.invite .i-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.invite .i-links a{font-size:12.5px;font-weight:600;color:#5a1622;border:1px solid #c9b083;border-radius:999px;padding:6px 12px;text-decoration:none}
+.invite .i-note{font-family:var(--f-display);font-style:italic;font-size:15px;color:#5b4a36}
+
+/* ---------- Sheet ---------- */
+#sheet-wrap{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+#sheet-wrap.open{opacity:1;pointer-events:auto}
+.sheet{width:100%;max-width:480px;max-height:90%;overflow-y:auto;background:var(--bg);border-radius:22px 22px 0 0;border:1px solid var(--line);border-bottom:0;padding-block:8px calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));transform:translateY(30px);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:grid;gap:16px;align-content:start}
+#sheet-wrap.open .sheet{transform:none}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 0}
+.sheet-head{display:flex;align-items:flex-start;gap:12px}
+.sheet-head h2{font-size:26px;flex:1;line-height:1.15}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.review{display:grid;gap:4px;padding:12px;border-radius:12px;background:var(--surface)}
+.review .top{display:flex;align-items:center;gap:8px;font-size:13px}
+.review p{margin:0;font-size:14px}
+.crit{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:8px}
+.dots{display:flex;gap:6px}
+.dots button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:600;color:var(--muted)}
+.dots button[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink);border-color:transparent}
+.calc-out{display:grid;gap:6px;padding:14px;border-radius:12px;background:var(--surface);font-size:14px}
+.calc-out .line{display:flex;justify-content:space-between;gap:12px}
+.calc-out .total{font-size:18px;font-weight:700;border-top:1px dashed var(--line);padding-top:8px}
+.calc-out .pp{font-family:var(--f-display);font-size:28px;color:var(--brass);text-align:center}
+.wine{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--wine-soft);border:1px solid color-mix(in srgb,var(--wine) 30%,transparent)}
+.wine b{font-family:var(--f-display);font-weight:500;font-size:17px}
+.tip{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.tip .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);display:grid;place-items:center;font-family:var(--f-display);font-style:italic}
+.tip p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.tip b{font-weight:600}
+.ledger-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ledger-row:last-child{border-bottom:0}
+.fav{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.fav:last-child{border-bottom:0}
+.fav .rank{font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--brass);text-align:center}
+.fav b{font-family:var(--f-display);font-weight:500;font-size:17px;display:block;line-height:1.2}
+.meter{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--brass)}
+.note{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:12px;border-radius:12px;background:var(--surface)}
+.note p{margin:2px 0 0;font-size:14px}
+.empty{text-align:center;padding:26px 12px;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.warnbox{padding:10px 12px;border-radius:10px;font-size:13px;background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.pick-list{display:grid;gap:8px;max-height:300px;overflow-y:auto;padding-right:2px}
+.pick{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-align:left;width:100%}
+.pick[aria-pressed="true"]{border-color:var(--brass);background:color-mix(in srgb,var(--brass) 10%,var(--surface))}
+.pick .grow{flex:1;min-width:0}
+.pick b{font-weight:600;display:block}
+.pick small{color:var(--muted)}
+.check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;flex:none;font-size:12px}
+.pick[aria-pressed="true"] .check{background:var(--brass);border-color:transparent;color:var(--brass-ink)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;padding:8px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface-2);color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.3s;z-index:80;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.proto{font-size:12px;color:var(--muted);text-align:center;padding:4px 8px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div id="splash" role="button" tabindex="0" aria-label="Table of 5 — tap to enter">
+  <div>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle class="ring" cx="100" cy="100" r="70"/>
+        <circle class="ring" cx="100" cy="100" r="58" style="stroke-width:.6;animation-delay:.45s"/>
+        <g id="seat-dots"></g>
+        <text class="five" x="100" y="126" text-anchor="middle">5</text>
+      </svg>
+    </div>
+    <div class="splash-title">TABLE OF 5</div>
+    <div class="splash-tag">Great food · Better company</div>
+  </div>
+  <div class="splash-hint">Tap to enter</div>
+</div>
+
+<div id="gate" hidden></div>
+
+<div class="app" id="app" hidden>
+  <header class="top">
+    <div class="brand">Table <i>of</i> 5</div>
+    <button class="icon-btn" data-act="tips" aria-label="Quick tip guide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>
+    </button>
+    <button class="icon-btn" data-act="seat" aria-label="Switch family member" id="me-btn" style="padding:0;border:0;background:none"></button>
+  </header>
+  <main id="view"></main>
+  <nav class="tabs" aria-label="Sections"><div class="row" id="tabs"></div></nav>
+</div>
+
+<div id="sheet-wrap" aria-hidden="true"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+"use strict";
+
+/* ================= Data ================= */
+const COLORS = ["#9a3343","#2f6b5a","#8a6526","#4a4f8c","#8a4a6e","#3d6f8a"];
+// [id, name, city, cuisines, neighborhood, address, price 1-4, flags, blurb]
+const RAW = [
+ ["rendezvous","Charlie Vergos' Rendezvous","Memphis",["BBQ"],"Downtown","52 S 2nd St, Memphis, TN 38103",2,[],"Charcoal-broiled dry-rub ribs down a downtown alley since 1948."],
+ ["central-bbq","Central BBQ","Memphis",["BBQ"],"Midtown","2249 Central Ave, Memphis, TN 38104",2,[],"Hickory-smoked ribs, pulled pork and the city's favorite BBQ nachos."],
+ ["cozy-corner","Cozy Corner","Memphis",["BBQ"],"Uptown","735 N Parkway, Memphis, TN 38105",1,[],"Barbecued Cornish hens and ribs from a family-run pit."],
+ ["four-way","The Four Way","Memphis",["Soul"],"South Memphis","998 Mississippi Blvd, Memphis, TN 38126",1,[],"Soul food landmark since 1946 — fried catfish, greens, peach cobbler."],
+ ["alcenias","Alcenia's","Memphis",["Soul"],"Pinch District","317 N Main St, Memphis, TN 38103",1,[],"Comfort food served with a hug. Save room for the chess pie."],
+ ["gus","Gus's World Famous Fried Chicken","Memphis",["Southern"],"Downtown","310 S Front St, Memphis, TN 38103",1,[],"Spicy, crackly fried chicken — casual and loud in the best way."],
+ ["folks-folly","Folk's Folly Prime Steak House","Memphis",["Steak"],"East Memphis","551 S Mendenhall Rd, Memphis, TN 38117",4,[],"Memphis' classic prime steakhouse; white tablecloths and big celebrations."],
+ ["ruths","Ruth's Chris Steak House","Memphis",["Steak"],"East Memphis","6120 Poplar Ave, Memphis, TN 38119",4,[],"Sizzling butter-topped steaks; reliable for larger parties."],
+ ["char","Char Restaurant","Memphis",["Steak","Southern"],"Midtown","431 S Highland St, Memphis, TN 38111",3,[],"Southern steakhouse with a lively bar and generous sides."],
+ ["texas-de-brazil","Texas de Brazil","Memphis",["Steak","Brazilian"],"Downtown","150 Peabody Pl, Memphis, TN 38103",4,[],"Churrascaria — gauchos carve tableside until you flip the card."],
+ ["chez-philippe","Chez Philippe","Memphis",["French","Fine Dining"],"The Peabody","149 Union Ave, Memphis, TN 38103",4,[],"Formal French dining inside The Peabody. The milestone-night room."],
+ ["erling-jensen","Erling Jensen","Memphis",["Fine Dining"],"East Memphis","1044 S Yates Rd, Memphis, TN 38119",4,[],"Chef-driven tasting menus and game dishes in a quiet house."],
+ ["amik","Andrew Michael Italian Kitchen","Memphis",["Italian"],"East Memphis","712 W Brookhaven Cir, Memphis, TN 38117",3,[],"Handmade pasta, Southern accent. A family favorite for a reason."],
+ ["hog-hominy","Hog & Hominy","Memphis",["Italian","Southern"],"East Memphis","707 W Brookhaven Cir, Memphis, TN 38117",3,[],"Wood-fired pizza and Southern-Italian plates, plus a bocce court."],
+ ["bari","Bari Ristorante e Enoteca","Memphis",["Italian"],"Midtown","22 S Cooper St, Memphis, TN 38104",3,[],"Puglian seafood and an all-Italian wine list."],
+ ["libro","Libro at Novel","Memphis",["Italian"],"East Memphis","387 Perkins Ext, Memphis, TN 38117",2,[],"Bright café-trattoria inside Novel bookstore — great for brunch."],
+ ["colettas","Coletta's","Memphis",["Italian"],"South Parkway","1063 S Parkway E, Memphis, TN 38106",1,[],"Old-school red sauce and the original BBQ pizza."],
+ ["ecco","Ecco on Overton Park","Memphis",["Mediterranean"],"Midtown","1585 Overton Park Ave, Memphis, TN 38112",2,[],"Neighborhood Mediterranean bistro with a charming patio."],
+ ["jims-place","Jim's Place Grille","Memphis",["Greek","American"],"East Memphis","518 Perkins Ext, Memphis, TN 38117",3,[],"Family-owned since 1921 — Greek-style fish and steaks."],
+ ["india-palace","India Palace","Memphis",["Indian"],"Midtown","1720 Poplar Ave, Memphis, TN 38104",2,[],"Northern Indian classics; tandoori and a generous lunch buffet."],
+ ["bhan-thai","Bhan Thai","Memphis",["Thai"],"Midtown","1324 Peabody Ave, Memphis, TN 38104",2,[],"Thai in a restored Midtown house with a lantern-lit patio."],
+ ["saigon-le","Saigon Le","Memphis",["Vietnamese"],"Midtown","51 N Cleveland St, Memphis, TN 38104",1,[],"Long-loved Vietnamese and Chinese — pho, vermicelli bowls."],
+ ["paulettes","Paulette's","Memphis",["Continental"],"Harbor Town","50 Harbor Town Square, Memphis, TN 38103",3,[],"Crêpes, filets and the famous popovers with strawberry butter."],
+ ["itta-bena","Itta Bena","Memphis",["Southern"],"Beale Street","145 Beale St, Memphis, TN 38103",3,[],"Speakeasy-style Delta dining upstairs from B.B. King's."],
+ ["felicia","Felicia Suzanne's","Memphis",["Southern"],"Downtown","80 Monroe Ave, Memphis, TN 38103",3,[],"Elevated Southern cooking with New Orleans soul."],
+ ["acre","Acre","Memphis",["Southern","American"],"East Memphis","690 S Perkins Rd, Memphis, TN 38117",3,[],"Modern Southern tasting-forward menu, seasonal and local."],
+ ["flight","Flight Restaurant & Wine Bar","Memphis",["American"],"Downtown","39 S Main St, Memphis, TN 38103",3,[],"Order in 'flights' of three — wine, small plates, desserts."],
+ ["majestic","The Majestic Grille","Memphis",["American"],"Downtown","145 S Main St, Memphis, TN 38103",2,[],"1913 silent-movie house turned grill; silent films on the wall."],
+ ["interim","Interim","Memphis",["American"],"East Memphis","5040 Sanderlin Ave, Memphis, TN 38117",3,[],"Polished neighborhood bistro with a strong Sunday brunch."],
+ ["owen-brennans","Owen Brennan's","Memphis",["Creole"],"East Memphis","6150 Poplar Ave, Memphis, TN 38119",3,[],"New Orleans Creole and a jazz brunch on Sundays."],
+ ["second-line","The Second Line","Memphis",["Creole"],"Midtown","2144 Monroe Ave, Memphis, TN 38104",2,[],"Casual po'boys, BBQ shrimp and beignets."],
+ ["beauty-shop","The Beauty Shop","Memphis",["Eclectic"],"Cooper-Young","966 S Cooper St, Memphis, TN 38104",2,[],"Global menu served in a former 1960s beauty salon — dryer chairs and all."],
+ ["mahogany","Mahogany Memphis","Memphis",["Southern","Fine Dining"],"Poplar Corridor","Poplar Ave, Memphis, TN",3,["new"],"Upscale Southern supper club — newer on the scene."],
+ ["husk-nash","Husk","Nashville",["Southern"],"Rutledge Hill","37 Rutledge St, Nashville, TN 37210",3,[],"Sean Brock's ingredient-driven Southern in a historic mansion."],
+ ["kayne-prime","Kayne Prime","Nashville",["Steak"],"The Gulch","1103 McGavock St, Nashville, TN 37203",4,[],"Modern steakhouse with playful sides."],
+ ["rolf","Rolf and Daughters","Nashville",["Italian"],"Germantown","700 Taylor St, Nashville, TN 37208",3,[],"Pasta-centric, communal tables, great energy."],
+ ["bacchanalia","Bacchanalia","Atlanta",["Fine Dining"],"Westside","1460 Ellsworth Industrial Blvd NW, Atlanta, GA 30318",4,[],"Atlanta's long-running prix-fixe destination."],
+ ["bones","Bones","Atlanta",["Steak"],"Buckhead","3130 Piedmont Rd NE, Atlanta, GA 30305",4,[],"Clubby Buckhead steakhouse institution."],
+ ["busy-bee","Busy Bee Cafe","Atlanta",["Soul"],"West End","810 Martin Luther King Jr Dr SW, Atlanta, GA 30314",1,[],"Legendary fried chicken since 1947."],
+ ["commanders","Commander's Palace","New Orleans",["Creole","Fine Dining"],"Garden District","1403 Washington Ave, New Orleans, LA 70130",4,[],"The blue-and-white landmark; jazz brunch, turtle soup."],
+ ["dooky-chase","Dooky Chase's","New Orleans",["Creole","Soul"],"Tremé","2301 Orleans Ave, New Orleans, LA 70119",2,[],"Leah Chase's legacy — gumbo and fried chicken with history."],
+ ["galatoires","Galatoire's","New Orleans",["French","Creole"],"French Quarter","209 Bourbon St, New Orleans, LA 70130",4,[],"Jackets for dinner, Friday lunch is an event."],
+ ["gibsons","Gibsons Bar & Steakhouse","Chicago",["Steak"],"Gold Coast","1028 N Rush St, Chicago, IL 60611",4,[],"Big steaks, bigger martinis."],
+ ["monteverde","Monteverde","Chicago",["Italian"],"West Loop","1020 W Madison St, Chicago, IL 60607",3,[],"Sarah Grueneberg's pasta counter — book early."],
+ ["alinea","Alinea","Chicago",["Fine Dining"],"Lincoln Park","1723 N Halsted St, Chicago, IL 60614",4,[],"Theatrical multi-course tasting. Bucket-list night."],
+ ["carbone","Carbone","New York",["Italian"],"Greenwich Village","181 Thompson St, New York, NY 10012",4,[],"Mid-century red-sauce glamour; spicy rigatoni."],
+ ["le-bernardin","Le Bernardin","New York",["Seafood","French"],"Midtown","155 W 51st St, New York, NY 10019",4,[],"Eric Ripert's seafood temple."],
+ ["peter-luger","Peter Luger","New York",["Steak"],"Williamsburg","178 Broadway, Brooklyn, NY 11211",4,[],"Porterhouse for the table since 1887."],
+ ["dhamaka","Dhamaka","New York",["Indian"],"Lower East Side","119 Delancey St, New York, NY 10002",3,[],"Bold regional Indian — the goat neck biryani."],
+ ["pappas-dal","Pappas Bros. Steakhouse","Dallas",["Steak"],"Love Field","10477 Lombardy Ln, Dallas, TX 75220",4,[],"Dry-aged in-house; a deep wine cellar."],
+ ["uchi-dal","Uchi","Dallas",["Japanese"],"Uptown","2817 Maple Ave, Dallas, TX 75201",3,[],"Inventive sushi and small plates."],
+ ["bestia","Bestia","Los Angeles",["Italian"],"Arts District","2121 E 7th Pl, Los Angeles, CA 90021",3,[],"Rustic Italian in an industrial space."],
+ ["republique","République","Los Angeles",["French"],"Mid-City","624 S La Brea Ave, Los Angeles, CA 90036",3,[],"French bistro in a 1920s Charlie Chaplin-built hall."],
+ ["bavel","Bavel","Los Angeles",["Mediterranean"],"Arts District","500 Mateo St, Los Angeles, CA 90013",3,[],"Middle Eastern hearth cooking."]
+];
+const R = RAW.map(([id,name,city,cuisine,hood,addr,price,flags,blurb]) => ({id,name,city,cuisine,hood,addr,price,flags,blurb}));
+const RBY = Object.fromEntries(R.map(r => [r.id, r]));
+const CITIES = ["Memphis","Nashville","Atlanta","New Orleans","Chicago","New York","Dallas","Los Angeles"];
+const CUISINES = ["All","Steak","Italian","Indian","BBQ","Soul","Southern","French","Creole","Mediterranean","Fine Dining","Thai","Vietnamese","American","Seafood"];
+const CRIT = [["food","Food quality"],["service","Service"],["price","Price / value"],["selection","Selection"],["clean","Cleanliness"],["location","Location"]];
+const OCCASIONS = [
+  {k:"sunday",label:"Sunday Dinner",mode:"vote"},
+  {k:"justbecause",label:"Just Because",mode:"vote"},
+  {k:"holiday",label:"Holiday",mode:"vote"},
+  {k:"birthday",label:"Birthday",mode:"host"},
+  {k:"anniversary",label:"Anniversary",mode:"host"},
+  {k:"celebration",label:"Celebration",mode:"host"},
+  {k:"personal",label:"My Treat",mode:"host"}
+];
+const DRESS = ["Casual","Smart casual","Sunday best","Business casual","Cocktail attire","Black tie optional"];
+const WINE = {
+  Steak:["Napa Cabernet Sauvignon or an Argentine Malbec","Dry-aged ribeye, creamed spinach, a shared baked potato"],
+  Italian:["Chianti Classico or Barolo for meat; Vermentino with seafood","A shared antipasti board, one pasta per two people, tiramisu"],
+  Indian:["Off-dry Riesling or Gewürztraminer to tame the heat","Tandoori mixed grill, butter chicken, garlic naan for the table"],
+  BBQ:["Zinfandel or a Rhône Syrah — or a cold local lager","Half dry / half wet ribs to compare, slaw, beans"],
+  Soul:["Sparkling rosé or a juicy Grenache","Fried catfish, smothered chicken, greens, cobbler"],
+  Southern:["Chenin Blanc or a crisp Champagne","Fried green tomatoes to start, shrimp & grits"],
+  French:["Red Burgundy (Pinot Noir) or Champagne","Chef's tasting menu; cheese course before dessert"],
+  Creole:["Pinot Noir or an aromatic Gewürztraminer","Gumbo, BBQ shrimp, bread pudding"],
+  Mediterranean:["Greek Assyrtiko or a Provence rosé","Mezze for the table, grilled fish"],
+  Greek:["Assyrtiko or Agiorgitiko","Grilled fish, Greek salad, baklava"],
+  "Fine Dining":["Ask for the sommelier's pairing — set a per-bottle budget first","Let the kitchen lead; note allergies when booking"],
+  Thai:["Off-dry Riesling or Grüner Veltliner","Pad see ew, green curry, mango sticky rice"],
+  Vietnamese:["Dry Riesling or a light Pinot Noir","Pho, spring rolls, vermicelli bowls"],
+  Japanese:["Junmai sake or Champagne","Omakase for the adventurous, tempura for the rest"],
+  Brazilian:["Malbec or a Brazilian sparkling","Picanha, the salad bar, caipirinha (or a virgin one)"],
+  Seafood:["Sancerre or Albariño","Raw bar to start, whole roasted fish"],
+  American:["A versatile Pinot Noir or California Chardonnay","Something to share, something to keep"],
+  Continental:["Bordeaux or a white Burgundy","Popovers, filet, crêpes for dessert"],
+  Eclectic:["A sparkling wine pairs with almost anything","Order across the menu and share"]
+};
+const NA = "Zero-proof: sparkling cider, a craft mocktail, or sweet tea — always on the table.";
+
+/* ================= Date helpers ================= */
+const DAY = 864e5;
+const now = new Date();
+const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const add = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
+const nextSunday = add(today0, (7 - today0.getDay()) % 7 || 7);
+const fmtDate = s => parse(s).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+const fmtLong = s => parse(s).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+const fmtTime = t => { if(!t) return ""; const [h,m] = t.split(":").map(Number); return new Date(2000,0,1,h,m).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); };
+const daysBetween = (a,b) => Math.round((parse(b)-parse(a))/DAY);
+const $ = n => "$".repeat(n);
+const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
+
+/* ================= State ================= */
+const KEY = "tableof5.v1";
+function seed(){
+  const fam = [
+    {id:"m1",name:"Richard",color:COLORS[0]},
+    {id:"m2",name:"Angela",color:COLORS[1]},
+    {id:"m3",name:"Marcus",color:COLORS[2]},
+    {id:"m4",name:"Jasmine",color:COLORS[3]},
+    {id:"m5",name:"Cole",color:COLORS[4]}
+  ];
+  const S = iso(nextSunday);
+  const back = n => iso(add(today0,-n));
+  const visits = [
+    ["four-way",back(5),"e-past1"],["central-bbq",back(12)],["rendezvous",back(19)],["ecco",back(33)],
+    ["amik",back(47)],["folks-folly",iso(add(nextSunday,-92))],["bhan-thai",back(173)],["amik",back(159)],
+    ["rendezvous",back(215)],["folks-folly",back(271)],["chez-philippe",back(296)],["amik",back(296-1)],
+    ["rendezvous",back(348)],["four-way",back(124)],["india-palace",back(390)]
+  ].map(([rid,date,eventId]) => ({rid,date,eventId:eventId||null}));
+  const reviews = [
+    {rid:"four-way",by:"m2",date:back(5),scores:{food:5,service:4,price:5,selection:4,clean:4,location:3},text:"Catfish was perfect. Mama's peach cobbler still wins, but close."},
+    {rid:"four-way",by:"m1",date:back(5),scores:{food:5,service:5,price:5,selection:4,clean:4,location:3},text:"Felt like home. Let's bring Grandma next time."},
+    {rid:"rendezvous",by:"m3",date:back(19),scores:{food:5,service:4,price:4,selection:3,clean:3,location:5},text:"Dry ribs forever. Get there before 6 or wait."},
+    {rid:"amik",by:"m4",date:back(47),scores:{food:5,service:5,price:3,selection:4,clean:5,location:4},text:"Ricotta gnocchi. That's the review."},
+    {rid:"folks-folly",by:"m5",date:iso(add(nextSunday,-92)),scores:{food:5,service:5,price:2,selection:4,clean:5,location:4},text:"Best steak of the year. Pricey — save it for big nights."},
+    {rid:"ecco",by:"m2",date:back(33),scores:{food:4,service:4,price:4,selection:3,clean:5,location:5},text:"Patio weather was perfect. Quiet enough to actually talk."},
+    {rid:"central-bbq",by:"m5",date:back(12),scores:{food:4,service:3,price:5,selection:4,clean:3,location:4},text:"Nachos for the table was the right call."}
+  ];
+  const events = [
+    {id:"e-sun",type:"sunday",mode:"vote",host:"m2",title:"Sunday Dinner",date:S,time:"17:30",dress:"Smart casual",
+     options:["folks-folly","hog-hominy","india-palace"],chosen:null,votes:{m2:"hog-hominy",m3:"india-palace",m4:"hog-hominy"},
+     rsvp:{m2:"yes",m3:"yes",m4:"yes",m5:"maybe"},guests:[{id:"g1",name:"Tasha (Marcus's friend)",by:"m3",hands:["m3","m4"]}],
+     reservation:{status:"none",by:null,conf:""},note:"Vote by Saturday noon so someone can book.",status:"open",created:back(1)},
+    {id:"e-bday",type:"birthday",mode:"host",host:"m4",title:"Jasmine's Birthday",date:iso(add(today0,15)),time:"19:30",dress:"Cocktail attire",
+     options:["chez-philippe"],chosen:"chez-philippe",votes:{},rsvp:{m4:"yes",m2:"yes",m3:"yes"},guests:[],
+     reservation:{status:"booked",by:"m4",conf:"CP-4471"},note:"Dinner is on me this year. Just bring yourselves — and maybe dessert appetite.",status:"set",created:back(3)},
+    {id:"e-past1",type:"sunday",mode:"vote",host:"m1",title:"Sunday Dinner",date:back(5),time:"17:00",dress:"Casual",
+     options:["four-way","bari","acre"],chosen:"four-way",votes:{m1:"four-way",m2:"four-way",m3:"acre",m4:"four-way",m5:"four-way"},
+     rsvp:{m1:"yes",m2:"yes",m3:"yes",m4:"yes",m5:"yes"},guests:[],reservation:{status:"booked",by:"m1",conf:"walk-in"},note:"",status:"done",created:back(10)}
+  ];
+  const ledger = [
+    {eventId:"e-past1",rid:"four-way",date:back(5),payer:"m1",mode:"all",forWhom:null,amount:142.5},
+    {eventId:null,rid:"central-bbq",date:back(12),payer:"m3",mode:"all",forWhom:null,amount:96.2},
+    {eventId:null,rid:"rendezvous",date:back(19),payer:null,mode:"split",forWhom:null,amount:168.0},
+    {eventId:null,rid:"ecco",date:back(33),payer:"m2",mode:"all",forWhom:null,amount:131.75},
+    {eventId:null,rid:"amik",date:back(47),payer:"m5",mode:"for",forWhom:"m4",amount:88.4}
+  ];
+  const notes = [
+    {id:"n1",by:"m4",date:back(5),eventId:"e-past1",text:"Best Sunday in a while. Thank you Dad for treating! ❤"},
+    {id:"n2",by:"m3",date:back(4),eventId:"e-past1",text:"Still thinking about that cobbler."}
+  ];
+  return {v:1,fam,me:null,events,visits,reviews,ledger,notes,ui:{tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:""}};
+}
+let st;
+try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
+if(!st.ui) st.ui = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:""};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+
+/* ================= Lookups ================= */
+const F = id => st.fam.find(f => f.id === id) || {name:"Someone",color:"#666",id};
+const ME = () => F(st.me);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const av = (id,cls="") => { const f = F(id); return `<span class="avatar ${cls}" style="background:${f.color}" title="${esc(f.name)}">${esc(f.name[0]||"?")}</span>`; };
+const visitsOf = rid => st.visits.filter(v => v.rid === rid).sort((a,b) => b.date.localeCompare(a.date));
+const lastVisit = rid => visitsOf(rid)[0]?.date || null;
+const reviewsOf = rid => st.reviews.filter(r => r.rid === rid).sort((a,b) => b.date.localeCompare(a.date));
+function avgOf(rid){
+  const rs = reviewsOf(rid); if(!rs.length) return null;
+  let t=0,n=0; rs.forEach(r => CRIT.forEach(([k]) => { if(r.scores[k]){ t+=r.scores[k]; n++; } }));
+  return n ? t/n : null;
+}
+function critAvg(rid){
+  const rs = reviewsOf(rid); const o = {};
+  CRIT.forEach(([k]) => { const vals = rs.map(r => r.scores[k]).filter(Boolean); o[k] = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null; });
+  return o;
+}
+const starStr = n => n == null ? "" : "★".repeat(Math.round(n)) + "☆".repeat(5-Math.round(n));
+const mapsDir = r => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ", " + r.addr)}`;
+const mapsPlace = r => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + ", " + r.addr)}`;
+const menuLink = r => `https://www.google.com/search?q=${encodeURIComponent(r.name + " " + r.city + " menu")}`;
+const pairing = r => { for(const c of r.cuisine){ if(WINE[c]) return WINE[c]; } return WINE.American; };
+
+/* 90-day rotation: a restaurant chosen within 90 days of the target Sunday is resting. */
+const ROTATION = 90;
+function rotationState(rid, target){
+  const lv = lastVisit(rid); if(!lv) return {state:"untried"};
+  const gap = daysBetween(lv, target);
+  if(gap < ROTATION) return {state:"resting", back: iso(add(parse(lv), ROTATION))};
+  if(gap < ROTATION + 30) return {state:"returning"};
+  return {state:"eligible"};
+}
+function sundayPicks(target){
+  const t = iso(target);
+  const wk = Math.floor(target.getTime() / (7*DAY));
+  const pool = R.filter(r => r.city === "Memphis").map(r => {
+    const rs = rotationState(r.id, t);
+    if(rs.state === "resting") return null;
+    const a = avgOf(r.id);
+    let s = (a ?? 3.6);
+    if(rs.state === "untried") s += .9;
+    if(rs.state === "returning") s += 1.2;
+    if(r.flags.includes("new")) s += .6;
+    s += ((wk * 7919 + r.id.length * 104729 + r.name.charCodeAt(2)) % 97) / 97 * 1.4; // weekly shuffle
+    return {r, s, rs};
+  }).filter(Boolean).sort((a,b) => b.s - a.s);
+  return pool.slice(0,3);
+}
+const pendingFor = id => {
+  const out = [];
+  st.events.filter(e => e.status !== "done").forEach(e => {
+    if(e.mode === "vote" && e.status === "open" && !e.votes[id]) out.push({e, kind:"vote"});
+    if(!e.rsvp[id] && e.host !== id) out.push({e, kind:"rsvp"});
+    e.guests.forEach(g => { if(!g.hands.includes(id) && !guestApproved(g)) out.push({e, kind:"guest", g}); });
+    if(e.status === "set" && e.reservation.status === "none") out.push({e, kind:"res"});
+  });
+  return out;
+};
+const majority = () => Math.floor(st.fam.length/2) + 1;
+const guestApproved = g => g.hands.length >= majority();
+
+/* ================= Icons ================= */
+const I = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>',
+  explore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 3v8a2 2 0 0 0 2 2v8"/><path d="M11 3v8"/><path d="M3 3v8a2 2 0 0 0 2 2"/><path d="M17 21V3c2.5 1 4 3.5 4 7v3h-4"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  feed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v10H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>',
+  table:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9L3.5 9.2l5.9-.8z"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  hand:'✋',
+  chev:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>',
+  bell:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>'
+};
+
+/* ================= Splash & gate ================= */
+(function splashDots(){
+  const g = document.getElementById("seat-dots");
+  for(let i=0;i<5;i++){
+    const a = (-90 + i*72) * Math.PI/180;
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx", 100 + 86*Math.cos(a)); c.setAttribute("cy", 100 + 86*Math.sin(a)); c.setAttribute("r", 7);
+    c.setAttribute("class","seat"); c.style.animationDelay = (0.9 + i*0.12) + "s"; c.style.transformOrigin = `${100+86*Math.cos(a)}px ${100+86*Math.sin(a)}px`;
+    g.appendChild(c);
+  }
+})();
+const splash = document.getElementById("splash"), gate = document.getElementById("gate"), app = document.getElementById("app");
+let splashDone = false;
+function endSplash(){
+  if(splashDone) return; splashDone = true;
+  splash.classList.add("out");
+  setTimeout(() => { splash.hidden = true; }, 700);
+  if(st.me && st.fam.some(f => f.id === st.me)) showGreeting(); else showSeats();
+}
+splash.addEventListener("click", endSplash);
+splash.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ") endSplash(); });
+setTimeout(endSplash, 3600);
+
+function partOfDay(){ const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
+function showSeats(){
+  gate.hidden = false; gate.className = "";
+  const n = st.fam.length;
+  const chairs = st.fam.map((f,i) => {
+    const a = (-90 + i*(360/n)) * Math.PI/180;
+    const x = 50 + 42*Math.cos(a), y = 50 + 42*Math.sin(a);
+    return `<button class="chair" style="left:${x}%;top:${y}%;background:${f.color}" data-seat="${f.id}" aria-label="I'm ${esc(f.name)}">${esc(f.name[0])}<span>${esc(f.name)}</span></button>`;
+  }).join("");
+  gate.innerHTML = `<div class="gate-inner">
+    <div class="eyebrow">Welcome to the table</div>
+    <h1 class="greet">Who's taking a seat?</h1>
+    <div class="round"><div class="tabletop">5</div>${chairs}</div>
+    <p class="muted small" style="max-width:300px;margin:18px 0 0">Tap your chair. In the full app each person signs in once on their own phone; here you can switch seats any time from the top-right.</p>
+  </div>`;
+}
+function showGreeting(){
+  gate.hidden = false; gate.className = "greeting";
+  const p = pendingFor(st.me).length;
+  gate.innerHTML = `<div class="gate-inner">
+    ${av(st.me)}
+    <h1 class="greet">${partOfDay()},<br><em>${esc(ME().name)}</em></h1>
+    <p class="muted">${p ? `${p} thing${p>1?"s":""} at the table need${p>1?"":"s"} you.` : "Your table is all set."}</p>
+  </div>`;
+  gate.querySelector(".avatar").style.cssText = "width:64px;height:64px;font-size:26px";
+  setTimeout(() => { gate.hidden = true; openApp(); }, 1700);
+}
+gate.addEventListener("click", e => {
+  const b = e.target.closest("[data-seat]");
+  if(b){ st.me = b.dataset.seat; save(); showGreeting(); }
+  else if(gate.classList.contains("greeting")){ gate.hidden = true; openApp(); }
+});
+function openApp(){ if(!app.hidden) return; app.hidden = false; render(); }
+
+/* ================= Render ================= */
+const view = document.getElementById("view");
+const TABS = [["home","Home",I.home],["explore","Explore",I.explore],["plan","Plan",I.plus],["feed","Feed",I.feed],["table","Our Table",I.table]];
+function renderTabs(){
+  const p = pendingFor(st.me).length;
+  document.getElementById("tabs").innerHTML = TABS.map(([k,l,ic]) => k === "plan"
+    ? `<button class="plan-btn" data-tab="plan" ${st.ui.tab==="plan"?'aria-current="page"':""}><span class="disc">${ic}</span>${l}</button>`
+    : `<button data-tab="${k}" ${st.ui.tab===k?'aria-current="page"':""}>${ic}${l}${k==="feed"&&p?`<span class="badge-dot">${p}</span>`:""}</button>`).join("");
+  document.getElementById("me-btn").innerHTML = av(st.me);
+}
+function render(){
+  renderTabs();
+  const fn = {home:vHome,explore:vExplore,plan:vPlan,feed:vFeed,table:vTable}[st.ui.tab] || vHome;
+  view.innerHTML = fn();
+  if(st.ui.tab === "plan") bindPlan();
+}
+function go(tab){ st.ui.tab = tab; save(); render(); window.scrollTo({top:0}); }
+
+/* ---------- Home ---------- */
+function vHome(){
+  const me = ME();
+  const picks = sundayPicks(nextSunday);
+  const top = picks[0];
+  const why = top.rs.state === "untried" ? "We haven't tried this one yet." : top.rs.state === "returning" ? `Back in rotation — last visit ${fmtDate(lastVisit(top.r.id))}.` : `Last visit ${fmtDate(lastVisit(top.r.id))}. ${avgOf(top.r.id) ? "Family rating " + avgOf(top.r.id).toFixed(1) + "." : ""}`;
+  const todos = pendingFor(st.me);
+  const upcoming = st.events.filter(e => e.status !== "done").sort((a,b) => a.date.localeCompare(b.date));
+  const fresh = R.filter(r => r.city === "Memphis" && (r.flags.includes("new") || !lastVisit(r.id))).slice(0,8);
+  const todoLabel = t => t.kind === "vote" ? ["Cast your vote", `${t.e.title} · ${fmtDate(t.e.date)}`]
+    : t.kind === "rsvp" ? ["RSVP needed", `${t.e.title} · ${fmtDate(t.e.date)}`]
+    : t.kind === "guest" ? ["Raise a hand?", `${t.g.name} would like to join ${t.e.title}`]
+    : ["No reservation yet", `${t.e.title} at ${RBY[t.e.chosen].name}`];
+  return `
+  <section class="hello">
+    <div class="eyebrow">${fmtLong(iso(today0))}</div>
+    <h1>${partOfDay()}, <em>${esc(me.name)}</em>.</h1>
+    <p>${todos.length ? `You have ${todos.length} open item${todos.length>1?"s":""} at the table.` : "Nothing waiting on you. Hungry?"}</p>
+  </section>
+
+  ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
+    ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="event" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
+  </section>` : ""}
+
+  <section class="sec">
+    <div class="sec-head"><h2>This Sunday</h2><span class="muted small">${fmtDate(iso(nextSunday))}</span></div>
+    <div class="feature">
+      <div class="plate" aria-hidden="true"></div>
+      <div class="eyebrow">Concierge recommends</div>
+      <h3>${esc(top.r.name)}</h3>
+      <div class="meta">${top.r.cuisine.join(" · ")} · ${esc(top.r.hood)} · ${$(top.r.price)}</div>
+      <div class="why">${why} Nothing here was chosen in the last 90 days.</div>
+      <div class="actions"><button class="btn" data-act="plan-with" data-rid="${top.r.id}" data-occ="sunday">Put it to a vote</button><button class="btn ghost" data-act="rest" data-rid="${top.r.id}">Details</button></div>
+    </div>
+    <div class="alts">${picks.slice(1).map(p => `<button class="alt" data-act="rest" data-rid="${p.r.id}"><span class="eyebrow" style="font-size:10px">Also consider</span><b>${esc(p.r.name)}</b><span class="muted small">${p.r.cuisine[0]} · ${$(p.r.price)}</span></button>`).join("")}</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Coming up</h2><button class="link-btn" data-tab="feed">See feed</button></div>
+    ${upcoming.length ? upcoming.map(e => miniEvent(e)).join("") : `<div class="empty">No plans yet. Tap <b>Plan</b> to set the table.</div>`}
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>New &amp; not yet tried</h2><button class="link-btn" data-act="explore-filter" data-f="untried">See all</button></div>
+    <div class="scroller">${fresh.map(r => `<button class="alt" data-act="rest" data-rid="${r.id}">${r.flags.includes("new")?'<span class="pill wine" style="justify-self:start">New</span>':'<span class="pill brass" style="justify-self:start">Not tried</span>'}<b>${esc(r.name)}</b><span class="muted small">${r.cuisine.join(" · ")} · ${$(r.price)}</span></button>`).join("")}</div>
+  </section>
+  <p class="proto">Prototype · data saves on this device only</p>`;
+}
+function miniEvent(e){
+  const r = e.chosen ? RBY[e.chosen] : null;
+  const state = e.status === "open" ? `<span class="pill warn">Voting · ${Object.keys(e.votes).length}/${st.fam.length}</span>`
+    : e.reservation.status === "booked" ? `<span class="pill good">Reserved</span>` : e.reservation.status === "claimed" ? `<span class="pill warn">${esc(F(e.reservation.by).name)} is booking</span>` : `<span class="pill bad">Not reserved</span>`;
+  return `<button class="todo" data-act="event" data-id="${e.id}">${av(e.host)}<span style="min-width:0"><b>${esc(e.title)}</b><small>${fmtDate(e.date)} · ${fmtTime(e.time)}${r?` · ${esc(r.name)}`:""}</small><br>${state}</span><span class="chev">${I.chev}</span></button>`;
+}
+
+/* ---------- Explore ---------- */
+function vExplore(){
+  const u = st.ui; const t = iso(nextSunday);
+  let list = R.filter(r => r.city === u.city);
+  if(u.cuisine !== "All") list = list.filter(r => r.cuisine.includes(u.cuisine));
+  if(u.filter === "untried") list = list.filter(r => !lastVisit(r.id));
+  if(u.filter === "new") list = list.filter(r => r.flags.includes("new"));
+  if(u.filter === "favorites") list = list.filter(r => visitsOf(r.id).length >= 2);
+  if(u.q) { const q = u.q.toLowerCase(); list = list.filter(r => (r.name+" "+r.cuisine.join(" ")+" "+r.hood).toLowerCase().includes(q)); }
+  list.sort((a,b) => (avgOf(b.id)??0) - (avgOf(a.id)??0) || a.name.localeCompare(b.name));
+  const total = R.filter(r => r.city === u.city).length;
+  return `
+  <section class="sec">
+    <div class="sec-head"><h2>Explore</h2><span class="muted small num">${list.length} of ${total}</span></div>
+    <div class="grid2">
+      <div class="field"><label for="city">City</label><select class="input" id="city" data-change="city">${CITIES.map(c => `<option ${c===u.city?"selected":""}>${c}</option>`).join("")}</select></div>
+      <div class="field"><label for="flt">Show</label><select class="input" id="flt" data-change="filter">
+        ${[["all","Everything"],["untried","Not tried yet"],["new","New openings"],["favorites","Our favorites"]].map(([k,l]) => `<option value="${k}" ${k===u.filter?"selected":""}>${l}</option>`).join("")}</select></div>
+    </div>
+    <div class="search">${I.search}<input class="input" id="q" type="search" placeholder="Search restaurants, cuisines, neighborhoods" value="${esc(u.q)}" data-input="q"></div>
+    <div class="chips" role="group" aria-label="Cuisine">${CUISINES.map(c => `<button class="chip" data-act="cuisine" data-c="${c}" aria-pressed="${c===u.cuisine}">${c}</button>`).join("")}</div>
+  </section>
+  <section class="sec" id="rlist">
+    ${list.length ? list.map(r => rRow(r,t)).join("") : `<div class="empty">No matches here yet. Try another cuisine or city.</div>`}
+    ${u.city === "Memphis" ? `<p class="proto">The full build pulls every Memphis restaurant live from Google Places, so this list becomes exhaustive and stays current.</p>` : ""}
+  </section>`;
+}
+function rRow(r,t){
+  const v = visitsOf(r.id).length, a = avgOf(r.id), rs = rotationState(r.id, t);
+  const tags = [];
+  if(r.flags.includes("new")) tags.push('<span class="pill wine">New</span>');
+  if(!v) tags.push('<span class="pill brass">Not tried</span>');
+  if(v) tags.push(`<span class="pill">Chosen ${v}× · last ${fmtDate(lastVisit(r.id))}</span>`);
+  if(rs.state === "resting") tags.push(`<span class="pill">Resting until ${fmtDate(rs.back)}</span>`);
+  if(rs.state === "returning") tags.push('<span class="pill good">Back in rotation</span>');
+  return `<button class="r-row" data-act="rest" data-rid="${r.id}">
+    <h3>${esc(r.name)}</h3><span class="score">${a ? `<span class="stars">★</span> ${a.toFixed(1)}` : "—"}</span>
+    <span class="sub">${r.cuisine.join(" · ")} · ${esc(r.hood)} · ${$(r.price)}</span>
+    ${tags.length ? `<span class="tags">${tags.join("")}</span>` : ""}
+  </button>`;
+}
+
+/* ---------- Restaurant sheet ---------- */
+function sheetRest(rid){
+  const r = RBY[rid]; const ca = critAvg(rid); const a = avgOf(rid); const vs = visitsOf(rid); const [wine, dish] = pairing(r);
+  const rs = rotationState(rid, iso(nextSunday));
+  openSheet(`
+    <div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">${r.cuisine.join(" · ")} · ${$(r.price)}</div><h2>${esc(r.name)}</h2></div>${a?`<div class="num" style="color:var(--brass);font-size:20px">★ ${a.toFixed(1)}</div>`:""}</div>
+    <p style="margin:0">${esc(r.blurb)}</p>
+    <dl class="kv">
+      <dt>Address</dt><dd><a href="${mapsPlace(r)}" target="_blank" rel="noopener">${esc(r.addr)}</a></dd>
+      <dt>Our visits</dt><dd>${vs.length ? `${vs.length}× · last ${fmtDate(vs[0].date)}` : "Not tried yet"}</dd>
+      <dt>Sunday rotation</dt><dd>${rs.state==="resting"?`Resting until ${fmtDate(rs.back)}`:rs.state==="returning"?"Back in rotation":"Available"}</dd>
+    </dl>
+    <div class="actions">
+      <a class="btn primary" href="${mapsDir(r)}" target="_blank" rel="noopener">Directions</a>
+      <a class="btn" href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a>
+      <button class="btn wine" data-act="plan-with" data-rid="${r.id}">Plan here</button>
+    </div>
+    <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
+    ${a ? `<div class="sec"><div class="lbl">FAMILY SCORES</div>${CRIT.map(([k,l]) => ca[k] ? `<div class="crit"><span class="small">${l}</span><div style="display:flex;align-items:center;gap:8px"><div class="meter" style="flex:1"><i style="width:${ca[k]/5*100}%"></i></div><span class="num small">${ca[k].toFixed(1)}</span></div></div>` : "").join("")}</div>` : ""}
+    <div class="sec"><div class="lbl">WHAT WE SAID</div>
+      ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="stars" style="margin-left:auto">${starStr(Object.values(rv.scores).reduce((x,y)=>x+y,0)/Object.values(rv.scores).length)}</span></div><p>${esc(rv.text)}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
+    </div>
+    <p class="proto">Hours, menus and reservations change. Confirm with the restaurant before booking.</p>`);
+}
+
+/* ---------- Plan ---------- */
+let draft = null;
+function newDraft(occ="sunday", rid=null){
+  const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
+  draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${ME().name}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
+    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:""};
+}
+function vPlan(){
+  if(!draft) newDraft();
+  const d = draft; const isHost = d.mode === "host"; const max = isHost ? 1 : 3;
+  const clash = st.events.filter(e => e.status !== "done" && e.date === d.date);
+  const picks = d.type === "sunday" ? sundayPicks(parse(d.date)).map(p => p.r.id) : [];
+  let pool = R.filter(r => r.city === "Memphis" || d.options.includes(r.id));
+  if(d.q){ const q = d.q.toLowerCase(); pool = R.filter(r => (r.name+" "+r.cuisine.join(" ")+" "+r.city).toLowerCase().includes(q)); }
+  pool.sort((a,b) => (d.options.includes(b.id)-d.options.includes(a.id)) || (picks.includes(b.id)-picks.includes(a.id)) || a.name.localeCompare(b.name));
+  const t = d.date;
+  return `
+  <section class="sec">
+    <div class="eyebrow">Set the table</div>
+    <h1 style="font-size:30px">Plan a dinner</h1>
+  </section>
+  <section class="sec">
+    <div class="lbl">OCCASION</div>
+    <div class="chips" style="flex-wrap:wrap">${OCCASIONS.map(o => `<button class="chip" data-act="occ" data-k="${o.k}" aria-pressed="${o.k===d.type}">${o.label}</button>`).join("")}</div>
+    <div class="seg" role="group" aria-label="Who decides">
+      <button data-act="mode" data-m="vote" aria-pressed="${!isHost}">Family votes</button>
+      <button data-act="mode" data-m="host" aria-pressed="${isHost}">I choose</button>
+    </div>
+    <p class="small muted" style="margin:0">${isHost ? "Your occasion, your pick. You'll send an invitation and the family RSVPs." : "Offer up to 3 restaurants. Everyone gets one vote; the host locks in the winner and breaks any tie."}</p>
+  </section>
+  <section class="sec">
+    <div class="field"><label for="p-title">Title</label><input class="input" id="p-title" data-d="title" value="${esc(d.title)}"></div>
+    <div class="grid2">
+      <div class="field"><label for="p-date">Date</label><input class="input" type="date" id="p-date" data-d="date" value="${d.date}"></div>
+      <div class="field"><label for="p-time">Time</label><input class="input" type="time" id="p-time" data-d="time" value="${d.time}"></div>
+    </div>
+    ${clash.length ? `<div class="warnbox">Heads up: ${clash.map(e => `${esc(F(e.host).name)}'s “${esc(e.title)}”`).join(", ")} is already on ${fmtDate(d.date)}. Pick another day or join that one instead.</div>` : ""}
+    <div class="field"><label for="p-dress">Dress code</label><select class="input" id="p-dress" data-d="dress">${DRESS.map(x => `<option ${x===d.dress?"selected":""}>${x}</option>`).join("")}</select></div>
+  </section>
+  <section class="sec">
+    <div class="sec-head"><div class="lbl">${isHost?"YOUR RESTAURANT":"CHOICES FOR THE VOTE"} · <span class="num">${d.options.length}/${max}</span></div></div>
+    <div class="search">${I.search}<input class="input" id="p-q" type="search" placeholder="Search any city" value="${esc(d.q)}" data-d="q"></div>
+    <div class="pick-list" id="pick-list">${pool.map(r => { const on = d.options.includes(r.id); const rs = rotationState(r.id,t); const rest = d.type==="sunday" && rs.state==="resting";
+      return `<button class="pick" data-act="pick" data-rid="${r.id}" aria-pressed="${on}" ${rest&&!on?'data-resting="1"':""}><span class="check">${on?"✓":""}</span><span class="grow"><b>${esc(r.name)}</b><small>${r.cuisine[0]} · ${r.city==="Memphis"?esc(r.hood):r.city} · ${$(r.price)}${picks.includes(r.id)?" · ★ Concierge pick":""}${rest?` · resting until ${fmtDate(rs.back)}`:""}</small></span></button>`; }).join("")}</div>
+  </section>
+  <section class="sec">
+    <div class="field"><label for="p-note">Personal note</label><textarea class="input" id="p-note" data-d="note" placeholder="${isHost?"A line for your invitation":"Anything the family should know"}">${esc(d.note)}</textarea></div>
+    <div class="field"><label for="p-guest">Invite a guest (family approves with a show of hands)</label>
+      <div style="display:flex;gap:8px"><input class="input" id="p-guest" placeholder="Guest name"><button class="btn" data-act="add-guest">Add</button></div>
+      ${d.guests.length ? `<div class="actions">${d.guests.map((g,i) => `<span class="pill brass">${esc(g)} <button data-act="rm-guest" data-i="${i}" aria-label="Remove ${esc(g)}" style="background:none;border:0;color:inherit;padding:0 0 0 4px">×</button></span>`).join("")}</div>` : ""}
+    </div>
+  </section>
+  ${isHost && d.options[0] ? `<section class="sec"><div class="lbl">INVITATION PREVIEW</div>${inviteCard({...d, host:st.me, chosen:d.options[0]})}</section>` : ""}
+  <button class="btn primary block" data-act="send" ${d.options.length?"":"disabled"}>${isHost ? "Send invitation" : `Send to the family for a vote`}</button>
+  <button class="btn ghost block" data-act="reset-plan">Start over</button>`;
+}
+function bindPlan(){
+  view.querySelectorAll("[data-d]").forEach(el => {
+    const ev = el.tagName === "SELECT" || el.type === "date" || el.type === "time" ? "change" : "input";
+    el.addEventListener(ev, () => {
+      draft[el.dataset.d] = el.value;
+      if(["date","q"].includes(el.dataset.d)){ const pos = el.selectionStart; render(); const n = document.getElementById(el.id); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch{} } }
+      if(el.dataset.d === "title" || el.dataset.d === "note" || el.dataset.d === "dress" || el.dataset.d === "time"){ const prev = view.querySelector(".invite"); if(prev && draft.mode==="host" && draft.options[0]) prev.outerHTML = inviteCard({...draft, host:st.me, chosen:draft.options[0]}); }
+    });
+  });
+}
+function inviteCard(e){
+  const r = RBY[e.chosen];
+  const occ = (OCCASIONS.find(o => o.k === e.type) || {}).label || "Dinner";
+  return `<div class="invite">
+    <div class="i-eyebrow">${esc(F(e.host).name)} requests the pleasure of your company</div>
+    <div class="i-title">${esc(e.title || occ)}</div>
+    <div class="i-orn">◆ ◆ ◆</div>
+    <div class="i-rest">${esc(r.name)}</div>
+    <div class="i-meta"><b>${fmtLong(e.date)}</b><br>${fmtTime(e.time)} · Dress: ${esc(e.dress)}<br>${esc(r.addr)}</div>
+    ${e.note ? `<div class="i-note">“${esc(e.note)}”</div>` : ""}
+    <div class="i-links"><a href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a><a href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a></div>
+  </div>`;
+}
+
+/* ---------- Feed ---------- */
+function vFeed(){
+  const active = st.events.filter(e => e.status !== "done").sort((a,b) => a.date.localeCompare(b.date));
+  const past = st.events.filter(e => e.status === "done").sort((a,b) => b.date.localeCompare(a.date));
+  return `
+  <section class="sec"><div class="sec-head"><h2>The Feed</h2><span class="muted small">${active.length} upcoming</span></div>
+    ${active.length ? active.map(eventCard).join("") : `<div class="empty">Nothing on the calendar. Start one from <b>Plan</b>.</div>`}
+  </section>
+  <section class="sec"><div class="sec-head"><h2>Enjoyed together</h2></div>
+    ${past.map(e => pastCard(e)).join("") || `<div class="empty">After your first dinner, memories land here.</div>`}
+  </section>`;
+}
+function eventCard(e){
+  const host = F(e.host); const isHost = e.host === st.me;
+  const occ = (OCCASIONS.find(o => o.k === e.type) || {}).label;
+  let body = "";
+  if(e.status === "open"){
+    const tally = {}; e.options.forEach(o => tally[o] = []); Object.entries(e.votes).forEach(([m,o]) => tally[o] && tally[o].push(m));
+    const n = Object.keys(e.votes).length;
+    const lead = Math.max(...Object.values(tally).map(a => a.length));
+    const leaders = e.options.filter(o => tally[o].length === lead && lead > 0);
+    body += `<div class="sec" style="gap:8px">${e.options.map(o => { const r = RBY[o]; const mine = e.votes[st.me] === o;
+      return `<button class="opt ${mine?"mine":""}" data-act="vote" data-id="${e.id}" data-rid="${o}"><span class="bar" style="width:${n?tally[o].length/st.fam.length*100:0}%"></span><span><b>${esc(r.name)}</b><br><span class="small muted">${r.cuisine[0]} · ${$(r.price)}${mine?" · your vote":""}</span></span><span style="display:grid;justify-items:end;gap:4px"><span class="count">${tally[o].length}</span><span class="stack">${tally[o].map(m => av(m,"xs")).join("")}</span></span></button>`; }).join("")}</div>
+      <div class="strip"><span class="grow">${n}/${st.fam.length} voted${leaders.length>1?` · tie between ${leaders.map(o=>esc(RBY[o].name)).join(" & ")} — ${esc(host.name)} breaks it`:""}</span>
+      ${isHost ? `<button class="btn sm primary" data-act="lock" data-id="${e.id}" ${lead?"":"disabled"}>Lock in ${leaders.length===1?esc(RBY[leaders[0]].name.split(" ")[0]):"winner"}</button>` : `<span class="muted">Host locks it in</span>`}</div>`;
+  } else {
+    body += inviteCard(e);
+  }
+  // reservation
+  const res = e.reservation;
+  if(e.status === "set"){
+    const r = RBY[e.chosen];
+    body += res.status === "none" ? `<div class="strip"><span class="pill bad">Not reserved</span><span class="grow">Claim it so no one double-books.</span><button class="btn sm" data-act="res-claim" data-id="${e.id}">I'll book it</button></div>`
+      : res.status === "claimed" ? `<div class="strip"><span class="pill warn">Booking</span><span class="grow"><b>${esc(F(res.by).name)}</b> is calling ${esc(r.name)} now. Please don't book.</span>${res.by===st.me?`<button class="btn sm primary" data-act="res-book" data-id="${e.id}">Mark booked</button><button class="btn sm ghost" data-act="res-release" data-id="${e.id}">Release</button>`:""}</div>`
+      : `<div class="strip"><span class="pill good">Reserved</span><span class="grow">by ${esc(F(res.by).name)}${res.conf?` · conf <span class="num">${esc(res.conf)}</span>`:""} · party of ${partySize(e)}</span></div>`;
+  }
+  // rsvp
+  const my = e.rsvp[st.me];
+  const counts = {yes:0,maybe:0,no:0}; Object.values(e.rsvp).forEach(v => counts[v]++);
+  body += `<div class="sec" style="gap:8px"><div class="lbl">ARE YOU COMING? <span class="muted" style="font-weight:400">· ${counts.yes} yes · ${counts.maybe} maybe · ${counts.no} can't</span></div>
+    <div class="rsvp">${[["yes","I'll be there"],["maybe","Maybe"],["no","Can't make it"]].map(([k,l]) => `<button class="${k}" data-act="rsvp" data-id="${e.id}" data-v="${k}" aria-pressed="${my===k}">${l}</button>`).join("")}</div>
+    <div class="stack">${st.fam.filter(f => e.rsvp[f.id]==="yes").map(f => av(f.id,"sm")).join("")}</div></div>`;
+  // guests
+  if(e.guests.length){
+    body += `<div class="divider"></div><div class="sec" style="gap:10px"><div class="lbl">GUEST REQUESTS · ${majority()} HANDS NEEDED</div>${e.guests.map(g => { const ok = guestApproved(g); const up = g.hands.includes(st.me);
+      return `<div class="guest"><span class="grow"><b>${esc(g.name)}</b><br><span class="small muted">asked by ${esc(F(g.by).name)}</span></span><span class="stack">${g.hands.map(m => av(m,"xs")).join("")}</span>${ok?`<span class="pill good">Welcome ✓</span>`:`<button class="hands" data-act="hand" data-id="${e.id}" data-g="${g.id}" aria-pressed="${up}">✋ ${g.hands.length}/${majority()}</button>`}</div>`; }).join("")}</div>`;
+  }
+  body += `<div class="actions" style="margin-top:2px">
+    <button class="btn sm" data-act="ask-guest" data-id="${e.id}">+ Ask to bring a guest</button>
+    ${e.status==="set"?`<button class="btn sm" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button><button class="btn sm wine" data-act="wrap" data-id="${e.id}">We dined — wrap up</button>`:""}
+    ${isHost?`<button class="btn sm ghost" data-act="cancel" data-id="${e.id}">Cancel</button>`:""}
+  </div>`;
+  return `<article class="event" id="ev-${e.id}">
+    <div class="ev-head">${av(e.host)}<span class="who"><b>${esc(host.name)}</b> · ${occ}${e.mode==="vote"?" · family vote":" · host's choice"}<br>${fmtLong(e.date)} · ${fmtTime(e.time)}</span>${e.status==="open"?'<span class="pill warn">Voting</span>':""}</div>
+    <div class="ev-body">${e.status==="open"?`<h3>${esc(e.title)}</h3>${e.note?`<p class="small muted" style="margin:-8px 0 0">${esc(e.note)}</p>`:""}<div class="small muted" style="margin-top:-8px">Dress: ${esc(e.dress)}</div>`:""}${body}</div>
+  </article>`;
+}
+const partySize = e => st.fam.filter(f => e.rsvp[f.id] === "yes").length + e.guests.filter(guestApproved).length;
+function pastCard(e){
+  const r = RBY[e.chosen]; const led = st.ledger.find(l => l.eventId === e.id); const ns = st.notes.filter(n => n.eventId === e.id);
+  return `<article class="card">
+    <div style="display:flex;gap:10px;align-items:center">${av(e.host,"sm")}<div style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-weight:500;font-size:18px">${esc(r.name)}</b><div class="small muted">${esc(e.title)} · ${fmtDate(e.date)}${led?` · ${ledgerText(led)}`:""}</div></div>${avgOf(r.id)?`<span class="num small" style="color:var(--brass)">★ ${avgOf(r.id).toFixed(1)}</span>`:""}</div>
+    ${ns.map(n => `<div class="note">${av(n.by,"sm")}<div><b class="small">${esc(F(n.by).name)}</b> <span class="small muted">${fmtDate(n.date)}</span><p>${esc(n.text)}</p></div></div>`).join("")}
+    <div style="display:flex;gap:8px"><input class="input" id="note-${e.id}" placeholder="Share a moment from the night"><button class="btn" data-act="note" data-id="${e.id}">Post</button></div>
+  </article>`;
+}
+const ledgerText = l => l.mode === "all" ? `${F(l.payer).name} treated everyone` : l.mode === "for" ? `${F(l.payer).name} paid for ${F(l.forWhom).name}` : l.mode === "split" ? "Split evenly" : "Everyone paid their own";
+
+/* ---------- Our Table: favorites, ledger ---------- */
+function vTable(){
+  const counts = {}; st.visits.forEach(v => { counts[v.rid] = (counts[v.rid]||0) + 1; });
+  const favs = Object.entries(counts).sort((a,b) => b[1]-a[1] || (lastVisit(b[0])||"").localeCompare(lastVisit(a[0])||"")).slice(0,8);
+  const maxC = favs[0]?.[1] || 1;
+  const led = [...st.ledger].sort((a,b) => b.date.localeCompare(a.date));
+  const lastTreat = {}; st.fam.forEach(f => lastTreat[f.id] = null);
+  led.forEach(l => { if(l.mode === "all" && l.payer && !lastTreat[l.payer]) lastTreat[l.payer] = l.date; });
+  const treatCount = id => st.ledger.filter(l => l.mode==="all" && l.payer===id).length;
+  const next = [...st.fam].sort((a,b) => (lastTreat[a.id]||"0000").localeCompare(lastTreat[b.id]||"0000"))[0];
+  const myReviews = st.reviews.filter(r => r.by === st.me).length;
+  return `
+  <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
+  <section class="card">
+    <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
+    ${favs.map(([rid,c],i) => `<button class="fav" data-act="rest" data-rid="${rid}" style="background:none;border:0;border-bottom:1px solid var(--line);text-align:left;width:100%;color:inherit"><span class="rank">${i+1}</span><span style="min-width:0"><b>${esc(RBY[rid].name)}</b><span class="small muted">Last ${fmtDate(lastVisit(rid))}${avgOf(rid)?` · ★ ${avgOf(rid).toFixed(1)}`:""}</span><div class="meter" style="margin-top:6px"><i style="width:${c/maxC*100}%"></i></div></span><span class="num">${c}×</span></button>`).join("")}
+  </section>
+  <section class="card">
+    <div class="sec-head"><h2 style="font-size:20px">Who's paid</h2></div>
+    <div class="strip"><span class="grow">Hasn't treated in a while: <b>${esc(next.name)}</b></span><span class="small muted">a nudge, not a rule</span></div>
+    ${led.map(l => `<div class="ledger-row">${l.payer?av(l.payer,"sm"):'<span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">½</span>'}<span style="min-width:0"><b>${esc(RBY[l.rid].name)}</b><br><span class="small muted">${fmtDate(l.date)} · ${esc(ledgerText(l))}</span></span><span class="num">${money(l.amount)}</span></div>`).join("")}
+    <div class="lbl" style="margin-top:6px">TREATS SO FAR</div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">${st.fam.map(f => `<span style="display:flex;align-items:center;gap:6px">${av(f.id,"sm")}<span class="num">${treatCount(f.id)}</span></span>`).join("")}</div>
+  </section>
+  <section class="card">
+    <h2 style="font-size:20px">Family</h2>
+    <p class="small muted" style="margin:0">You've written ${myReviews} review${myReviews===1?"":"s"}. Names and seats can be changed any time.</p>
+    <div class="actions"><button class="btn sm" data-act="edit-fam">Edit family names</button><button class="btn sm" data-act="tips">Quick tip guide</button><button class="btn sm ghost" data-act="reset-all">Reset prototype data</button></div>
+  </section>`;
+}
+
+/* ---------- Sheets ---------- */
+const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
+wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
+
+function sheetTips(){
+  const tips = [
+    ["Your seat","Tap your chair once. The app greets you by name and only shows what needs you."],
+    ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
+    ["Voting","One vote each. Change it until the host locks it in. A tie? The host breaks it."],
+    ["Guests","Anyone can ask to bring a guest. It takes a show of hands from a majority of the family (✋ 3 of 5)."],
+    ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Mark it booked with the confirmation number."],
+    ["The 90-day rule","The Sunday pick never repeats a restaurant chosen in the last 3 months. After that it comes “back in rotation”."],
+    ["Concierge","On the night, open Concierge & tip for wine ideas, a tax-aware bill splitter and a tip based on how the service felt."],
+    ["Wrap up","After dinner, rate six things (food, service, price, selection, cleanliness, location), say who paid, and post a moment for the family."]
+  ];
+  openSheet(`<div class="sheet-head"><h2>Quick tip guide</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    ${tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("")}`);
+}
+function sheetSeat(){
+  openSheet(`<div class="sheet-head"><h2>Switch seat</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">Prototype only — see the app through each family member's eyes.</p>
+    <div class="sec" style="gap:8px">${st.fam.map(f => `<button class="pick" data-act="be" data-id="${f.id}" aria-pressed="${f.id===st.me}">${av(f.id)}<span class="grow"><b>${esc(f.name)}</b><small>${pendingFor(f.id).length} open item(s)</small></span></button>`).join("")}</div>`);
+}
+function sheetEditFam(){
+  openSheet(`<div class="sheet-head"><h2>Family names</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">These are example names. Type your family's real names.</p>
+    ${st.fam.map(f => `<div class="field"><label for="fn-${f.id}">Seat ${f.id.slice(1)}</label><div style="display:flex;gap:8px;align-items:center">${av(f.id)}<input class="input" id="fn-${f.id}" value="${esc(f.name)}"></div></div>`).join("")}
+    <button class="btn primary block" data-act="save-fam">Save names</button>`);
+}
+function sheetAskGuest(id){
+  openSheet(`<div class="sheet-head"><h2>Bring a guest</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">The family will be asked to raise a hand. ${majority()} hands and they're in.</p>
+    <div class="field"><label for="g-name">Guest's name</label><input class="input" id="g-name" placeholder="e.g. Tasha (Marcus's friend)"></div>
+    <button class="btn primary block" data-act="ask-guest-go" data-id="${id}">Ask the family</button>`);
+}
+function sheetBook(id){
+  openSheet(`<div class="sheet-head"><h2>Reservation booked</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="field"><label for="b-conf">Confirmation number (optional)</label><input class="input" id="b-conf" placeholder="e.g. OT-38291"></div>
+    <p class="small muted" style="margin:0">Party of ${partySize(ev(id))} confirmed so far. The full build connects OpenTable / Resy to book in-app.</p>
+    <button class="btn primary block" data-act="res-book-go" data-id="${id}">Save &amp; tell the family</button>`);
+}
+
+/* Concierge: wine + tip calculator */
+const TIP_BY_SERVICE = {1:12,2:15,3:18,4:20,5:22};
+function sheetConcierge(id){
+  const e = ev(id); const r = RBY[e.chosen]; const [wine, dish] = pairing(r); const diners = Math.max(1, partySize(e));
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Your concierge</div><h2>${esc(r.name)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="wine"><span class="eyebrow">Wine &amp; dinner</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
+    <div class="sec"><div class="lbl">BILL &amp; TIP</div>
+      <div class="grid2">
+        <div class="field"><label for="c-sub">Food &amp; drink subtotal</label><input class="input num" id="c-sub" inputmode="decimal" value="240.00" data-calc></div>
+        <div class="field"><label for="c-tax">Sales tax %</label><input class="input num" id="c-tax" inputmode="decimal" value="${r.city==="Memphis"?"9.75":"9.00"}" data-calc></div>
+      </div>
+      <div class="field"><span class="lbl">How was the service?</span><div class="dots" role="group" aria-label="Service rating">${[1,2,3,4,5].map(n => `<button data-act="svc" data-n="${n}" aria-pressed="${n===4}">${n}</button>`).join("")}</div><span class="small muted" id="c-svc-note">Great service → 20%</span></div>
+      <div class="grid2">
+        <div class="field"><label for="c-diners">Splitting between</label><input class="input num" id="c-diners" type="number" min="1" value="${diners}" data-calc></div>
+        <div class="field"><label for="c-auto">Gratuity already on bill?</label><select class="input" id="c-auto" data-calc><option value="0">No</option><option value="1">Yes (party of 6+)</option></select></div>
+      </div>
+      <div class="calc-out" id="c-out"></div>
+      <p class="small muted" style="margin:0">Tip is figured on the pre-tax subtotal. Many restaurants add 18–20% automatically for parties of 6 or more, so check the bill before tipping again.</p>
+    </div>`);
+  sheet.dataset.svc = "4";
+  calc();
+}
+function calc(){
+  const out = document.getElementById("c-out"); if(!out) return;
+  const sub = parseFloat(document.getElementById("c-sub").value) || 0;
+  const tax = (parseFloat(document.getElementById("c-tax").value) || 0) / 100;
+  const n = Math.max(1, parseInt(document.getElementById("c-diners").value) || 1);
+  const auto = document.getElementById("c-auto").value === "1";
+  const svc = +sheet.dataset.svc;
+  const pct = auto ? 0 : TIP_BY_SERVICE[svc];
+  const labels = {1:"Poor service → 12%",2:"Below par → 15%",3:"Solid → 18%",4:"Great service → 20%",5:"Exceptional → 22%"};
+  document.getElementById("c-svc-note").textContent = auto ? "Gratuity included — add extra only for something special." : labels[svc];
+  const t = sub*tax, tip = sub*pct/100, total = sub + t + tip;
+  out.innerHTML = `<div class="line"><span>Subtotal</span><span class="num">${money(sub)}</span></div>
+    <div class="line"><span>Tax</span><span class="num">${money(t)}</span></div>
+    <div class="line"><span>Tip (${pct}%)</span><span class="num">${money(tip)}</span></div>
+    <div class="line total"><span>Total</span><span class="num">${money(total)}</span></div>
+    <div class="pp num">${money(total/n)}</div><div class="small muted" style="text-align:center">per person · ${n} diner${n>1?"s":""}</div>`;
+}
+sheet.addEventListener("input", e => { if(e.target.matches("[data-calc]")) calc(); });
+sheet.addEventListener("change", e => { if(e.target.matches("[data-calc]")) calc(); });
+
+/* Wrap-up: rate + who paid */
+let wrapDraft = null;
+function sheetWrap(id){
+  const e = ev(id); const r = RBY[e.chosen];
+  wrapDraft = {id, scores:{food:0,service:0,price:0,selection:0,clean:0,location:0}, pay:"all", forWhom: st.fam.find(f => f.id !== st.me).id};
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">How was it?</div><h2>${esc(r.name)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="sec" style="gap:10px">${CRIT.map(([k,l]) => `<div class="crit"><span class="small">${l}</span><div class="dots" role="group" aria-label="${l}">${[1,2,3,4,5].map(n => `<button data-act="score" data-k="${k}" data-n="${n}" aria-pressed="false">${n}</button>`).join("")}</div></div>`).join("")}</div>
+    <div class="field"><label for="w-text">Brief feedback (everyone sees it)</label><textarea class="input" id="w-text" placeholder="What should the family remember?"></textarea></div>
+    <div class="field"><span class="lbl">WHO PAID?</span>
+      <div class="seg" style="grid-auto-flow:row;grid-template-columns:1fr 1fr">${[["all","I paid for all"],["for","I paid for…"],["split","We split it"],["self","Each paid own"]].map(([k,l]) => `<button data-act="pay" data-k="${k}" aria-pressed="${k==="all"}">${l}</button>`).join("")}</div>
+      <select class="input" id="w-for" hidden>${st.fam.filter(f => f.id !== st.me).map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join("")}</select>
+    </div>
+    <div class="field"><label for="w-amt">Total paid</label><input class="input num" id="w-amt" inputmode="decimal" placeholder="0.00"></div>
+    <div class="field"><label for="w-note">A moment from tonight (optional)</label><input class="input" id="w-note" placeholder="Posts to Enjoyed together"></div>
+    <button class="btn primary block" data-act="wrap-go">Save &amp; share with the family</button>`);
+}
+
+/* ================= Actions ================= */
+const ev = id => st.events.find(e => e.id === id);
+let toastT;
+function toast(m){ const t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
+const uid = p => p + Math.random().toString(36).slice(2,8);
+
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-tab]");
+  if(tab){ go(tab.dataset.tab); return; }
+  const b = e.target.closest("[data-act]"); if(!b) return;
+  const a = b.dataset.act, id = b.dataset.id;
+  switch(a){
+    case "close": closeSheet(); break;
+    case "tips": sheetTips(); break;
+    case "seat": sheetSeat(); break;
+    case "be": st.me = id; save(); closeSheet(); draft = null; render(); toast(`You're now seated as ${ME().name}`); break;
+    case "edit-fam": sheetEditFam(); break;
+    case "save-fam": st.fam.forEach(f => { const v = document.getElementById("fn-"+f.id).value.trim(); if(v) f.name = v; }); save(); closeSheet(); render(); toast("Family names saved"); break;
+    case "reset-all": if(b.dataset.armed){ localStorage.removeItem(KEY); st = seed(); st.me = "m1"; save(); draft = null; render(); toast("Prototype data reset"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to reset"; } break;
+    case "rest": sheetRest(b.dataset.rid); break;
+    case "explore-filter": st.ui.filter = b.dataset.f; st.ui.city = "Memphis"; go("explore"); break;
+    case "cuisine": st.ui.cuisine = b.dataset.c; save(); render(); break;
+    case "plan-with": newDraft(b.dataset.occ || "sunday", b.dataset.rid); closeSheet(); go("plan"); break;
+    case "event": go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth",block:"start"}), 60); break;
+    // plan
+    case "occ": { const keep = draft.options; newDraft(b.dataset.k); draft.options = keep.slice(0, draft.mode==="host"?1:3); render(); break; }
+    case "mode": draft.mode = b.dataset.m; if(draft.mode==="host") draft.options = draft.options.slice(0,1); render(); break;
+    case "pick": { const rid = b.dataset.rid; const max = draft.mode==="host"?1:3; const i = draft.options.indexOf(rid);
+      if(i >= 0) draft.options.splice(i,1);
+      else if(b.dataset.resting){ toast("Resting — chosen within the last 90 days"); return; }
+      else if(draft.mode === "host") draft.options = [rid];
+      else if(draft.options.length < max) draft.options.push(rid); else { toast("Up to 3 choices for a vote"); return; }
+      const sc = document.getElementById("pick-list")?.scrollTop; render(); const pl = document.getElementById("pick-list"); if(pl) pl.scrollTop = sc; break; }
+    case "add-guest": { const inp = document.getElementById("p-guest"); const v = inp.value.trim(); if(v){ draft.guests.push(v); render(); } break; }
+    case "rm-guest": draft.guests.splice(+b.dataset.i,1); render(); break;
+    case "reset-plan": newDraft(); render(); break;
+    case "send": {
+      const d = draft; if(!d.options.length) return;
+      const e2 = {id:uid("e"),type:d.type,mode:d.mode,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
+        chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(n => ({id:uid("g"),name:n,by:st.me,hands:[st.me]})),
+        reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
+      st.events.push(e2); save(); draft = null; go("feed"); toast(d.mode==="host" ? "Invitation sent to the family" : "Vote sent — everyone's been alerted"); break; }
+    // feed
+    case "vote": { const e2 = ev(id); if(e2.status !== "open") return; e2.votes[st.me] = b.dataset.rid; save(); render(); toast(`Voted for ${RBY[b.dataset.rid].name}`); break; }
+    case "lock": { const e2 = ev(id); const tally = {}; e2.options.forEach(o => tally[o] = 0); Object.values(e2.votes).forEach(o => tally[o]++);
+      const lead = Math.max(...Object.values(tally)); const leaders = e2.options.filter(o => tally[o] === lead);
+      const win = leaders.includes(e2.votes[st.me]) ? e2.votes[st.me] : leaders[0];
+      e2.chosen = win; e2.status = "set"; save(); render(); toast(`Locked in: ${RBY[win].name}`); break; }
+    case "rsvp": ev(id).rsvp[st.me] = b.dataset.v; save(); render(); break;
+    case "hand": { const g = ev(id).guests.find(x => x.id === b.dataset.g); const i = g.hands.indexOf(st.me); i >= 0 ? g.hands.splice(i,1) : g.hands.push(st.me); save(); render(); if(guestApproved(g)) toast(`${g.name} is welcome at the table`); break; }
+    case "ask-guest": sheetAskGuest(id); break;
+    case "ask-guest-go": { const v = document.getElementById("g-name").value.trim(); if(!v) return; ev(id).guests.push({id:uid("g"),name:v,by:st.me,hands:[st.me]}); save(); closeSheet(); render(); toast("Asked the family — hands up!"); break; }
+    case "res-claim": { const e2 = ev(id); if(e2.reservation.status !== "none"){ toast(`${F(e2.reservation.by).name} already has it`); return; } e2.reservation = {status:"claimed",by:st.me,conf:""}; save(); render(); toast("Everyone can see you're booking"); break; }
+    case "res-release": ev(id).reservation = {status:"none",by:null,conf:""}; save(); render(); break;
+    case "res-book": sheetBook(id); break;
+    case "res-book-go": { const e2 = ev(id); e2.reservation = {status:"booked",by:st.me,conf:document.getElementById("b-conf").value.trim()}; save(); closeSheet(); render(); toast("Reservation confirmed for the family"); break; }
+    case "cancel": if(b.dataset.armed){ st.events = st.events.filter(x => x.id !== id); save(); render(); toast("Plan cancelled"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to cancel"; } break;
+    case "concierge": sheetConcierge(id); break;
+    case "svc": sheet.dataset.svc = b.dataset.n; sheet.querySelectorAll('[data-act="svc"]').forEach(x => x.setAttribute("aria-pressed", x === b)); calc(); break;
+    case "wrap": sheetWrap(id); break;
+    case "score": wrapDraft.scores[b.dataset.k] = +b.dataset.n; sheet.querySelectorAll(`[data-act="score"][data-k="${b.dataset.k}"]`).forEach(x => x.setAttribute("aria-pressed", +x.dataset.n <= +b.dataset.n)); break;
+    case "pay": wrapDraft.pay = b.dataset.k; sheet.querySelectorAll('[data-act="pay"]').forEach(x => x.setAttribute("aria-pressed", x === b)); document.getElementById("w-for").hidden = b.dataset.k !== "for"; break;
+    case "wrap-go": {
+      const e2 = ev(wrapDraft.id); const sc = wrapDraft.scores;
+      if(Object.values(sc).some(v => !v)){ toast("Rate all six to save"); return; }
+      const text = document.getElementById("w-text").value.trim();
+      const amt = parseFloat(document.getElementById("w-amt").value) || 0;
+      const moment = document.getElementById("w-note").value.trim();
+      const pay = wrapDraft.pay;
+      st.reviews.push({rid:e2.chosen,by:st.me,date:e2.date,scores:{...sc},text:text||"(no comment)"});
+      if(!st.visits.some(v => v.eventId === e2.id)) st.visits.push({rid:e2.chosen,date:e2.date,eventId:e2.id});
+      st.ledger = st.ledger.filter(l => l.eventId !== e2.id);
+      st.ledger.push({eventId:e2.id,rid:e2.chosen,date:e2.date,payer:pay==="all"||pay==="for"?st.me:null,mode:pay,forWhom:pay==="for"?document.getElementById("w-for").value:null,amount:amt});
+      if(moment) st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:e2.id,text:moment});
+      e2.status = "done"; save(); closeSheet(); render(); toast("Saved — thanks for the review"); break; }
+    case "note": { const inp = document.getElementById("note-"+id); const v = inp.value.trim(); if(!v) return; st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:id,text:v}); save(); render(); break; }
+  }
+});
+document.addEventListener("change", e => {
+  const c = e.target.dataset.change; if(!c) return;
+  st.ui[c] = e.target.value; save(); render();
+});
+document.addEventListener("input", e => {
+  if(e.target.dataset.input === "q"){ st.ui.q = e.target.value; save();
+    const list = document.getElementById("rlist"); const pos = e.target.selectionStart; view.innerHTML = vExplore(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos,pos); }
+});
+})();
+</script>
+</body>
+</html>
