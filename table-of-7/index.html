@@ -299,7 +299,9 @@ textarea.input{min-height:76px;resize:vertical}
 .proto{font-size:12px;color:var(--muted);text-align:center;padding:4px 8px}
 
 /* ---------- Live vote & welcome (full screen) ---------- */
-#live,#reveal{position:fixed;inset:0;z-index:70;overflow-y:auto;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+#live,#reveal,#host,#cardov,#tab{position:fixed;inset:0;z-index:70;overflow-y:auto;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+#host{z-index:71}
+#cardov,#tab{z-index:74}
 #reveal{background:radial-gradient(130% 60% at 50% 0%,color-mix(in srgb,var(--wine) 40%,var(--bg)) 0%,var(--bg) 65%)}
 .ov-inner{max-width:480px;margin:0 auto;display:grid;gap:18px}
 .ov-bar{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -382,6 +384,9 @@ textarea.input{min-height:76px;resize:vertical}
 
 <div id="sheet-wrap" aria-hidden="true"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div id="gallery" hidden></div>
+<div id="host" hidden></div>
+<div id="cardov" hidden></div>
+<div id="tab" hidden></div>
 <div id="invite" hidden></div>
 <div id="live" hidden></div>
 <div id="reveal" hidden></div>
@@ -623,7 +628,7 @@ function seed(){
 }
 let st;
 try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
-st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {};
+st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {}; st.cards ||= []; st.tabs ||= {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); return true; } catch { return false; } };
 
 /* ================= Lookups ================= */
@@ -687,7 +692,7 @@ const pendingFor = id => {
   });
   return out;
 };
-const majority = () => Math.floor(st.fam.length/2) + 1;
+const majority = () => Math.floor(st.fam.filter(f => f.status !== "suspended").length/2) + 1;
 const guestApproved = g => g.hands.length >= majority();
 
 /* Alerts: in the full app each one is also a push notification to that person's phone. */
@@ -817,6 +822,8 @@ function vHome(){
     <h1>${partOfDay()}, <em>${esc(first(me.name))}</em>.</h1>
     <p>${todos.length ? `You have ${todos.length} open item${todos.length>1?"s":""} at the table.` : "Nothing waiting on you. Hungry?"}</p>
   </section>
+  ${isSuspended() ? `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)">Your seat is paused by ${esc(first(F(ADMIN).name))}. You can look around, but voting and posting are off for now.</div>` : ""}
+  ${isAdmin() && queueCount() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>${queueCount()} waiting for your approval</b><small>Photos, cards and posts from the family</small></span><span class="chev">${I.chev}</span></button>` : ""}
 
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
@@ -834,6 +841,7 @@ function vHome(){
     <button class="alt" data-act="quick-plan" data-m="vote"><span class="eyebrow" style="font-size:10px">Group decision</span><b>Start a family vote</b><span class="muted small">Everyone picks in 10 minutes</span></button>
     <button class="alt" data-act="quick-plan" data-m="host"><span class="eyebrow" style="font-size:10px">No vote needed</span><b>Send an invitation</b><span class="muted small">You decide, they RSVP</span></button>
   </div>
+  <button class="todo" data-act="card-open"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✉</span><span><b>Send a card</b><small>A picture of us and our dinner, for anyone you love</small></span><span class="chev">${I.chev}</span></button>
 
   <section class="sec">
     <div class="sec-head"><h2>This Sunday</h2><span class="muted small">${fmtDate(iso(nextSunday))}</span></div>
@@ -855,7 +863,7 @@ function vHome(){
 
   <section class="sec">
     <div class="sec-head"><h2>Sights &amp; Sounds</h2><button class="link-btn" data-act="gallery">Open gallery</button></div>
-    ${st.photos.length ? `<div class="strip-photos">${[...st.photos].sort((a,b) => b.t-a.t).slice(0,8).map(p => `<button data-act="photo" data-id="${p.id}" aria-label="${esc(p.caption || "Photo")}"><img src="${p.data}" alt=""></button>`).join("")}</div>`
+    ${shownPhotos().length ? `<div class="strip-photos">${[...shownPhotos()].sort((a,b) => b.t-a.t).slice(0,8).map(p => `<button data-act="photo" data-id="${p.id}" aria-label="${esc(p.caption || "Photo")}"><img src="${p.data}" alt=""></button>`).join("")}</div>`
       : `<button class="empty" data-act="photo-add" style="width:100%;background:none;color:var(--muted)">Share the first photo: a plate, the room, the view on the way.</button>`}
   </section>
 
@@ -945,7 +953,7 @@ function sheetRest(rid){
     <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
     ${a ? `<div class="sec"><div class="lbl">FAMILY SCORES</div>${CRIT.map(([k,l]) => ca[k] ? `<div class="crit"><span class="small">${l}</span><div style="display:flex;align-items:center;gap:8px"><div class="meter" style="flex:1"><i style="width:${ca[k]/5*100}%"></i></div><span class="num small">${ca[k].toFixed(1)}</span></div></div>` : "").join("")}</div>` : ""}
     <div class="sec"><div class="lbl">WHAT WE SAID</div>
-      ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="stars" style="margin-left:auto">${starStr(Object.values(rv.scores).reduce((x,y)=>x+y,0)/Object.values(rv.scores).length)}</span></div><p>${esc(rv.text)}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
+      ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="stars" style="margin-left:auto">${starStr(Object.values(rv.scores).reduce((x,y)=>x+y,0)/Object.values(rv.scores).length)}</span></div><p>${rv.status === "held" && rv.by !== st.me && !isAdmin() ? '<span class="muted">Held for review.</span>' : esc(rv.text)}${isAdmin() ? ` <button class="link-btn" data-act="mod-post" data-k="review" data-id="${rv.id || (rv.id = uid("r"))}" data-v="del" style="color:var(--bad)">Delete</button>` : ""}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
     </div>
     ${isBlocked(rid) ? "" : `<button class="btn ghost sm" data-act="block" data-rid="${rid}" style="justify-self:start;color:var(--bad)">Add to Never Again list</button>`}
     <p class="proto">Hours, menus and reservations change. Confirm with the restaurant before booking.</p>`);
@@ -1001,7 +1009,7 @@ function vPlan(){
   <section class="sec">
     <div class="field"><label for="p-note">Personal note</label><textarea class="input" id="p-note" data-d="note" placeholder="${isHost?"A line for your invitation":"Anything the family should know"}">${esc(d.note)}</textarea></div>
     <div class="field"><span class="lbl">GUESTS (FAMILY APPROVES WITH A SHOW OF HANDS)</span>
-      ${st.contacts.length ? `<div class="chips" style="flex-wrap:wrap">${st.contacts.map(c => `<button class="chip" data-act="toggle-contact" data-cid="${c.id}" aria-pressed="${d.guests.some(g => g.contactId === c.id)}">${esc(c.name)}</button>`).join("")}</div>` : ""}
+      ${st.contacts.length ? `<div class="chips" style="flex-wrap:wrap">${st.contacts.filter(c => !c.banned).map(c => `<button class="chip" data-act="toggle-contact" data-cid="${c.id}" aria-pressed="${d.guests.some(g => g.contactId === c.id)}">${esc(c.name)}</button>`).join("")}</div>` : ""}
       <div class="grid2"><input class="input" id="p-guest" placeholder="New guest name" aria-label="New guest name"><input class="input" id="p-guest-email" type="email" placeholder="Email (optional)" aria-label="New guest email"></div>
       <button class="btn sm" data-act="add-guest" style="justify-self:start">+ Add guest &amp; save to contacts</button>
       ${d.guests.length ? `<div class="actions">${d.guests.map((g,i) => `<span class="pill brass">${esc(g.name)} <button data-act="rm-guest" data-i="${i}" aria-label="Remove ${esc(g.name)}" style="background:none;border:0;color:inherit;padding:0 0 0 4px">×</button></span>`).join("")}</div>` : ""}
@@ -1138,7 +1146,7 @@ function eventCard(e){
   if(e.status === "set"){
     const ar = st.arrivals[e.id] || {}; const here = Object.values(ar).filter(a => a.s === "here").length;
     body += `<div class="actions"><button class="btn primary" data-act="reveal" data-id="${e.id}">Open dinner card${here?` · ${here} arrived`:""}</button>
-      <a class="btn sm" href="${mailInvite(e)}">Email invitation</a><button class="btn sm ghost" data-act="copy-invite" data-id="${e.id}">Copy text</button></div>`;
+      <button class="btn sm wine" data-act="tab" data-id="${e.id}">The Tab</button><a class="btn sm" href="${mailInvite(e)}">Email invitation</a><button class="btn sm ghost" data-act="copy-invite" data-id="${e.id}">Copy text</button></div>`;
   }
   body += `<div class="actions" style="margin-top:2px">
     ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:"Start 10-minute vote"}</button>`:""}
@@ -1156,13 +1164,13 @@ function pastCard(e){
   const r = RBY[e.chosen]; const led = st.ledger.find(l => l.eventId === e.id); const ns = st.notes.filter(n => n.eventId === e.id);
   return `<article class="card">
     <div style="display:flex;gap:10px;align-items:center">${av(e.host,"sm")}<div style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-weight:500;font-size:18px">${esc(r.name)}</b><div class="small muted">${esc(e.title)} · ${fmtDate(e.date)}${led?` · ${ledgerText(led)}`:""}</div></div>${avgOf(r.id)?`<span class="num small" style="color:var(--brass)">★ ${avgOf(r.id).toFixed(1)}</span>`:""}</div>
-    ${ns.map(n => `<div class="note">${av(n.by,"sm")}<div><b class="small">${esc(F(n.by).name)}</b> <span class="small muted">${fmtDate(n.date)}</span><p>${esc(n.text)}</p></div></div>`).join("")}
+    ${ns.filter(n => n.status !== "held" || n.by === st.me || isAdmin()).map(n => `<div class="note">${av(n.by,"sm")}<div><b class="small">${esc(F(n.by).name)}</b> <span class="small muted">${fmtDate(n.date)}</span>${n.status === "held" ? ' <span class="pill warn">Held for review</span>' : ""}${isAdmin() ? ` <button class="link-btn" data-act="mod-post" data-k="note" data-id="${n.id}" data-v="del" style="color:var(--bad)">Delete</button>` : ""}<p>${esc(n.text)}</p></div></div>`).join("")}
     ${photoGrid(e.id)}
     <button class="btn sm" style="justify-self:start" data-act="photo-add" data-id="${e.id}">+ Add photos of the night</button>
     <div style="display:flex;gap:8px"><input class="input" id="note-${e.id}" placeholder="Share a moment from the night"><button class="btn" data-act="note" data-id="${e.id}">Post</button></div>
   </article>`;
 }
-const ledgerText = l => l.mode === "all" ? `${F(l.payer).name} treated everyone` : l.mode === "for" ? `${F(l.payer).name} paid for ${F(l.forWhom).name}` : l.mode === "split" ? "Split evenly" : "Everyone paid their own";
+const ledgerText = l => l.mode === "tab" ? `${F(l.payer).name} paid one check; everyone paid back` : l.mode === "all" ? `${F(l.payer).name} treated everyone` : l.mode === "for" ? `${F(l.payer).name} paid for ${F(l.forWhom).name}` : l.mode === "split" ? "Split evenly" : "Everyone paid their own";
 
 /* ---------- Our Table: favorites, ledger ---------- */
 function vTable(){
@@ -1177,6 +1185,7 @@ function vTable(){
   const myReviews = st.reviews.filter(r => r.by === st.me).length;
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
+  ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts</small></span><span class="chev">${I.chev}</span></button>` : ""}
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
     ${favs.map(([rid,c],i) => `<button class="fav" data-act="rest" data-rid="${rid}" style="background:none;border:0;border-bottom:1px solid var(--line);text-align:left;width:100%;color:inherit"><span class="rank">${i+1}</span><span style="min-width:0"><b>${esc(RBY[rid].name)}</b><span class="small muted">Last ${fmtDate(lastVisit(rid))}${avgOf(rid)?` · ★ ${avgOf(rid).toFixed(1)}`:""}</span><div class="meter" style="margin-top:6px"><i style="width:${c/maxC*100}%"></i></div></span><span class="num">${c}×</span></button>`).join("")}
@@ -1188,7 +1197,7 @@ function vTable(){
     <div class="lbl" style="margin-top:6px">TREATS SO FAR</div>
     <div style="display:flex;flex-wrap:wrap;gap:12px">${st.fam.map(f => `<span style="display:flex;align-items:center;gap:6px">${av(f.id,"sm")}<span class="num">${treatCount(f.id)}</span></span>`).join("")}</div>
   </section>
-  <button class="g-hero" data-act="gallery" style="${st.photos.length ? "" : "padding:22px;background:var(--surface);border:1px solid var(--line);color:var(--ink)"}">${st.photos.length ? `<img src="${[...st.photos].sort((a,b)=>b.t-a.t)[0].data}" alt=""><span class="cap"><span>${st.photos.length} moments</span><b>Sights &amp; Sounds</b><span>Open the family gallery</span></span>` : `<span class="eyebrow">Gallery</span><br><b style="font-family:var(--f-display);font-weight:500;font-size:22px">Sights &amp; Sounds</b><br><span class="small muted">Food, places and family photos, all in one album.</span>`}</button>
+  <button class="g-hero" data-act="gallery" style="${st.photos.some(approved) ? "" : "padding:22px;background:var(--surface);border:1px solid var(--line);color:var(--ink)"}">${st.photos.some(approved) ? `<img src="${st.photos.filter(approved).sort((a,b)=>b.t-a.t)[0].data}" alt=""><span class="cap"><span>${st.photos.filter(approved).length} moments</span><b>Sights &amp; Sounds</b><span>Open the family gallery</span></span>` : `<span class="eyebrow">Gallery</span><br><b style="font-family:var(--f-display);font-weight:500;font-size:22px">Sights &amp; Sounds</b><br><span class="small muted">Food, places and family photos, all in one album.</span>`}</button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Never Again</h2><span class="small muted num">${Object.keys(st.blocked).length}</span></div>
     <p class="small muted" style="margin:0">Places with a bad experience. They're hidden from recommendations, votes and planning.</p>
@@ -1233,7 +1242,10 @@ function sheetTips(){
     ["Guests","Pick guests from Contacts or add someone new. Each guest needs a show of hands from a majority of the family."],
     ["Contacts","Our Table → add family seats and contacts with email and mobile. “Email invitation” addresses everyone at once."],
     ["Running late & table ready","On the dinner card, tap “Running late” and pick minutes. The first one there taps “Our table is ready”."],
-    ["Sights & Sounds","Share photos of the food, the place and the family. They're arranged by month in the gallery."],
+    ["Sights & Sounds","Share photos of the food, the place and the family. They're arranged by month in the gallery. Richard approves family photos before they appear."],
+    ["Send a card","Pick a photo, write a note, choose Keepsake or Snapshot, and send it to anyone from your phone's share menu. Cards from the family go to Richard first."],
+    ["The Tab","One person pays the restaurant. Everyone adds their tickets, picks their tip, and pays that person back by Zelle, Apple Pay, Cash App or cash. The payer taps “Got it” for each."],
+    ["Host controls","Richard approves photos and cards, can pause or remove a seat, mark a guest not welcome, and delete any post. Hurtful posts about a person are held for him automatically."],
     ["Never Again","Had a bad night? Add the place to Never Again with a reason. It disappears from picks and votes."],
     ["Birthday radar","Add birthdays and dietary notes under Our Table. Three weeks out, everyone gets a nudge with the birthday person's favorites."],
     ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Mark it booked with the confirmation number."],
@@ -1260,14 +1272,17 @@ function sheetPerson(kind, id){
     <div class="field"><label for="pp-email">Email</label><input class="input" id="pp-email" type="email" value="${esc(p.email)}" placeholder="name@email.com"></div>
     <div class="field"><label for="pp-phone">Mobile</label><input class="input" id="pp-phone" type="tel" value="${esc(p.phone)}" placeholder="(901) 555-0123"></div>
     ${kind==="fam" ? `<div class="field"><label for="pp-bday">Birthday</label><input class="input" id="pp-bday" type="date" value="${esc(p.birthday||"")}"></div>
-    <div class="field"><label for="pp-diet">Allergies &amp; dietary notes</label><input class="input" id="pp-diet" value="${esc(p.diet||"")}" placeholder="e.g. Shellfish allergy, no pork"></div>` : ""}
+    <div class="field"><label for="pp-diet">Allergies &amp; dietary notes</label><input class="input" id="pp-diet" value="${esc(p.diet||"")}" placeholder="e.g. Shellfish allergy, no pork"></div>
+    <div class="lbl">HOW FAMILY CAN PAY YOU BACK</div>
+    <div class="grid2"><input class="input" id="pp-zelle" value="${esc(p.zelle||"")}" placeholder="Zelle email or phone" aria-label="Zelle"><input class="input" id="pp-cashtag" value="${esc(p.cashtag||"")}" placeholder="Cash App $cashtag" aria-label="Cash App"></div>
+    <input class="input" id="pp-applepay" value="${esc(p.applepay||"")}" placeholder="Apple Pay phone number" aria-label="Apple Pay">` : ""}
     <button class="btn primary block" data-act="person-save" data-kind="${kind}" data-id="${id||""}">Save</button>
     ${!isNew && !(kind==="fam" && id===st.me) ? `<button class="btn ghost block" data-act="person-del" data-kind="${kind}" data-id="${id}">Remove ${kind==="fam"?"from the table":"contact"}</button>` : ""}`);
 }
 let guestPick = new Set();
 function sheetAskGuest(id){
   const e = ev(id); guestPick = new Set();
-  const avail = st.contacts.filter(c => !e.guests.some(g => g.contactId === c.id));
+  const avail = st.contacts.filter(c => !c.banned && !e.guests.some(g => g.contactId === c.id));
   openSheet(`<div class="sheet-head"><h2>Bring guests</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <p class="small muted" style="margin:0">Pick as many as you like. Each guest needs ${majority()} raised hands from the family.</p>
     ${avail.length ? `<div class="sec" style="gap:8px">${avail.map(c => `<button class="pick" data-act="gpick" data-cid="${c.id}" aria-pressed="false"><span class="check"></span><span class="grow"><b>${esc(c.name)}</b><small>${esc([c.relation,c.email].filter(Boolean).join(" · "))}</small></span></button>`).join("")}</div>` : ""}
@@ -1277,7 +1292,7 @@ function sheetAskGuest(id){
 }
 
 /* Photos of the night (downscaled so they fit on the phone) */
-const photosOf = id => st.photos.filter(p => p.eventId === id);
+const photosOf = id => shownPhotos().filter(p => p.eventId === id);
 const photoGrid = id => { const ps = photosOf(id); return ps.length ? `<div class="photos">${ps.map(p => `<button data-act="photo" data-id="${p.id}" aria-label="Photo by ${esc(first(F(p.by).name))}"><img src="${p.data}" alt=""></button>`).join("")}</div>` : ""; };
 const PCATS = [["food","The food"],["place","The place"],["sights","Sights & sounds"],["family","Family"]];
 const pcat = k => (PCATS.find(c => c[0] === k) || PCATS[0])[1];
@@ -1312,34 +1327,37 @@ async function savePhotos(){
   const caption = document.getElementById("ph-cap").value.trim(); const rid = document.getElementById("ph-rest").value || null;
   let added = 0;
   for(const f of d.files){
-    try { const data = await downscale(f); st.photos.push({id:uid("p"), eventId:d.eventId, rid, cat:d.cat, caption, by:st.me, t:Date.now(), data});
+    try { const data = await downscale(f); st.photos.push({id:uid("p"), eventId:d.eventId, rid, cat:d.cat, caption, by:st.me, t:Date.now(), data, status: isAdmin() ? "approved" : "pending"});
       if(!save()){ st.photos.pop(); toast("This phone's storage is full. Remove a few photos first."); break; } added++; }
     catch { toast("One file couldn't be read as a photo"); }
   }
-  if(added){ alertAll(`${first(ME().name)} shared ${added} photo${added>1?"s":""}${rid ? " from " + RBY[rid].name : ""}.`, d.eventId); save(); }
-  closeSheet(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); render(); if(added) toast(`${added} photo${added>1?"s":""} added to Sights & Sounds`);
+  if(added && isAdmin()){ alertAll(`${first(ME().name)} shared ${added} photo${added>1?"s":""}${rid ? " from " + RBY[rid].name : ""}.`, d.eventId); save(); }
+  if(added && !isAdmin()){ alertAdmin(`${first(ME().name)} shared ${added} photo${added>1?"s":""}. They're waiting for your approval.`); save(); }
+  closeSheet(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); render();
+  if(added) toast(isAdmin() ? `${added} photo${added>1?"s":""} added to Sights & Sounds` : `Sent to ${first(F(ADMIN).name)} for approval`);
 }
 function sheetPhoto(id){
   const p = st.photos.find(x => x.id === id); if(!p) return; const e = ev(p.eventId); const r = p.rid ? RBY[p.rid] : e?.chosen ? RBY[e.chosen] : null;
   openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">${pcat(p.cat)}${r ? " · " + esc(r.name) : ""}</div><h2>${esc(p.caption || (e?.title) || "From the table")}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <img src="${p.data}" alt="${esc(p.caption || "Family photo")}" style="width:100%;border-radius:12px">
     <div class="small muted">Shared by ${esc(first(F(p.by).name))} · ${new Date(p.t).toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})}</div>
-    ${p.by === st.me ? `<button class="btn ghost block" data-act="photo-del" data-id="${p.id}">Remove photo</button>` : ""}`);
+    ${approved(p) ? `<button class="btn primary block" data-act="card-open" data-id="${p.eventId || ""}" data-pid="${p.id}">Send as a card</button>` : `<div class="warnbox">Waiting for ${esc(first(F(ADMIN).name))}'s approval.</div>`}
+    ${p.by === st.me || isAdmin() ? `<button class="btn ghost block" data-act="photo-del" data-id="${p.id}">Remove photo</button>` : ""}`);
 }
 const galleryEl = document.getElementById("gallery"); let galCat = "all";
 function openGallery(){ galleryEl.hidden = false; document.body.style.overflow = "hidden"; drawGallery(); }
 function closeGallery(){ galleryEl.hidden = true; document.body.style.overflow = ""; render(); }
 function tileHTML(p){ const r = p.rid ? RBY[p.rid] : null;
-  return `<button class="tile" data-act="photo" data-id="${p.id}"><img src="${p.data}" alt="${esc(p.caption || pcat(p.cat))}" loading="lazy"><span class="meta"><b>${esc(p.caption || pcat(p.cat))}</b><span>${r ? esc(r.name) + " · " : ""}${esc(first(F(p.by).name))}</span></span></button>`; }
+  return `<button class="tile" data-act="photo" data-id="${p.id}"><img src="${p.data}" alt="${esc(p.caption || pcat(p.cat))}" loading="lazy"><span class="meta"><b>${esc(p.caption || pcat(p.cat))}</b><span>${r ? esc(r.name) + " · " : ""}${esc(first(F(p.by).name))}</span>${approved(p) ? "" : `<span class="pill warn" style="justify-self:start;margin-top:4px">Waiting for approval</span>`}</span></button>`; }
 function drawGallery(){
-  const all = [...st.photos].sort((a,b) => b.t - a.t); const list = galCat === "all" ? all : all.filter(p => p.cat === galCat);
+  const all = [...shownPhotos()].sort((a,b) => b.t - a.t); const list = galCat === "all" ? all : all.filter(p => p.cat === galCat);
   const hero = list[0]; const rest = list.slice(1);
   const groups = {}; rest.forEach(p => { const k = new Date(p.t).toLocaleDateString(undefined,{month:"long",year:"numeric"}); (groups[k] ||= []).push(p); });
   galleryEl.innerHTML = `<div class="ov-inner">
     <div class="ov-bar"><span class="eyebrow">${st.photos.length} moment${st.photos.length===1?"":"s"}</span><button class="icon-btn" data-act="gallery-close" aria-label="Close">✕</button></div>
     <div><h1 style="font-size:34px">Sights &amp; Sounds</h1><p class="muted" style="margin:4px 0 0">The food, the places and the people, all in one album.</p></div>
     <div class="chips"><button class="chip" data-act="gal-cat" data-k="all" aria-pressed="${galCat==="all"}">Everything</button>${PCATS.map(([k,l]) => `<button class="chip" data-act="gal-cat" data-k="${k}" aria-pressed="${galCat===k}">${l} · ${st.photos.filter(p => p.cat===k).length}</button>`).join("")}</div>
-    <button class="btn primary block" data-act="photo-add">+ Share photos</button>
+    <div class="grid2"><button class="btn primary" data-act="photo-add">+ Share photos</button><button class="btn" data-act="card-open">Send a card</button></div>
     ${hero ? `<button class="g-hero" data-act="photo" data-id="${hero.id}"><img src="${hero.data}" alt="${esc(hero.caption || pcat(hero.cat))}"><span class="cap"><span>${pcat(hero.cat)}</span><b>${esc(hero.caption || (hero.rid ? RBY[hero.rid].name : "From the table"))}</b><span>${esc(first(F(hero.by).name))} · ${ago(hero.t)}</span></span></button>`
       : `<div class="empty">No photos here yet. Share the first plate, the room, or the view on the drive.</div>`}
     ${Object.entries(groups).map(([m, ps]) => `<div class="g-month">${m}</div><div class="masonry">${ps.map(tileHTML).join("")}</div>`).join("")}
@@ -1367,6 +1385,227 @@ function radarList(){
     const favs = Object.entries(mine).map(([rid,a]) => [rid, a.reduce((x,y)=>x+y,0)/a.length]).filter(([rid]) => !isBlocked(rid)).sort((a,b) => b[1]-a[1]).slice(0,2);
     return {f, date, days, favs};
   }).filter(x => x.days <= 21).sort((a,b) => a.days - b.days);
+}
+
+/* ================= Host controls & moderation =================
+   Richard is the table's host: family photos and cards wait for his OK, posts that look
+   hurtful toward a person are held, and he can pause or remove anyone. */
+const ADMIN = "m1";
+const isAdmin = (id = st.me) => id === ADMIN;
+const active = f => f.status !== "suspended";
+const isSuspended = (id = st.me) => F(id).status === "suspended";
+const approved = p => !p.status || p.status === "approved";
+const shownPhotos = () => st.photos.filter(p => approved(p) || p.by === st.me);
+const NEG = /\b(stupid|idiot|dumb|hate|hates|ugly|lazy|liar|loser|trash|shut up|annoying|rude|selfish|disrespectful|worthless|fake|jerk|clown|embarrassing|cheap|nasty|petty)\b/i;
+function needsReview(text){
+  if(isAdmin() || !text || !NEG.test(text)) return false;
+  const names = [...st.fam.map(f => first(f.name)), ...st.contacts.map(c => first(c.name)), ...st.events.flatMap(e => e.guests.map(g => first(g.name)))].filter(n => n && n.length > 1);
+  return names.some(n => new RegExp("\\b" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(text)) || /\byou\b/i.test(text);
+}
+function hostQueue(){
+  return {photos: st.photos.filter(p => p.status === "pending"), cards: st.cards.filter(c => c.status === "pending"),
+    notes: st.notes.filter(n => n.status === "held"), reviews: st.reviews.filter(r => r.status === "held")};
+}
+const queueCount = () => { const q = hostQueue(); return q.photos.length + q.cards.length + q.notes.length + q.reviews.length; };
+const hostEl = document.getElementById("host");
+function openHost(){ if(!isAdmin()) return; hostEl.hidden = false; document.body.style.overflow = "hidden"; drawHost(); }
+function closeHost(){ hostEl.hidden = true; document.body.style.overflow = ""; render(); }
+function drawHost(){
+  const q = hostQueue(); const none = t => `<div class="empty">${t}</div>`;
+  const recent = [...st.notes.map(n => ({k:"note", id:n.id, by:n.by, text:n.text, t:n.date})), ...st.reviews.filter(r => r.text && r.text !== "(no comment)").map((r,i) => ({k:"review", id:r.id || (r.id = uid("r")), by:r.by, text:r.text, t:r.date, rid:r.rid}))].sort((a,b) => String(b.t).localeCompare(String(a.t))).slice(0, 20);
+  hostEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow">Host controls · ${esc(first(F(ADMIN).name))} only</span><button class="icon-btn" data-act="host-close" aria-label="Close">✕</button></div>
+    <div><h1 style="font-size:32px">Keep the table kind</h1><p class="muted" style="margin:4px 0 0">Family photos and cards wait here for your OK before anyone sees them. Posts that look hurtful toward a person are held too.</p></div>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Photos waiting</h2><span class="num">${q.photos.length}</span></div>
+      ${q.photos.length ? `<div class="masonry">${q.photos.map(p => `<div class="tile"><img src="${p.data}" alt=""><span class="meta"><b>${esc(p.caption || pcat(p.cat))}</b><span>from ${esc(first(F(p.by).name))}</span><span class="actions" style="margin-top:6px"><button class="btn sm primary" data-act="mod-photo" data-id="${p.id}" data-v="ok">Approve</button><button class="btn sm ghost" data-act="mod-photo" data-id="${p.id}" data-v="no">Decline</button></span></span></div>`).join("")}</div>` : none("No photos waiting.")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Cards waiting to go out</h2><span class="num">${q.cards.length}</span></div>
+      ${q.cards.map(c => { const src = c.upload || st.photos.find(p => p.id === c.photoId)?.data; return `<div class="person">${src ? `<img src="${src}" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:8px">` : av(c.by)}<span style="min-width:0"><b>From ${esc(first(F(c.by).name))}</b><small>“${esc(c.msg)}”${c.to.length ? " · to " + c.to.map(id => esc(first(personName(id)))).join(", ") : ""}</small></span><span class="actions" style="justify-content:flex-end"><button class="btn sm primary" data-act="mod-card" data-id="${c.id}" data-v="ok">Approve</button><button class="btn sm ghost" data-act="mod-card" data-id="${c.id}" data-v="no">Decline</button></span></div>`; }).join("") || none("No cards waiting.")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Held posts</h2><span class="num">${q.notes.length + q.reviews.length}</span></div>
+      ${[...q.notes.map(n => ({k:"note", ...n})), ...q.reviews.map(r => ({k:"review", ...r, id:r.id || (r.id = uid("r"))}))].map(x => `<div class="person">${av(x.by,"sm")}<span style="min-width:0"><b>${esc(first(F(x.by).name))}</b><small>“${esc(x.text)}”</small></span><span class="actions" style="justify-content:flex-end"><button class="btn sm" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="ok">Allow</button><button class="btn sm wine" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="del">Delete</button></span></div>`).join("") || none("Nothing held. Everyone's being kind.")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Family seats</h2></div>
+      ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>`).join("")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Guests &amp; contacts</h2></div>
+      ${st.contacts.map(c => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(c.name[0])}</span><span style="min-width:0"><b>${esc(c.name)}</b><small>${c.banned ? "Not welcome: can't be invited" : esc(c.relation || "Contact")}</small></span><button class="btn sm ${c.banned ? "primary" : "ghost"}" data-act="host-contact" data-id="${c.id}">${c.banned ? "Welcome back" : "Not welcome"}</button></div>`).join("") || none("No contacts yet.")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">Recent posts</h2></div>
+      <p class="small muted" style="margin:0">Delete anything that shouldn't be on the table.</p>
+      ${recent.map(x => `<div class="person">${av(x.by,"sm")}<span style="min-width:0"><b>${esc(first(F(x.by).name))}</b><small>“${esc(x.text)}”</small></span><button class="btn sm ghost" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="del">Delete</button></div>`).join("") || none("No posts yet.")}
+    </section>
+  </div>`;
+}
+const personName = id => st.fam.find(f => f.id === id)?.name || st.contacts.find(c => c.id === id)?.name || "Someone";
+function alertAdmin(text){ st.alerts.push({id:uid("a"), to:ADMIN, text, eventId:null, t:Date.now(), read:false}); }
+
+/* ================= Send a card (picture + note) to anyone ================= */
+const cardEl = document.getElementById("cardov"); let cardDraft = null, cardTimer = null;
+const CARD_STYLES = [["keepsake","Keepsake"],["snapshot","Snapshot"]];
+function openCard(o = {}){
+  const ps = st.photos.filter(approved).sort((a,b) => b.t - a.t);
+  const ph = o.photoId ? st.photos.find(p => p.id === o.photoId) : ps[0];
+  const eid = o.eventId || ph?.eventId || null; const e = eid ? ev(eid) : null;
+  const place = e?.chosen ? RBY[e.chosen].name : ph?.rid ? RBY[ph.rid].name : null;
+  cardDraft = o.card ? {...o.card, approvedId: o.card.status === "approved" ? o.card.id : null}
+    : {id:null, by:st.me, photoId: ph?.id || null, upload:null, style:"keepsake", eventId:eid, rid: ph?.rid || null, to:[],
+       msg: place ? `${e ? e.title : "Dinner"} at ${place}. Wish you were here!` : "A night around the table. Wish you were here!"};
+  cardEl.hidden = false; document.body.style.overflow = "hidden"; drawCard();
+}
+function closeCard(){ cardEl.hidden = true; cardDraft = null; document.body.style.overflow = ""; render(); }
+function drawCard(){
+  const d = cardDraft; const ps = st.photos.filter(approved).sort((a,b) => b.t - a.t).slice(0, 18);
+  const people = [...st.fam.filter(f => f.id !== st.me).map(f => ({id:f.id, name:f.name, email:f.email})), ...st.contacts.filter(c => !c.banned).map(c => ({id:c.id, name:c.name, email:c.email}))];
+  const mineWaiting = st.cards.filter(c => c.by === st.me && (c.status === "pending" || c.status === "approved"));
+  const canSend = isAdmin() || d.approvedId;
+  cardEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow">Send a card</span><button class="icon-btn" data-act="card-close" aria-label="Close">✕</button></div>
+    <div><h1 style="font-size:32px">Share the night</h1><p class="muted" style="margin:4px 0 0">A picture of us and our dinner, with a note, for anyone you love.</p></div>
+    <canvas id="card-cv" width="1200" height="1500" style="width:100%;max-width:100%;height:auto;border-radius:10px;box-shadow:var(--card-shadow);background:var(--surface)"></canvas>
+    <div class="field"><span class="lbl">PHOTO</span>
+      ${ps.length ? `<div class="strip-photos">${ps.map(p => `<button data-act="card-photo" data-id="${p.id}" style="${p.id === d.photoId && !d.upload ? "outline:3px solid var(--brass);outline-offset:-3px" : ""}" aria-label="Use this photo"><img src="${p.data}" alt=""></button>`).join("")}</div>` : ""}
+      <label class="btn sm" style="justify-self:start">${d.upload ? "✓ New photo added" : "+ Use a new photo"}<input type="file" accept="image/*" hidden id="card-file"></label></div>
+    <div class="field"><span class="lbl">STYLE</span><div class="seg" role="group" aria-label="Card style">${CARD_STYLES.map(([k,l]) => `<button data-act="card-style" data-k="${k}" aria-pressed="${d.style === k}">${l}</button>`).join("")}</div></div>
+    <div class="field"><label for="card-msg">Your note</label><textarea class="input" id="card-msg" maxlength="160">${esc(d.msg)}</textarea></div>
+    <div class="field"><span class="lbl">WHO IS IT FOR? (OPTIONAL)</span><div class="chips" style="flex-wrap:wrap">${people.map(x => `<button class="chip" data-act="card-to" data-id="${x.id}" aria-pressed="${d.to.includes(x.id)}">${esc(first(x.name))}</button>`).join("")}</div>
+      <span class="small muted">You can also send it to anyone from your phone's share menu.</span></div>
+    ${canSend ? `<button class="btn primary block" data-act="card-send">Send card</button>` : `<button class="btn wine block" data-act="card-send">Send to ${esc(first(F(ADMIN).name))} for approval</button><p class="small muted" style="margin:0;text-align:center">Cards leave the table once ${esc(first(F(ADMIN).name))} approves. You'll get an alert.</p>`}
+    ${mineWaiting.length ? `<section class="card"><div class="lbl">YOUR CARDS</div>${mineWaiting.map(c => `<div class="person">${av(c.by,"sm")}<span style="min-width:0"><b>${c.status === "approved" ? "Approved, ready to send" : "Waiting for approval"}</b><small>“${esc(c.msg)}”</small></span>${c.status === "approved" ? `<button class="btn sm primary" data-act="card-reopen" data-id="${c.id}">Open</button>` : ""}</div>`).join("")}</section>` : ""}
+  </div>`;
+  renderCard(document.getElementById("card-cv"), d);
+  document.getElementById("card-msg").addEventListener("input", x => { d.msg = x.target.value; clearTimeout(cardTimer); cardTimer = setTimeout(() => renderCard(document.getElementById("card-cv"), d), 200); });
+  document.getElementById("card-file").addEventListener("change", async x => { const f = x.target.files?.[0]; if(!f) return; try { d.upload = await downscale(f); drawCard(); } catch { toast("That file isn't a photo this phone can read"); } });
+}
+const loadImg = src => new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = src; });
+function coverDraw(ctx, img, x, y, w, h){ const k = Math.max(w/img.width, h/img.height), sw = w/k, sh = h/k; ctx.drawImage(img, (img.width-sw)/2, (img.height-sh)/2, sw, sh, x, y, w, h); }
+function wrapLines(ctx, text, maxW){ const out = []; let line = ""; String(text).split(/\s+/).forEach(w => { const t = line ? line + " " + w : w; if(ctx.measureText(t).width > maxW && line){ out.push(line); line = w; } else line = t; }); if(line) out.push(line); return out; }
+function fitFont(ctx, text, style, size, family, maxW){ let s = size; do { ctx.font = `${style} ${s}px ${family}`; s -= 2; } while(ctx.measureText(text).width > maxW && s > 18); }
+async function renderCard(cv, d){
+  if(!cv) return; const ctx = cv.getContext("2d"); const W = 1200, H = 1500;
+  try { await Promise.all(['64px "Pinyon Script"','italic 40px "Bodoni Moda"','500 44px "Bodoni Moda"','600 28px Figtree'].map(f => document.fonts.load(f))); } catch {}
+  const src = d.upload || st.photos.find(p => p.id === d.photoId)?.data; const img = src ? await loadImg(src).catch(() => null) : null;
+  const e = d.eventId ? ev(d.eventId) : null; const r = e?.chosen ? RBY[e.chosen] : d.rid ? RBY[d.rid] : null;
+  const place = r ? r.name : "Table of 7";
+  const when = (e ? parse(e.date) : new Date()).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  const from = `— ${first(F(d.by || st.me).name)} & the Table of 7`;
+  const BOD = '"Bodoni Moda", Didot, Georgia, serif', SCR = '"Pinyon Script", "Snell Roundhand", cursive', SANS = 'Figtree, system-ui, sans-serif';
+  ctx.clearRect(0, 0, W, H); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  if(d.style === "snapshot"){
+    const g = ctx.createRadialGradient(W/2, 300, 50, W/2, 600, 1100); g.addColorStop(0, "#1d3a30"); g.addColorStop(1, "#0b1512"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.translate(W/2, 600); ctx.rotate(-0.03);
+    ctx.shadowColor = "rgba(0,0,0,.5)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 18; ctx.fillStyle = "#fbf8f1"; ctx.fillRect(-460, -480, 920, 1000); ctx.shadowColor = "transparent";
+    if(img) coverDraw(ctx, img, -420, -440, 840, 780); else { ctx.fillStyle = "#d9cfbd"; ctx.fillRect(-420, -440, 840, 780); }
+    ctx.fillStyle = "#5a1622"; fitFont(ctx, place, "", 64, SCR, 820); ctx.fillText(place, 0, 430);
+    ctx.restore();
+    ctx.fillStyle = "#cfab6c"; ctx.font = `600 26px ${SANS}`; ctx.fillText(when.toUpperCase().split("").join(String.fromCharCode(8202)), W/2, 1205);
+    ctx.fillStyle = "#efe9dc"; ctx.font = `italic 40px ${BOD}`; wrapLines(ctx, d.msg, 1000).slice(0, 3).forEach((l, i) => ctx.fillText(l, W/2, 1280 + i*54));
+    ctx.fillStyle = "#cfab6c"; ctx.font = `28px ${SANS}`; ctx.fillText(from, W/2, 1450);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#fcf9f1"); g.addColorStop(1, "#f1e8d5"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "#c9b083"; ctx.lineWidth = 3; ctx.strokeRect(28, 28, W-56, H-56); ctx.lineWidth = 1.2; ctx.strokeRect(42, 42, W-84, H-84);
+    if(img) coverDraw(ctx, img, 80, 80, W-160, 760); else { ctx.fillStyle = "#e3d8c3"; ctx.fillRect(80, 80, W-160, 760); }
+    ctx.strokeStyle = "#b08d4c"; ctx.lineWidth = 2; ctx.strokeRect(80, 80, W-160, 760);
+    ctx.fillStyle = "#5a1622"; ctx.font = `76px ${SCR}`; ctx.fillText("Greetings from the table", W/2, 975);
+    ctx.fillStyle = "#2a1f14"; fitFont(ctx, place.toUpperCase(), "500", 46, BOD, 1000); ctx.fillText(place.toUpperCase(), W/2, 1050);
+    ctx.fillStyle = "#8a6a2c"; ctx.font = `600 24px ${SANS}`; ctx.fillText(when.toUpperCase(), W/2, 1098);
+    ctx.strokeStyle = "#b08d4c"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(W/2-150, 1135); ctx.lineTo(W/2-22, 1135); ctx.moveTo(W/2+22, 1135); ctx.lineTo(W/2+150, 1135); ctx.stroke();
+    ctx.fillStyle = "#b08d4c"; ctx.beginPath(); ctx.moveTo(W/2, 1125); ctx.lineTo(W/2+10, 1135); ctx.lineTo(W/2, 1145); ctx.lineTo(W/2-10, 1135); ctx.fill();
+    ctx.fillStyle = "#5b4a36"; ctx.font = `italic 40px ${BOD}`; wrapLines(ctx, d.msg, 980).slice(0, 4).forEach((l, i) => ctx.fillText(l, W/2, 1215 + i*52));
+    ctx.fillStyle = "#8a6a2c"; ctx.font = `28px ${SANS}`; ctx.fillText(from, W/2, 1430);
+  }
+}
+async function sendCard(){
+  const d = cardDraft;
+  if(!isAdmin() && !d.approvedId){
+    st.cards.push({id:uid("cd"), by:st.me, photoId:d.photoId, upload:d.upload, style:d.style, msg:d.msg, eventId:d.eventId, rid:d.rid, to:[...d.to], status:"pending", t:Date.now()});
+    alertAdmin(`${first(ME().name)} made a card and is waiting for your approval.`);
+    if(!save()){ st.cards.pop(); toast("This phone's storage is full."); return; }
+    closeCard(); toast(`Sent to ${first(F(ADMIN).name)} for approval`); return;
+  }
+  const cv = document.getElementById("card-cv"); await renderCard(cv, d);
+  const blob = await new Promise(ok => cv.toBlob(ok, "image/png"));
+  const rec = d.approvedId ? st.cards.find(c => c.id === d.approvedId) : null;
+  if(rec) rec.status = "sent"; else st.cards.push({id:uid("cd"), by:st.me, photoId:d.photoId, style:d.style, msg:d.msg, eventId:d.eventId, rid:d.rid, to:[...d.to], status:"sent", t:Date.now()});
+  save();
+  const file = blob ? new File([blob], "table-of-7-card.png", {type:"image/png"}) : null;
+  if(file && navigator.canShare && navigator.canShare({files:[file]})){
+    try { await navigator.share({files:[file], title:"From the Table of 7", text:d.msg}); toast("Card sent"); return; } catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  const emails = d.to.map(id => st.fam.find(f => f.id === id)?.email || st.contacts.find(c => c.id === id)?.email).filter(Boolean);
+  openSheet(`<div class="sheet-head"><h2>Your card is ready</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <img src="${cv.toDataURL("image/jpeg", .9)}" alt="Your card" style="width:100%;border-radius:10px">
+    <p class="small muted" style="margin:0">Press and hold the card to save it to your photos, then text or email it. On the live app, “Send card” opens your phone's share menu directly.</p>
+    <a class="btn block" href="mailto:?bcc=${encodeURIComponent(emails.join(","))}&subject=${encodeURIComponent("A card from the Table of 7")}&body=${encodeURIComponent(d.msg + "\n\n" + "— " + first(ME().name) + " & the Table of 7")}">Email the note${emails.length ? ` to ${emails.length}` : ""}</a>`);
+}
+
+/* ================= The Tab: one check, everyone pays the payer back ================= */
+const tabEl = document.getElementById("tab"); let tabId = null;
+const TIP_CHOICES = [15,18,20,22,25];
+function tabOf(e){ return st.tabs[e.id] ||= {payer:null, items:[], tax: RBY[e.chosen].city === "Memphis" ? 9.75 : 9, tips:{}, paid:{}, autoGrat:false, receipt:"", closed:false, whoSel:null}; }
+function diners(e){ return [...st.fam.filter(f => e.rsvp[f.id] !== "no" && active(f)).map(f => ({id:f.id, name:f.name, fam:true})), ...e.guests.filter(guestApproved).map(g => ({id:"g:"+g.id, name:g.name, fam:false}))]; }
+const dinerName = (e, id) => id.startsWith("g:") ? (e.guests.find(g => "g:"+g.id === id)?.name || "Guest") : F(id).name;
+function shares(e){
+  const t = tabOf(e), ds = diners(e), sub = {}; ds.forEach(d => sub[d.id] = 0);
+  t.items.forEach(it => { const who = it.who.length ? it.who.filter(w => w in sub) : ds.map(d => d.id); if(!who.length) return; const each = it.amount / who.length; who.forEach(w => sub[w] += each); });
+  return ds.map(d => { const s = sub[d.id], tax = s * t.tax / 100, pct = t.autoGrat ? 0 : (t.tips[d.id] ?? 20), tip = s * pct / 100; return {...d, sub:s, tax, pct, tip, total:s + tax + tip, paid:t.paid[d.id]}; });
+}
+function payOptions(payer, amt){
+  const p = F(payer), a = amt.toFixed(2), out = [];
+  if(p.zelle) out.push(["Zelle", null, p.zelle]);
+  if(p.applepay) out.push(["Apple Pay", null, p.applepay]);
+  if(p.cashtag){ const tag = p.cashtag.startsWith("$") ? p.cashtag : "$" + p.cashtag; out.push(["Cash App", `https://cash.app/${encodeURIComponent(tag)}/${a}`, tag]); }
+  out.push(["Cash", null, ""]);
+  return out;
+}
+function openTab(id){ tabId = id; tabEl.hidden = false; document.body.style.overflow = "hidden"; drawTab(); }
+function closeTab(){ tabEl.hidden = true; tabId = null; document.body.style.overflow = revealId ? "hidden" : ""; if(revealId) drawReveal(); else render(); }
+function drawTab(){
+  const e = ev(tabId), r = RBY[e.chosen], t = tabOf(e), sh = shares(e), ds = diners(e), payer = t.payer;
+  if(!t.whoSel) t.whoSel = ds.some(d => d.id === st.me) ? [st.me] : [];
+  const meIn = sh.find(x => x.id === st.me);
+  const sum = k => sh.reduce((a, x) => a + x[k], 0);
+  const back = sh.filter(x => x.id !== payer), owed = back.reduce((a, x) => a + x.total, 0), got = back.filter(x => x.paid?.status === "received").reduce((a, x) => a + x.total, 0);
+  const pf = payer ? F(payer) : null, pn = pf ? esc(first(pf.name)) : "";
+  const handles = pf ? [pf.zelle && "Zelle " + pf.zelle, pf.cashtag && "Cash App " + pf.cashtag, pf.applepay && "Apple Pay " + pf.applepay].filter(Boolean).map(esc).join(" · ") : "";
+  const diff = t.receipt ? +t.receipt - (sum("sub") + sum("tax")) : null;
+  tabEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow">One check tonight</span><button class="icon-btn" data-act="tab-close" aria-label="Close">✕</button></div>
+    <div><h1 style="font-size:34px">The Tab</h1><p class="muted" style="margin:4px 0 0">${esc(r.name)} · ${fmtLong(e.date)}${t.closed ? " · closed" : ""}</p></div>
+    ${!payer ? `<section class="card"><div class="lbl">WHO'S PUTTING IT ON THEIR CARD?</div>
+        <p class="small muted" style="margin:0">One person pays the restaurant. Everyone else pays them back from their phone.</p>
+        <div class="actions">${ds.filter(d => d.fam).map(d => `<button class="btn ${d.id === st.me ? "primary" : ""}" data-act="tab-payer" data-id="${d.id}">${d.id === st.me ? "I'll pay the restaurant" : esc(first(d.name))}</button>`).join("")}</div></section>`
+      : `<section class="card"><div style="display:flex;gap:12px;align-items:center">${av(payer)}<div style="flex:1;min-width:0"><b>${esc(pf.name)}</b> is paying the restaurant<br><span class="small muted">${handles || (payer === st.me ? "Add your Zelle, Cash App or Apple Pay under Our Table → Edit so everyone can pay you." : "Cash works too.")}</span></div>${(payer === st.me || isAdmin()) && !t.closed ? `<button class="btn sm ghost" data-act="tab-payer" data-id="">Change</button>` : ""}</div>
+        <div class="ready" style="background:var(--wine-soft);color:var(--ink)">Tell the server: <b>one check, please.</b></div></section>`}
+    <section class="card"><div class="lbl">ADD TICKETS</div>
+      <p class="small muted" style="margin:0">Add what each person ordered. Shared plates split evenly between the people you tap.</p>
+      <div class="grid2"><input class="input" id="tab-desc" placeholder="e.g. Ribeye + tea" aria-label="What was it"><input class="input num" id="tab-amt" inputmode="decimal" placeholder="$0.00" aria-label="Amount"></div>
+      <div class="chips" style="flex-wrap:wrap">${ds.map(d => `<button class="chip" data-act="tab-who" data-id="${d.id}" aria-pressed="${t.whoSel.includes(d.id)}">${esc(first(d.name))}</button>`).join("")}<button class="chip" data-act="tab-who" data-id="*" aria-pressed="${!t.whoSel.length}">Shared by everyone</button></div>
+      <button class="btn primary" data-act="tab-add" ${t.closed ? "disabled" : ""}>Add to the tab</button>
+      <div>${t.items.map(it => `<div class="ledger-row"><span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${it.who.length === 1 ? esc(dinerName(e, it.who[0])[0]) : "÷"}</span><span style="min-width:0"><b>${esc(it.desc || "Item")}</b><br><span class="small muted">${it.who.length ? it.who.map(w => esc(first(dinerName(e, w)))).join(", ") : "Shared by everyone"}</span></span><span style="display:flex;gap:8px;align-items:center"><span class="num">${money(it.amount)}</span>${(it.by === st.me || payer === st.me) && !t.closed ? `<button class="link-btn" data-act="tab-del" data-id="${it.id}" aria-label="Remove item">✕</button>` : ""}</span></div>`).join("") || `<div class="empty">No tickets yet. Add the first one above.</div>`}</div>
+    </section>
+    ${meIn && payer && meIn.id !== payer ? `<section class="card" style="border-color:var(--brass)"><div class="lbl">YOUR SHARE</div>
+      <div class="calc-out"><div class="line"><span>Your food &amp; drink</span><span class="num">${money(meIn.sub)}</span></div><div class="line"><span>Tax (${t.tax}%)</span><span class="num">${money(meIn.tax)}</span></div><div class="line"><span>Tip (${meIn.pct}%)</span><span class="num">${money(meIn.tip)}</span></div><div class="line total"><span>You send ${pn}</span><span class="num">${money(meIn.total)}</span></div></div>
+      ${t.autoGrat ? `<p class="small muted" style="margin:0">The restaurant already added the tip.</p>` : `<div class="field"><span class="lbl">CHOOSE YOUR TIP</span><div class="chips">${TIP_CHOICES.map(pc => `<button class="chip" data-act="tab-tip" data-id="${st.me}" data-p="${pc}" aria-pressed="${meIn.pct === pc}">${pc}%</button>`).join("")}</div></div>`}
+      ${meIn.paid ? `<div class="ready">${meIn.paid.status === "received" ? `✓ ${pn} got your ${money(meIn.paid.amount)}` : `Sent by ${esc(meIn.paid.method)} · waiting for ${pn} to confirm`}</div>` : ""}
+      <div class="lbl">PAY ${pn.toUpperCase()} BACK</div>
+      <div class="actions">${payOptions(payer, meIn.total).map(([l, url, h]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener" data-act="tab-pay" data-m="${l}">${l}</a>` : `<button class="btn" data-act="tab-pay" data-m="${l}" data-h="${esc(h)}">${l}</button>`).join("")}</div>
+      <p class="small muted" style="margin:0">Zelle or Apple Pay: tapping copies ${pn}'s info and your amount. Open your bank or Messages to send it. Cash App opens with the amount filled in.</p>
+    </section>` : ""}
+    <section class="card"><div class="lbl">EVERYONE</div>
+      ${sh.map(x => { const isP = x.id === payer;
+        const pill = isP ? '<span class="pill brass">Paying the restaurant</span>' : !x.paid ? '<span class="pill">Not sent yet</span>' : x.paid.status === "received" ? '<span class="pill good">Received ✓</span>' : `<span class="pill warn">Sent · ${esc(x.paid.method)}</span>`;
+        return `<div class="ledger-row">${x.fam ? av(x.id, "sm") : `<span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${esc(x.name[0])}</span>`}<span style="min-width:0"><b>${esc(first(x.name))}</b>${x.fam ? "" : ' <span class="small muted">guest</span>'}<br><span class="small muted">${money(x.sub)} + tax + ${payer === st.me && !x.fam && !t.closed ? `<button class="link-btn" data-act="tab-tipcycle" data-id="${x.id}">${x.pct}% tip</button>` : x.pct + "% tip"}</span><br>${pill}</span><span style="display:grid;justify-items:end;gap:4px"><span class="num">${money(x.total)}</span>${payer === st.me && !isP && x.paid?.status !== "received" && !t.closed ? `<button class="btn sm" data-act="tab-recv" data-id="${x.id}">Got it</button>` : ""}</span></div>`; }).join("")}
+    </section>
+    <section class="card">
+      <div class="calc-out"><div class="line"><span>Food &amp; drink</span><span class="num">${money(sum("sub"))}</span></div><div class="line"><span>Tax</span><span class="num">${money(sum("tax"))}</span></div><div class="line"><span>Tips</span><span class="num">${money(sum("tip"))}</span></div><div class="line total"><span>One check total</span><span class="num">${money(sum("total"))}</span></div></div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="tab-auto" ${t.autoGrat ? "checked" : ""} ${t.closed ? "disabled" : ""}> The restaurant already added a tip (common for 6 or more)</label>
+      ${payer === st.me ? `<div class="field"><label for="tab-receipt">Receipt total before tip (to double-check)</label><input class="input num" id="tab-receipt" inputmode="decimal" value="${esc(t.receipt)}" placeholder="0.00"></div>
+        ${diff !== null ? `<div class="small" style="color:${Math.abs(diff) < 1 ? "var(--good)" : "var(--warn)"}">${Math.abs(diff) < 1 ? "✓ Matches the tickets plus tax" : `${money(Math.abs(diff))} ${diff > 0 ? "more on the receipt than the tickets. Something is missing." : "less on the receipt than the tickets. Check for a duplicate."}`}</div>` : ""}
+        <div class="small">Paid back so far: <b>${money(got)}</b> of ${money(owed)}</div>
+        <button class="btn wine block" data-act="tab-close-out" ${t.closed ? "disabled" : ""}>${t.closed ? "Tab closed" : "Close the tab"}</button>` : ""}
+    </section>
+  </div>`;
 }
 
 /* Invitations by email / copy */
@@ -1400,12 +1639,12 @@ function closeLive(){ clearInterval(liveTimer); liveEl.hidden = true; liveId = n
 function tickLive(){
   const e = ev(liveId); if(!e){ closeLive(); return; }
   if(simOn && Math.random() < .2){
-    const missing = st.fam.filter(f => f.id !== st.me && !e.votes[f.id]);
+    const missing = st.fam.filter(f => f.id !== st.me && !e.votes[f.id] && active(f));
     if(missing.length){ const m = missing[Math.floor(Math.random()*missing.length)]; e.votes[m.id] = e.options[Math.floor(Math.random()*e.options.length)]; save(); drawLive(); toast(`${m.name} voted`); }
   }
   const left = e.voteEnds - Date.now();
   if(left < 120000 && !e.warned2){ e.warned2 = true; st.fam.filter(f => !e.votes[f.id]).forEach(f => st.alerts.push({id:uid("a"),to:f.id,text:`2 minutes left to vote for ${e.title}.`,eventId:e.id,t:Date.now(),read:false})); save(); }
-  if(left <= 0 || Object.keys(e.votes).length >= st.fam.length){ finishLive(e); return; }
+  if(left <= 0 || Object.keys(e.votes).length >= st.fam.filter(active).length){ finishLive(e); return; }
   const c = document.getElementById("cd"); if(c){ c.textContent = mmss(left); c.classList.toggle("low", left < 60000); }
 }
 function finishLive(e){
@@ -1489,6 +1728,8 @@ function drawReveal(){
       <a class="btn primary" href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a>
       <a class="btn" href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a>
       <button class="btn" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button>
+      <button class="btn wine" data-act="tab" data-id="${e.id}">The Tab · one check</button>
+      <button class="btn" data-act="card-open" data-id="${e.id}">Send a card</button>
     </div>
     <section class="card">
       <div class="lbl">CHECK IN</div>
@@ -1595,11 +1836,14 @@ let toastT;
 function toast(m){ const t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
 const uid = p => p + Math.random().toString(36).slice(2,8);
 
+const WRITE_ACTS = new Set(["vote","live","live-vote","live-add","rsvp","invite-rsvp","hand","ask-guest","ask-guest-go","send","quick-plan","plan-with","note","photo-add","ph-save","wrap","wrap-go","block","block-go","res-claim","card-open","card-send","tab-add","tab-pay","tab-payer","arrive","table-ready"]);
 document.addEventListener("click", e => {
   const tab = e.target.closest("[data-tab]");
   if(tab){ go(tab.dataset.tab); return; }
   const b = e.target.closest("[data-act]"); if(!b) return;
   const a = b.dataset.act, id = b.dataset.id;
+  if(isSuspended() && WRITE_ACTS.has(a)){ toast(`Your seat is paused. Please talk to ${first(F(ADMIN).name)}.`); return; }
+  if(/^(mod-|host-member|host-contact)/.test(a) && !isAdmin()) return;
   switch(a){
     case "close": closeSheet(); break;
     case "tips": sheetTips(); break;
@@ -1612,7 +1856,7 @@ document.addEventListener("click", e => {
       if(!name){ toast("Add a name to save"); return; }
       const data = {name, email:document.getElementById("pp-email").value.trim(), phone:document.getElementById("pp-phone").value.trim()};
       if(kind === "contact") data.relation = document.getElementById("pp-rel").value.trim();
-      else { data.birthday = document.getElementById("pp-bday").value; data.diet = document.getElementById("pp-diet").value.trim(); }
+      else { data.birthday = document.getElementById("pp-bday").value; data.diet = document.getElementById("pp-diet").value.trim(); ["zelle","cashtag","applepay"].forEach(k => data[k] = document.getElementById("pp-"+k).value.trim()); }
       const list = kind === "fam" ? st.fam : st.contacts;
       const p = id && list.find(x => x.id === id);
       if(p) Object.assign(p, data);
@@ -1675,6 +1919,55 @@ document.addEventListener("click", e => {
     case "invite-close": closeInvite(); break;
     case "invite-rsvp": { const e2 = ev(inviteId); e2.rsvp[st.me] = b.dataset.v; if(b.dataset.v !== "maybe") st.alerts.push({id:uid("a"),to:e2.host,text:`${first(ME().name)} ${b.dataset.v==="yes"?"accepted":"declined"} your invitation to ${e2.title}.`,eventId:e2.id,t:Date.now(),read:false}); save(); drawInvite(); toast(b.dataset.v==="yes" ? "Wonderful — see you there" : b.dataset.v==="no" ? "We'll miss you" : "Marked as maybe"); break; }
     case "alerts": sheetAlerts(); break;
+    case "host": closeSheet(); openHost(); break;
+    case "host-close": closeHost(); break;
+    case "mod-photo": { const ph = st.photos.find(x => x.id === id); if(!ph) break;
+      if(b.dataset.v === "ok"){ ph.status = "approved"; st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} approved your photo. It's in Sights & Sounds.`,eventId:ph.eventId,t:Date.now(),read:false}); alertAll(`New in Sights & Sounds: ${ph.caption || pcat(ph.cat)}.`, ph.eventId, ph.by); }
+      else { st.photos = st.photos.filter(x => x.id !== id); st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} didn't approve one of your photos.`,eventId:null,t:Date.now(),read:false}); }
+      save(); drawHost(); break; }
+    case "mod-card": { const c = st.cards.find(x => x.id === id); if(!c) break;
+      c.status = b.dataset.v === "ok" ? "approved" : "declined";
+      st.alerts.push({id:uid("a"),to:c.by,text:b.dataset.v === "ok" ? `${first(ME().name)} approved your card. Open Send a card to send it.` : `${first(ME().name)} didn't approve your card.`,eventId:null,t:Date.now(),read:false});
+      save(); drawHost(); break; }
+    case "mod-post": { const list = b.dataset.k === "note" ? "notes" : "reviews"; const x = st[list].find(y => y.id === id); if(!x) break;
+      if(b.dataset.v === "ok") x.status = "ok"; else st[list] = st[list].filter(y => y.id !== id);
+      save(); if(!hostEl.hidden) drawHost(); else { closeSheet(); render(); } toast(b.dataset.v === "ok" ? "Post allowed" : "Post deleted"); break; }
+    case "host-member": { const f = F(id); const v = b.dataset.v;
+      if(v === "remove"){ if(b.dataset.armed){ st.fam = st.fam.filter(x => x.id !== id); save(); drawHost(); toast(`${first(f.name)} removed from the table`); } else { b.dataset.armed = "1"; b.textContent = "Tap again"; } break; }
+      f.status = v === "pause" ? "suspended" : "active"; save(); drawHost(); toast(v === "pause" ? `${first(f.name)}'s seat is paused` : `${first(f.name)} is back at the table`); break; }
+    case "host-contact": { const c = st.contacts.find(x => x.id === id); c.banned = !c.banned; save(); drawHost(); toast(c.banned ? `${c.name} can't be invited` : `${c.name} is welcome again`); break; }
+    case "card-open": closeSheet(); openCard({eventId: id || null, photoId: b.dataset.pid || null}); break;
+    case "card-close": closeCard(); break;
+    case "card-photo": cardDraft.photoId = id; cardDraft.upload = null; const ph2 = st.photos.find(x => x.id === id); if(ph2?.rid) cardDraft.rid = ph2.rid; drawCard(); break;
+    case "card-style": cardDraft.style = b.dataset.k; drawCard(); break;
+    case "card-to": { const i = cardDraft.to.indexOf(id); i >= 0 ? cardDraft.to.splice(i,1) : cardDraft.to.push(id); b.setAttribute("aria-pressed", i < 0); break; }
+    case "card-send": sendCard(); break;
+    case "card-reopen": { const c = st.cards.find(x => x.id === id); if(c) openCard({card:c}); break; }
+    case "tab": openTab(id || revealId); break;
+    case "tab-close": closeTab(); break;
+    case "tab-payer": { const e2 = ev(tabId), t = tabOf(e2); t.payer = id || null;
+      if(id){ alertAll(`${first(F(id).name)} is paying the restaurant for ${e2.title}. Pay them back in The Tab.`, e2.id, id); if(id !== st.me) st.alerts.push({id:uid("a"),to:id,text:`You're paying the restaurant for ${e2.title}. Everyone will pay you back in The Tab.`,eventId:e2.id,t:Date.now(),read:false}); }
+      save(); drawTab(); break; }
+    case "tab-who": { const t = tabOf(ev(tabId)); if(id === "*") t.whoSel = []; else { const i = t.whoSel.indexOf(id); i >= 0 ? t.whoSel.splice(i,1) : t.whoSel.push(id); }
+      tabEl.querySelectorAll('[data-act="tab-who"]').forEach(x => x.setAttribute("aria-pressed", x.dataset.id === "*" ? !t.whoSel.length : t.whoSel.includes(x.dataset.id))); break; }
+    case "tab-add": { const e2 = ev(tabId), t = tabOf(e2); const amt = parseFloat(String(document.getElementById("tab-amt").value).replace(/[^0-9.]/g,""));
+      if(!(amt > 0)){ toast("Enter the amount for this ticket"); return; }
+      t.items.push({id:uid("i"), desc:document.getElementById("tab-desc").value.trim(), amount:amt, who:[...t.whoSel], by:st.me}); save(); drawTab(); toast(`Added ${money(amt)}`); break; }
+    case "tab-del": { const t = tabOf(ev(tabId)); t.items = t.items.filter(x => x.id !== id); save(); drawTab(); break; }
+    case "tab-tip": { const t = tabOf(ev(tabId)); t.tips[id] = +b.dataset.p; save(); drawTab(); break; }
+    case "tab-tipcycle": { const t = tabOf(ev(tabId)); const cur = t.tips[id] ?? 20; t.tips[id] = TIP_CHOICES[(TIP_CHOICES.indexOf(cur) + 1) % TIP_CHOICES.length]; save(); drawTab(); break; }
+    case "tab-pay": { const e2 = ev(tabId), t = tabOf(e2); const mine = shares(e2).find(x => x.id === st.me); const m = b.dataset.m;
+      if(b.dataset.h){ const txt = `${b.dataset.h} · ${money(mine.total)}`; navigator.clipboard?.writeText(txt).then(() => {}, () => {}); }
+      t.paid[st.me] = {status:"sent", method:m, amount:mine.total, t:Date.now()};
+      st.alerts.push({id:uid("a"),to:t.payer,text:`${first(ME().name)} sent you ${money(mine.total)} by ${m} for ${e2.title}. Tap “Got it” in The Tab when it arrives.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); drawTab(); toast(m === "Cash" ? `Hand ${first(F(t.payer).name)} ${money(mine.total)}` : b.dataset.h ? `Copied ${b.dataset.h} and ${money(mine.total)}` : `Opening ${m}…`); break; }
+    case "tab-recv": { const e2 = ev(tabId), t = tabOf(e2); const x = shares(e2).find(y => y.id === id);
+      t.paid[id] = {...(t.paid[id] || {method:"Cash"}), status:"received", amount:x.total, t:Date.now()};
+      if(!id.startsWith("g:")) st.alerts.push({id:uid("a"),to:id,text:`${first(ME().name)} got your ${money(x.total)} for ${e2.title}. Thank you!`,eventId:e2.id,t:Date.now(),read:false});
+      save(); drawTab(); break; }
+    case "tab-close-out": { const e2 = ev(tabId), t = tabOf(e2); const total = shares(e2).reduce((a2, x) => a2 + x.total, 0); t.closed = true;
+      st.ledger = st.ledger.filter(l => l.eventId !== e2.id); st.ledger.push({eventId:e2.id, rid:e2.chosen, date:e2.date, payer:t.payer, mode:"tab", forWhom:null, amount:total});
+      alertAll(`The Tab for ${e2.title} is closed. Thanks for settling up!`, e2.id); save(); drawTab(); toast("Tab closed and saved to Who's paid"); break; }
     case "gallery": closeSheet(); openGallery(); break;
     case "gallery-close": closeGallery(); break;
     case "gal-cat": galCat = b.dataset.k; drawGallery(); break;
@@ -1715,19 +2008,22 @@ document.addEventListener("click", e => {
       const amt = parseFloat(document.getElementById("w-amt").value) || 0;
       const moment = document.getElementById("w-note").value.trim();
       const pay = wrapDraft.pay;
-      st.reviews.push({rid:e2.chosen,by:st.me,date:e2.date,scores:{...sc},text:text||"(no comment)"});
+      st.reviews.push({id:uid("r"),rid:e2.chosen,by:st.me,date:e2.date,scores:{...sc},text:text||"(no comment)",status:needsReview(text)?"held":"ok"}); if(needsReview(text)) alertAdmin(`A review from ${first(ME().name)} is waiting for your review.`);
       if(!st.visits.some(v => v.eventId === e2.id)) st.visits.push({rid:e2.chosen,date:e2.date,eventId:e2.id});
       st.ledger = st.ledger.filter(l => l.eventId !== e2.id);
       st.ledger.push({eventId:e2.id,rid:e2.chosen,date:e2.date,payer:pay==="all"||pay==="for"?st.me:null,mode:pay,forWhom:pay==="for"?document.getElementById("w-for").value:null,amount:amt});
       if(moment) st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:e2.id,text:moment});
       e2.status = "done"; save(); closeSheet(); render(); const avgMine = Object.values(sc).reduce((x,y)=>x+y,0)/6;
       if(avgMine <= 2.2) setTimeout(() => sheetBlock(e2.chosen, text), 250); else toast("Saved — thanks for the review"); break; }
-    case "note": { const inp = document.getElementById("note-"+id); const v = inp.value.trim(); if(!v) return; st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:id,text:v}); save(); render(); break; }
+    case "note": { const inp = document.getElementById("note-"+id); const v = inp.value.trim(); if(!v) return; const held = needsReview(v); st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:id,text:v,status:held?"held":"ok"}); if(held) alertAdmin(`A post from ${first(ME().name)} is waiting for your review.`); save(); render(); if(held) toast(`Held for ${first(F(ADMIN).name)} to review first`); break; }
   }
 });
 setInterval(() => {
   document.querySelectorAll("[data-cd]").forEach(el => { const e = ev(el.dataset.cd); if(!e || !e.voteEnds) return; const left = e.voteEnds - Date.now(); el.textContent = mmss(left); if(left <= 0 && !liveId && app.hidden === false) render(); });
 }, 1000);
+tabEl.addEventListener("change", e => { if(!tabId) return; const t = tabOf(ev(tabId));
+  if(e.target.id === "tab-auto"){ t.autoGrat = e.target.checked; save(); drawTab(); }
+  if(e.target.id === "tab-receipt"){ t.receipt = e.target.value.replace(/[^0-9.]/g,""); save(); drawTab(); } });
 document.addEventListener("change", e => {
   const c = e.target.dataset.change; if(!c) return;
   st.ui[c] = e.target.value; save(); render();
