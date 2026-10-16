@@ -1,0 +1,15 @@
+{
+  "name": "jaguar-ascend-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automated browser tests and icon generator for the Jaguar Ascend Hub. Designed and created by Dr. Richard G. Clark. All rights reserved.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node t2.js",
+    "qa": "node qa.js",
+    "icons": "node icons.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}
