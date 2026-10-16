@@ -81,6 +81,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:500;text-wrap:balance;margin:0
 .greet{font-family:var(--f-display);font-size:clamp(30px,8vw,40px)}
 .greet em{color:var(--brass)}
 #gate.greeting .gate-inner{animation:rise .7s both}
+.signin{width:100%;max-width:340px;display:grid;gap:12px;text-align:left}
+.pin{font-family:var(--f-mono);font-size:26px;letter-spacing:.7em;text-align:center;padding-left:.7em}
+.si-err{min-height:20px;font-size:13px;color:var(--bad);text-align:center}
+.round.small{width:min(190px,52vw)}
+.round.small .chair{width:38px;height:38px;margin:-19px 0 0 -19px;font-size:13px;pointer-events:none}
+.round.small .chair span{display:none}
+.round.small .tabletop{font-size:30px}
 
 /* ---------- App shell ---------- */
 .app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
@@ -666,7 +673,7 @@ function seed(){
 }
 let st;
 try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
-st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {}; st.cards ||= []; st.tabs ||= {};
+st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {}; st.cards ||= []; st.tabs ||= {}; st.pins ||= {}; st.pinLocks ||= {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); return true; } catch { return false; } };
 
 /* ================= Lookups ================= */
@@ -782,28 +789,73 @@ function endSplash(){
   if(splashDone) return; splashDone = true;
   splash.classList.add("out");
   setTimeout(() => { splash.hidden = true; }, 700);
-  if(st.me && st.fam.some(f => f.id === st.me)) showGreeting(); else showSeats();
+  showSignIn();
 }
 splash.addEventListener("click", endSplash);
 splash.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ") endSplash(); });
 setTimeout(endSplash, 3600);
 
 function partOfDay(){ const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
-function showSeats(){
-  gate.hidden = false; gate.className = "";
+/* Sign in: full name + 4-digit PIN. First time, each person creates their PIN.
+   Five wrong tries locks that name for 5 minutes. The host can reset anyone's PIN. */
+const norm = n => String(n || "").trim().toLowerCase().replace(/\s+/g, " ");
+async function hashPin(id, pin){
+  const data = new TextEncoder().encode("t7:" + id + ":" + pin);
+  try { const buf = await crypto.subtle.digest("SHA-256", data); return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join(""); }
+  catch { let h = 5381; for(const c of data) h = ((h << 5) + h + c) >>> 0; return "d" + h.toString(16); }
+}
+let siMode = "signin", siWho = null;
+function showSignIn(msg = ""){
+  app.hidden = true; closeSheet(); gate.hidden = false; gate.className = ""; siMode = "signin"; siWho = null;
   const n = st.fam.length;
-  const chairs = st.fam.map((f,i) => {
-    const a = (-90 + i*(360/n)) * Math.PI/180;
-    const x = 50 + 42*Math.cos(a), y = 50 + 42*Math.sin(a);
-    return `<button class="chair" style="left:${x}%;top:${y}%;background:${f.color}" data-seat="${f.id}" aria-label="I'm ${esc(f.name)}">${esc(f.name[0])}<span>${esc(first(f.name))}</span></button>`;
-  }).join("");
+  const chairs = st.fam.map((f, i) => { const a2 = (-90 + i*(360/n)) * Math.PI/180; return `<span class="chair" style="left:${50 + 42*Math.cos(a2)}%;top:${50 + 42*Math.sin(a2)}%;background:${f.color}" aria-hidden="true">${esc(f.name[0])}</span>`; }).join("");
   gate.innerHTML = `<div class="gate-inner">
     <div class="eyebrow">Welcome to the table</div>
-    <h1 class="greet">Who's taking a seat?</h1>
-    <div class="round"><div class="tabletop">7</div>${chairs}</div>
-    <p class="muted small" style="max-width:300px;margin:18px 0 0">Tap your chair. In the full app each person signs in once on their own phone; here you can switch seats any time from the top-right.</p>
+    <div class="round small"><div class="tabletop">7</div>${chairs}</div>
+    <h1 class="greet" style="font-size:30px">Who's taking a seat?</h1>
+    <form class="signin" id="signin" autocomplete="on">
+      <div class="field"><label for="si-name">Your full name</label><input class="input" id="si-name" autocomplete="name" autocapitalize="words" placeholder="e.g. Richard Clark" value="${esc(st.lastName || "")}" required></div>
+      <div class="field"><label for="si-pin" id="si-pin-label">PIN</label><input class="input pin" id="si-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" placeholder="••••" required></div>
+      <div class="field" id="si-pin2-wrap" hidden><label for="si-pin2">Type the same PIN again</label><input class="input pin" id="si-pin2" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="••••"></div>
+      <div class="si-err" id="si-err" role="alert">${esc(msg)}</div>
+      <button class="btn primary block" type="submit" id="si-go">Sign in</button>
+    </form>
+    <p class="muted small" style="max-width:300px;margin:0">First time? Type your full name and you'll be asked to create a 4-digit PIN. Forgot it? Ask ${esc(first(F(ADMIN).name))} to reset it.</p>
   </div>`;
+  const f = document.getElementById("signin");
+  (st.lastName ? document.getElementById("si-pin") : document.getElementById("si-name")).focus();
+  document.getElementById("si-name").addEventListener("input", () => { if(siMode === "create"){ siMode = "signin"; document.getElementById("si-pin2-wrap").hidden = true; document.getElementById("si-pin-label").textContent = "PIN"; document.getElementById("si-go").textContent = "Sign in"; } });
+  f.addEventListener("submit", async ev2 => { ev2.preventDefault(); await trySignIn(); });
 }
+async function trySignIn(){
+  const err = document.getElementById("si-err"); err.style.color = ""; const name = document.getElementById("si-name").value; const pin = document.getElementById("si-pin").value.trim();
+  const who = st.fam.find(f => norm(f.name) === norm(name));
+  if(!who){ err.textContent = `We couldn't find “${name.trim()}” at the table. Use your full name, or ask ${first(F(ADMIN).name)} to add you.`; return; }
+  st.pinLocks ||= {}; const lk = st.pinLocks[who.id] || {fails:0, until:0};
+  if(lk.until > Date.now()){ err.textContent = `Too many tries. Try again in ${Math.ceil((lk.until - Date.now())/60000)} min, or ask ${first(F(ADMIN).name)} to reset your PIN.`; return; }
+  if(!/^\d{4}$/.test(pin)){ err.textContent = "Your PIN is 4 numbers."; return; }
+  st.pins ||= {};
+  if(!st.pins[who.id]){
+    if(siMode !== "create" || siWho !== who.id){
+      siMode = "create"; siWho = who.id;
+      document.getElementById("si-pin2-wrap").hidden = false; document.getElementById("si-pin-label").textContent = "Create a 4-digit PIN";
+      document.getElementById("si-go").textContent = "Save my PIN"; err.textContent = ""; err.style.color = "var(--brass)";
+      err.textContent = `Welcome, ${first(who.name)}! Choose a PIN only you know.`; document.getElementById("si-pin2").focus(); return;
+    }
+    const pin2 = document.getElementById("si-pin2").value.trim();
+    if(pin !== pin2){ err.style.color = ""; err.textContent = "Those PINs don't match. Try again."; document.getElementById("si-pin2").value = ""; return; }
+    st.pins[who.id] = await hashPin(who.id, pin);
+  } else if(await hashPin(who.id, pin) !== st.pins[who.id]){
+    lk.fails++; if(lk.fails >= 5){ lk.until = Date.now() + 5*60000; lk.fails = 0; } st.pinLocks[who.id] = lk; save();
+    err.style.color = ""; err.textContent = lk.until > Date.now() ? `Too many tries. Locked for 5 minutes.` : `That PIN isn't right. ${5 - lk.fails} ${5 - lk.fails === 1 ? "try" : "tries"} left.`;
+    document.getElementById("si-pin").value = ""; return;
+  }
+  delete st.pinLocks[who.id]; st.me = who.id; st.lastName = who.name; draft = null; save(); showGreeting();
+}
+function lockApp(msg){ closeSheet(); clearInterval(liveTimer); ["live","reveal","gallery","host","cardov","tab","invite"].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; }); document.body.style.overflow = ""; liveId = null; revealId = null; tabId = null; showSignIn(msg); }
+/* Lock again after 10 minutes away from the app */
+let awayAt = 0;
+document.addEventListener("visibilitychange", () => { if(document.hidden) awayAt = Date.now(); else if(awayAt && Date.now() - awayAt > 10*60000 && !app.hidden) lockApp("Locked after 10 minutes away. Sign in again."); });
 function showGreeting(){
   gate.hidden = false; gate.className = "greeting";
   const p = pendingFor(st.me).length;
@@ -816,11 +868,9 @@ function showGreeting(){
   setTimeout(() => { gate.hidden = true; openApp(); }, 1700);
 }
 gate.addEventListener("click", e => {
-  const b = e.target.closest("[data-seat]");
-  if(b){ st.me = b.dataset.seat; save(); showGreeting(); }
-  else if(gate.classList.contains("greeting")){ gate.hidden = true; openApp(); }
+  if(gate.classList.contains("greeting")){ gate.hidden = true; openApp(); }
 });
-function openApp(){ if(!app.hidden) return; app.hidden = false; render(); }
+function openApp(){ if(!app.hidden) return; app.hidden = false; st.ui.tab = "home"; render(); }
 
 /* ================= Render ================= */
 const view = document.getElementById("view");
@@ -1288,7 +1338,7 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet();
 
 function sheetTips(){
   const tips = [
-    ["Your seat","Tap your chair once. The app greets you by name and only shows what needs you."],
+    ["Signing in","Type your full name and your 4-digit PIN. The first time, you create your PIN. Tap your initial (top right) to lock the app or change your PIN. Forgot it? Richard can reset it."],
     ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
     ["The 10-minute vote","Tap “Start 10-minute vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
     ["Welcome to dinner","When the vote closes, the winner opens full screen with directions, the menu and tonight's highlights."],
@@ -1311,9 +1361,11 @@ function sheetTips(){
     ${tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("")}`);
 }
 function sheetSeat(){
-  openSheet(`<div class="sheet-head"><h2>Switch seat</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:0">Prototype only — see the app through each family member's eyes.</p>
-    <div class="sec" style="gap:8px">${st.fam.map(f => `<button class="pick" data-act="be" data-id="${f.id}" aria-pressed="${f.id===st.me}">${av(f.id)}<span class="grow"><b>${esc(f.name)}</b><small>${pendingFor(f.id).length} open item(s)</small></span></button>`).join("")}</div>`);
+  openSheet(`<div class="sheet-head"><div style="flex:1;display:flex;gap:12px;align-items:center">${av(st.me)}<div><div class="eyebrow">Signed in</div><h2 style="font-size:22px">${esc(ME().name)}</h2></div></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <button class="btn primary block" data-act="lock">Lock the app</button>
+    <button class="btn block" data-act="lock-switch">Sign in as someone else</button>
+    <button class="btn ghost block" data-act="pin-change">Change my PIN</button>
+    <p class="small muted" style="margin:0">The app also locks itself after 10 minutes away.</p>`);
 }
 function sheetPerson(kind, id){
   const list = kind === "fam" ? st.fam : st.contacts;
@@ -1480,7 +1532,8 @@ function drawHost(){
       ${[...q.notes.map(n => ({k:"note", ...n})), ...q.reviews.map(r => ({k:"review", ...r, id:r.id || (r.id = uid("r"))}))].map(x => `<div class="person">${av(x.by,"sm")}<span style="min-width:0"><b>${esc(first(F(x.by).name))}</b><small>“${esc(x.text)}”</small></span><span class="actions" style="justify-content:flex-end"><button class="btn sm" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="ok">Allow</button><button class="btn sm wine" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="del">Delete</button></span></div>`).join("") || none("Nothing held. Everyone's being kind.")}
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Family seats</h2></div>
-      ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>`).join("")}
+      ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;margin:-4px 0 6px"><span class="small muted">${st.pins?.[f.id] ? "PIN set" : "No PIN yet"}</span>${st.pins?.[f.id] && f.id !== ADMIN ? `<button class="link-btn" data-act="host-pin" data-id="${f.id}">Reset PIN</button>` : ""}</div>`).join("")}
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Guests &amp; contacts</h2></div>
       ${st.contacts.map(c => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(c.name[0])}</span><span style="min-width:0"><b>${esc(c.name)}</b><small>${c.banned ? "Not welcome: can't be invited" : esc(c.relation || "Contact")}</small></span><button class="btn sm ${c.banned ? "primary" : "ghost"}" data-act="host-contact" data-id="${c.id}">${c.banned ? "Welcome back" : "Not welcome"}</button></div>`).join("") || none("No contacts yet.")}
@@ -1981,14 +2034,17 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
   const a = b.dataset.act, id = b.dataset.id;
   if(isSuspended() && WRITE_ACTS.has(a)){ toast(`Your seat is paused. Please talk to ${first(F(ADMIN).name)}.`); return; }
-  if(/^(mod-|host-member|host-contact|ev-people|ev-guest-del)/.test(a) && !isAdmin()) return;
+  if(/^(mod-|host-member|host-contact|host-pin|ev-people|ev-guest-del)/.test(a) && !isAdmin()) return;
   if(["vote","rsvp","hand","invite-rsvp","ask-guest","live","res-claim"].includes(a) && id && ev(id) && !inEvent(ev(id), st.me)){ toast(`${first(F(ADMIN).name)} has taken you off this event.`); return; }
   if((a === "person-new" || a === "person-del") && b.dataset.kind === "fam" && !isAdmin()){ toast(`Only ${first(F(ADMIN).name)} can change who sits at the table.`); return; }
   switch(a){
     case "close": closeSheet(); break;
     case "tips": sheetTips(); break;
     case "seat": sheetSeat(); break;
-    case "be": st.me = id; save(); closeSheet(); draft = null; render(); toast(`You're now seated as ${ME().name}`); break;
+    case "lock": lockApp(); break;
+    case "lock-switch": st.lastName = ""; save(); lockApp(); break;
+    case "pin-change": if(b.dataset.armed){ delete st.pins[st.me]; save(); lockApp("Type your full name, then create your new PIN."); } else { b.dataset.armed = "1"; b.textContent = "Tap again to set a new PIN"; } break;
+    case "host-pin": { delete st.pins[id]; delete (st.pinLocks||{})[id]; save(); drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); break; }
     case "person-new": sheetPerson(b.dataset.kind, null); break;
     case "person-edit": sheetPerson(b.dataset.kind, id); break;
     case "person-save": {

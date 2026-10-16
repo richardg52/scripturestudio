@@ -69,8 +69,20 @@ Fields to collect for each person: `email`, `mobile`, `birthday` (YYYY-MM-DD), `
 
 Every one of these must live in shared storage: the 10-minute vote, check-ins, alerts, the gallery and RSVPs. **Recommended: Supabase.** It provides Postgres, auth, realtime, storage and edge functions. Richard already has a Supabase account connected. Netlify DB plus Netlify Functions would also work.
 
-### Auth
-Sign in by email magic link. Each `auth.users` row maps to one `members` row through `members.user_id`. Only emails listed in `members` can sign in. Guests do not get accounts.
+### Auth: full name + 4-digit PIN
+Richard asked for this exact sign-in. The prototype already has the screens (`showSignIn()` / `trySignIn()`):
+- Each person types their **full name** (it must match a seat; Nikki is just "Nikki") and their **4-digit PIN**.
+- **First time:** they create a PIN and type it twice.
+- **5 wrong tries** locks that name for 5 minutes.
+- The app **locks itself after 10 minutes away**, and anyone can lock it from their initial at the top right.
+- From the same place they can sign in as someone else or change their PIN.
+- **Richard can reset anyone's PIN** in Host controls → Family seats.
+
+The prototype keeps a SHA-256 hash of each PIN on the phone. That is fine for a demo, but it is **not real security**, because a 4-digit PIN in the browser can be guessed offline. For the live app:
+- Store `members.pin_hash` (bcrypt or argon2) **on the server**, and check it in an edge function that returns a Supabase session for that member.
+- Rate-limit by member and by IP, with the same 5 tries and 5-minute lock, and enforce it server-side.
+- Keep the Netlify site password as the outer gate until this is live.
+- Optional: send a one-time email code the first time a new phone signs in, so a PIN alone can't open the app on a stranger's device.
 
 ### Schema (starting point)
 
@@ -78,7 +90,7 @@ Sign in by email magic link. Each `auth.users` row maps to one `members` row thr
 create table families (id uuid primary key default gen_random_uuid(), name text not null default 'Table of 7');
 create table members (
   id uuid primary key default gen_random_uuid(), family_id uuid references families not null,
-  user_id uuid unique references auth.users, name text not null, email text unique, mobile text,
+  user_id uuid unique references auth.users, name text not null, email text unique, mobile text, pin_hash text,
   birthday date, diet text, color text, role text check (role in ('host','member')) default 'member',
   status text check (status in ('active','suspended')) default 'active', zelle text, cashtag text, applepay text,
   created_at timestamptz default now());
