@@ -213,6 +213,8 @@ textarea.input{min-height:76px;resize:vertical}
 .i-note{font-family:var(--f-display);font-style:italic;font-size:15.5px;color:#5b4a36;max-width:30ch;line-height:1.5}
 .i-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .i-links a{font-size:12px;font-weight:600;letter-spacing:.04em;color:#5a1622;border:1px solid #c9b083;border-radius:999px;padding:7px 13px;text-decoration:none;background:rgba(255,255,255,.4)}
+.i-dress{font-size:12px;font-style:italic;color:#5b4a36;margin-top:-4px}
+.i-req{display:grid;gap:3px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8a6a2c;font-weight:700;line-height:1.5}
 .i-reply{font-family:var(--f-script);font-size:24px;color:#5a1622;line-height:1.2}
 
 /* envelope teaser in the feed */
@@ -327,6 +329,38 @@ textarea.input{min-height:76px;resize:vertical}
 .livebar .cd{font-size:30px}
 .dotlive{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block;animation:blink 1.2s infinite}
 @keyframes blink{50%{opacity:.25}}
+
+/* Guest check (The Tab): pale green ruled restaurant check, same in both themes */
+.gcheck{position:relative;background:#f2f6e9;color:#22302a;border-radius:3px;padding:16px 16px 14px;box-shadow:0 14px 34px rgba(0,0,0,.28);display:grid;gap:10px;font-size:14px;overflow:hidden}
+.gc-title{font-family:var(--f-display);font-size:22px;text-align:center;letter-spacing:.2em;text-transform:uppercase;color:#9a3343}
+.gc-head{display:grid;grid-template-columns:repeat(4,1fr);border:1.5px solid #2f6b5a;text-align:center}
+.gc-head > div{padding:4px 2px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#2f6b5a;font-weight:700}
+.gc-head > div + div{border-left:1px solid #2f6b5a}
+.gc-head b{display:block;font-family:var(--f-mono);font-size:15px;color:#22302a;letter-spacing:0;font-weight:500}
+.gc-name{display:grid;justify-items:center;gap:1px;border-bottom:1.5px solid #2f6b5a;padding-bottom:8px}
+.gc-name span{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#2f6b5a;font-weight:700}
+.gc-name b{font-family:var(--f-display);font-size:20px;font-weight:500}
+.gc-lines{background:repeating-linear-gradient(to bottom,transparent 0 29px,#b9cdb9 29px 30px);min-height:30px}
+.gc-row{display:grid;grid-template-columns:70px minmax(0,1fr) auto 22px;gap:8px;align-items:center;min-height:30px;font-size:14px}
+.gc-row > span:nth-child(2){overflow-wrap:anywhere}
+.gc-cat{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#2f6b5a;font-weight:700}
+.gc-amt{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.gc-muted{color:#6c7d73;font-style:italic}
+.gc-x{border:0;background:none;color:#b4442f;font-size:13px;padding:0}
+.gc-for{font-size:12.5px;color:#41544a}
+.gc-tot{display:grid;gap:3px;border-top:1.5px solid #2f6b5a;padding-top:8px;font-size:13.5px}
+.gc-tot > div{display:flex;justify-content:space-between;gap:12px}
+.gc-tot > div span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.gc-grand{font-weight:700;font-size:16px;border-top:3px double #2f6b5a;padding-top:6px;margin-top:3px}
+.gc-bal{color:#9a3343;font-weight:700}
+.gc-note{color:#b4442f;font-size:13px;font-style:italic}
+.gc-section{display:grid;gap:2px;padding:6px 0;border-bottom:1px dashed #9db59f}
+.gc-who{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.gc-who span{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2f6b5a;font-weight:700}
+.gc-sub{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#41544a}
+.gc-sub span:last-child{font-family:var(--f-mono);color:#22302a;font-weight:600;font-size:13px}
+.stamp{position:absolute;right:12px;top:118px;transform:rotate(-14deg);border:3px solid currentColor;border-radius:6px;padding:3px 10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:17px;opacity:.82;z-index:1;pointer-events:none}
+.stamp.sent{color:#9a6a10}.stamp.ok{color:#2f6b5a}.stamp.back{color:#b4442f}.stamp.paid{color:#2f7d48;font-size:24px}
 /* Sights & Sounds gallery */
 #gallery{position:fixed;inset:0;z-index:71;overflow-y:auto;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
 .g-hero{position:relative;border-radius:16px;overflow:hidden;padding:0;border:0;width:100%;background:var(--surface);display:block;text-align:left;color:#fff}
@@ -519,6 +553,9 @@ const OCCASIONS = [
   {k:"personal",label:"My Treat",mode:"host"}
 ];
 const DRESS = ["Casual","Smart casual","Sunday best","Business casual","Cocktail attire","Black tie optional"];
+const DRESS_NOTE = {"Casual":"Jeans and sneakers are fine.","Smart casual":"Collared shirt or nice top, dark jeans or slacks.","Sunday best":"Church clothes.",
+  "Business casual":"Slacks or a skirt, button-down or blouse; no jacket needed.","Cocktail attire":"Dresses and jackets; tie optional.","Black tie optional":"Suit and tie or tux; gown or formal dress."};
+const GIFTS = ["","No gifts, please. Your presence is the gift.","Cards welcome","Gifts welcome"];
 const WINE = {
   Steak:["Napa Cabernet Sauvignon or an Argentine Malbec","Dry-aged ribeye, creamed spinach, a shared baked potato"],
   Italian:["Chianti Classico or Barolo for meat; Vermentino with seafood","A shared antipasti board, one pasta per two people, tiramisu"],
@@ -561,7 +598,7 @@ const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 // DEMO = true fills the app with sample plans, reviews and photos-free history so it can be tried alone.
 // Set to false before going live: the app then starts clean with only the family list below.
 const DEMO = true;
-const KEY = DEMO ? "tableof7.v3" : "tableof7.live1";
+const KEY = DEMO ? "tableof7.v4" : "tableof7.live1";
 const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
@@ -571,7 +608,8 @@ function seed(){
     {id:"m4",name:"Rosa Andino",color:COLORS[3],email:"",phone:""},
     {id:"m5",name:"Mario Davison",color:COLORS[4],email:"",phone:""},
     {id:"m6",name:"Derrick Williams",color:COLORS[5],email:"",phone:""},
-    {id:"m7",name:"Candyce Jackson",color:COLORS[6],email:"",phone:""}
+    {id:"m7",name:"Candyce Jackson",color:COLORS[6],email:"",phone:""},
+    {id:"m8",name:"Nikki",color:COLORS[7],email:"",phone:""}
   ];
   const contacts = [
     {id:"c1",name:"Tasha",relation:"Devonte's friend",email:"tasha@example.com",phone:""},
@@ -684,7 +722,7 @@ function sundayPicks(target){
 }
 const pendingFor = id => {
   const out = [];
-  st.events.filter(e => e.status !== "done").forEach(e => {
+  st.events.filter(e => e.status !== "done" && inEvent(e, id)).forEach(e => {
     if(e.mode === "vote" && e.status === "open" && !e.votes[id]) out.push({e, kind:"vote"});
     if(!e.rsvp[id] && e.host !== id) out.push({e, kind:"rsvp"});
     e.guests.forEach(g => { if(!g.hands.includes(id) && !guestApproved(g)) out.push({e, kind:"guest", g}); });
@@ -696,8 +734,13 @@ const majority = () => Math.floor(st.fam.filter(f => f.status !== "suspended").l
 const guestApproved = g => g.hands.length >= majority();
 
 /* Alerts: in the full app each one is also a push notification to that person's phone. */
+/* The host can take anyone off a single event: they stop getting its alerts, can't see,
+   vote or RSVP, and no one else can put them back. */
+const inEvent = (e, id) => !(e?.excluded || []).includes(id);
+const canSee = e => inEvent(e, st.me) || isAdmin();
 function alertAll(text, eventId = null, except = st.me){
-  st.fam.forEach(f => { if(f.id !== except) st.alerts.push({id:uid("a"), to:f.id, text, eventId, t:Date.now(), read:false}); });
+  const evx = eventId ? st.events.find(x => x.id === eventId) : null;
+  st.fam.forEach(f => { if(f.id !== except && inEvent(evx, f.id) && f.status !== "suspended") st.alerts.push({id:uid("a"), to:f.id, text, eventId, t:Date.now(), read:false}); });
   if(st.alerts.length > 300) st.alerts = st.alerts.slice(-300);
 }
 const ago = t => { const m = Math.round((Date.now() - t)/60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m/60)} hr ago` : new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"}); };
@@ -810,7 +853,7 @@ function vHome(){
   const top = picks[0];
   const why = top.rs.state === "untried" ? "We haven't tried this one yet." : top.rs.state === "returning" ? `Back in rotation — last visit ${fmtDate(lastVisit(top.r.id))}.` : `Last visit ${fmtDate(lastVisit(top.r.id))}. ${avgOf(top.r.id) ? "Family rating " + avgOf(top.r.id).toFixed(1) + "." : ""}`;
   const todos = pendingFor(st.me);
-  const upcoming = st.events.filter(e => e.status !== "done").sort((a,b) => a.date.localeCompare(b.date));
+  const upcoming = st.events.filter(e => e.status !== "done" && canSee(e)).sort((a,b) => a.date.localeCompare(b.date));
   const fresh = R.filter(r => r.city === "Memphis" && (r.flags.includes("new") || !lastVisit(r.id))).slice(0,8);
   const todoLabel = t => t.kind === "vote" ? ["Cast your vote", `${t.e.title} · ${fmtDate(t.e.date)}`]
     : t.kind === "rsvp" ? ["RSVP needed", `${t.e.title} · ${fmtDate(t.e.date)}`]
@@ -829,7 +872,7 @@ function vHome(){
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
   </section>` : ""}
 
-  ${(() => { const ov = st.events.find(e => e.status === "open"); if(!ov) return "";
+  ${(() => { const ov = st.events.find(e => e.status === "open" && inEvent(e, st.me)); if(!ov) return "";
     return `<div class="livebar">${ov.voteEnds?`<span class="cd num" data-cd="${ov.id}">${mmss(ov.voteEnds - Date.now())}</span>`:`<span class="dotlive"></span>`}<span class="grow"><b>${esc(ov.title)} vote</b><br><span class="small muted">${Object.keys(ov.votes).length} of ${st.fam.length} voted · ${ov.options.length} restaurants on the ballot</span></span><button class="btn wine sm" data-act="live" data-id="${ov.id}">${ov.voteEnds?"Join":"Start vote"}</button></div>`; })()}
 
   ${radarList().map(x => `<div class="radar"><span class="eyebrow">Birthday radar</span>
@@ -964,7 +1007,7 @@ let draft = null;
 function newDraft(occ="sunday", rid=null){
   const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
   draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${first(ME().name)}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
-    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0};
+    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0, arrive:"", theme:"", gifts:"", adults:false};
 }
 function vPlan(){
   if(!draft) newDraft();
@@ -997,7 +1040,14 @@ function vPlan(){
       <div class="field"><label for="p-time">Time</label><input class="input" type="time" id="p-time" data-d="time" value="${d.time}"></div>
     </div>
     ${clash.length ? `<div class="warnbox">Heads up: ${clash.map(e => `${esc(F(e.host).name)}'s “${esc(e.title)}”`).join(", ")} is already on ${fmtDate(d.date)}. Pick another day or join that one instead.</div>` : ""}
-    <div class="field"><label for="p-dress">Dress code</label><select class="input" id="p-dress" data-d="dress">${DRESS.map(x => `<option ${x===d.dress?"selected":""}>${x}</option>`).join("")}</select></div>
+    <div class="field"><label for="p-dress">Dress code</label><select class="input" id="p-dress" data-d="dress">${DRESS.map(x => `<option ${x===d.dress?"selected":""}>${x}</option>`).join("")}</select><span class="small muted">${DRESS_NOTE[d.dress] || ""}</span></div>
+    <details class="card" style="padding:12px 14px"${d.arrive || d.theme || d.gifts || d.adults ? " open" : ""}><summary style="cursor:pointer;font-weight:600">Occasion details <span class="small muted">(optional)</span></summary>
+      <div style="display:grid;gap:10px;margin-top:10px">
+        <div class="grid2"><div class="field"><label for="p-arrive">Please arrive by</label><input class="input" type="time" id="p-arrive" data-d="arrive" value="${d.arrive}"></div>
+          <div class="field"><label for="p-theme">Theme or colors</label><input class="input" id="p-theme" data-d="theme" value="${esc(d.theme)}" placeholder="e.g. Wear red"></div></div>
+        <div class="field"><label for="p-gifts">Gifts</label><select class="input" id="p-gifts" data-d="gifts">${GIFTS.map(g => `<option value="${esc(g)}" ${g===d.gifts?"selected":""}>${g || "Don't mention gifts"}</option>`).join("")}</select></div>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="p-adults" data-d="adults" ${d.adults?"checked":""}> Adults only</label>
+      </div></details>
     ${isHost ? "" : `<div class="field"><label for="p-cap">Budget for this vote</label><select class="input" id="p-cap" data-d="cap">${[[0,"Any budget"],[1,"$ only (under $15)"],[2,"Up to $$ ($15–30)"],[3,"Up to $$$ ($30–60)"]].map(([v,l]) => `<option value="${v}" ${+d.cap===v?"selected":""}>${l}</option>`).join("")}</select></div>`}
   </section>
   <section class="sec">
@@ -1023,9 +1073,10 @@ function bindPlan(){
   view.querySelectorAll("[data-d]").forEach(el => {
     const ev = el.tagName === "SELECT" || el.type === "date" || el.type === "time" ? "change" : "input";
     el.addEventListener(ev, () => {
-      draft[el.dataset.d] = el.value;
+      draft[el.dataset.d] = el.type === "checkbox" ? el.checked : el.value;
       if(["date","q","cap"].includes(el.dataset.d)){ const pos = el.selectionStart; render(); const n = document.getElementById(el.id); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch{} } }
-      if(el.dataset.d === "title" || el.dataset.d === "note" || el.dataset.d === "dress" || el.dataset.d === "time"){ const prev = view.querySelector(".invite"); if(prev && draft.mode==="host" && draft.options[0]) prev.outerHTML = inviteCard({...draft, host:st.me, chosen:draft.options[0]}); }
+      if(el.dataset.d === "dress"){ render(); return; }
+      if(["title","note","time","arrive","theme","gifts","adults"].includes(el.dataset.d)){ const prev = view.querySelector(".invite"); if(prev && draft.mode==="host" && draft.options[0]) prev.outerHTML = inviteCard({...draft, host:st.me, chosen:draft.options[0]}); }
     });
   });
 }
@@ -1046,6 +1097,8 @@ function inviteCard(e){
     <div class="i-rest">${esc(r.name)}</div>
     <div class="i-addr">${esc(addrOf(r))}</div>
     <div class="i-grid"><div><span>Attire</span>${esc(e.dress)}</div><div><span>Typical cost</span>${"$".repeat(r.price)}<br>${COST[r.price]}</div><div><span>Seats</span>${coming || "—"} confirmed</div></div>
+    <div class="i-dress">${esc(DRESS_NOTE[e.dress] || "")}</div>
+    ${e.arrive || e.theme || e.gifts || e.adults ? `<div class="i-req">${[e.arrive ? `Please arrive by ${fmtTime(e.arrive)}` : "", e.theme ? `Wear: ${esc(e.theme)}` : "", e.adults ? "Adults only, please" : "", e.gifts ? esc(e.gifts) : ""].filter(Boolean).map(x => `<span>${x}</span>`).join("")}</div>` : ""}
     ${e.note ? `<div class="i-note">“${esc(e.note)}”</div>` : ""}
     <div class="i-links"><a href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a><a href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a><a href="${calLink(e)}" target="_blank" rel="noopener">Add to calendar</a></div>
     <div class="i-reply">Kindly reply by ${fmtDate(replyBy)}</div>
@@ -1098,8 +1151,8 @@ function drawInvite(banner){
 
 /* ---------- Feed ---------- */
 function vFeed(){
-  const active = st.events.filter(e => e.status !== "done").sort((a,b) => a.date.localeCompare(b.date));
-  const past = st.events.filter(e => e.status === "done").sort((a,b) => b.date.localeCompare(a.date));
+  const active = st.events.filter(e => e.status !== "done" && canSee(e)).sort((a,b) => a.date.localeCompare(b.date));
+  const past = st.events.filter(e => e.status === "done" && canSee(e)).sort((a,b) => b.date.localeCompare(a.date));
   return `
   <section class="sec"><div class="sec-head"><h2>The Feed</h2><span class="muted small">${active.length} upcoming</span></div>
     ${active.length ? active.map(eventCard).join("") : `<div class="empty">Nothing on the calendar. Start one from <b>Plan</b>.</div>`}
@@ -1152,6 +1205,7 @@ function eventCard(e){
     ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:"Start 10-minute vote"}</button>`:""}
     <button class="btn sm" data-act="ask-guest" data-id="${e.id}">+ Ask to bring a guest</button>
     ${e.status==="set"?`<button class="btn sm" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button><button class="btn sm wine" data-act="wrap" data-id="${e.id}">We dined — wrap up</button>`:""}
+    ${isAdmin()?`<button class="btn sm ghost" data-act="ev-people" data-id="${e.id}">Who's invited</button>`:""}
     ${isHost?`<button class="btn sm ghost" data-act="cancel" data-id="${e.id}">Cancel</button>`:""}
   </div>`;
   return `<article class="event" id="ev-${e.id}">
@@ -1206,7 +1260,7 @@ function vTable(){
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Family at the table</h2><span class="small muted num">${st.fam.length} seats</span></div>
     <div>${st.fam.map(f => personRow("fam", f)).join("")}</div>
-    <button class="btn sm" data-act="person-new" data-kind="fam" style="justify-self:start">+ Add a seat</button>
+    ${isAdmin() ? `<button class="btn sm" data-act="person-new" data-kind="fam" style="justify-self:start">+ Add a seat</button>` : `<p class="small muted" style="margin:0">Only ${esc(first(F(ADMIN).name))} can add or remove seats.</p>`}
   </section>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Contacts &amp; guests</h2><span class="small muted num">${st.contacts.length}</span></div>
@@ -1222,7 +1276,7 @@ function vTable(){
 function personRow(kind, p){
   const lead = kind === "fam" ? av(p.id) : `<span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc((p.name||"?")[0])}</span>`;
   const sub = [kind === "contact" ? p.relation : "", p.email, p.phone, p.birthday ? "Birthday " + parse(p.birthday).toLocaleDateString(undefined,{month:"short",day:"numeric"}) : "", p.diet].filter(Boolean).join(" · ") || "No email or phone yet";
-  return `<div class="person">${lead}<span style="min-width:0"><b>${esc(p.name)}</b>${kind==="fam"&&p.id===st.me?' <span class="pill brass">you</span>':""}<small>${esc(sub)}</small></span><button class="btn sm ghost" data-act="person-edit" data-kind="${kind}" data-id="${p.id}">Edit</button></div>`;
+  return `<div class="person">${lead}<span style="min-width:0"><b>${esc(p.name)}</b>${kind==="fam"&&p.id===st.me?' <span class="pill brass">you</span>':""}<small>${esc(sub)}</small></span>${kind === "contact" || p.id === st.me || isAdmin() ? `<button class="btn sm ghost" data-act="person-edit" data-kind="${kind}" data-id="${p.id}">Edit</button>` : "<span></span>"}</div>`;
 }
 
 /* ---------- Sheets ---------- */
@@ -1244,7 +1298,7 @@ function sheetTips(){
     ["Running late & table ready","On the dinner card, tap “Running late” and pick minutes. The first one there taps “Our table is ready”."],
     ["Sights & Sounds","Share photos of the food, the place and the family. They're arranged by month in the gallery. Richard approves family photos before they appear."],
     ["Send a card","Pick a photo, write a note, choose Keepsake or Snapshot, and send it to anyone from your phone's share menu. Cards from the family go to Richard first."],
-    ["The Tab","One person pays the restaurant. Everyone adds their tickets, picks their tip, and pays that person back by Zelle, Apple Pay, Cash App or cash. The payer taps “Got it” for each."],
+    ["The Tab","One person pays the restaurant on one check. Everyone fills out their own ticket (appetizer, drink, entrée, who they're paying for, tip) and sends it. The payer verifies it by name, confirms it or sends it back, and marks it settled when the money arrives. Then that ticket shows $0.00."],
     ["Host controls","Richard approves photos and cards, can pause or remove a seat, mark a guest not welcome, and delete any post. Hurtful posts about a person are held for him automatically."],
     ["Never Again","Had a bad night? Add the place to Never Again with a reason. It disappears from picks and votes."],
     ["Birthday radar","Add birthdays and dietary notes under Our Table. Three weeks out, everyone gets a nudge with the birthday person's favorites."],
@@ -1277,7 +1331,7 @@ function sheetPerson(kind, id){
     <div class="grid2"><input class="input" id="pp-zelle" value="${esc(p.zelle||"")}" placeholder="Zelle email or phone" aria-label="Zelle"><input class="input" id="pp-cashtag" value="${esc(p.cashtag||"")}" placeholder="Cash App $cashtag" aria-label="Cash App"></div>
     <input class="input" id="pp-applepay" value="${esc(p.applepay||"")}" placeholder="Apple Pay phone number" aria-label="Apple Pay">` : ""}
     <button class="btn primary block" data-act="person-save" data-kind="${kind}" data-id="${id||""}">Save</button>
-    ${!isNew && !(kind==="fam" && id===st.me) ? `<button class="btn ghost block" data-act="person-del" data-kind="${kind}" data-id="${id}">Remove ${kind==="fam"?"from the table":"contact"}</button>` : ""}`);
+    ${!isNew && !(kind==="fam" && (id===st.me || !isAdmin())) ? `<button class="btn ghost block" data-act="person-del" data-kind="${kind}" data-id="${id}">Remove ${kind==="fam"?"from the table":"contact"}</button>` : ""}`);
 }
 let guestPick = new Set();
 function sheetAskGuest(id){
@@ -1539,17 +1593,21 @@ async function sendCard(){
     <a class="btn block" href="mailto:?bcc=${encodeURIComponent(emails.join(","))}&subject=${encodeURIComponent("A card from the Table of 7")}&body=${encodeURIComponent(d.msg + "\n\n" + "— " + first(ME().name) + " & the Table of 7")}">Email the note${emails.length ? ` to ${emails.length}` : ""}</a>`);
 }
 
-/* ================= The Tab: one check, everyone pays the payer back ================= */
-const tabEl = document.getElementById("tab"); let tabId = null;
+/* ================= The Tab: one check, one payer =================
+   One person pays the restaurant. Everyone fills out their own guest-check ticket
+   (appetizer, drink, entrée… who it covers, tip) and sends it to the payer's wallet.
+   The payer verifies it by name, confirms it or sends it back for corrections, and marks
+   it settled once the money arrives. Only then does the ticket show a $0.00 balance. */
+const tabEl = document.getElementById("tab"); let tabId = null, tabView = "mine", tkCat = "Entrée";
 const TIP_CHOICES = [15,18,20,22,25];
-function tabOf(e){ return st.tabs[e.id] ||= {payer:null, items:[], tax: RBY[e.chosen].city === "Memphis" ? 9.75 : 9, tips:{}, paid:{}, autoGrat:false, receipt:"", closed:false, whoSel:null}; }
-function diners(e){ return [...st.fam.filter(f => e.rsvp[f.id] !== "no" && active(f)).map(f => ({id:f.id, name:f.name, fam:true})), ...e.guests.filter(guestApproved).map(g => ({id:"g:"+g.id, name:g.name, fam:false}))]; }
+const LINE_CATS = ["Appetizer","Drink","Entrée","Side","Dessert","Other"];
+function tabOf(e){ const t = st.tabs[e.id] ||= {payer:null, tax: RBY[e.chosen].city === "Memphis" ? 9.75 : 9, autoGrat:false, tickets:{}, receipt:"", closed:false, no: 100 + Math.floor(Math.random()*900)}; t.tickets ||= {}; t.no ||= 101; return t; }
+function diners(e){ return [...st.fam.filter(f => e.rsvp[f.id] !== "no" && active(f) && inEvent(e, f.id)).map(f => ({id:f.id, name:f.name, fam:true})), ...e.guests.filter(guestApproved).map(g => ({id:"g:"+g.id, name:g.name, fam:false}))]; }
 const dinerName = (e, id) => id.startsWith("g:") ? (e.guests.find(g => "g:"+g.id === id)?.name || "Guest") : F(id).name;
-function shares(e){
-  const t = tabOf(e), ds = diners(e), sub = {}; ds.forEach(d => sub[d.id] = 0);
-  t.items.forEach(it => { const who = it.who.length ? it.who.filter(w => w in sub) : ds.map(d => d.id); if(!who.length) return; const each = it.amount / who.length; who.forEach(w => sub[w] += each); });
-  return ds.map(d => { const s = sub[d.id], tax = s * t.tax / 100, pct = t.autoGrat ? 0 : (t.tips[d.id] ?? 20), tip = s * pct / 100; return {...d, sub:s, tax, pct, tip, total:s + tax + tip, paid:t.paid[d.id]}; });
-}
+function ticketOf(t, id){ return t.tickets[id] ||= {items:[], covers:[id], tip:20, status:"draft", note:"", paidVia:null}; }
+function tmath(t, k){ const sub = k.items.reduce((a, x) => a + x.amount, 0), tax = sub * t.tax / 100, tip = t.autoGrat ? 0 : sub * k.tip / 100; return {sub, tax, tip, total: sub + tax + tip}; }
+function coveredBy(t, id){ for(const [owner, k] of Object.entries(t.tickets)) if(owner !== id && k.covers.includes(id) && k.status !== "draft" && k.status !== "returned") return owner; return null; }
+const balanceOf = (t, owner) => { const k = t.tickets[owner]; if(!k || owner === t.payer || k.status === "settled") return 0; return tmath(t, k).total; };
 function payOptions(payer, amt){
   const p = F(payer), a = amt.toFixed(2), out = [];
   if(p.zelle) out.push(["Zelle", null, p.zelle]);
@@ -1558,60 +1616,140 @@ function payOptions(payer, amt){
   out.push(["Cash", null, ""]);
   return out;
 }
-function openTab(id){ tabId = id; tabEl.hidden = false; document.body.style.overflow = "hidden"; drawTab(); }
+function openTab(id){ tabId = id; const t = tabOf(ev(id)); tabView = t.payer === st.me ? "wallet" : "mine"; tabEl.hidden = false; document.body.style.overflow = "hidden"; drawTab(); tabEl.scrollTop = 0; }
 function closeTab(){ tabEl.hidden = true; tabId = null; document.body.style.overflow = revealId ? "hidden" : ""; if(revealId) drawReveal(); else render(); }
+const STAMP = {sent:["Sent","sent"], confirmed:["Confirmed","ok"], returned:["Sent back","back"], settled:["Paid","paid"], payer:["Payer","ok"]};
+function guestCheck(e, t, owner, editable){
+  const k = ticketOf(t, owner), m = tmath(t, k), r = RBY[e.chosen], d = parse(e.date);
+  const status = owner === t.payer ? "payer" : k.status; const stp = STAMP[status];
+  return `<div class="gcheck">
+    ${stp ? `<div class="stamp ${stp[1]}">${stp[0]}</div>` : ""}
+    <div class="gc-title">Table of 7</div>
+    <div class="gc-head"><div>Table<b>7</b></div><div>Guests<b>${diners(e).length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${d.getMonth()+1}/${d.getDate()}</b></div></div>
+    <div class="gc-name"><span>Guest check</span><b>${esc(F(owner).name)}</b><span>${esc(r.name)}</span></div>
+    <div class="gc-lines">${k.items.map(x => `<div class="gc-row"><span class="gc-cat">${esc(x.cat)}</span><span>${esc(x.desc || x.cat)}</span><span class="gc-amt">${money(x.amount)}</span>${editable ? `<button class="gc-x" data-act="tk-del" data-id="${x.id}" aria-label="Remove line">✕</button>` : "<span></span>"}</div>`).join("") || `<div class="gc-row"><span></span><span class="gc-muted">Nothing on this ticket yet</span><span></span><span></span></div>`}</div>
+    <div class="gc-for">Paying for: <b>${k.covers.map(c => esc(first(dinerName(e, c)))).join(", ")}</b></div>
+    <div class="gc-tot">
+      <div><span>Food &amp; drink</span><span>${money(m.sub)}</span></div>
+      <div><span>Tax ${t.tax}%</span><span>${money(m.tax)}</span></div>
+      <div><span>${t.autoGrat ? "Gratuity added by restaurant" : `Tip ${k.tip}%`}</span><span>${money(m.tip)}</span></div>
+      <div class="gc-grand"><span>Total</span><span>${money(m.total)}</span></div>
+      <div class="gc-bal"><span>Balance due</span><span>${money(balanceOf(t, owner))}</span></div>
+    </div>
+    ${k.status === "returned" && k.note ? `<div class="gc-note">Sent back: “${esc(k.note)}”</div>` : ""}
+  </div>`;
+}
+function ticketEditor(e, t, owner){
+  const k = ticketOf(t, owner), ds = diners(e);
+  return `<section class="card"><div class="lbl">ADD TO ${owner === st.me ? "YOUR" : esc(first(F(owner).name)).toUpperCase() + "'S"} TICKET</div>
+    <div class="chips" style="flex-wrap:wrap">${LINE_CATS.map(c => `<button class="chip" data-act="tk-cat" data-k="${c}" aria-pressed="${tkCat === c}">${c}</button>`).join("")}</div>
+    <div class="grid2"><input class="input" id="tk-desc" placeholder="e.g. Ribeye, medium" aria-label="Item"><input class="input num" id="tk-amt" inputmode="decimal" placeholder="$0.00" aria-label="Price"></div>
+    <button class="btn primary" data-act="tk-add">Add line</button>
+    <div class="field"><span class="lbl">WHO ARE YOU PAYING FOR?</span><div class="chips" style="flex-wrap:wrap">${ds.map(x => `<button class="chip" data-act="tk-cover" data-id="${x.id}" aria-pressed="${k.covers.includes(x.id)}">${x.id === owner ? "Myself" : esc(first(x.name))}</button>`).join("")}</div></div>
+    ${t.autoGrat ? `<p class="small muted" style="margin:0">The restaurant already added the tip to the check.</p>` : `<div class="field"><span class="lbl">YOUR TIP</span><div class="chips">${TIP_CHOICES.map(pc => `<button class="chip" data-act="tk-tip" data-p="${pc}" aria-pressed="${k.tip === pc}">${pc}%</button>`).join("")}</div></div>`}
+  </section>`;
+}
 function drawTab(){
-  const e = ev(tabId), r = RBY[e.chosen], t = tabOf(e), sh = shares(e), ds = diners(e), payer = t.payer;
-  if(!t.whoSel) t.whoSel = ds.some(d => d.id === st.me) ? [st.me] : [];
-  const meIn = sh.find(x => x.id === st.me);
-  const sum = k => sh.reduce((a, x) => a + x[k], 0);
-  const back = sh.filter(x => x.id !== payer), owed = back.reduce((a, x) => a + x.total, 0), got = back.filter(x => x.paid?.status === "received").reduce((a, x) => a + x.total, 0);
-  const pf = payer ? F(payer) : null, pn = pf ? esc(first(pf.name)) : "";
-  const handles = pf ? [pf.zelle && "Zelle " + pf.zelle, pf.cashtag && "Cash App " + pf.cashtag, pf.applepay && "Apple Pay " + pf.applepay].filter(Boolean).map(esc).join(" · ") : "";
-  const diff = t.receipt ? +t.receipt - (sum("sub") + sum("tax")) : null;
+  const keep = ["tk-desc","tk-amt","tk-note"].map(id => [id, document.getElementById(id)?.value]);
+  const e = ev(tabId), r = RBY[e.chosen], t = tabOf(e), ds = diners(e), payer = t.payer, pf = payer ? F(payer) : null, pn = pf ? esc(first(pf.name)) : "";
+  const owners = Object.keys(t.tickets).filter(o => t.tickets[o].items.length || o === payer);
+  const all = owners.map(o => ({o, k:t.tickets[o], m:tmath(t, t.tickets[o])}));
+  const checkTotal = all.reduce((a, x) => a + x.m.total, 0);
+  const due = all.filter(x => x.o !== payer && (x.k.status === "confirmed" || x.k.status === "sent")).reduce((a, x) => a + x.m.total, 0);
+  const settled = all.filter(x => x.o !== payer && x.k.status === "settled").reduce((a, x) => a + x.m.total, 0);
+  const waiting = ds.filter(x => x.id !== payer && !coveredBy(t, x.id) && !["sent","confirmed","settled"].includes(t.tickets[x.id]?.status));
+  let body = "";
+  if(!payer){
+    body = `<section class="card"><div class="lbl">WHO'S PAYING THE RESTAURANT TONIGHT?</div>
+      <p class="small muted" style="margin:0">One person puts the whole check on their card. Everyone else fills out their own ticket and pays them back.</p>
+      <div class="actions">${ds.filter(x => x.fam).map(x => `<button class="btn ${x.id === st.me ? "primary" : ""}" data-act="tab-payer" data-id="${x.id}">${x.id === st.me ? "I'll pay the restaurant" : esc(first(x.name))}</button>`).join("")}</div></section>`;
+  } else if(payer === st.me){
+    body = `<div class="seg" role="group" aria-label="Payer views">${[["wallet","Wallet"],["check","Full check"],["mine","My meal"]].map(([k2,l]) => `<button data-act="tab-view" data-k="${k2}" aria-pressed="${tabView === k2}">${l}</button>`).join("")}</div>`;
+    if(tabView === "wallet"){
+      const sent = all.filter(x => x.o !== payer && x.k.status === "sent"), conf = all.filter(x => x.o !== payer && x.k.status === "confirmed"), done = all.filter(x => x.o !== payer && x.k.status === "settled");
+      const row = (x, btn) => `<div class="ledger-row">${av(x.o,"sm")}<span style="min-width:0"><b>${esc(F(x.o).name)}</b><br><span class="small muted">${x.k.items.length} item${x.k.items.length === 1 ? "" : "s"} · for ${x.k.covers.map(c => esc(first(dinerName(e, c)))).join(", ")}${x.k.paidVia ? ` · says paid by ${esc(x.k.paidVia)}` : ""}</span></span><span style="display:grid;justify-items:end;gap:4px"><span class="num">${money(x.m.total)}</span>${btn}</span></div>`;
+      body += `<section class="card"><div class="lbl">YOUR WALLET</div>
+          <div class="calc-out"><div class="line"><span>Settled</span><span class="num">${money(settled)}</span></div><div class="line"><span>Still owed to you</span><span class="num">${money(due)}</span></div></div>
+        </section>
+        <section class="card"><div class="lbl">TICKETS TO VERIFY · ${sent.length}</div>${sent.map(x => row(x, `<button class="btn sm primary" data-act="tk-verify" data-id="${x.o}">Verify</button>`)).join("") || `<div class="empty">No tickets waiting.</div>`}</section>
+        <section class="card"><div class="lbl">CONFIRMED · WAITING FOR MONEY · ${conf.length}</div>${conf.map(x => row(x, `<button class="btn sm wine" data-act="tk-settle" data-id="${x.o}">Mark settled</button>`)).join("") || `<div class="empty">Nothing outstanding.</div>`}</section>
+        <section class="card"><div class="lbl">SETTLED · ${done.length}</div>${done.map(x => row(x, `<span class="pill good">$0.00 ✓</span>`)).join("") || `<div class="empty">None yet.</div>`}</section>
+        ${waiting.length ? `<section class="card"><div class="lbl">NOT ON A TICKET YET</div><p class="small muted" style="margin:0">${waiting.map(x => esc(first(x.name)) + (x.fam ? "" : " (guest)")).join(", ")}</p>
+          <div class="actions">${waiting.filter(x => !x.fam).map(x => `<button class="btn sm" data-act="tk-cover-guest" data-id="${x.id}">Put ${esc(first(x.name))} on my ticket</button>`).join("")}${waiting.some(x => x.fam) ? `<button class="btn sm" data-act="tk-nudge">Remind them</button>` : ""}</div></section>` : ""}`;
+    } else if(tabView === "check"){
+      body += `<div class="gcheck">
+        <div class="gc-title">Table of 7</div>
+        <div class="gc-head"><div>Table<b>7</b></div><div>Guests<b>${ds.length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${parse(e.date).getMonth()+1}/${parse(e.date).getDate()}</b></div></div>
+        <div class="gc-name"><span>Full check</span><b>${esc(r.name)}</b><span>Paid by ${esc(pf.name)}</span></div>
+        ${all.map(x => `<div class="gc-section"><div class="gc-who"><b>${esc(F(x.o).name)}</b><span>${x.o === payer ? "Payer" : {draft:"Not sent",sent:"To verify",confirmed:"Confirmed",returned:"Sent back",settled:"Paid ✓"}[x.k.status]}</span></div>
+          <div class="gc-lines">${x.k.items.map(it => `<div class="gc-row"><span class="gc-cat">${esc(it.cat)}</span><span>${esc(it.desc || it.cat)}</span><span class="gc-amt">${money(it.amount)}</span><span></span></div>`).join("")}</div>
+          <div class="gc-sub"><span>For ${x.k.covers.map(c => esc(first(dinerName(e, c)))).join(", ")} · tax + ${t.autoGrat ? "gratuity incl." : x.k.tip + "% tip"}</span><span>${money(x.m.total)}</span></div></div>`).join("") || `<div class="gc-row"><span></span><span class="gc-muted">No tickets yet</span><span></span><span></span></div>`}
+        <div class="gc-tot">
+          <div><span>Food &amp; drink</span><span>${money(all.reduce((a, x) => a + x.m.sub, 0))}</span></div>
+          <div><span>Tax</span><span>${money(all.reduce((a, x) => a + x.m.tax, 0))}</span></div>
+          <div><span>Tips</span><span>${money(all.reduce((a, x) => a + x.m.tip, 0))}</span></div>
+          <div class="gc-grand"><span>Check total</span><span>${money(checkTotal)}</span></div>
+          <div class="gc-bal"><span>Balance owed to ${pn}</span><span>${money(due)}</span></div>
+        </div></div>
+        <section class="card">
+          <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="tab-auto" ${t.autoGrat ? "checked" : ""} ${t.closed ? "disabled" : ""}> The restaurant added the tip already (common for 6 or more)</label>
+          <div class="field"><label for="tab-receipt">Restaurant receipt total, to double-check</label><input class="input num" id="tab-receipt" inputmode="decimal" value="${esc(t.receipt)}" placeholder="0.00"></div>
+          ${t.receipt ? (() => { const diff = +t.receipt - all.reduce((a, x) => a + x.m.sub + x.m.tax + (t.autoGrat ? 0 : 0), 0); return `<div class="small" style="color:${Math.abs(diff) < 1 ? "var(--good)" : "var(--warn)"}">${Math.abs(diff) < 1 ? "✓ Matches the tickets plus tax" : `${money(Math.abs(diff))} ${diff > 0 ? "more on the receipt than on the tickets. Someone's item may be missing." : "less on the receipt than on the tickets. Check for a duplicate line."}`}</div>`; })() : ""}
+          ${waiting.length ? `<div class="warnbox">Still missing a ticket: ${waiting.map(x => esc(first(x.name))).join(", ")}</div>` : ""}
+          <button class="btn wine block" data-act="tab-close-out" ${t.closed ? "disabled" : ""}>${t.closed ? "Tab closed" : "Close the tab"}</button>
+          ${!t.closed && !all.some(x => x.o !== payer && ["confirmed","settled"].includes(x.k.status)) ? `<button class="btn ghost block" data-act="tab-payer" data-id="">Change who's paying</button>` : ""}
+        </section>`;
+    } else {
+      body += guestCheck(e, t, st.me, !t.closed) + (t.closed ? "" : ticketEditor(e, t, st.me)) + `<p class="small muted" style="margin:0;text-align:center">Your own meal counts on the full check. Nothing to send.</p>`;
+    }
+  } else {
+    const k = ticketOf(t, st.me), m = tmath(t, k), cov = coveredBy(t, st.me);
+    body = `<section class="card"><div style="display:flex;gap:12px;align-items:center">${av(payer)}<div style="flex:1;min-width:0"><b>${esc(pf.name)}</b> is paying the restaurant tonight<br><span class="small muted">Fill out your ticket and send it to ${pn}'s wallet.</span></div></div></section>`;
+    if(cov && cov !== st.me){ body += `<div class="ready">Your meal is on ${esc(first(F(cov).name))}'s ticket. Nothing for you to do.</div>`; }
+    else {
+      const editable = (k.status === "draft" || k.status === "returned") && !t.closed;
+      body += guestCheck(e, t, st.me, editable);
+      if(k.status === "returned") body += `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)">${pn} sent your ticket back${k.note ? `: “${esc(k.note)}”` : ""}. Make the changes and send it again.</div>`;
+      if(editable) body += ticketEditor(e, t, st.me) + `<button class="btn wine block" data-act="tk-send" ${k.items.length ? "" : "disabled"}>Send my ticket to ${pn} · ${money(m.total)}</button>`;
+      if(k.status === "sent") body += `<div class="ready" style="color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)">Sent. Waiting for ${pn} to verify it.</div><button class="btn ghost block" data-act="tk-unsend">Take it back to make a change</button>`;
+      if(k.status === "confirmed") body += `<section class="card" style="border-color:var(--brass)"><div class="lbl">${pn} CONFIRMED YOUR TICKET</div>
+          <div style="font-family:var(--f-display);font-size:28px">You owe ${money(m.total)}</div>
+          <div class="actions">${payOptions(payer, m.total).map(([l, url, h]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener" data-act="tk-pay" data-m="${l}">${l}</a>` : `<button class="btn" data-act="tk-pay" data-m="${l}" data-h="${esc(h)}">${l}</button>`).join("")}</div>
+          ${k.paidVia ? `<div class="small">You told ${pn} you paid by <b>${esc(k.paidVia)}</b>. Your balance clears when ${pn} marks it settled.</div>` : `<p class="small muted" style="margin:0">Zelle or Apple Pay: tapping copies ${pn}'s info and your amount. Cash App opens with the amount filled in.</p>`}
+        </section>`;
+      if(k.status === "settled") body += `<div class="ready" style="font-size:18px;text-align:center">✓ Paid. ${pn} received your ${money(m.total)}. Balance $0.00</div>`;
+    }
+  }
   tabEl.innerHTML = `<div class="ov-inner">
     <div class="ov-bar"><span class="eyebrow">One check tonight</span><button class="icon-btn" data-act="tab-close" aria-label="Close">✕</button></div>
     <div><h1 style="font-size:34px">The Tab</h1><p class="muted" style="margin:4px 0 0">${esc(r.name)} · ${fmtLong(e.date)}${t.closed ? " · closed" : ""}</p></div>
-    ${!payer ? `<section class="card"><div class="lbl">WHO'S PUTTING IT ON THEIR CARD?</div>
-        <p class="small muted" style="margin:0">One person pays the restaurant. Everyone else pays them back from their phone.</p>
-        <div class="actions">${ds.filter(d => d.fam).map(d => `<button class="btn ${d.id === st.me ? "primary" : ""}" data-act="tab-payer" data-id="${d.id}">${d.id === st.me ? "I'll pay the restaurant" : esc(first(d.name))}</button>`).join("")}</div></section>`
-      : `<section class="card"><div style="display:flex;gap:12px;align-items:center">${av(payer)}<div style="flex:1;min-width:0"><b>${esc(pf.name)}</b> is paying the restaurant<br><span class="small muted">${handles || (payer === st.me ? "Add your Zelle, Cash App or Apple Pay under Our Table → Edit so everyone can pay you." : "Cash works too.")}</span></div>${(payer === st.me || isAdmin()) && !t.closed ? `<button class="btn sm ghost" data-act="tab-payer" data-id="">Change</button>` : ""}</div>
-        <div class="ready" style="background:var(--wine-soft);color:var(--ink)">Tell the server: <b>one check, please.</b></div></section>`}
-    <section class="card"><div class="lbl">ADD TICKETS</div>
-      <p class="small muted" style="margin:0">Add what each person ordered. Shared plates split evenly between the people you tap.</p>
-      <div class="grid2"><input class="input" id="tab-desc" placeholder="e.g. Ribeye + tea" aria-label="What was it"><input class="input num" id="tab-amt" inputmode="decimal" placeholder="$0.00" aria-label="Amount"></div>
-      <div class="chips" style="flex-wrap:wrap">${ds.map(d => `<button class="chip" data-act="tab-who" data-id="${d.id}" aria-pressed="${t.whoSel.includes(d.id)}">${esc(first(d.name))}</button>`).join("")}<button class="chip" data-act="tab-who" data-id="*" aria-pressed="${!t.whoSel.length}">Shared by everyone</button></div>
-      <button class="btn primary" data-act="tab-add" ${t.closed ? "disabled" : ""}>Add to the tab</button>
-      <div>${t.items.map(it => `<div class="ledger-row"><span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${it.who.length === 1 ? esc(dinerName(e, it.who[0])[0]) : "÷"}</span><span style="min-width:0"><b>${esc(it.desc || "Item")}</b><br><span class="small muted">${it.who.length ? it.who.map(w => esc(first(dinerName(e, w)))).join(", ") : "Shared by everyone"}</span></span><span style="display:flex;gap:8px;align-items:center"><span class="num">${money(it.amount)}</span>${(it.by === st.me || payer === st.me) && !t.closed ? `<button class="link-btn" data-act="tab-del" data-id="${it.id}" aria-label="Remove item">✕</button>` : ""}</span></div>`).join("") || `<div class="empty">No tickets yet. Add the first one above.</div>`}</div>
-    </section>
-    ${meIn && payer && meIn.id !== payer ? `<section class="card" style="border-color:var(--brass)"><div class="lbl">YOUR SHARE</div>
-      <div class="calc-out"><div class="line"><span>Your food &amp; drink</span><span class="num">${money(meIn.sub)}</span></div><div class="line"><span>Tax (${t.tax}%)</span><span class="num">${money(meIn.tax)}</span></div><div class="line"><span>Tip (${meIn.pct}%)</span><span class="num">${money(meIn.tip)}</span></div><div class="line total"><span>You send ${pn}</span><span class="num">${money(meIn.total)}</span></div></div>
-      ${t.autoGrat ? `<p class="small muted" style="margin:0">The restaurant already added the tip.</p>` : `<div class="field"><span class="lbl">CHOOSE YOUR TIP</span><div class="chips">${TIP_CHOICES.map(pc => `<button class="chip" data-act="tab-tip" data-id="${st.me}" data-p="${pc}" aria-pressed="${meIn.pct === pc}">${pc}%</button>`).join("")}</div></div>`}
-      ${meIn.paid ? `<div class="ready">${meIn.paid.status === "received" ? `✓ ${pn} got your ${money(meIn.paid.amount)}` : `Sent by ${esc(meIn.paid.method)} · waiting for ${pn} to confirm`}</div>` : ""}
-      <div class="lbl">PAY ${pn.toUpperCase()} BACK</div>
-      <div class="actions">${payOptions(payer, meIn.total).map(([l, url, h]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener" data-act="tab-pay" data-m="${l}">${l}</a>` : `<button class="btn" data-act="tab-pay" data-m="${l}" data-h="${esc(h)}">${l}</button>`).join("")}</div>
-      <p class="small muted" style="margin:0">Zelle or Apple Pay: tapping copies ${pn}'s info and your amount. Open your bank or Messages to send it. Cash App opens with the amount filled in.</p>
-    </section>` : ""}
-    <section class="card"><div class="lbl">EVERYONE</div>
-      ${sh.map(x => { const isP = x.id === payer;
-        const pill = isP ? '<span class="pill brass">Paying the restaurant</span>' : !x.paid ? '<span class="pill">Not sent yet</span>' : x.paid.status === "received" ? '<span class="pill good">Received ✓</span>' : `<span class="pill warn">Sent · ${esc(x.paid.method)}</span>`;
-        return `<div class="ledger-row">${x.fam ? av(x.id, "sm") : `<span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${esc(x.name[0])}</span>`}<span style="min-width:0"><b>${esc(first(x.name))}</b>${x.fam ? "" : ' <span class="small muted">guest</span>'}<br><span class="small muted">${money(x.sub)} + tax + ${payer === st.me && !x.fam && !t.closed ? `<button class="link-btn" data-act="tab-tipcycle" data-id="${x.id}">${x.pct}% tip</button>` : x.pct + "% tip"}</span><br>${pill}</span><span style="display:grid;justify-items:end;gap:4px"><span class="num">${money(x.total)}</span>${payer === st.me && !isP && x.paid?.status !== "received" && !t.closed ? `<button class="btn sm" data-act="tab-recv" data-id="${x.id}">Got it</button>` : ""}</span></div>`; }).join("")}
-    </section>
-    <section class="card">
-      <div class="calc-out"><div class="line"><span>Food &amp; drink</span><span class="num">${money(sum("sub"))}</span></div><div class="line"><span>Tax</span><span class="num">${money(sum("tax"))}</span></div><div class="line"><span>Tips</span><span class="num">${money(sum("tip"))}</span></div><div class="line total"><span>One check total</span><span class="num">${money(sum("total"))}</span></div></div>
-      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="tab-auto" ${t.autoGrat ? "checked" : ""} ${t.closed ? "disabled" : ""}> The restaurant already added a tip (common for 6 or more)</label>
-      ${payer === st.me ? `<div class="field"><label for="tab-receipt">Receipt total before tip (to double-check)</label><input class="input num" id="tab-receipt" inputmode="decimal" value="${esc(t.receipt)}" placeholder="0.00"></div>
-        ${diff !== null ? `<div class="small" style="color:${Math.abs(diff) < 1 ? "var(--good)" : "var(--warn)"}">${Math.abs(diff) < 1 ? "✓ Matches the tickets plus tax" : `${money(Math.abs(diff))} ${diff > 0 ? "more on the receipt than the tickets. Something is missing." : "less on the receipt than the tickets. Check for a duplicate."}`}</div>` : ""}
-        <div class="small">Paid back so far: <b>${money(got)}</b> of ${money(owed)}</div>
-        <button class="btn wine block" data-act="tab-close-out" ${t.closed ? "disabled" : ""}>${t.closed ? "Tab closed" : "Close the tab"}</button>` : ""}
-    </section>
+    ${payer ? `<div class="ready" style="background:var(--wine-soft);color:var(--ink)">Tell the server: <b>one check, please.</b> ${esc(pf.name)} is paying.</div>` : ""}
+    ${body}
   </div>`;
+  keep.forEach(([id, v]) => { const el = document.getElementById(id); if(el && v) el.value = v; });
+}
+function sheetVerify(owner){
+  const e = ev(tabId), t = tabOf(e);
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Verify by name</div><h2>${esc(F(owner).name)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    ${guestCheck(e, t, owner, false)}
+    <button class="btn primary block" data-act="tk-confirm" data-id="${owner}">Confirm · ${money(tmath(t, t.tickets[owner]).total)}</button>
+    <div class="field"><label for="tk-note">Or send it back for corrections</label><textarea class="input" id="tk-note" placeholder="e.g. You had the salmon, not the ribeye. Add your drink too."></textarea></div>
+    <button class="btn ghost block" data-act="tk-return" data-id="${owner}">Send back to ${esc(first(F(owner).name))}</button>`);
+}
+
+function sheetPeople(id){
+  const e = ev(id); e.excluded ||= [];
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Who's invited</div><h2>${esc(e.title)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">Anyone you take off stops getting alerts for this event and can't see it, vote or RSVP. Only you can put them back.</p>
+    <div>${st.fam.filter(f => f.id !== ADMIN).map(f => { const off = e.excluded.includes(f.id);
+      return `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${off ? "Taken off this event" : "Invited"}</small></span><button class="btn sm ${off ? "primary" : "ghost"}" data-act="ev-people-toggle" data-id="${e.id}" data-m="${f.id}">${off ? "Put back" : "Take off"}</button></div>`; }).join("")}</div>
+    ${e.guests.length ? `<div class="lbl">GUESTS</div><div>${e.guests.map(g => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(g.name[0])}</span><span style="min-width:0"><b>${esc(g.name)}</b><small>asked by ${esc(first(F(g.by).name))}</small></span><button class="btn sm ghost" data-act="ev-guest-del" data-id="${e.id}" data-g="${g.id}">Remove</button></div>`).join("")}</div>` : ""}`);
 }
 
 /* Invitations by email / copy */
 function inviteText(e){
   const r = RBY[e.chosen];
-  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 7.`;
+  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress} (${DRESS_NOTE[e.dress] || ""})${e.arrive ? `\nPlease arrive by ${fmtTime(e.arrive)}` : ""}${e.theme ? `\nWear: ${e.theme}` : ""}${e.adults ? "\nAdults only, please" : ""}${e.gifts ? `\n${e.gifts}` : ""}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 7.`;
 }
 function mailInvite(e){
   const to = [...st.fam.filter(f => f.id !== st.me).map(f => f.email), ...e.guests.filter(guestApproved).map(g => g.email)].filter(Boolean);
@@ -1836,14 +1974,16 @@ let toastT;
 function toast(m){ const t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
 const uid = p => p + Math.random().toString(36).slice(2,8);
 
-const WRITE_ACTS = new Set(["vote","live","live-vote","live-add","rsvp","invite-rsvp","hand","ask-guest","ask-guest-go","send","quick-plan","plan-with","note","photo-add","ph-save","wrap","wrap-go","block","block-go","res-claim","card-open","card-send","tab-add","tab-pay","tab-payer","arrive","table-ready"]);
+const WRITE_ACTS = new Set(["vote","live","live-vote","live-add","rsvp","invite-rsvp","hand","ask-guest","ask-guest-go","send","quick-plan","plan-with","note","photo-add","ph-save","wrap","wrap-go","block","block-go","res-claim","card-open","card-send","tk-add","tk-send","tk-pay","tab-payer","arrive","table-ready"]);
 document.addEventListener("click", e => {
   const tab = e.target.closest("[data-tab]");
   if(tab){ go(tab.dataset.tab); return; }
   const b = e.target.closest("[data-act]"); if(!b) return;
   const a = b.dataset.act, id = b.dataset.id;
   if(isSuspended() && WRITE_ACTS.has(a)){ toast(`Your seat is paused. Please talk to ${first(F(ADMIN).name)}.`); return; }
-  if(/^(mod-|host-member|host-contact)/.test(a) && !isAdmin()) return;
+  if(/^(mod-|host-member|host-contact|ev-people|ev-guest-del)/.test(a) && !isAdmin()) return;
+  if(["vote","rsvp","hand","invite-rsvp","ask-guest","live","res-claim"].includes(a) && id && ev(id) && !inEvent(ev(id), st.me)){ toast(`${first(F(ADMIN).name)} has taken you off this event.`); return; }
+  if((a === "person-new" || a === "person-del") && b.dataset.kind === "fam" && !isAdmin()){ toast(`Only ${first(F(ADMIN).name)} can change who sits at the table.`); return; }
   switch(a){
     case "close": closeSheet(); break;
     case "tips": sheetTips(); break;
@@ -1907,7 +2047,7 @@ document.addEventListener("click", e => {
     case "reset-plan": newDraft(); render(); break;
     case "send": {
       const d = draft; if(!d.options.length) return;
-      const e2 = {id:uid("e"),type:d.type,mode:d.mode,cap:+d.cap||0,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
+      const e2 = {id:uid("e"),type:d.type,mode:d.mode,cap:+d.cap||0,arrive:d.arrive,theme:d.theme.trim(),gifts:d.gifts,adults:!!d.adults,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
         chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(g => ({id:uid("g"),name:g.name,email:g.email||"",contactId:g.contactId||null,by:st.me,hands:[st.me]})),
         reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
       st.events.push(e2);
@@ -1920,6 +2060,11 @@ document.addEventListener("click", e => {
     case "invite-rsvp": { const e2 = ev(inviteId); e2.rsvp[st.me] = b.dataset.v; if(b.dataset.v !== "maybe") st.alerts.push({id:uid("a"),to:e2.host,text:`${first(ME().name)} ${b.dataset.v==="yes"?"accepted":"declined"} your invitation to ${e2.title}.`,eventId:e2.id,t:Date.now(),read:false}); save(); drawInvite(); toast(b.dataset.v==="yes" ? "Wonderful — see you there" : b.dataset.v==="no" ? "We'll miss you" : "Marked as maybe"); break; }
     case "alerts": sheetAlerts(); break;
     case "host": closeSheet(); openHost(); break;
+    case "ev-people": sheetPeople(id); break;
+    case "ev-people-toggle": { const e2 = ev(id); e2.excluded ||= []; const m = b.dataset.m; const i2 = e2.excluded.indexOf(m);
+      if(i2 >= 0) e2.excluded.splice(i2, 1); else { e2.excluded.push(m); delete e2.votes[m]; delete e2.rsvp[m]; }
+      save(); sheetPeople(id); render(); toast(i2 >= 0 ? `${first(F(m).name)} is back on ${e2.title}` : `${first(F(m).name)} is off ${e2.title}. No more alerts for it.`); break; }
+    case "ev-guest-del": { const e2 = ev(id); e2.guests = e2.guests.filter(g => g.id !== b.dataset.g); save(); sheetPeople(id); render(); toast("Guest removed"); break; }
     case "host-close": closeHost(); break;
     case "mod-photo": { const ph = st.photos.find(x => x.id === id); if(!ph) break;
       if(b.dataset.v === "ok"){ ph.status = "approved"; st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} approved your photo. It's in Sights & Sounds.`,eventId:ph.eventId,t:Date.now(),read:false}); alertAll(`New in Sights & Sounds: ${ph.caption || pcat(ph.cat)}.`, ph.eventId, ph.by); }
@@ -1945,27 +2090,43 @@ document.addEventListener("click", e => {
     case "card-reopen": { const c = st.cards.find(x => x.id === id); if(c) openCard({card:c}); break; }
     case "tab": openTab(id || revealId); break;
     case "tab-close": closeTab(); break;
+    case "tab-view": tabView = b.dataset.k; drawTab(); tabEl.scrollTop = 0; break;
     case "tab-payer": { const e2 = ev(tabId), t = tabOf(e2); t.payer = id || null;
-      if(id){ alertAll(`${first(F(id).name)} is paying the restaurant for ${e2.title}. Pay them back in The Tab.`, e2.id, id); if(id !== st.me) st.alerts.push({id:uid("a"),to:id,text:`You're paying the restaurant for ${e2.title}. Everyone will pay you back in The Tab.`,eventId:e2.id,t:Date.now(),read:false}); }
-      save(); drawTab(); break; }
-    case "tab-who": { const t = tabOf(ev(tabId)); if(id === "*") t.whoSel = []; else { const i = t.whoSel.indexOf(id); i >= 0 ? t.whoSel.splice(i,1) : t.whoSel.push(id); }
-      tabEl.querySelectorAll('[data-act="tab-who"]').forEach(x => x.setAttribute("aria-pressed", x.dataset.id === "*" ? !t.whoSel.length : t.whoSel.includes(x.dataset.id))); break; }
-    case "tab-add": { const e2 = ev(tabId), t = tabOf(e2); const amt = parseFloat(String(document.getElementById("tab-amt").value).replace(/[^0-9.]/g,""));
-      if(!(amt > 0)){ toast("Enter the amount for this ticket"); return; }
-      t.items.push({id:uid("i"), desc:document.getElementById("tab-desc").value.trim(), amount:amt, who:[...t.whoSel], by:st.me}); save(); drawTab(); toast(`Added ${money(amt)}`); break; }
-    case "tab-del": { const t = tabOf(ev(tabId)); t.items = t.items.filter(x => x.id !== id); save(); drawTab(); break; }
-    case "tab-tip": { const t = tabOf(ev(tabId)); t.tips[id] = +b.dataset.p; save(); drawTab(); break; }
-    case "tab-tipcycle": { const t = tabOf(ev(tabId)); const cur = t.tips[id] ?? 20; t.tips[id] = TIP_CHOICES[(TIP_CHOICES.indexOf(cur) + 1) % TIP_CHOICES.length]; save(); drawTab(); break; }
-    case "tab-pay": { const e2 = ev(tabId), t = tabOf(e2); const mine = shares(e2).find(x => x.id === st.me); const m = b.dataset.m;
-      if(b.dataset.h){ const txt = `${b.dataset.h} · ${money(mine.total)}`; navigator.clipboard?.writeText(txt).then(() => {}, () => {}); }
-      t.paid[st.me] = {status:"sent", method:m, amount:mine.total, t:Date.now()};
-      st.alerts.push({id:uid("a"),to:t.payer,text:`${first(ME().name)} sent you ${money(mine.total)} by ${m} for ${e2.title}. Tap “Got it” in The Tab when it arrives.`,eventId:e2.id,t:Date.now(),read:false});
-      save(); drawTab(); toast(m === "Cash" ? `Hand ${first(F(t.payer).name)} ${money(mine.total)}` : b.dataset.h ? `Copied ${b.dataset.h} and ${money(mine.total)}` : `Opening ${m}…`); break; }
-    case "tab-recv": { const e2 = ev(tabId), t = tabOf(e2); const x = shares(e2).find(y => y.id === id);
-      t.paid[id] = {...(t.paid[id] || {method:"Cash"}), status:"received", amount:x.total, t:Date.now()};
-      if(!id.startsWith("g:")) st.alerts.push({id:uid("a"),to:id,text:`${first(ME().name)} got your ${money(x.total)} for ${e2.title}. Thank you!`,eventId:e2.id,t:Date.now(),read:false});
-      save(); drawTab(); break; }
-    case "tab-close-out": { const e2 = ev(tabId), t = tabOf(e2); const total = shares(e2).reduce((a2, x) => a2 + x.total, 0); t.closed = true;
+      if(id){ ticketOf(t, id).status = "payer"; alertAll(`${first(F(id).name)} is paying the restaurant for ${e2.title}. Fill out your ticket in The Tab and send it over.`, e2.id, id);
+        if(id !== st.me) st.alerts.push({id:uid("a"),to:id,text:`You're paying the restaurant for ${e2.title}. Tickets will arrive in your wallet in The Tab.`,eventId:e2.id,t:Date.now(),read:false}); }
+      tabView = id === st.me ? "wallet" : "mine"; save(); drawTab(); break; }
+    case "tk-cat": tkCat = b.dataset.k; tabEl.querySelectorAll('[data-act="tk-cat"]').forEach(x => x.setAttribute("aria-pressed", x === b)); break;
+    case "tk-add": { const e2 = ev(tabId), t = tabOf(e2), k = ticketOf(t, st.me);
+      const amt = parseFloat(String(document.getElementById("tk-amt").value).replace(/[^0-9.]/g, ""));
+      if(!(amt > 0)){ toast("Enter the price for this line"); return; }
+      k.items.push({id:uid("i"), cat:tkCat, desc:document.getElementById("tk-desc").value.trim(), amount:amt});
+      document.getElementById("tk-desc").value = ""; document.getElementById("tk-amt").value = ""; save(); drawTab(); toast(`${tkCat} added · ${money(amt)}`); break; }
+    case "tk-del": { const k = ticketOf(tabOf(ev(tabId)), st.me); k.items = k.items.filter(x => x.id !== id); save(); drawTab(); break; }
+    case "tk-cover": { const t = tabOf(ev(tabId)), k = ticketOf(t, st.me); const other = coveredBy(t, id);
+      if(other && other !== st.me && !k.covers.includes(id)){ toast(`${first(dinerName(ev(tabId), id))} is already on ${first(F(other).name)}'s ticket`); return; }
+      const i2 = k.covers.indexOf(id); i2 >= 0 ? k.covers.splice(i2, 1) : k.covers.push(id); save(); drawTab(); break; }
+    case "tk-cover-guest": { const t = tabOf(ev(tabId)), k = ticketOf(t, st.me); if(!k.covers.includes(id)) k.covers.push(id); save(); drawTab(); toast("Added to your ticket. Add their food under My meal."); break; }
+    case "tk-tip": { const k = ticketOf(tabOf(ev(tabId)), st.me); k.tip = +b.dataset.p; save(); drawTab(); break; }
+    case "tk-send": { const e2 = ev(tabId), t = tabOf(e2), k = ticketOf(t, st.me); k.status = "sent"; k.note = ""; k.sentAt = Date.now();
+      st.alerts.push({id:uid("a"),to:t.payer,text:`${first(ME().name)} sent you a ticket for ${money(tmath(t, k).total)}. Verify it in your wallet.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); drawTab(); toast(`Ticket sent to ${first(F(t.payer).name)}`); break; }
+    case "tk-unsend": { const k = ticketOf(tabOf(ev(tabId)), st.me); k.status = "draft"; save(); drawTab(); break; }
+    case "tk-verify": sheetVerify(id); break;
+    case "tk-confirm": { const e2 = ev(tabId), t = tabOf(e2), k = t.tickets[id]; k.status = "confirmed";
+      st.alerts.push({id:uid("a"),to:id,text:`${first(ME().name)} confirmed your ticket: you owe ${money(tmath(t, k).total)}. Pay by Zelle, Apple Pay, Cash App or cash.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); closeSheet(); drawTab(); toast(`${first(F(id).name)}'s ticket confirmed`); break; }
+    case "tk-return": { const e2 = ev(tabId), t = tabOf(e2), k = t.tickets[id]; k.status = "returned"; k.note = document.getElementById("tk-note").value.trim();
+      st.alerts.push({id:uid("a"),to:id,text:`${first(ME().name)} sent your ticket back${k.note ? ": " + k.note : " for a correction"}.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); closeSheet(); drawTab(); toast(`Sent back to ${first(F(id).name)}`); break; }
+    case "tk-pay": { const e2 = ev(tabId), t = tabOf(e2), k = ticketOf(t, st.me), amt = tmath(t, k).total, m = b.dataset.m;
+      if(b.dataset.h) navigator.clipboard?.writeText(`${b.dataset.h} · ${money(amt)}`).then(() => {}, () => {});
+      k.paidVia = m; st.alerts.push({id:uid("a"),to:t.payer,text:`${first(ME().name)} says they paid you ${money(amt)} by ${m}. Mark it settled when it arrives.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); drawTab(); toast(m === "Cash" ? `Hand ${first(F(t.payer).name)} ${money(amt)}` : b.dataset.h ? `Copied ${b.dataset.h} and ${money(amt)}` : `Opening ${m}…`); break; }
+    case "tk-settle": { const e2 = ev(tabId), t = tabOf(e2), k = t.tickets[id]; k.status = "settled"; k.settledAt = Date.now();
+      st.alerts.push({id:uid("a"),to:id,text:`Paid ✓ ${first(ME().name)} received your ${money(tmath(t, k).total)} for ${e2.title}. Your balance is $0.00.`,eventId:e2.id,t:Date.now(),read:false});
+      save(); drawTab(); toast(`${first(F(id).name)} is settled · $0.00`); break; }
+    case "tk-nudge": { const e2 = ev(tabId), t = tabOf(e2); diners(e2).filter(x => x.fam && x.id !== t.payer && !coveredBy(t, x.id) && !["sent","confirmed","settled"].includes(t.tickets[x.id]?.status)).forEach(x => st.alerts.push({id:uid("a"),to:x.id,text:`${first(ME().name)} is waiting on your ticket for ${e2.title}. Open The Tab to fill it out.`,eventId:e2.id,t:Date.now(),read:false})); save(); toast("Reminders sent"); break; }
+    case "tab-close-out": { const e2 = ev(tabId), t = tabOf(e2); const total = Object.values(t.tickets).reduce((a2, k) => a2 + tmath(t, k).total, 0); t.closed = true;
       st.ledger = st.ledger.filter(l => l.eventId !== e2.id); st.ledger.push({eventId:e2.id, rid:e2.chosen, date:e2.date, payer:t.payer, mode:"tab", forWhom:null, amount:total});
       alertAll(`The Tab for ${e2.title} is closed. Thanks for settling up!`, e2.id); save(); drawTab(); toast("Tab closed and saved to Who's paid"); break; }
     case "gallery": closeSheet(); openGallery(); break;

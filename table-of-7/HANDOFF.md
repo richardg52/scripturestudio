@@ -1,6 +1,6 @@
 # Table of 7 — Handoff
 
-A family dining app for seven people in Memphis. Everyone gets a seat. They vote on where to eat or send formal invitations, book a table without anyone booking twice, check in when they arrive, and keep the photos, reviews and receipts in one place.
+A family dining app for Richard Clark's family in Memphis. The name is **Table of 7**; the table currently has eight seats. Everyone gets a seat. They vote on where to eat or send formal invitations, book a table without anyone booking twice, check in when they arrive, and keep the photos, reviews and receipts in one place.
 
 This folder holds a **working prototype**: one HTML file with no build step. The design and features are agreed. What it lacks is a shared backend: right now each phone keeps its own data in browser storage. This document is the plan for taking it live.
 
@@ -20,7 +20,7 @@ This folder holds a **working prototype**: one HTML file with no build step. The
 | `netlify.toml` | Netlify settings for this folder: no build, publish the folder as is. |
 | `HANDOFF.md` | This document. |
 
-To try it locally, open `index.html` in a browser, or run `npx serve table-of-7`. At the top of the script, `const DEMO = true;` loads sample plans, reviews and alerts so one person can try every flow. **Set `DEMO = false` before the family uses it.** The app then starts clean with just the seven family members.
+To try it locally, open `index.html` in a browser, or run `npx serve table-of-7`. At the top of the script, `const DEMO = true;` loads sample plans, reviews and alerts so one person can try every flow. **Set `DEMO = false` before the family uses it.** The app then starts clean with just the eight family members.
 
 ---
 
@@ -46,7 +46,7 @@ Richard will give you the family's emails, phone numbers and other details. **Do
 - **Until Step 2 is done:** each person enters their own details on their own phone under **Our Table → Edit**. That data stays on that phone. The site is password protected.
 - **After Step 2:** load the details into the `members` and `contacts` tables below. The app reads them only after sign-in, and row-level security limits them to the family.
 
-The seven family seats (names only) are already in `seed()` in `index.html`:
+The eight family seats (names only) are already in `seed()` in `index.html`:
 
 | Seat | Name |
 |---|---|
@@ -57,6 +57,7 @@ The seven family seats (names only) are already in `seed()` in `index.html`:
 | m5 | Mario Davison |
 | m6 | Derrick Williams |
 | m7 | Candyce Jackson |
+| m8 | Nikki (last name to add) |
 
 Fields to collect for each person: `email`, `mobile`, `birthday` (YYYY-MM-DD), `diet` (allergies and dietary notes), and payment handles for The Tab: `zelle` (email or phone), `cashtag` (Cash App $tag) and `applepay` (phone).
 
@@ -93,6 +94,8 @@ create table events (
   type text not null, mode text check (mode in ('vote','host')) not null, host uuid references members,
   title text, date date not null, time time not null, dress text, note text,
   budget_cap smallint default 0, vote_ends timestamptz, chosen text references restaurants,
+  arrive_by time, theme text, gifts text, adults_only boolean default false,
+  excluded uuid[] not null default '{}',          -- members the host took off this event; only the host can change it
   status text check (status in ('open','set','done')) default 'open', created_at timestamptz default now());
 create table event_options (event_id uuid references events on delete cascade, restaurant_id text references restaurants, added_by uuid references members, primary key (event_id, restaurant_id));
 create table votes (event_id uuid references events on delete cascade, member_id uuid references members, restaurant_id text references restaurants, cast_at timestamptz default now(), primary key (event_id, member_id));
@@ -117,21 +120,39 @@ create table media (id uuid primary key default gen_random_uuid(), family_id uui
 create table cards (id uuid primary key default gen_random_uuid(), family_id uuid references families, by uuid references members, media_id uuid references media,
   style text check (style in ('keepsake','snapshot')), message text, event_id uuid references events, recipients uuid[],
   status text check (status in ('pending','approved','declined','sent')) default 'pending', at timestamptz default now());
--- The Tab: one check, everyone pays the payer back
-create table tabs (event_id uuid primary key references events on delete cascade, payer uuid references members, tax_rate numeric(5,2) default 9.75,
-  auto_gratuity boolean default false, receipt_total numeric(10,2), closed boolean default false);
-create table tab_items (id uuid primary key default gen_random_uuid(), event_id uuid references tabs on delete cascade, description text,
-  amount numeric(10,2) not null, diners text[] not null default '{}',   -- member ids or 'g:<guest id>'; empty = shared by everyone
-  added_by uuid references members);
-create table tab_shares (event_id uuid references tabs on delete cascade, diner text, tip_pct smallint default 20,
-  method text, status text check (status in ('unsent','sent','received')) default 'unsent', amount numeric(10,2), updated_at timestamptz default now(),
-  primary key (event_id, diner));
+-- The Tab: one check, one payer, a guest-check ticket per person
+create table tabs (event_id uuid primary key references events on delete cascade, payer uuid references members not null,
+  tax_rate numeric(5,2) default 9.75, auto_gratuity boolean default false, receipt_total numeric(10,2),
+  check_no int, closed boolean default false, created_at timestamptz default now());
+create table tab_tickets (event_id uuid references tabs on delete cascade, owner uuid references members,
+  covers text[] not null,                        -- who this ticket pays for: member ids and/or 'g:<guest id>'
+  tip_pct smallint default 20,
+  status text check (status in ('draft','sent','returned','confirmed','settled','payer')) default 'draft',
+  return_note text, paid_via text,               -- 'Zelle' | 'Apple Pay' | 'Cash App' | 'Cash' (what the member says they used)
+  sent_at timestamptz, confirmed_at timestamptz, settled_at timestamptz,
+  primary key (event_id, owner));
+create table tab_lines (id uuid primary key default gen_random_uuid(), event_id uuid, owner uuid,
+  category text check (category in ('Appetizer','Drink','Entrée','Side','Dessert','Other')),
+  description text, amount numeric(10,2) not null check (amount > 0),
+  foreign key (event_id, owner) references tab_tickets on delete cascade);
 create table never_again (family_id uuid references families, restaurant_id text references restaurants, by uuid references members, reason text, date date default current_date, primary key (family_id, restaurant_id));
 create table alerts (id uuid primary key default gen_random_uuid(), to_member uuid references members, text text, event_id uuid references events, read boolean default false, at timestamptz default now());
 create table push_subscriptions (member_id uuid references members, endpoint text primary key, keys jsonb, created_at timestamptz default now());
 ```
 
-**Host powers in the backend:** only `role = 'host'` may approve `media` and `cards`, change `notes` and `reviews` status, delete any post, set `members.status` (pause or reinstate) or remove a member, and set `contacts.banned`. Paused members can read but not write. Enforce this in RLS policies, not only in the UI.
+**Host powers in the backend:** only `role = 'host'` may:
+- approve `media` and `cards`
+- change `notes` and `reviews` status, and delete any post
+- add or remove seats (`members` insert/delete), and set `members.status` (pause or reinstate)
+- set `contacts.banned`
+- change `events.excluded`. A member on that list gets no alerts or push for the event, can't read it, and can't vote, RSVP, ask for guests or check in. Nobody else can add them back.
+
+Paused members can read but not write. Enforce all of this in RLS policies and in the alert/push function, not only in the UI.
+
+**The Tab rules in the backend:**
+- only the ticket owner may edit their lines, and only while the ticket is `draft` or `returned`
+- only the payer may set `confirmed`, `returned` (with a note) or `settled`
+- a ticket's balance is zero only when it is `settled`
 
 **Moderation:** the prototype holds posts locally when they contain a hurtful word and name a person (`needsReview()`). In the live app, run each new note, review and caption through the Claude API with a short rubric ("is this unkind toward a family member or guest?") in an edge function. Set `status = 'held'` and alert the host.
 
@@ -177,17 +198,33 @@ The prototype holds about 90 hand-entered restaurants: 68 in Memphis plus a few 
 - **New openings:** set `first_seen` when a place first appears, and flag anything seen in the last 60 days.
 - Cache the data and refresh it weekly.
 
-## 6b. Money: The Tab
+## 6b. The Tab: one check instead of seven
 
-The app **does not move money**. It only calculates each person's share and opens the right app:
+The app **never moves money**. It replaces seven separate checks, and the wait for each one, with **one check** and a clear record of who owes the payer what.
 
-- **Cash App:** opens `https://cash.app/$tag/AMOUNT` with the amount filled in.
-- **Zelle:** there is no public link that pre-fills an amount. The app copies the payer's Zelle email or phone and the amount, and the person sends it from their bank app.
-- **Apple Pay (Apple Cash):** no pre-fill link either. The app copies the payer's phone and the amount, and the person sends it in Messages.
-- **Cash:** marks the share as handed over in person.
-- The payer taps **Got it** when each payment arrives. Closing the tab records one entry in Who's paid (`mode = 'tab'`).
-- Math: each person's share is their own tickets plus an equal split of shared items, plus tax at the event's rate (Memphis 9.75%), plus their chosen tip (15–25%) on the pre-tax amount. If the restaurant already added gratuity, tips are zero.
-- Later, Venmo deep links (`venmo://paycharge?txn=pay&recipients=…&amount=…&note=…`) could be added if the family uses Venmo.
+1. **One person agrees to pay** the restaurant on their card ("I'll pay the restaurant"). Everyone is told: ask the server for one check.
+2. **Each person fills out their own ticket.** It looks like a pale green restaurant guest check with "Table of 7" across the top, plus table, guests, check number and date.
+   - Lines by category: Appetizer, Drink, Entrée, Side, Dessert, Other.
+   - **Who they're paying for:** themselves, plus anyone else they're covering, such as a spouse, Nikki or a guest. People covered by someone else's ticket see "Your meal is on Rosa's ticket."
+   - Tax is added automatically: Memphis 9.75%, or 9% elsewhere.
+   - Each person chooses their tip (15–25%). If the restaurant already added gratuity, the payer ticks that box and tips go to zero.
+3. **Send the ticket to the payer's wallet.**
+4. **The payer verifies it by name.**
+   - **Confirm:** the member is told "you owe $X."
+   - **Send back for corrections,** with a note: the ticket reopens for editing, and the member fixes it and sends it again.
+5. **The member pays the payer back** by Zelle, Apple Pay, Cash App or cash:
+   - Cash App opens with the amount filled in.
+   - Zelle and Apple Pay copy the payer's info and the amount.
+   - The member's tap only tells the payer "Rosa says she paid by Zelle."
+6. **Once the money actually arrives, the payer taps "Mark settled."** Only then does the ticket show **PAID** and **Balance $0.00**, and the member gets a "Paid ✓" alert.
+7. **The payer's other views:**
+   - **Full check:** every ticket with its name, items, who it covers and its total, then the grand totals and the balance still owed.
+   - **Receipt check:** type in the restaurant receipt total to catch a missing or duplicate item.
+   - **Remind them:** nudges anyone who hasn't sent a ticket.
+   - **Put a guest on my ticket.**
+   - **Close the tab:** saves it to Who's paid.
+
+Payment handles (Zelle, Cash App $tag, Apple Pay phone) live on each member's profile. Cash App links take the form `https://cash.app/$tag/AMOUNT`. Zelle and Apple Cash have no public pre-fill links, which is why the app copies the details instead.
 
 ## 6c. Send a card
 
@@ -205,7 +242,7 @@ First run it as an installable web app. Once the backend and push notifications 
 
 ## 9. Feature inventory: what the prototype does
 
-- **Opening:** a gold place-setting splash, a round-table seat picker for seven, and a greeting by first name.
+- **Opening:** a gold place-setting splash, a round-table seat picker (eight seats today), and a greeting by first name.
 - **Home:**
   - things that need you
   - the live vote bar
@@ -230,7 +267,9 @@ First run it as an installable web app. Once the backend and push notifications 
   - occasion
   - who decides: **Family votes** (up to 3 choices, optional budget limit) or **I decide · just invite**
   - date and time, with a warning if it clashes with another plan
-  - dress code, restaurant picker, personal note
+  - dress code, with a one-line explanation of what it means
+  - optional occasion details: arrive-by time, theme or colors ("Wear red"), gifts line, adults only
+  - restaurant picker, personal note
   - guests from Contacts or someone new
   - an invitation preview
 - **10-minute live vote:**
@@ -246,19 +285,21 @@ First run it as an installable web app. Once the backend and push notifications 
 - **Formal invitation:**
   - ivory stationery card with a T7 monogram and script lettering
   - the date and time written out in words
-  - restaurant, attire, typical cost and confirmed seats
+  - restaurant, attire (with what it means), typical cost and confirmed seats
+  - the occasion details: arrive by, what to wear, adults only, gifts
   - links for directions, menu, location and Google Calendar
   - a "Kindly reply by" line
   - in the feed it arrives as a sealed envelope that opens full screen with Accept / Maybe / Decline
   - Email invitation (one message to everyone) and Copy text
-- **Guests:** they need a majority of the family to raise hands (4 of 7).
+- **Guests:** they need a majority of the active family to raise hands (5 of 8 today).
 - **Reservations:** claim (everyone sees "Rosa is booking"), then booked with a confirmation number. The booker sees the family's dietary notes.
 - **Concierge and tip calculator:** Memphis sales tax of 9.75%. Tip by service rating: 1 → 12%, 2 → 15%, 3 → 18%, 4 → 20%, 5 → 22%. It warns about automatic gratuity for parties of 6+ and splits the bill per person.
 - **Wrap-up:** rate the six areas, write feedback, and record who paid (all / for someone / split / each paid). A score of 2.2 or less offers to add the place to Never Again.
 - **Our Table:**
   - the Sights & Sounds gallery entry
   - Never Again, favorites ranked by visits, who has paid and "hasn't treated in a while"
-  - family seats (add or remove) with email, mobile, birthday and diet
+  - family seats with email, mobile, birthday, diet and payment handles
+  - only Richard can add or remove seats; others can edit only their own profile
   - contacts
   - the quick tip guide
 - **Sights & Sounds gallery:**
@@ -273,8 +314,9 @@ First run it as an installable web app. Once the backend and push notifications 
   - delete any post
   - pause, reinstate or remove a seat (a paused member can look but not vote or post)
   - mark a contact "Not welcome" so they can't be invited
+  - **Who's invited** on any event: take a member off that event (no alerts, can't see, vote or RSVP) or remove a guest. Only Richard can put them back.
 - **Send a card:** choose a photo (or a new one), a style and a note, pick recipients if you like, and send through the phone's share sheet.
-- **The Tab:** one person pays the restaurant. Everyone adds tickets (their own or shared), chooses their own tip, and pays the payer back by Zelle, Apple Pay, Cash App or cash. The payer taps Got it for each, can compare against the receipt total, and closes the tab.
+- **The Tab:** one check, one payer, a guest-check ticket for each person. The payer verifies, confirms or sends back, and settles each one to $0.00. See section 6b.
 - **Sunday rule:** a restaurant chosen within the last 90 days doesn't come back. After 90 days it shows as "back in rotation".
 
 ## 10. Known limits of the prototype
@@ -284,6 +326,23 @@ First run it as an installable web app. Once the backend and push notifications 
 - `mailto:` invitations are plain text. HTML email comes in Step 3.
 - Restaurant facts need checking (see Step 4).
 
-## 11. Suggested first message to the desktop Claude
+## 11. Before the family uses it (checklist)
 
-> Read `table-of-7/HANDOFF.md` in `richardg52/scripturestudio` (branch `claude/table-of-5-app-zxebfq`). Do Step 1: create a new Netlify site called table-of-7 from the `table-of-7` folder with password protection on, and give me the URL. Do not touch the scripturestudio.app site. Then propose the Supabase setup from Step 2, and load our family's contact details into the database only, never into index.html.
+1. Deploy (Step 1) behind a password, and test on an iPhone and an Android phone.
+2. Set `const DEMO = false;` in `index.html`.
+3. Add Nikki's last name to seat `m8`. If the family wants the name to match the head count, renaming to "Table of 8" touches the title, splash, monogram (T7) and the guest-check header; search for `Table of 7` and `T7`.
+4. Build Step 2 (Supabase) so the eight phones share one table. Load everyone's email, mobile, birthday, dietary notes and payment handles **into the database only**.
+5. Turn on push notifications (Step 3) so votes, invitations, tickets and "Paid ✓" reach phones.
+6. Replace the hand-entered restaurants with Google Places (Step 4), and check the 68 Memphis entries against it.
+7. Give each family member a 5-minute walkthrough. The **?** button in the app has the quick tip guide.
+
+## 12. Ideas for later (not built)
+
+- **A chair for those we miss.** An optional "In loving memory" place at the table: a photo and a favorite restaurant for a family member who has passed. On their birthday or a chosen day, the app suggests a dinner at their favorite place.
+- **Venmo** links for The Tab, if the family uses it.
+- **Short videos and voice notes** in Sights & Sounds (needs Step 2 storage).
+- **Year in review** each December: most-loved restaurant, new places tried, total dinners together.
+
+## 13. Suggested first message to the desktop Claude
+
+> Read `table-of-7/HANDOFF.md` in `richardg52/scripturestudio` (branch `claude/table-of-5-app-zxebfq`). Do Step 1: create a new Netlify site called table-of-7 from the `table-of-7` folder with password protection on, and give me the URL. Do not touch the scripturestudio.app site. Then propose the Supabase setup from Step 2, and load our family's contact details into the database only, never into index.html. Work through the checklist in section 11.
