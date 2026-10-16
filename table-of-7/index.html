@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Table of 5</title>
+<title>Table of 7</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Table of 5">
+<meta name="apple-mobile-web-app-title" content="Table of 7">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
@@ -287,17 +287,17 @@ textarea.input{min-height:76px;resize:vertical}
 </head>
 <body>
 
-<div id="splash" role="button" tabindex="0" aria-label="Table of 5 — tap to enter">
+<div id="splash" role="button" tabindex="0" aria-label="Table of 7 — tap to enter">
   <div>
     <div class="mark" aria-hidden="true">
       <svg viewBox="0 0 200 200">
         <circle class="ring" cx="100" cy="100" r="70"/>
         <circle class="ring" cx="100" cy="100" r="58" style="stroke-width:.6;animation-delay:.45s"/>
         <g id="seat-dots"></g>
-        <text class="five" x="100" y="126" text-anchor="middle">5</text>
+        <text class="five" x="100" y="126" text-anchor="middle">7</text>
       </svg>
     </div>
-    <div class="splash-title">TABLE OF 5</div>
+    <div class="splash-title">TABLE OF 7</div>
     <div class="splash-tag">Great food · Better company</div>
   </div>
   <div class="splash-hint">Tap to enter</div>
@@ -307,7 +307,7 @@ textarea.input{min-height:76px;resize:vertical}
 
 <div class="app" id="app" hidden>
   <header class="top">
-    <div class="brand">Table <i>of</i> 5</div>
+    <div class="brand">Table <i>of</i> 7</div>
     <button class="icon-btn" data-act="tips" aria-label="Quick tip guide">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>
     </button>
@@ -327,7 +327,7 @@ textarea.input{min-height:76px;resize:vertical}
 "use strict";
 
 /* ================= Data ================= */
-const COLORS = ["#9a3343","#2f6b5a","#8a6526","#4a4f8c","#8a4a6e","#3d6f8a"];
+const COLORS = ["#9a3343","#2f6b5a","#8a6526","#4a4f8c","#8a4a6e","#3d6f8a","#6b5a2f","#5c4a8a"];
 // [id, name, city, cuisines, neighborhood, address, price 1-4, flags, blurb]
 const RAW = [
  ["rendezvous","Charlie Vergos' Rendezvous","Memphis",["BBQ"],"Downtown","52 S 2nd St, Memphis, TN 38103",2,[],"Charcoal-broiled dry-rub ribs down a downtown alley since 1948."],
@@ -488,18 +488,20 @@ const $ = n => "$".repeat(n);
 const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 
 /* ================= State ================= */
-const KEY = "tableof5.v2";
+const KEY = "tableof7.v3";
 const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
-    {id:"m1",name:"Richard",color:COLORS[0],email:"",phone:""},
-    {id:"m2",name:"Angela",color:COLORS[1],email:"",phone:""},
-    {id:"m3",name:"Marcus",color:COLORS[2],email:"",phone:""},
-    {id:"m4",name:"Jasmine",color:COLORS[3],email:"",phone:""},
-    {id:"m5",name:"Cole",color:COLORS[4],email:"",phone:""}
+    {id:"m1",name:"Richard Clark",color:COLORS[0],email:"",phone:""},
+    {id:"m2",name:"Jasmine Clark",color:COLORS[1],email:"",phone:""},
+    {id:"m3",name:"Devonte Clark",color:COLORS[2],email:"",phone:""},
+    {id:"m4",name:"Rosa Andino",color:COLORS[3],email:"",phone:""},
+    {id:"m5",name:"Mario Davison",color:COLORS[4],email:"",phone:""},
+    {id:"m6",name:"Derrick Williams",color:COLORS[5],email:"",phone:""},
+    {id:"m7",name:"Candyce Jackson",color:COLORS[6],email:"",phone:""}
   ];
   const contacts = [
-    {id:"c1",name:"Tasha",relation:"Marcus's friend",email:"tasha@example.com",phone:""},
+    {id:"c1",name:"Tasha",relation:"Devonte's friend",email:"tasha@example.com",phone:""},
     {id:"c2",name:"Uncle Ray",relation:"Family friend",email:"ray@example.com",phone:""}
   ];
   const S = iso(nextSunday);
@@ -524,9 +526,9 @@ function seed(){
      options:["folks-folly","hog-hominy","india-palace"],chosen:null,votes:{m2:"hog-hominy",m3:"india-palace",m4:"hog-hominy"},
      rsvp:{m2:"yes",m3:"yes",m4:"yes",m5:"maybe"},guests:[{id:"g1",name:"Tasha",email:"tasha@example.com",contactId:"c1",by:"m3",hands:["m3","m4"]}],
      reservation:{status:"none",by:null,conf:""},note:"Vote by Saturday noon so someone can book.",status:"open",created:back(1)},
-    {id:"e-bday",type:"birthday",mode:"host",host:"m4",title:"Jasmine's Birthday",date:iso(add(today0,15)),time:"19:30",dress:"Cocktail attire",
-     options:["chez-philippe"],chosen:"chez-philippe",votes:{},rsvp:{m4:"yes",m2:"yes",m3:"yes"},guests:[],
-     reservation:{status:"booked",by:"m4",conf:"CP-4471"},note:"Dinner is on me this year. Just bring yourselves — and maybe dessert appetite.",status:"set",created:back(3)},
+    {id:"e-bday",type:"birthday",mode:"host",host:"m2",title:"Jasmine's Birthday",date:iso(add(today0,15)),time:"19:30",dress:"Cocktail attire",
+     options:["chez-philippe"],chosen:"chez-philippe",votes:{},rsvp:{m2:"yes",m4:"yes",m3:"yes",m6:"yes"},guests:[],
+     reservation:{status:"booked",by:"m2",conf:"CP-4471"},note:"Dinner is on me this year. Just bring yourselves — and maybe dessert appetite.",status:"set",created:back(3)},
     {id:"e-past1",type:"sunday",mode:"vote",host:"m1",title:"Sunday Dinner",date:back(5),time:"17:00",dress:"Casual",
      options:["four-way","bari","acre"],chosen:"four-way",votes:{m1:"four-way",m2:"four-way",m3:"acre",m4:"four-way",m5:"four-way"},
      rsvp:{m1:"yes",m2:"yes",m3:"yes",m4:"yes",m5:"yes"},guests:[],reservation:{status:"booked",by:"m1",conf:"walk-in"},note:"",status:"done",created:back(10)}
@@ -539,7 +541,7 @@ function seed(){
     {eventId:null,rid:"amik",date:back(47),payer:"m5",mode:"for",forWhom:"m4",amount:88.4}
   ];
   const notes = [
-    {id:"n1",by:"m4",date:back(5),eventId:"e-past1",text:"Best Sunday in a while. Thank you Dad for treating! ❤"},
+    {id:"n1",by:"m4",date:back(5),eventId:"e-past1",text:"Best Sunday in a while. Thank you Richard for treating! ❤"},
     {id:"n2",by:"m3",date:back(4),eventId:"e-past1",text:"Still thinking about that cobbler."}
   ];
   return {v:2,fam,contacts,arrivals:{},me:null,events,visits,reviews,ledger,notes,ui:{...UI0}};
@@ -552,6 +554,7 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catc
 /* ================= Lookups ================= */
 const F = id => st.fam.find(f => f.id === id) || {name:"Someone",color:"#666",id};
 const ME = () => F(st.me);
+const first = n => String(n||"").split(" ")[0];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const av = (id,cls="") => { const f = F(id); return `<span class="avatar ${cls}" style="background:${f.color}" title="${esc(f.name)}">${esc(f.name[0]||"?")}</span>`; };
 const visitsOf = rid => st.visits.filter(v => v.rid === rid).sort((a,b) => b.date.localeCompare(a.date));
@@ -628,8 +631,8 @@ const I = {
 /* ================= Splash & gate ================= */
 (function splashDots(){
   const g = document.getElementById("seat-dots");
-  for(let i=0;i<5;i++){
-    const a = (-90 + i*72) * Math.PI/180;
+  for(let i=0;i<7;i++){
+    const a = (-90 + i*360/7) * Math.PI/180;
     const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
     c.setAttribute("cx", 100 + 86*Math.cos(a)); c.setAttribute("cy", 100 + 86*Math.sin(a)); c.setAttribute("r", 7);
     c.setAttribute("class","seat"); c.style.animationDelay = (0.9 + i*0.12) + "s"; c.style.transformOrigin = `${100+86*Math.cos(a)}px ${100+86*Math.sin(a)}px`;
@@ -655,12 +658,12 @@ function showSeats(){
   const chairs = st.fam.map((f,i) => {
     const a = (-90 + i*(360/n)) * Math.PI/180;
     const x = 50 + 42*Math.cos(a), y = 50 + 42*Math.sin(a);
-    return `<button class="chair" style="left:${x}%;top:${y}%;background:${f.color}" data-seat="${f.id}" aria-label="I'm ${esc(f.name)}">${esc(f.name[0])}<span>${esc(f.name)}</span></button>`;
+    return `<button class="chair" style="left:${x}%;top:${y}%;background:${f.color}" data-seat="${f.id}" aria-label="I'm ${esc(f.name)}">${esc(f.name[0])}<span>${esc(first(f.name))}</span></button>`;
   }).join("");
   gate.innerHTML = `<div class="gate-inner">
     <div class="eyebrow">Welcome to the table</div>
     <h1 class="greet">Who's taking a seat?</h1>
-    <div class="round"><div class="tabletop">5</div>${chairs}</div>
+    <div class="round"><div class="tabletop">7</div>${chairs}</div>
     <p class="muted small" style="max-width:300px;margin:18px 0 0">Tap your chair. In the full app each person signs in once on their own phone; here you can switch seats any time from the top-right.</p>
   </div>`;
 }
@@ -669,7 +672,7 @@ function showGreeting(){
   const p = pendingFor(st.me).length;
   gate.innerHTML = `<div class="gate-inner">
     ${av(st.me)}
-    <h1 class="greet">${partOfDay()},<br><em>${esc(ME().name)}</em></h1>
+    <h1 class="greet">${partOfDay()},<br><em>${esc(first(ME().name))}</em></h1>
     <p class="muted">${p ? `${p} thing${p>1?"s":""} at the table need${p>1?"":"s"} you.` : "Your table is all set."}</p>
   </div>`;
   gate.querySelector(".avatar").style.cssText = "width:64px;height:64px;font-size:26px";
@@ -717,7 +720,7 @@ function vHome(){
   return `
   <section class="hello">
     <div class="eyebrow">${fmtLong(iso(today0))}</div>
-    <h1>${partOfDay()}, <em>${esc(me.name)}</em>.</h1>
+    <h1>${partOfDay()}, <em>${esc(first(me.name))}</em>.</h1>
     <p>${todos.length ? `You have ${todos.length} open item${todos.length>1?"s":""} at the table.` : "Nothing waiting on you. Hungry?"}</p>
   </section>
 
@@ -727,6 +730,11 @@ function vHome(){
 
   ${(() => { const ov = st.events.find(e => e.status === "open"); if(!ov) return "";
     return `<div class="livebar">${ov.voteEnds?`<span class="cd num" data-cd="${ov.id}">${mmss(ov.voteEnds - Date.now())}</span>`:`<span class="dotlive"></span>`}<span class="grow"><b>${esc(ov.title)} vote</b><br><span class="small muted">${Object.keys(ov.votes).length} of ${st.fam.length} voted · ${ov.options.length} restaurants on the ballot</span></span><button class="btn wine sm" data-act="live" data-id="${ov.id}">${ov.voteEnds?"Join":"Start vote"}</button></div>`; })()}
+
+  <div class="grid2">
+    <button class="alt" data-act="quick-plan" data-m="vote"><span class="eyebrow" style="font-size:10px">Group decision</span><b>Start a family vote</b><span class="muted small">Everyone picks in 10 minutes</span></button>
+    <button class="alt" data-act="quick-plan" data-m="host"><span class="eyebrow" style="font-size:10px">No vote needed</span><b>Send an invitation</b><span class="muted small">You decide, they RSVP</span></button>
+  </div>
 
   <section class="sec">
     <div class="sec-head"><h2>This Sunday</h2><span class="muted small">${fmtDate(iso(nextSunday))}</span></div>
@@ -839,7 +847,7 @@ function sheetRest(rid){
 let draft = null;
 function newDraft(occ="sunday", rid=null){
   const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
-  draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${ME().name}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
+  draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${first(ME().name)}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
     dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:""};
 }
 function vPlan(){
@@ -861,9 +869,9 @@ function vPlan(){
     <div class="chips" style="flex-wrap:wrap">${OCCASIONS.map(o => `<button class="chip" data-act="occ" data-k="${o.k}" aria-pressed="${o.k===d.type}">${o.label}</button>`).join("")}</div>
     <div class="seg" role="group" aria-label="Who decides">
       <button data-act="mode" data-m="vote" aria-pressed="${!isHost}">Family votes</button>
-      <button data-act="mode" data-m="host" aria-pressed="${isHost}">I choose</button>
+      <button data-act="mode" data-m="host" aria-pressed="${isHost}">I decide · just invite</button>
     </div>
-    <p class="small muted" style="margin:0">${isHost ? "Your occasion, your pick. You'll send an invitation and the family RSVPs." : "Offer up to 3 restaurants. Everyone gets one vote; the host locks in the winner and breaks any tie."}</p>
+    <p class="small muted" style="margin:0">${isHost ? "No vote. You pick the restaurant, the invitation goes straight out, and everyone RSVPs." : "Offer up to 3 restaurants. Everyone gets one vote; the host locks in the winner and breaks any tie."}</p>
   </section>
   <section class="sec">
     <div class="field"><label for="p-title">Title</label><input class="input" id="p-title" data-d="title" value="${esc(d.title)}"></div>
@@ -1094,7 +1102,7 @@ function sheetAskGuest(id){
 /* Invitations by email / copy */
 function inviteText(e){
   const r = RBY[e.chosen];
-  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 5.`;
+  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 7.`;
 }
 function mailInvite(e){
   const to = [...st.fam.filter(f => f.id !== st.me).map(f => f.email), ...e.guests.filter(guestApproved).map(g => g.email)].filter(Boolean);
@@ -1330,6 +1338,7 @@ document.addEventListener("click", e => {
     case "toggle-contact": { const c = st.contacts.find(x => x.id === b.dataset.cid); const i = draft.guests.findIndex(g => g.contactId === c.id);
       if(i >= 0) draft.guests.splice(i,1); else draft.guests.push({name:c.name, email:c.email, contactId:c.id}); render(); break; }
     case "gpick": { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); b.querySelector(".check").textContent = on ? "✓" : ""; on ? guestPick.add(b.dataset.cid) : guestPick.delete(b.dataset.cid); break; }
+    case "quick-plan": newDraft(b.dataset.m === "host" ? "personal" : "sunday"); draft.mode = b.dataset.m; if(b.dataset.m === "host"){ draft.title = "Dinner with the family"; draft.dress = "Smart casual"; } go("plan"); break;
     case "live": openLive(id); break;
     case "live-close": closeLive(); break;
     case "live-vote": { const e2 = ev(liveId); e2.votes[st.me] = b.dataset.rid; save(); drawLive(); toast(`You voted for ${RBY[b.dataset.rid].name}`); break; }
