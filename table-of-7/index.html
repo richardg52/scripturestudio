@@ -8,9 +8,12 @@
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Table of 7">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Pinyon+Script&display=swap">
 <style>
 /* Layout: one-column phone app shell (max 480px) — sticky header, scrolling view, fixed tab bar. Evening dining room: bottle green, brass, wine. */
 :root{
@@ -21,6 +24,7 @@
   --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
   --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --f-script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
   --r:14px; color-scheme:dark;
 }
 @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
@@ -187,18 +191,57 @@ textarea.input{min-height:76px;resize:vertical}
 .hands[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink);border-color:transparent}
 .divider{height:1px;background:var(--line)}
 
-/* ---------- Invitation (deliberately paper, both themes) ---------- */
-.invite{background:var(--paper);color:var(--paper-ink);border-radius:6px;padding:26px 22px;text-align:center;position:relative;box-shadow:var(--card-shadow);display:grid;gap:10px}
-.invite::before{content:"";position:absolute;inset:8px;border:1px solid var(--paper-line);border-radius:3px;pointer-events:none}
-.invite .i-eyebrow{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#8a6a2c;font-weight:600}
-.invite .i-title{font-family:var(--f-display);font-style:italic;font-size:30px;line-height:1.1}
-.invite .i-rest{font-family:var(--f-display);font-size:22px;letter-spacing:.02em}
-.invite .i-orn{color:#8a6a2c;font-size:14px;letter-spacing:.6em}
-.invite .i-meta{font-size:13.5px;line-height:1.6}
-.invite .i-meta b{font-weight:600}
-.invite .i-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:4px}
-.invite .i-links a{font-size:12.5px;font-weight:600;color:#5a1622;border:1px solid #c9b083;border-radius:999px;padding:6px 12px;text-decoration:none}
-.invite .i-note{font-family:var(--f-display);font-style:italic;font-size:15px;color:#5b4a36}
+/* ---------- Invitation: formal stationery, same paper in both themes ---------- */
+.invite{background:linear-gradient(180deg,#fcf9f1 0%,#f3ebda 100%);color:var(--paper-ink);border-radius:3px;padding:38px 26px 30px;text-align:center;position:relative;box-shadow:0 18px 40px rgba(0,0,0,.28);display:grid;gap:12px;justify-items:center}
+.invite::before{content:"";position:absolute;inset:9px;border:1px solid var(--paper-line);pointer-events:none}
+.invite::after{content:"";position:absolute;inset:14px;border:.5px solid rgba(201,176,131,.55);pointer-events:none}
+.invite > *{position:relative;z-index:1}
+.i-mono{width:60px;height:60px;border-radius:50%;border:1px solid #b08d4c;box-shadow:inset 0 0 0 3px #fcf9f1,inset 0 0 0 4px rgba(176,141,76,.5);display:grid;place-items:center;font-family:var(--f-display);font-style:italic;font-size:22px;color:#8a6a2c}
+.i-caps{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#8a6a2c;font-weight:600;max-width:30ch;line-height:1.7}
+.i-script{font-family:var(--f-script);font-size:38px;line-height:1.05;color:#5a1622;font-weight:400}
+.i-title{font-family:var(--f-display);font-size:26px;line-height:1.15;letter-spacing:.08em;text-transform:uppercase;font-weight:500;text-wrap:balance;max-width:16ch}
+.i-host{font-family:var(--f-display);font-style:italic;font-size:16px;color:#5b4a36}
+.i-flour{width:150px;height:14px;color:#b08d4c}
+.i-when{font-family:var(--f-display);font-size:17px;line-height:1.55}
+.i-when em{display:block;font-size:14px;color:#5b4a36}
+.i-rest{font-family:var(--f-display);font-size:23px;letter-spacing:.07em;text-transform:uppercase;line-height:1.2;text-wrap:balance}
+.i-addr{font-size:13px;color:#5b4a36;margin-top:-6px}
+.i-grid{display:grid;grid-template-columns:repeat(3,1fr);width:100%;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);padding:10px 0}
+.i-grid > div{display:grid;gap:3px;font-size:12.5px;padding:0 4px;align-content:start}
+.i-grid > div + div{border-left:1px solid var(--paper-line)}
+.i-grid span{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#8a6a2c;font-weight:700}
+.i-note{font-family:var(--f-display);font-style:italic;font-size:15.5px;color:#5b4a36;max-width:30ch;line-height:1.5}
+.i-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.i-links a{font-size:12px;font-weight:600;letter-spacing:.04em;color:#5a1622;border:1px solid #c9b083;border-radius:999px;padding:7px 13px;text-decoration:none;background:rgba(255,255,255,.4)}
+.i-reply{font-family:var(--f-script);font-size:24px;color:#5a1622;line-height:1.2}
+
+/* envelope teaser in the feed */
+.envelope{position:relative;border-radius:4px;background:#efe4cf;color:#2a1f14;padding:0 18px 18px;text-align:center;overflow:hidden;display:grid;gap:6px;justify-items:center;border:1px solid #d9c6a0;width:100%;box-shadow:var(--card-shadow)}
+.envelope .flap{position:absolute;inset:0 0 auto;height:74px;background:#e5d4b4;clip-path:polygon(0 0,100% 0,50% 100%)}
+.seal{position:relative;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#b8455a,#7d1e2e 70%);color:#f4d9a8;font-family:var(--f-display);font-style:italic;font-size:18px;display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,.3);margin-top:48px}
+.envelope .from{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#8a6a2c;font-weight:700;margin-top:6px}
+.envelope .t{font-family:var(--f-script);font-size:30px;color:#5a1622;line-height:1.1}
+.envelope .d{font-family:var(--f-display);font-size:15px}
+.envelope .btn{background:#5a1622;color:#fcf9f1;border-color:transparent;margin-top:6px}
+
+/* full-screen invitation */
+#invite{position:fixed;inset:0;z-index:72;overflow-y:auto;background:radial-gradient(120% 70% at 50% 10%,#2a3d34 0%,#0b1512 70%);color:#efe9dc;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+#invite .invite{animation:unfold 1s cubic-bezier(.2,.8,.2,1) both}
+#invite .rsvp button{background:rgba(255,255,255,.06);border-color:rgba(239,233,220,.2);color:#efe9dc}
+@keyframes unfold{from{opacity:0;transform:translateY(60px) scale(.94)}to{opacity:1;transform:none}}
+
+/* alerts, photos, misc */
+.bell{position:relative}
+.bell .badge-dot{top:-3px;left:auto;right:-3px}
+.alert-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line);text-align:left;background:none;border-left:0;border-right:0;border-top:0;width:100%;color:inherit}
+.alert-row.unread b{color:var(--brass)}
+.alert-row small{color:var(--muted)}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.photos button{padding:0;border:0;background:none;border-radius:8px;overflow:hidden}
+.photos img{display:block;width:100%;aspect-ratio:1;object-fit:cover;max-width:100%}
+.eta{display:flex;gap:6px;flex-wrap:wrap}
+.ready{padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);font-weight:600;font-size:14px}
+.radar{display:grid;gap:8px;padding:16px;border-radius:16px;border:1px dashed var(--brass);background:color-mix(in srgb,var(--brass) 6%,var(--surface))}
 
 /* ---------- Sheet ---------- */
 #sheet-wrap{position:fixed;inset:0;z-index:85;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -282,6 +325,25 @@ textarea.input{min-height:76px;resize:vertical}
 .livebar .cd{font-size:30px}
 .dotlive{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block;animation:blink 1.2s infinite}
 @keyframes blink{50%{opacity:.25}}
+/* Sights & Sounds gallery */
+#gallery{position:fixed;inset:0;z-index:71;overflow-y:auto;background:var(--bg);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+.g-hero{position:relative;border-radius:16px;overflow:hidden;padding:0;border:0;width:100%;background:var(--surface);display:block;text-align:left;color:#fff}
+.g-hero img{display:block;width:100%;max-width:100%;aspect-ratio:4/3;object-fit:cover}
+.g-hero .cap{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.72));display:grid;gap:2px}
+.g-hero .cap b{font-family:var(--f-display);font-weight:500;font-size:22px;line-height:1.15}
+.g-hero .cap span{font-size:12px;opacity:.85}
+.g-month{font-family:var(--f-display);font-style:italic;font-size:20px;color:var(--brass);margin:6px 0 -4px}
+.masonry{columns:2;column-gap:8px}
+@media (min-width:640px){.masonry{columns:3}}
+.tile{break-inside:avoid;margin:0 0 8px;display:block;width:100%;padding:0;border:0;border-radius:12px;overflow:hidden;background:var(--surface);text-align:left;color:var(--ink)}
+.tile img{display:block;width:100%;max-width:100%;height:auto}
+.tile .meta{padding:7px 9px 9px;display:grid;gap:1px}
+.tile .meta b{font-size:12.5px;font-weight:600;line-height:1.3}
+.tile .meta span{font-size:11px;color:var(--muted)}
+.strip-photos{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.strip-photos button{flex:0 0 112px;height:112px;padding:0;border:0;border-radius:12px;overflow:hidden;background:var(--surface)}
+.strip-photos img{width:100%;height:100%;object-fit:cover;display:block}
+
 @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -308,6 +370,7 @@ textarea.input{min-height:76px;resize:vertical}
 <div class="app" id="app" hidden>
   <header class="top">
     <div class="brand">Table <i>of</i> 7</div>
+    <button class="icon-btn bell" data-act="alerts" aria-label="Alerts" id="bell-btn"></button>
     <button class="icon-btn" data-act="tips" aria-label="Quick tip guide">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>
     </button>
@@ -318,6 +381,8 @@ textarea.input{min-height:76px;resize:vertical}
 </div>
 
 <div id="sheet-wrap" aria-hidden="true"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="gallery" hidden></div>
+<div id="invite" hidden></div>
 <div id="live" hidden></div>
 <div id="reveal" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -488,7 +553,10 @@ const $ = n => "$".repeat(n);
 const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 
 /* ================= State ================= */
-const KEY = "tableof7.v3";
+// DEMO = true fills the app with sample plans, reviews and photos-free history so it can be tried alone.
+// Set to false before going live: the app then starts clean with only the family list below.
+const DEMO = true;
+const KEY = DEMO ? "tableof7.v3" : "tableof7.live1";
 const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
@@ -544,12 +612,19 @@ function seed(){
     {id:"n1",by:"m4",date:back(5),eventId:"e-past1",text:"Best Sunday in a while. Thank you Richard for treating! ❤"},
     {id:"n2",by:"m3",date:back(4),eventId:"e-past1",text:"Still thinking about that cobbler."}
   ];
-  return {v:2,fam,contacts,arrivals:{},me:null,events,visits,reviews,ledger,notes,ui:{...UI0}};
+  const ago = m => Date.now() - m*60000;
+  const alerts = [
+    {id:"a1",to:"m1",text:"Jasmine started a vote for Sunday Dinner. Pick before Saturday noon.",eventId:"e-sun",t:ago(95),read:false},
+    {id:"a2",to:"m1",text:"Devonte asked to bring Tasha to Sunday Dinner. Raise a hand?",eventId:"e-sun",t:ago(80),read:false},
+    {id:"a3",to:"m1",text:"Jasmine invited you to Jasmine's Birthday at Chez Philippe.",eventId:"e-bday",t:ago(60*26),read:false}
+  ];
+  if(!DEMO) return {v:3,fam,contacts:[],arrivals:{},alerts:[],photos:[],tableReady:{},radarSent:{},blocked:{},me:null,events:[],visits:[],reviews:[],ledger:[],notes:[],ui:{...UI0}};
+  return {v:3,fam,contacts,arrivals:{},alerts,photos:[],tableReady:{},radarSent:{},blocked:{},me:null,events,visits,reviews,ledger,notes,ui:{...UI0}};
 }
 let st;
 try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
-st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {};
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); return true; } catch { return false; } };
 
 /* ================= Lookups ================= */
 const F = id => st.fam.find(f => f.id === id) || {name:"Someone",color:"#666",id};
@@ -591,7 +666,7 @@ function sundayPicks(target){
   const wk = Math.floor(target.getTime() / (7*DAY));
   const pool = R.filter(r => r.city === "Memphis").map(r => {
     const rs = rotationState(r.id, t);
-    if(rs.state === "resting" || !meals(r).dinner) return null;
+    if(rs.state === "resting" || !meals(r).dinner || isBlocked(r.id)) return null;
     const a = avgOf(r.id);
     let s = (a ?? 3.6);
     if(rs.state === "untried") s += .9;
@@ -614,6 +689,20 @@ const pendingFor = id => {
 };
 const majority = () => Math.floor(st.fam.length/2) + 1;
 const guestApproved = g => g.hands.length >= majority();
+
+/* Alerts: in the full app each one is also a push notification to that person's phone. */
+function alertAll(text, eventId = null, except = st.me){
+  st.fam.forEach(f => { if(f.id !== except) st.alerts.push({id:uid("a"), to:f.id, text, eventId, t:Date.now(), read:false}); });
+  if(st.alerts.length > 300) st.alerts = st.alerts.slice(-300);
+}
+const ago = t => { const m = Math.round((Date.now() - t)/60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m/60)} hr ago` : new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"}); };
+function sheetAlerts(){
+  const mine = st.alerts.filter(a => a.to === st.me).sort((a,b) => b.t - a.t).slice(0,60);
+  openSheet(`<div class="sheet-head"><h2>Alerts</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">On the live app these arrive as notifications on ${esc(first(ME().name))}'s phone.</p>
+    <div>${mine.map(a => `<button class="alert-row ${a.read?"":"unread"}" data-act="alert-go" data-id="${a.eventId||""}"><span class="ic" style="color:var(--brass)">${I.bell}</span><span><b style="font-weight:600">${esc(a.text)}</b><br><small>${ago(a.t)}</small></span></button>`).join("") || `<div class="empty">You're all caught up.</div>`}</div>`);
+  mine.forEach(a => a.read = true); save(); renderTabs();
+}
 
 /* ================= Icons ================= */
 const I = {
@@ -694,9 +783,14 @@ function renderTabs(){
     ? `<button class="plan-btn" data-tab="plan" ${st.ui.tab==="plan"?'aria-current="page"':""}><span class="disc">${ic}</span>${l}</button>`
     : `<button data-tab="${k}" ${st.ui.tab===k?'aria-current="page"':""}>${ic}${l}${k==="feed"&&p?`<span class="badge-dot">${p}</span>`:""}</button>`).join("");
   document.getElementById("me-btn").innerHTML = av(st.me);
+  const un = st.alerts.filter(a => a.to === st.me && !a.read).length;
+  document.getElementById("bell-btn").innerHTML = I.bell + (un ? `<span class="badge-dot">${un}</span>` : "");
 }
 function render(){
   if(!liveId) st.events.forEach(e => { if(e.status === "open" && e.voteEnds && e.voteEnds < Date.now()) lockEvent(e); });
+  st.fam.filter(f => f.birthday).forEach(f => { const [, m, d] = f.birthday.split("-").map(Number); let dt = new Date(today0.getFullYear(), m-1, d); if(dt < today0) dt = new Date(today0.getFullYear()+1, m-1, d);
+    const days = Math.round((dt - today0)/DAY), key = f.id + "-" + dt.getFullYear();
+    if(days <= 21 && !st.radarSent[key]){ st.radarSent[key] = true; alertAll(`${first(f.name)}'s birthday is in ${days} days (${dt.toLocaleDateString(undefined,{month:"short",day:"numeric"})}). Time to plan?`, null, f.id); save(); } });
   renderTabs();
   const fn = {home:vHome,explore:vExplore,plan:vPlan,feed:vFeed,table:vTable}[st.ui.tab] || vHome;
   view.innerHTML = fn();
@@ -725,11 +819,16 @@ function vHome(){
   </section>
 
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
-    ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="event" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
+    ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
   </section>` : ""}
 
   ${(() => { const ov = st.events.find(e => e.status === "open"); if(!ov) return "";
     return `<div class="livebar">${ov.voteEnds?`<span class="cd num" data-cd="${ov.id}">${mmss(ov.voteEnds - Date.now())}</span>`:`<span class="dotlive"></span>`}<span class="grow"><b>${esc(ov.title)} vote</b><br><span class="small muted">${Object.keys(ov.votes).length} of ${st.fam.length} voted · ${ov.options.length} restaurants on the ballot</span></span><button class="btn wine sm" data-act="live" data-id="${ov.id}">${ov.voteEnds?"Join":"Start vote"}</button></div>`; })()}
+
+  ${radarList().map(x => `<div class="radar"><span class="eyebrow">Birthday radar</span>
+      <b style="font-family:var(--f-display);font-weight:500;font-size:21px">${esc(first(x.f.name))}'s birthday is ${x.days === 0 ? "today" : x.days === 1 ? "tomorrow" : `in ${x.days} days`}</b>
+      <span class="small muted">${x.date.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"})}${x.favs.length ? ` · ${esc(first(x.f.name))}'s favorites: ${x.favs.map(([rid,a]) => `${esc(RBY[rid].name)} (★${a.toFixed(1)})`).join(", ")}` : ""}</span>
+      <button class="btn sm wine" style="justify-self:start" data-act="plan-bday" data-id="${x.f.id}">Plan ${esc(first(x.f.name))}'s birthday</button></div>`).join("")}
 
   <div class="grid2">
     <button class="alt" data-act="quick-plan" data-m="vote"><span class="eyebrow" style="font-size:10px">Group decision</span><b>Start a family vote</b><span class="muted small">Everyone picks in 10 minutes</span></button>
@@ -755,6 +854,12 @@ function vHome(){
   </section>
 
   <section class="sec">
+    <div class="sec-head"><h2>Sights &amp; Sounds</h2><button class="link-btn" data-act="gallery">Open gallery</button></div>
+    ${st.photos.length ? `<div class="strip-photos">${[...st.photos].sort((a,b) => b.t-a.t).slice(0,8).map(p => `<button data-act="photo" data-id="${p.id}" aria-label="${esc(p.caption || "Photo")}"><img src="${p.data}" alt=""></button>`).join("")}</div>`
+      : `<button class="empty" data-act="photo-add" style="width:100%;background:none;color:var(--muted)">Share the first photo: a plate, the room, the view on the way.</button>`}
+  </section>
+
+  <section class="sec">
     <div class="sec-head"><h2>New &amp; not yet tried</h2><button class="link-btn" data-act="explore-filter" data-f="untried">See all</button></div>
     <div class="scroller">${fresh.map(r => `<button class="alt" data-act="rest" data-rid="${r.id}">${r.flags.includes("new")?'<span class="pill wine" style="justify-self:start">New</span>':'<span class="pill brass" style="justify-self:start">Not tried</span>'}<b>${esc(r.name)}</b><span class="muted small">${r.cuisine.join(" · ")} · ${$(r.price)}</span></button>`).join("")}</div>
   </section>
@@ -771,6 +876,7 @@ function miniEvent(e){
 function vExplore(){
   const u = st.ui; const t = iso(nextSunday);
   let list = R.filter(r => r.city === u.city);
+  list = u.filter === "blocked" ? list.filter(r => isBlocked(r.id)) : list.filter(r => !isBlocked(r.id));
   if(u.cuisine !== "All") list = list.filter(r => r.cuisine.includes(u.cuisine));
   if(u.filter === "untried") list = list.filter(r => !lastVisit(r.id));
   if(u.filter === "new") list = list.filter(r => r.flags.includes("new"));
@@ -787,7 +893,7 @@ function vExplore(){
     <div class="grid2">
       <div class="field"><label for="city">City</label><select class="input" id="city" data-change="city">${CITIES.map(c => `<option ${c===u.city?"selected":""}>${c}</option>`).join("")}</select></div>
       <div class="field"><label for="flt">Show</label><select class="input" id="flt" data-change="filter">
-        ${[["all","Everything"],["untried","Not tried yet"],["new","New openings"],["favorites","Our favorites"]].map(([k,l]) => `<option value="${k}" ${k===u.filter?"selected":""}>${l}</option>`).join("")}</select></div>
+        ${[["all","Everything"],["untried","Not tried yet"],["new","New openings"],["favorites","Our favorites"],["blocked","Never Again list"]].map(([k,l]) => `<option value="${k}" ${k===u.filter?"selected":""}>${l}</option>`).join("")}</select></div>
       <div class="field"><label for="bud">Budget</label><select class="input" id="bud" data-change="budget">
         ${[["any","Any budget"],["light","Lighter ($–$$)"],["high","High end ($$$+)"]].map(([k,l]) => `<option value="${k}" ${k===u.budget?"selected":""}>${l}</option>`).join("")}</select></div>
       <div class="field"><label for="meal">Meal</label><select class="input" id="meal" data-change="meal">
@@ -833,13 +939,15 @@ function sheetRest(rid){
     <div class="actions">
       <a class="btn primary" href="${mapsDir(r)}" target="_blank" rel="noopener">Directions</a>
       <a class="btn" href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a>
-      <button class="btn wine" data-act="plan-with" data-rid="${r.id}">Plan here</button>
+      ${isBlocked(rid) ? "" : `<button class="btn wine" data-act="plan-with" data-rid="${r.id}">Plan here</button>`}
     </div>
+    ${isBlocked(rid) ? `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)"><b>On our Never Again list.</b> “${esc(st.blocked[rid].reason || "Bad experience")}” — ${esc(first(F(st.blocked[rid].by).name))}, ${fmtDate(st.blocked[rid].date)}<br><button class="link-btn" data-act="unblock" data-rid="${rid}" style="color:inherit;text-decoration:underline">Give it another chance</button></div>` : ""}
     <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
     ${a ? `<div class="sec"><div class="lbl">FAMILY SCORES</div>${CRIT.map(([k,l]) => ca[k] ? `<div class="crit"><span class="small">${l}</span><div style="display:flex;align-items:center;gap:8px"><div class="meter" style="flex:1"><i style="width:${ca[k]/5*100}%"></i></div><span class="num small">${ca[k].toFixed(1)}</span></div></div>` : "").join("")}</div>` : ""}
     <div class="sec"><div class="lbl">WHAT WE SAID</div>
       ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="stars" style="margin-left:auto">${starStr(Object.values(rv.scores).reduce((x,y)=>x+y,0)/Object.values(rv.scores).length)}</span></div><p>${esc(rv.text)}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
     </div>
+    ${isBlocked(rid) ? "" : `<button class="btn ghost sm" data-act="block" data-rid="${rid}" style="justify-self:start;color:var(--bad)">Add to Never Again list</button>`}
     <p class="proto">Hours, menus and reservations change. Confirm with the restaurant before booking.</p>`);
 }
 
@@ -848,7 +956,7 @@ let draft = null;
 function newDraft(occ="sunday", rid=null){
   const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
   draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${first(ME().name)}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
-    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:""};
+    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0};
 }
 function vPlan(){
   if(!draft) newDraft();
@@ -857,6 +965,7 @@ function vPlan(){
   const picks = d.type === "sunday" ? sundayPicks(parse(d.date)).map(p => p.r.id) : [];
   let pool = R.filter(r => r.city === "Memphis" || d.options.includes(r.id));
   if(d.q){ const q = d.q.toLowerCase(); pool = R.filter(r => (r.name+" "+r.cuisine.join(" ")+" "+r.city).toLowerCase().includes(q)); }
+  pool = pool.filter(r => (!isBlocked(r.id) && (isHost || !+d.cap || r.price <= +d.cap)) || d.options.includes(r.id));
   pool.sort((a,b) => (d.options.includes(b.id)-d.options.includes(a.id)) || (picks.includes(b.id)-picks.includes(a.id)) || a.name.localeCompare(b.name));
   const t = d.date;
   return `
@@ -881,6 +990,7 @@ function vPlan(){
     </div>
     ${clash.length ? `<div class="warnbox">Heads up: ${clash.map(e => `${esc(F(e.host).name)}'s “${esc(e.title)}”`).join(", ")} is already on ${fmtDate(d.date)}. Pick another day or join that one instead.</div>` : ""}
     <div class="field"><label for="p-dress">Dress code</label><select class="input" id="p-dress" data-d="dress">${DRESS.map(x => `<option ${x===d.dress?"selected":""}>${x}</option>`).join("")}</select></div>
+    ${isHost ? "" : `<div class="field"><label for="p-cap">Budget for this vote</label><select class="input" id="p-cap" data-d="cap">${[[0,"Any budget"],[1,"$ only (under $15)"],[2,"Up to $$ ($15–30)"],[3,"Up to $$$ ($30–60)"]].map(([v,l]) => `<option value="${v}" ${+d.cap===v?"selected":""}>${l}</option>`).join("")}</select></div>`}
   </section>
   <section class="sec">
     <div class="sec-head"><div class="lbl">${isHost?"YOUR RESTAURANT":"CHOICES FOR THE VOTE"} · <span class="num">${d.options.length}/${max}</span></div></div>
@@ -906,7 +1016,7 @@ function bindPlan(){
     const ev = el.tagName === "SELECT" || el.type === "date" || el.type === "time" ? "change" : "input";
     el.addEventListener(ev, () => {
       draft[el.dataset.d] = el.value;
-      if(["date","q"].includes(el.dataset.d)){ const pos = el.selectionStart; render(); const n = document.getElementById(el.id); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch{} } }
+      if(["date","q","cap"].includes(el.dataset.d)){ const pos = el.selectionStart; render(); const n = document.getElementById(el.id); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch{} } }
       if(el.dataset.d === "title" || el.dataset.d === "note" || el.dataset.d === "dress" || el.dataset.d === "time"){ const prev = view.querySelector(".invite"); if(prev && draft.mode==="host" && draft.options[0]) prev.outerHTML = inviteCard({...draft, host:st.me, chosen:draft.options[0]}); }
     });
   });
@@ -914,14 +1024,67 @@ function bindPlan(){
 function inviteCard(e){
   const r = RBY[e.chosen];
   const occ = (OCCASIONS.find(o => o.k === e.type) || {}).label || "Dinner";
+  const celebrate = ["birthday","anniversary","celebration"].includes(e.type);
+  const coming = st.fam.filter(f => e.rsvp?.[f.id] === "yes").length + (e.guests||[]).filter(guestApproved).length;
+  const replyBy = iso(add(parse(e.date), -2));
   return `<div class="invite">
-    <div class="i-eyebrow">${esc(F(e.host).name)} requests the pleasure of your company</div>
+    <div class="i-mono">T7</div>
+    <div class="i-caps">${esc(F(e.host).name)}<br>requests the pleasure of your company</div>
+    <div class="i-script">${celebrate ? "to celebrate" : e.type === "personal" ? "for an evening of" : "at the table for"}</div>
     <div class="i-title">${esc(e.title || occ)}</div>
-    <div class="i-orn">◆ ◆ ◆</div>
+    ${FLOURISH}
+    <div class="i-when">${formalDate(e.date)}<em>${formalYear(e.date)}</em>${formalTime(e.time)}</div>
+    <div class="i-caps" style="margin-bottom:-6px">at</div>
     <div class="i-rest">${esc(r.name)}</div>
-    <div class="i-meta"><b>${fmtLong(e.date)}</b><br>${fmtTime(e.time)} · Dress: ${esc(e.dress)}<br>${esc(addrOf(r))}<br>Typical cost ${costText(r)}</div>
+    <div class="i-addr">${esc(addrOf(r))}</div>
+    <div class="i-grid"><div><span>Attire</span>${esc(e.dress)}</div><div><span>Typical cost</span>${"$".repeat(r.price)}<br>${COST[r.price]}</div><div><span>Seats</span>${coming || "—"} confirmed</div></div>
     ${e.note ? `<div class="i-note">“${esc(e.note)}”</div>` : ""}
-    <div class="i-links"><a href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a><a href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a></div>
+    <div class="i-links"><a href="${mapsDir(r)}" target="_blank" rel="noopener">Driving directions</a><a href="${menuLink(r)}" target="_blank" rel="noopener">Menu</a><a href="${mapsPlace(r)}" target="_blank" rel="noopener">Location</a><a href="${calLink(e)}" target="_blank" rel="noopener">Add to calendar</a></div>
+    <div class="i-reply">Kindly reply by ${fmtDate(replyBy)}</div>
+  </div>`;
+}
+const FLOURISH = `<svg class="i-flour" viewBox="0 0 150 14" aria-hidden="true"><path d="M2 7h56M92 7h56" stroke="currentColor" stroke-width=".8" fill="none"/><path d="M75 1l6 6-6 6-6-6z" fill="currentColor"/><circle cx="62" cy="7" r="1.6" fill="currentColor"/><circle cx="88" cy="7" r="1.6" fill="currentColor"/></svg>`;
+const ONES = ["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+const words = n => n < 20 ? ONES[n] : TENS[Math.floor(n/10)] + (n%10 ? "-" + ONES[n%10] : "");
+const ORD_IRREG = {1:"first",2:"second",3:"third",5:"fifth",8:"eighth",9:"ninth",12:"twelfth"};
+const ordWord = n => { if(ORD_IRREG[n]) return ORD_IRREG[n]; if(n < 20) return ONES[n] + "th"; const t = Math.floor(n/10), o = n%10;
+  return o ? TENS[t] + "-" + (ORD_IRREG[o] || ONES[o] + "th") : TENS[t].replace(/y$/,"ieth"); };
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+function formalDate(s){ const d = parse(s); return `${d.toLocaleDateString("en-US",{weekday:"long"})}, the ${ordWord(d.getDate())} of ${d.toLocaleDateString("en-US",{month:"long"})}`; }
+function formalYear(s){ const y = parse(s).getFullYear(); return cap1(`two thousand ${words(y - 2000)}`.trim()); }
+function formalTime(t){
+  const [h,m] = t.split(":").map(Number); const hh = h % 12 || 12;
+  const part = h < 12 ? "in the morning" : h < 17 ? "in the afternoon" : "in the evening";
+  if(h === 12 && m === 0) return "at twelve noon";
+  const clock = m === 0 ? `${ONES[hh]} o'clock` : m === 30 ? `half past ${ONES[hh]}` : m === 15 ? `quarter past ${ONES[hh]}` : m === 45 ? `quarter to ${ONES[hh % 12 + 1]}` : `${ONES[hh]} ${m < 10 ? "oh " + ONES[m] : words(m)}`;
+  return `at ${clock} ${part}`;
+}
+function calLink(e){
+  const r = RBY[e.chosen]; const [h,m] = e.time.split(":").map(Number); const d = parse(e.date);
+  const st0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m), en = new Date(st0.getTime() + 2*36e5);
+  const f = x => `${x.getFullYear()}${String(x.getMonth()+1).padStart(2,"0")}${String(x.getDate()).padStart(2,"0")}T${String(x.getHours()).padStart(2,"0")}${String(x.getMinutes()).padStart(2,"0")}00`;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.title + " · " + r.name)}&dates=${f(st0)}/${f(en)}&location=${encodeURIComponent(placeQ(r))}&details=${encodeURIComponent("Dress: " + e.dress + "\nMenu: " + menuLink(r))}`;
+}
+function envelope(e){
+  return `<div class="envelope"><div class="flap"></div><div class="seal">T7</div>
+    <div class="from">An invitation from ${esc(F(e.host).name)}</div>
+    <div class="t">${esc(e.title)}</div>
+    <div class="d">${fmtLong(e.date)} · ${fmtTime(e.time)}</div>
+    <button class="btn" data-act="invite-open" data-id="${e.id}">Open invitation</button></div>`;
+}
+
+/* Full-screen invitation */
+const inviteEl = document.getElementById("invite"); let inviteId = null;
+function openInvite(id, banner){ inviteId = id; inviteEl.hidden = false; document.body.style.overflow = "hidden"; drawInvite(banner); }
+function closeInvite(){ inviteEl.hidden = true; inviteId = null; document.body.style.overflow = ""; render(); }
+function drawInvite(banner){
+  const e = ev(inviteId); const my = e.rsvp[st.me];
+  inviteEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow" style="color:#cfab6c">${banner ? esc(banner) : "You're invited"}</span><button class="icon-btn" data-act="invite-close" aria-label="Close" style="background:rgba(255,255,255,.06);color:#efe9dc;border-color:rgba(239,233,220,.2)">✕</button></div>
+    ${inviteCard(e)}
+    ${e.host === st.me ? `<p class="small" style="text-align:center;color:#c9c2b2;margin:0">You're hosting. Your RSVP is in.</p>` : `<div class="rsvp">${[["yes","Joyfully accept"],["maybe","Maybe"],["no","Regretfully decline"]].map(([k,l]) => `<button class="${k}" data-act="invite-rsvp" data-v="${k}" aria-pressed="${my===k}">${l}</button>`).join("")}</div>`}
+    <div class="stack" style="justify-content:center">${st.fam.filter(f => e.rsvp[f.id]==="yes").map(f => av(f.id,"sm")).join("")}</div>
   </div>`;
 }
 
@@ -951,14 +1114,14 @@ function eventCard(e){
       <div class="strip"><span class="grow">${n}/${st.fam.length} voted${leaders.length>1?` · tie between ${leaders.map(o=>esc(RBY[o].name)).join(" & ")} — ${esc(host.name)} breaks it`:""}</span>
       ${isHost ? `<button class="btn sm primary" data-act="lock" data-id="${e.id}" ${lead?"":"disabled"}>Lock in ${leaders.length===1?esc(RBY[leaders[0]].name.split(" ")[0]):"winner"}</button>` : `<span class="muted">Host locks it in</span>`}</div>`;
   } else {
-    body += inviteCard(e);
+    body += envelope(e);
   }
   // reservation
   const res = e.reservation;
   if(e.status === "set"){
     const r = RBY[e.chosen];
     body += res.status === "none" ? `<div class="strip"><span class="pill bad">Not reserved</span><span class="grow">Claim it so no one double-books.</span><button class="btn sm" data-act="res-claim" data-id="${e.id}">I'll book it</button></div>`
-      : res.status === "claimed" ? `<div class="strip"><span class="pill warn">Booking</span><span class="grow"><b>${esc(F(res.by).name)}</b> is calling ${esc(r.name)} now. Please don't book.</span>${res.by===st.me?`<button class="btn sm primary" data-act="res-book" data-id="${e.id}">Mark booked</button><button class="btn sm ghost" data-act="res-release" data-id="${e.id}">Release</button>`:""}</div>`
+      : res.status === "claimed" ? `<div class="strip"><span class="pill warn">Booking</span><span class="grow"><b>${esc(F(res.by).name)}</b> is calling ${esc(r.name)} now. Please don't book.${res.by===st.me && dietLine(e) ? `<br><b>Tell them:</b> ${esc(dietLine(e))}` : ""}</span>${res.by===st.me?`<button class="btn sm primary" data-act="res-book" data-id="${e.id}">Mark booked</button><button class="btn sm ghost" data-act="res-release" data-id="${e.id}">Release</button>`:""}</div>`
       : `<div class="strip"><span class="pill good">Reserved</span><span class="grow">by ${esc(F(res.by).name)}${res.conf?` · conf <span class="num">${esc(res.conf)}</span>`:""} · party of ${partySize(e)}</span></div>`;
   }
   // rsvp
@@ -994,6 +1157,8 @@ function pastCard(e){
   return `<article class="card">
     <div style="display:flex;gap:10px;align-items:center">${av(e.host,"sm")}<div style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-weight:500;font-size:18px">${esc(r.name)}</b><div class="small muted">${esc(e.title)} · ${fmtDate(e.date)}${led?` · ${ledgerText(led)}`:""}</div></div>${avgOf(r.id)?`<span class="num small" style="color:var(--brass)">★ ${avgOf(r.id).toFixed(1)}</span>`:""}</div>
     ${ns.map(n => `<div class="note">${av(n.by,"sm")}<div><b class="small">${esc(F(n.by).name)}</b> <span class="small muted">${fmtDate(n.date)}</span><p>${esc(n.text)}</p></div></div>`).join("")}
+    ${photoGrid(e.id)}
+    <button class="btn sm" style="justify-self:start" data-act="photo-add" data-id="${e.id}">+ Add photos of the night</button>
     <div style="display:flex;gap:8px"><input class="input" id="note-${e.id}" placeholder="Share a moment from the night"><button class="btn" data-act="note" data-id="${e.id}">Post</button></div>
   </article>`;
 }
@@ -1023,6 +1188,12 @@ function vTable(){
     <div class="lbl" style="margin-top:6px">TREATS SO FAR</div>
     <div style="display:flex;flex-wrap:wrap;gap:12px">${st.fam.map(f => `<span style="display:flex;align-items:center;gap:6px">${av(f.id,"sm")}<span class="num">${treatCount(f.id)}</span></span>`).join("")}</div>
   </section>
+  <button class="g-hero" data-act="gallery" style="${st.photos.length ? "" : "padding:22px;background:var(--surface);border:1px solid var(--line);color:var(--ink)"}">${st.photos.length ? `<img src="${[...st.photos].sort((a,b)=>b.t-a.t)[0].data}" alt=""><span class="cap"><span>${st.photos.length} moments</span><b>Sights &amp; Sounds</b><span>Open the family gallery</span></span>` : `<span class="eyebrow">Gallery</span><br><b style="font-family:var(--f-display);font-weight:500;font-size:22px">Sights &amp; Sounds</b><br><span class="small muted">Food, places and family photos, all in one album.</span>`}</button>
+  <section class="card">
+    <div class="sec-head"><h2 style="font-size:20px">Never Again</h2><span class="small muted num">${Object.keys(st.blocked).length}</span></div>
+    <p class="small muted" style="margin:0">Places with a bad experience. They're hidden from recommendations, votes and planning.</p>
+    <div>${Object.entries(st.blocked).map(([rid,b]) => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--bad)">✕</span><span style="min-width:0"><b>${esc(RBY[rid].name)}</b><small>“${esc(b.reason || "Bad experience")}” — ${esc(first(F(b.by).name))}, ${fmtDate(b.date)}</small></span><button class="btn sm ghost" data-act="unblock" data-rid="${rid}">Remove</button></div>`).join("") || `<div class="empty">Nothing here, and let's keep it that way.</div>`}</div>
+  </section>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Family at the table</h2><span class="small muted num">${st.fam.length} seats</span></div>
     <div>${st.fam.map(f => personRow("fam", f)).join("")}</div>
@@ -1041,7 +1212,7 @@ function vTable(){
 }
 function personRow(kind, p){
   const lead = kind === "fam" ? av(p.id) : `<span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc((p.name||"?")[0])}</span>`;
-  const sub = [kind === "contact" ? p.relation : "", p.email, p.phone].filter(Boolean).join(" · ") || "No email or phone yet";
+  const sub = [kind === "contact" ? p.relation : "", p.email, p.phone, p.birthday ? "Birthday " + parse(p.birthday).toLocaleDateString(undefined,{month:"short",day:"numeric"}) : "", p.diet].filter(Boolean).join(" · ") || "No email or phone yet";
   return `<div class="person">${lead}<span style="min-width:0"><b>${esc(p.name)}</b>${kind==="fam"&&p.id===st.me?' <span class="pill brass">you</span>':""}<small>${esc(sub)}</small></span><button class="btn sm ghost" data-act="person-edit" data-kind="${kind}" data-id="${p.id}">Edit</button></div>`;
 }
 
@@ -1061,6 +1232,10 @@ function sheetTips(){
     ["Check in","Tap “I'm on my way”, then “I've arrived”. Everyone can see who's at the table."],
     ["Guests","Pick guests from Contacts or add someone new. Each guest needs a show of hands from a majority of the family."],
     ["Contacts","Our Table → add family seats and contacts with email and mobile. “Email invitation” addresses everyone at once."],
+    ["Running late & table ready","On the dinner card, tap “Running late” and pick minutes. The first one there taps “Our table is ready”."],
+    ["Sights & Sounds","Share photos of the food, the place and the family. They're arranged by month in the gallery."],
+    ["Never Again","Had a bad night? Add the place to Never Again with a reason. It disappears from picks and votes."],
+    ["Birthday radar","Add birthdays and dietary notes under Our Table. Three weeks out, everyone gets a nudge with the birthday person's favorites."],
     ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Mark it booked with the confirmation number."],
     ["The 90-day rule","The Sunday pick never repeats a restaurant chosen in the last 3 months. After that it comes “back in rotation”."],
     ["Concierge","On the night, open Concierge & tip for wine ideas, a tax-aware bill splitter and a tip based on how the service felt."],
@@ -1084,6 +1259,8 @@ function sheetPerson(kind, id){
     ${kind==="contact" ? `<div class="field"><label for="pp-rel">Relationship</label><input class="input" id="pp-rel" value="${esc(p.relation)}" placeholder="e.g. Cousin, Jasmine's fiancé"></div>` : ""}
     <div class="field"><label for="pp-email">Email</label><input class="input" id="pp-email" type="email" value="${esc(p.email)}" placeholder="name@email.com"></div>
     <div class="field"><label for="pp-phone">Mobile</label><input class="input" id="pp-phone" type="tel" value="${esc(p.phone)}" placeholder="(901) 555-0123"></div>
+    ${kind==="fam" ? `<div class="field"><label for="pp-bday">Birthday</label><input class="input" id="pp-bday" type="date" value="${esc(p.birthday||"")}"></div>
+    <div class="field"><label for="pp-diet">Allergies &amp; dietary notes</label><input class="input" id="pp-diet" value="${esc(p.diet||"")}" placeholder="e.g. Shellfish allergy, no pork"></div>` : ""}
     <button class="btn primary block" data-act="person-save" data-kind="${kind}" data-id="${id||""}">Save</button>
     ${!isNew && !(kind==="fam" && id===st.me) ? `<button class="btn ghost block" data-act="person-del" data-kind="${kind}" data-id="${id}">Remove ${kind==="fam"?"from the table":"contact"}</button>` : ""}`);
 }
@@ -1097,6 +1274,99 @@ function sheetAskGuest(id){
     <div class="lbl">SOMEONE NEW</div>
     <div class="grid2"><input class="input" id="g-name" placeholder="Name" aria-label="Guest name"><input class="input" id="g-email" type="email" placeholder="Email (optional)" aria-label="Guest email"></div>
     <button class="btn primary block" data-act="ask-guest-go" data-id="${id}">Ask the family</button>`);
+}
+
+/* Photos of the night (downscaled so they fit on the phone) */
+const photosOf = id => st.photos.filter(p => p.eventId === id);
+const photoGrid = id => { const ps = photosOf(id); return ps.length ? `<div class="photos">${ps.map(p => `<button data-act="photo" data-id="${p.id}" aria-label="Photo by ${esc(first(F(p.by).name))}"><img src="${p.data}" alt=""></button>`).join("")}</div>` : ""; };
+const PCATS = [["food","The food"],["place","The place"],["sights","Sights & sounds"],["family","Family"]];
+const pcat = k => (PCATS.find(c => c[0] === k) || PCATS[0])[1];
+function downscale(file){
+  return new Promise((ok, bad) => { const rd = new FileReader();
+    rd.onload = () => { const img = new Image();
+      img.onload = () => { const k = Math.min(1, 1000 / Math.max(img.width, img.height)); const c = document.createElement("canvas");
+        c.width = Math.round(img.width*k); c.height = Math.round(img.height*k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .72)); };
+      img.onerror = bad; img.src = rd.result; };
+    rd.onerror = bad; rd.readAsDataURL(file); });
+}
+let photoDraft = null;
+function sheetAddPhoto(eventId){
+  const e = eventId ? ev(eventId) : null;
+  photoDraft = {eventId: eventId || null, cat: "food", files: []};
+  const rs = R.filter(r => r.city === "Memphis" || r.id === e?.chosen).sort((a,b) => a.name.localeCompare(b.name));
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Sights &amp; Sounds</div><h2>Share photos</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <label class="btn primary block">Choose photos<input type="file" accept="image/*" multiple hidden id="ph-file"></label>
+    <div class="photos" id="ph-prev"></div>
+    <div class="field"><span class="lbl">WHAT IS IT?</span><div class="chips" style="flex-wrap:wrap">${PCATS.map(([k,l]) => `<button class="chip" data-act="ph-cat" data-k="${k}" aria-pressed="${k==="food"}">${l}</button>`).join("")}</div></div>
+    <div class="field"><label for="ph-cap">Caption</label><input class="input" id="ph-cap" placeholder="e.g. Dry ribs, extra sauce"></div>
+    <div class="field"><label for="ph-rest">Where</label><select class="input" id="ph-rest"><option value="">Somewhere else</option>${rs.map(r => `<option value="${r.id}" ${r.id===e?.chosen?"selected":""}>${esc(r.name)}</option>`).join("")}</select></div>
+    <button class="btn wine block" data-act="ph-save">Share with the family</button>
+    <p class="proto">The full app also takes short videos and voice notes, stored in the cloud.</p>`);
+  document.getElementById("ph-file").addEventListener("change", x => {
+    photoDraft.files = [...x.target.files].slice(0, 12);
+    document.getElementById("ph-prev").innerHTML = photoDraft.files.map(f => `<button disabled><img src="${URL.createObjectURL(f)}" alt=""></button>`).join("");
+  });
+}
+async function savePhotos(){
+  const d = photoDraft; if(!d.files.length){ toast("Choose at least one photo"); return; }
+  const caption = document.getElementById("ph-cap").value.trim(); const rid = document.getElementById("ph-rest").value || null;
+  let added = 0;
+  for(const f of d.files){
+    try { const data = await downscale(f); st.photos.push({id:uid("p"), eventId:d.eventId, rid, cat:d.cat, caption, by:st.me, t:Date.now(), data});
+      if(!save()){ st.photos.pop(); toast("This phone's storage is full. Remove a few photos first."); break; } added++; }
+    catch { toast("One file couldn't be read as a photo"); }
+  }
+  if(added){ alertAll(`${first(ME().name)} shared ${added} photo${added>1?"s":""}${rid ? " from " + RBY[rid].name : ""}.`, d.eventId); save(); }
+  closeSheet(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); render(); if(added) toast(`${added} photo${added>1?"s":""} added to Sights & Sounds`);
+}
+function sheetPhoto(id){
+  const p = st.photos.find(x => x.id === id); if(!p) return; const e = ev(p.eventId); const r = p.rid ? RBY[p.rid] : e?.chosen ? RBY[e.chosen] : null;
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">${pcat(p.cat)}${r ? " · " + esc(r.name) : ""}</div><h2>${esc(p.caption || (e?.title) || "From the table")}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <img src="${p.data}" alt="${esc(p.caption || "Family photo")}" style="width:100%;border-radius:12px">
+    <div class="small muted">Shared by ${esc(first(F(p.by).name))} · ${new Date(p.t).toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})}</div>
+    ${p.by === st.me ? `<button class="btn ghost block" data-act="photo-del" data-id="${p.id}">Remove photo</button>` : ""}`);
+}
+const galleryEl = document.getElementById("gallery"); let galCat = "all";
+function openGallery(){ galleryEl.hidden = false; document.body.style.overflow = "hidden"; drawGallery(); }
+function closeGallery(){ galleryEl.hidden = true; document.body.style.overflow = ""; render(); }
+function tileHTML(p){ const r = p.rid ? RBY[p.rid] : null;
+  return `<button class="tile" data-act="photo" data-id="${p.id}"><img src="${p.data}" alt="${esc(p.caption || pcat(p.cat))}" loading="lazy"><span class="meta"><b>${esc(p.caption || pcat(p.cat))}</b><span>${r ? esc(r.name) + " · " : ""}${esc(first(F(p.by).name))}</span></span></button>`; }
+function drawGallery(){
+  const all = [...st.photos].sort((a,b) => b.t - a.t); const list = galCat === "all" ? all : all.filter(p => p.cat === galCat);
+  const hero = list[0]; const rest = list.slice(1);
+  const groups = {}; rest.forEach(p => { const k = new Date(p.t).toLocaleDateString(undefined,{month:"long",year:"numeric"}); (groups[k] ||= []).push(p); });
+  galleryEl.innerHTML = `<div class="ov-inner">
+    <div class="ov-bar"><span class="eyebrow">${st.photos.length} moment${st.photos.length===1?"":"s"}</span><button class="icon-btn" data-act="gallery-close" aria-label="Close">✕</button></div>
+    <div><h1 style="font-size:34px">Sights &amp; Sounds</h1><p class="muted" style="margin:4px 0 0">The food, the places and the people, all in one album.</p></div>
+    <div class="chips"><button class="chip" data-act="gal-cat" data-k="all" aria-pressed="${galCat==="all"}">Everything</button>${PCATS.map(([k,l]) => `<button class="chip" data-act="gal-cat" data-k="${k}" aria-pressed="${galCat===k}">${l} · ${st.photos.filter(p => p.cat===k).length}</button>`).join("")}</div>
+    <button class="btn primary block" data-act="photo-add">+ Share photos</button>
+    ${hero ? `<button class="g-hero" data-act="photo" data-id="${hero.id}"><img src="${hero.data}" alt="${esc(hero.caption || pcat(hero.cat))}"><span class="cap"><span>${pcat(hero.cat)}</span><b>${esc(hero.caption || (hero.rid ? RBY[hero.rid].name : "From the table"))}</b><span>${esc(first(F(hero.by).name))} · ${ago(hero.t)}</span></span></button>`
+      : `<div class="empty">No photos here yet. Share the first plate, the room, or the view on the drive.</div>`}
+    ${Object.entries(groups).map(([m, ps]) => `<div class="g-month">${m}</div><div class="masonry">${ps.map(tileHTML).join("")}</div>`).join("")}
+  </div>`;
+}
+
+/* Never Again list (the family blacklist) */
+const isBlocked = rid => !!st.blocked[rid];
+function sheetBlock(rid, reason = ""){
+  const r = RBY[rid];
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Never Again list</div><h2>${esc(r.name)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small muted" style="margin:0">It stops showing up in recommendations, votes and planning. The whole family sees why.</p>
+    <div class="field"><label for="bl-reason">What happened?</label><textarea class="input" id="bl-reason" placeholder="e.g. Waited 90 minutes, cold food, rude to Mario">${esc(reason)}</textarea></div>
+    <button class="btn wine block" data-act="block-go" data-rid="${rid}">Add to Never Again</button>`);
+}
+const dietLine = e => st.fam.filter(f => f.diet && e.rsvp?.[f.id] !== "no").map(f => `${first(f.name)}: ${f.diet}`).join("; ");
+
+/* Birthday radar: 3 weeks out, with the birthday person's favorites */
+function radarList(){
+  return st.fam.filter(f => f.birthday && f.id !== st.me).map(f => {
+    const [, m, d] = f.birthday.split("-").map(Number);
+    let date = new Date(today0.getFullYear(), m-1, d); if(date < today0) date = new Date(today0.getFullYear()+1, m-1, d);
+    const days = Math.round((date - today0)/DAY);
+    const mine = {}; st.reviews.filter(r => r.by === f.id).forEach(r => { const v = Object.values(r.scores); (mine[r.rid] ||= []).push(v.reduce((a,b)=>a+b,0)/v.length); });
+    const favs = Object.entries(mine).map(([rid,a]) => [rid, a.reduce((x,y)=>x+y,0)/a.length]).filter(([rid]) => !isBlocked(rid)).sort((a,b) => b[1]-a[1]).slice(0,2);
+    return {f, date, days, favs};
+  }).filter(x => x.days <= 21).sort((a,b) => a.days - b.days);
 }
 
 /* Invitations by email / copy */
@@ -1119,10 +1389,10 @@ function lockEvent(e){
   e.chosen = leaders.includes(hv) ? hv : leaders[0]; e.status = "set"; save();
 }
 const liveEl = document.getElementById("live"), revealEl = document.getElementById("reveal");
-let liveId = null, liveTimer = null, simOn = true;
+let liveId = null, liveTimer = null, simOn = DEMO;
 function openLive(id){
   const e = ev(id); if(!e || e.status !== "open") return;
-  if(!e.voteEnds){ e.voteEnds = Date.now() + VOTE_MS; save(); toast("Vote is open — the family has 10 minutes"); }
+  if(!e.voteEnds){ e.voteEnds = Date.now() + VOTE_MS; alertAll(`${first(ME().name)} opened the 10-minute vote for ${e.title}. Vote now!`, e.id); save(); toast("Vote is open — the family has 10 minutes"); }
   liveId = id; liveEl.hidden = false; document.body.style.overflow = "hidden"; drawLive();
   clearInterval(liveTimer); liveTimer = setInterval(tickLive, 1000);
 }
@@ -1134,11 +1404,12 @@ function tickLive(){
     if(missing.length){ const m = missing[Math.floor(Math.random()*missing.length)]; e.votes[m.id] = e.options[Math.floor(Math.random()*e.options.length)]; save(); drawLive(); toast(`${m.name} voted`); }
   }
   const left = e.voteEnds - Date.now();
+  if(left < 120000 && !e.warned2){ e.warned2 = true; st.fam.filter(f => !e.votes[f.id]).forEach(f => st.alerts.push({id:uid("a"),to:f.id,text:`2 minutes left to vote for ${e.title}.`,eventId:e.id,t:Date.now(),read:false})); save(); }
   if(left <= 0 || Object.keys(e.votes).length >= st.fam.length){ finishLive(e); return; }
   const c = document.getElementById("cd"); if(c){ c.textContent = mmss(left); c.classList.toggle("low", left < 60000); }
 }
 function finishLive(e){
-  if(e.status === "open") lockEvent(e);
+  if(e.status === "open"){ lockEvent(e); alertAll(`The family chose ${RBY[e.chosen].name} for ${e.title}. See you at ${fmtTime(e.time)}.`, e.id, null); save(); }
   clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = "";
   render(); openReveal(e.id);
 }
@@ -1150,6 +1421,7 @@ function drawLive(){
     <div class="live-head">
       <h2 style="font-size:26px">${esc(e.title)}</h2>
       <div class="small muted">${fmtLong(e.date)} · ${fmtTime(e.time)}</div>
+      ${e.cap ? `<span class="pill brass">Budget: ${e.cap === 1 ? "$ only" : "up to " + "$".repeat(e.cap)}</span>` : ""}
       <div class="cd ${left<60000?"low":""}" id="cd">${mmss(left)}</div>
       <div class="small">${n} of ${st.fam.length} voted <span class="stack" style="vertical-align:middle;margin-left:6px">${Object.keys(e.votes).map(m => av(m,"xs")).join("")}</span></div>
       <div class="small muted">Waiting on ${st.fam.filter(f => !e.votes[f.id]).map(f => esc(f.name)).join(", ") || "no one"}</div>
@@ -1173,7 +1445,7 @@ function drawLive(){
 liveEl.addEventListener("change", e => { if(e.target.id === "sim") simOn = e.target.checked; });
 function sheetBallotAdd(){
   const e = ev(liveId);
-  const pool = R.filter(r => r.city === "Memphis" && meals(r).dinner && !e.options.includes(r.id) && rotationState(r.id, e.date).state !== "resting").sort((a,b) => a.name.localeCompare(b.name));
+  const pool = R.filter(r => r.city === "Memphis" && meals(r).dinner && !e.options.includes(r.id) && !isBlocked(r.id) && (!e.cap || r.price <= e.cap) && rotationState(r.id, e.date).state !== "resting").sort((a,b) => a.name.localeCompare(b.name));
   openSheet(`<div class="sheet-head"><h2>Add to the ballot</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="search">${I.search}<input class="input" id="ba-q" type="search" placeholder="Search Memphis restaurants"></div>
     <div class="pick-list" id="ba-list" style="max-height:55vh">${pool.map(r => `<button class="pick" data-act="ballot-add" data-rid="${r.id}" data-s="${esc((r.name+" "+r.cuisine.join(" ")).toLowerCase())}"><span class="grow"><b>${esc(r.name)}</b><small>${r.cuisine[0]} · ${costText(r)}</small></span></button>`).join("")}</div>`);
@@ -1220,16 +1492,27 @@ function drawReveal(){
     </div>
     <section class="card">
       <div class="lbl">CHECK IN</div>
+      ${st.tableReady[e.id] ? `<div class="ready">✓ Our table is ready — ${esc(first(F(st.tableReady[e.id].by).name))} is seated</div>` : ""}
       <div class="seg" role="group" aria-label="My status">
-        <button data-act="arrive" data-s="way" aria-pressed="${mine==="way"}">I'm on my way</button>
+        <button data-act="arrive" data-s="way" aria-pressed="${mine==="way"}">On my way</button>
+        <button data-act="arrive" data-s="late" aria-pressed="${mine==="late"}">Running late</button>
         <button data-act="arrive" data-s="here" aria-pressed="${mine==="here"}">I've arrived</button>
       </div>
+      ${mine === "late" ? `<div class="eta"><span class="small muted" style="align-self:center">About</span>${[5,10,15,20,30].map(m => `<button class="chip" data-act="eta" data-m="${m}" aria-pressed="${ar[st.me].eta===m}">${m} min</button>`).join("")}</div>` : ""}
+      ${mine === "here" && !st.tableReady[e.id] ? `<button class="btn primary" data-act="table-ready">Our table is ready — tell everyone</button>` : ""}
       <div>${coming.map(f => { const a = ar[f.id];
-        const pill = !a ? '<span class="pill">Not left yet</span>' : a.s === "way" ? `<span class="pill warn">On the way · ${fmtClock(a.t)}</span>` : `<span class="pill good">Here · ${fmtClock(a.t)}</span>`;
+        const pill = !a ? '<span class="pill">Not left yet</span>' : a.s === "way" ? `<span class="pill warn">On the way · ${fmtClock(a.t)}</span>` : a.s === "late" ? `<span class="pill bad">Late · ~${a.eta||10} min</span>` : `<span class="pill good">Here · ${fmtClock(a.t)}</span>`;
         return `<div class="arr">${av(f.id,"sm")}<span><b>${esc(F(f.id).name)}</b></span>${pill}</div>`; }).join("")}
         ${e.guests.filter(guestApproved).map(g => `<div class="arr"><span class="avatar sm" style="background:var(--surface-2);color:var(--ink)">${esc(g.name[0])}</span><span><b>${esc(g.name)}</b><small>guest</small></span><span class="pill">Guest</span></div>`).join("")}
       </div>
       <div class="small muted">${Object.values(ar).filter(a => a.s==="here").length} of ${coming.length} family at the table</div>
+    </section>
+    ${(() => { const notes = coming.filter(f => F(f.id).diet).map(f => `<div class="sup"><span class="ic">!</span><span><b>${esc(first(F(f.id).name))}:</b> ${esc(F(f.id).diet)}</span></div>`).join("");
+      return notes ? `<section class="card"><div class="lbl">TELL YOUR SERVER</div>${notes}</section>` : ""; })()}
+    <section class="card">
+      <div class="lbl">PHOTOS FROM TONIGHT</div>
+      ${photoGrid(e.id)}
+      <button class="btn sm" style="justify-self:start" data-act="photo-add" data-id="${e.id}">+ Add photos</button>
     </section>
     <section class="card">
       <div class="lbl">TONIGHT'S HIGHLIGHTS</div>
@@ -1242,6 +1525,7 @@ function drawReveal(){
 function sheetBook(id){
   openSheet(`<div class="sheet-head"><h2>Reservation booked</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="field"><label for="b-conf">Confirmation number (optional)</label><input class="input" id="b-conf" placeholder="e.g. OT-38291"></div>
+    ${dietLine(ev(id)) ? `<div class="warnbox"><b>Tell the restaurant:</b> ${esc(dietLine(ev(id)))}</div>` : ""}
     <p class="small muted" style="margin:0">Party of ${partySize(ev(id))} confirmed so far. The full build connects OpenTable / Resy to book in-app.</p>
     <button class="btn primary block" data-act="res-book-go" data-id="${id}">Save &amp; tell the family</button>`);
 }
@@ -1328,6 +1612,7 @@ document.addEventListener("click", e => {
       if(!name){ toast("Add a name to save"); return; }
       const data = {name, email:document.getElementById("pp-email").value.trim(), phone:document.getElementById("pp-phone").value.trim()};
       if(kind === "contact") data.relation = document.getElementById("pp-rel").value.trim();
+      else { data.birthday = document.getElementById("pp-bday").value; data.diet = document.getElementById("pp-diet").value.trim(); }
       const list = kind === "fam" ? st.fam : st.contacts;
       const p = id && list.find(x => x.id === id);
       if(p) Object.assign(p, data);
@@ -1347,7 +1632,13 @@ document.addEventListener("click", e => {
     case "live-end": finishLive(ev(liveId)); break;
     case "reveal": openReveal(id); break;
     case "reveal-close": closeReveal(); break;
-    case "arrive": { const e2 = ev(revealId); st.arrivals[e2.id] ||= {}; st.arrivals[e2.id][st.me] = {s:b.dataset.s, t:Date.now()}; save(); drawReveal(); toast(b.dataset.s === "here" ? "Checked in. The family can see you're here" : "The family knows you're on the way"); break; }
+    case "arrive": { const e2 = ev(revealId); const sv = b.dataset.s; st.arrivals[e2.id] ||= {}; st.arrivals[e2.id][st.me] = {s:sv, t:Date.now(), eta:sv === "late" ? 10 : null};
+      const nm = first(ME().name); alertAll(sv === "here" ? `${nm} has arrived at ${RBY[e2.chosen].name}.` : sv === "late" ? `${nm} is running late, about 10 minutes.` : `${nm} is on the way.`, e2.id);
+      save(); drawReveal(); toast(sv === "here" ? "Checked in. The family can see you're here" : sv === "late" ? "Pick how late you'll be" : "The family knows you're on the way"); break; }
+    case "eta": { const e2 = ev(revealId); const a = st.arrivals[e2.id][st.me]; a.eta = +b.dataset.m; alertAll(`${first(ME().name)} is running late, about ${a.eta} minutes.`, e2.id); save(); drawReveal(); toast(`Everyone knows: about ${a.eta} minutes`); break; }
+    case "table-ready": { const e2 = ev(revealId); st.tableReady[e2.id] = {by:st.me, t:Date.now()}; alertAll(`Our table is ready at ${RBY[e2.chosen].name}. ${first(ME().name)} is seated.`, e2.id); save(); drawReveal(); toast("Everyone's been told the table is ready"); break; }
+    case "photo": sheetPhoto(id); break;
+    case "photo-del": st.photos = st.photos.filter(x => x.id !== id); save(); closeSheet(); render(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); toast("Photo removed"); break;
     case "copy-invite": { const txt = inviteText(ev(id)); navigator.clipboard?.writeText(txt).then(() => toast("Invitation copied — paste it into a text"), () => toast("Couldn't copy on this device")); break; }
     case "reset-all": if(b.dataset.armed){ localStorage.removeItem(KEY); st = seed(); st.me = "m1"; save(); draft = null; render(); toast("Prototype data reset"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to reset"; } break;
     case "rest": sheetRest(b.dataset.rid); break;
@@ -1372,26 +1663,45 @@ document.addEventListener("click", e => {
     case "reset-plan": newDraft(); render(); break;
     case "send": {
       const d = draft; if(!d.options.length) return;
-      const e2 = {id:uid("e"),type:d.type,mode:d.mode,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
+      const e2 = {id:uid("e"),type:d.type,mode:d.mode,cap:+d.cap||0,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
         chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(g => ({id:uid("g"),name:g.name,email:g.email||"",contactId:g.contactId||null,by:st.me,hands:[st.me]})),
         reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
-      st.events.push(e2); save(); draft = null; go("feed"); toast(d.mode==="host" ? "Invitation sent to the family" : "Vote sent — everyone's been alerted"); break; }
+      st.events.push(e2);
+      alertAll(d.mode==="host" ? `${first(ME().name)} invited you to ${e2.title} at ${RBY[e2.chosen].name}.` : `${first(ME().name)} started a vote for ${e2.title}.`, e2.id);
+      e2.guests.forEach(g => alertAll(`${first(ME().name)} asked to bring ${g.name} to ${e2.title}. Raise a hand?`, e2.id));
+      save(); draft = null; go("feed");
+      if(d.mode==="host") openInvite(e2.id, `Sent to ${st.fam.length-1} family members`); else toast("Vote sent — everyone's been alerted"); break; }
+    case "invite-open": openInvite(id); break;
+    case "invite-close": closeInvite(); break;
+    case "invite-rsvp": { const e2 = ev(inviteId); e2.rsvp[st.me] = b.dataset.v; if(b.dataset.v !== "maybe") st.alerts.push({id:uid("a"),to:e2.host,text:`${first(ME().name)} ${b.dataset.v==="yes"?"accepted":"declined"} your invitation to ${e2.title}.`,eventId:e2.id,t:Date.now(),read:false}); save(); drawInvite(); toast(b.dataset.v==="yes" ? "Wonderful — see you there" : b.dataset.v==="no" ? "We'll miss you" : "Marked as maybe"); break; }
+    case "alerts": sheetAlerts(); break;
+    case "gallery": closeSheet(); openGallery(); break;
+    case "gallery-close": closeGallery(); break;
+    case "gal-cat": galCat = b.dataset.k; drawGallery(); break;
+    case "photo-add": sheetAddPhoto(id || null); break;
+    case "ph-cat": photoDraft.cat = b.dataset.k; sheet.querySelectorAll('[data-act="ph-cat"]').forEach(x => x.setAttribute("aria-pressed", x === b)); break;
+    case "ph-save": savePhotos(); break;
+    case "block": sheetBlock(b.dataset.rid); break;
+    case "block-go": { const rid = b.dataset.rid; st.blocked[rid] = {by:st.me, reason:document.getElementById("bl-reason").value.trim(), date:iso(today0)}; alertAll(`${first(ME().name)} added ${RBY[rid].name} to the Never Again list.`); save(); closeSheet(); render(); toast(`${RBY[rid].name} is on the Never Again list`); break; }
+    case "unblock": { const rid = b.dataset.rid; delete st.blocked[rid]; save(); closeSheet(); render(); toast(`${RBY[rid].name} is back in the mix`); break; }
+    case "plan-bday": { const f = F(id); newDraft("birthday"); draft.title = `${first(f.name)}'s Birthday`; const fav = radarList().find(x => x.f.id === id)?.favs[0]; if(fav) draft.options = [fav[0]]; go("plan"); break; }
+    case "alert-go": closeSheet(); if(id){ const e2 = ev(id); if(e2 && e2.status === "set" && e2.rsvp[st.me] === undefined) openInvite(id); else { go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth"}), 60); } } break;
     // feed
     case "vote": { const e2 = ev(id); if(e2.status !== "open") return; e2.votes[st.me] = b.dataset.rid; save(); render(); toast(`Voted for ${RBY[b.dataset.rid].name}`); break; }
     case "lock": { const e2 = ev(id); lockEvent(e2); render(); openReveal(id); break; }
     case "rsvp": ev(id).rsvp[st.me] = b.dataset.v; save(); render(); break;
-    case "hand": { const g = ev(id).guests.find(x => x.id === b.dataset.g); const i = g.hands.indexOf(st.me); i >= 0 ? g.hands.splice(i,1) : g.hands.push(st.me); save(); render(); if(guestApproved(g)) toast(`${g.name} is welcome at the table`); break; }
+    case "hand": { const g = ev(id).guests.find(x => x.id === b.dataset.g); const i = g.hands.indexOf(st.me); i >= 0 ? g.hands.splice(i,1) : g.hands.push(st.me); save(); render(); if(guestApproved(g)){ toast(`${g.name} is welcome at the table`); alertAll(`The family said yes: ${g.name} is joining ${ev(id).title}.`, id); save(); } break; }
     case "ask-guest": sheetAskGuest(id); break;
     case "ask-guest-go": {
       const e2 = ev(id); const v = document.getElementById("g-name").value.trim(); const em = document.getElementById("g-email").value.trim();
       if(v){ const c = {id:uid("c"), name:v, email:em, phone:"", relation:`Guest of ${ME().name}`}; st.contacts.push(c); guestPick.add(c.id); }
       if(!guestPick.size){ toast("Pick a contact or type a name"); return; }
-      guestPick.forEach(cid => { const c = st.contacts.find(x => x.id === cid); e2.guests.push({id:uid("g"),name:c.name,email:c.email||"",contactId:c.id,by:st.me,hands:[st.me]}); });
+      guestPick.forEach(cid => { const c = st.contacts.find(x => x.id === cid); e2.guests.push({id:uid("g"),name:c.name,email:c.email||"",contactId:c.id,by:st.me,hands:[st.me]}); alertAll(`${first(ME().name)} asked to bring ${c.name} to ${e2.title}. Raise a hand?`, e2.id); });
       const n = guestPick.size; save(); closeSheet(); render(); toast(`Asked the family about ${n} guest${n>1?"s":""} — hands up!`); break; }
-    case "res-claim": { const e2 = ev(id); if(e2.reservation.status !== "none"){ toast(`${F(e2.reservation.by).name} already has it`); return; } e2.reservation = {status:"claimed",by:st.me,conf:""}; save(); render(); toast("Everyone can see you're booking"); break; }
+    case "res-claim": { const e2 = ev(id); if(e2.reservation.status !== "none"){ toast(`${F(e2.reservation.by).name} already has it`); return; } e2.reservation = {status:"claimed",by:st.me,conf:""}; alertAll(`${first(ME().name)} is calling ${RBY[e2.chosen].name} to book. No need to call.`, e2.id); save(); render(); toast("Everyone can see you're booking"); break; }
     case "res-release": ev(id).reservation = {status:"none",by:null,conf:""}; save(); render(); break;
     case "res-book": sheetBook(id); break;
-    case "res-book-go": { const e2 = ev(id); e2.reservation = {status:"booked",by:st.me,conf:document.getElementById("b-conf").value.trim()}; save(); closeSheet(); render(); toast("Reservation confirmed for the family"); break; }
+    case "res-book-go": { const e2 = ev(id); e2.reservation = {status:"booked",by:st.me,conf:document.getElementById("b-conf").value.trim()}; alertAll(`${first(ME().name)} booked ${RBY[e2.chosen].name} for ${e2.title}.`, e2.id); save(); closeSheet(); render(); toast("Reservation confirmed for the family"); break; }
     case "cancel": if(b.dataset.armed){ st.events = st.events.filter(x => x.id !== id); save(); render(); toast("Plan cancelled"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to cancel"; } break;
     case "concierge": sheetConcierge(id); break;
     case "svc": sheet.dataset.svc = b.dataset.n; sheet.querySelectorAll('[data-act="svc"]').forEach(x => x.setAttribute("aria-pressed", x === b)); calc(); break;
@@ -1410,7 +1720,8 @@ document.addEventListener("click", e => {
       st.ledger = st.ledger.filter(l => l.eventId !== e2.id);
       st.ledger.push({eventId:e2.id,rid:e2.chosen,date:e2.date,payer:pay==="all"||pay==="for"?st.me:null,mode:pay,forWhom:pay==="for"?document.getElementById("w-for").value:null,amount:amt});
       if(moment) st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:e2.id,text:moment});
-      e2.status = "done"; save(); closeSheet(); render(); toast("Saved — thanks for the review"); break; }
+      e2.status = "done"; save(); closeSheet(); render(); const avgMine = Object.values(sc).reduce((x,y)=>x+y,0)/6;
+      if(avgMine <= 2.2) setTimeout(() => sheetBlock(e2.chosen, text), 250); else toast("Saved — thanks for the review"); break; }
     case "note": { const inp = document.getElementById("note-"+id); const v = inp.value.trim(); if(!v) return; st.notes.push({id:uid("n"),by:st.me,date:iso(today0),eventId:id,text:v}); save(); render(); break; }
   }
 });

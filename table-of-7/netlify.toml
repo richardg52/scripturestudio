@@ -1,0 +1,17 @@
+# Netlify settings for the Table of 7 site.
+# In Netlify, set Base directory = table-of-7 so this file is used
+# (and the Scripture Studio settings at the repo root are ignored).
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
