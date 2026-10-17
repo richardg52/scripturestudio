@@ -865,7 +865,7 @@ const localDay = s => { const d = new Date(s); return `${d.getFullYear()}-${Stri
 const SCORE_KEYS = ["food","service","price","selection","clean","location"];
 const PK = {members:["id"], contacts:["id"], events:["id"], event_options:["event_id","restaurant_id"], votes:["event_id","member_id"],
   rsvps:["event_id","member_id"], guests:["id"], guest_hands:["guest_id","member_id"], reservations:["event_id"], arrivals:["event_id","member_id"],
-  table_ready:["event_id"], visits:["id"], reviews:["id"], payments:["id"], notes:["id"], never_again:["family_id","restaurant_id"], want_to_try:["family_id","restaurant_id"],
+  table_ready:["event_id"], visits:["id"], reviews:["id"], payments:["id"], notes:["id"], never_again:["family_id","restaurant_id"], want_to_try:["family_id","restaurant_id"], standing_dinners:["id"],
   media:["id"], cards:["id"], tabs:["event_id"], tab_tickets:["event_id","owner"], tab_lines:["id"], alerts:["id"]};
 const ORDER = Object.keys(PK);   // parents before children
 const isDefaultTicket = (k, owner) => !k.items.length && k.status === "draft" && k.covers.length === 1 && k.covers[0] === owner && +k.tip === 20 && !k.note && !k.paidVia;
@@ -899,6 +899,8 @@ function rowsOf(s){
     mode:l.mode, for_member:nz(l.forWhom), amount:+l.amount || 0}); });
   s.notes.forEach(n => { n.at ||= new Date().toISOString(); put("notes", {id:n.id, family_id:fam, event_id:nz(n.eventId), member_id:n.by, text:n.text, status:n.status || "ok", at:n.at}); });
   Object.entries(s.blocked).forEach(([rid, b]) => put("never_again", {family_id:fam, restaurant_id:rid, by:nz(b.by), reason:nz(b.reason), date:b.date}));
+  (s.standing || []).forEach(x => put("standing_dinners", {id:x.id, family_id:fam, label:x.label, weekday:+x.weekday, nth:x.nth === "" || x.nth == null ? null : +x.nth, time:x.time,
+    lead_days:+x.lead, vote_minutes:+x.voteMin, dress:x.dress, active:!!x.active, created_by:x.by}));
   Object.entries(s.want || {}).forEach(([rid, w]) => { w.t ||= Date.now(); put("want_to_try", {family_id:fam, restaurant_id:rid, added_by:w.by, at:ms2iso(w.t)}); });
   s.photos.forEach(p => put("media", {id:p.id, family_id:fam, event_id:nz(p.eventId), restaurant_id:nz(p.rid), kind:"photo", category:nz(p.cat), caption:nz(p.caption),
     storage_path:p.path || `${fam}/${p.id}.jpg`, by:p.by, status:p.status, at:ms2iso(p.t)}));
@@ -921,7 +923,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","media","cards","tabs","tab_tickets","tab_lines","alerts"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -935,7 +937,7 @@ async function pull(){
     R.push(r); RBY[r.id] = r; if(!CITIES.includes(r.city)) CITIES.push(r.city); });
   const me = D.members.find(m => m.id === st.me) || D.members[0]; FAMILY = me?.family_id || null;
   ADMIN = D.members.find(m => m.role === "host")?.id || ADMIN;
-  const n = {fam:[], contacts:[], events:[], arrivals:{}, tableReady:{}, visits:[], reviews:[], ledger:[], notes:[], blocked:{}, want:{}, photos:[], cards:[], tabs:{}, alerts:[]};
+  const n = {fam:[], contacts:[], events:[], arrivals:{}, tableReady:{}, visits:[], reviews:[], ledger:[], notes:[], blocked:{}, want:{}, standing:[], runs:[], photos:[], cards:[], tabs:{}, alerts:[]};
   n.fam = D.members.map(m => ({id:m.id, name:m.name, color:m.color || COLORS[0], email:m.email || "", phone:m.mobile || "", birthday:m.birthday || "", diet:m.diet || "",
     zelle:m.zelle || "", cashtag:m.cashtag || "", applepay:m.applepay || "", status:m.status}));
   n.contacts = D.contacts.map(c => ({id:c.id, name:c.name, relation:c.relation || "", email:c.email || "", phone:c.mobile || "", banned:c.banned, addedBy:c.added_by}));
@@ -957,6 +959,8 @@ async function pull(){
   n.notes = D.notes.map(x => ({id:x.id, by:x.member_id, eventId:x.event_id, text:x.text, status:x.status, at:x.at, date:localDay(x.at)}));
   D.never_again.forEach(b => n.blocked[b.restaurant_id] = {by:b.by, reason:b.reason || "", date:b.date});
   D.want_to_try.forEach(w => n.want[w.restaurant_id] = {by:w.added_by, t:iso2ms(w.at)});
+  n.standing = D.standing_dinners.map(x => ({id:x.id, label:x.label, weekday:x.weekday, nth:x.nth, time:hhmm(x.time), lead:x.lead_days, voteMin:x.vote_minutes, dress:x.dress, active:x.active, by:x.created_by}));
+  n.runs = D.standing_runs.map(x => ({sid:x.standing_id, date:x.dinner_date, eventId:x.event_id}));
   const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
   const urls = {};
   if(paths.length){ const {data} = await sb.storage.from("media").createSignedUrls(paths, 6*3600); (data || []).forEach(u => { if(u.signedUrl) urls[u.path] = u.signedUrl; }); }
@@ -1009,7 +1013,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","media","cards","tabs","tab_tickets","tab_lines","alerts"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1073,6 +1077,15 @@ function rotationState(rid, target){
 /* Want to Try (his order, 2026-10-17): anyone saves a place they're curious about; the list shows who added
    it, and the Concierge suggests from it first. Only the person who saved it, or the host, takes it off. */
 const wantOf = rid => st.want?.[rid] || null;
+/* Standing dinners (his order, 2026-10-17): the host's repeating rule ("first Sunday of every month"). The SERVER opens
+   the vote at 9 AM Memphis time, lead days before the dinner (private.run_standing_dinners, pg_cron), claiming the
+   date first so it never fires twice. The app only edits the rules and shows when the next one comes. */
+const WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const NTH = [["","Every"],["1","First"],["2","Second"],["3","Third"],["4","Fourth"],["-1","Last"]];
+const sdMatch = (x, d) => d.getDay() === +x.weekday && (x.nth == null || x.nth === "" ||
+  (+x.nth > 0 && Math.floor((d.getDate() - 1) / 7) + 1 === +x.nth) || (+x.nth === -1 && add(d, 7).getMonth() !== d.getMonth()));
+function sdNext(x){ for(let k = 0; k < 400; k++){ const d = add(today0, k); if(sdMatch(x, d)){ const opens = add(d, -x.lead); if(opens >= today0 || (st.runs || []).some(r => r.sid === x.id && r.date === iso(d))) return {d, opens}; } } return null; }
+const sdRule = x => `${(NTH.find(([k]) => String(k) === String(x.nth ?? "")) || NTH[0])[1]} ${WEEKDAYS[x.weekday]}${x.nth == null || x.nth === "" ? "" : " of every month"} · ${fmtTime(x.time)}`;
 /* Question of the night (his order, 2026-10-17): a conversation starter on the dinner card, family- and
    faith-friendly. Each dinner takes the next question in a fixed shuffle of the list (step 7 through 60),
    ordered by the family's dinners by date, so two dinners in a row never share one and none repeats until all
@@ -1780,7 +1793,7 @@ function vTable(){
   const myReviews = st.reviews.filter(r => r.by === st.me).length;
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
-  ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts</small></span><span class="chev">${I.chev}</span></button>` : ""}
+  ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
     ${favs.map(([rid,c],i) => `<button class="fav" data-act="rest" data-rid="${rid}" style="background:none;border:0;border-bottom:1px solid var(--line);text-align:left;width:100%;color:inherit"><span class="rank">${i+1}</span><span style="min-width:0"><b>${esc(RBY[rid].name)}</b><span class="small muted">Last ${fmtDate(lastVisit(rid))}${avgOf(rid)?` · ${fmt10(avgOf(rid))}/10`:""}</span><div class="meter" style="margin-top:6px"><i style="width:${c/maxC*100}%"></i></div></span><span class="num">${c}×</span></button>`).join("")}
@@ -1855,7 +1868,8 @@ function sheetTips(){
     ["Dessert after","Add a second stop to any plan: a bakery, ice cream or dessert shop. When you plan, tap “+ Dessert after” under the restaurants; on a plan already sent, its host can add or change it. Everyone gets its own directions on the invitation, the plan and the dinner card."],
     ["Want to Try","Curious about a place? Open it and tap “☆ Want to try” (it works on Google results too). It shows who saved it, the Concierge suggests those places first, and Explore → Show → “Want to try” lists them all. Only the person who saved a place, or Richard, can take it off."],
     ["What I ordered","In the wrap-up, under your score, type what you ordered. It shows next to your score on the restaurant's page, and the next time the family dines there your dinner card says “Last time here, you had …”."],
-    ["Question of the night","Every dinner card has a conversation starter: family memories, gratitude, faith. Go around the table. The next dinner gets a different one, and none repeats until all 60 have been asked. Tap “Another question” to change it on your phone."]
+    ["Question of the night","Every dinner card has a conversation starter: family memories, gratitude, faith. Go around the table. The next dinner gets a different one, and none repeats until all 60 have been asked. Tap “Another question” to change it on your phone."],
+    ["Standing dinners","Richard can set a dinner that repeats, like the first Sunday of every month. At 9 AM, a few days before (he chooses how many), the family vote opens by itself with three choices from the Concierge, and every phone is told. Then it works like any vote: tap Start, vote, lock in."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1889,6 +1903,7 @@ function guideBody(k){
     step(13, "Want to Try", `Open any restaurant (or a Google result) and tap ${pic("☆ Want to try")}. It turns into ${pic("★ Want to try · Zoey")} so everyone sees who saved it. The Concierge's Sunday picks on Home come from this list first, and Explore → <b>Show</b> → <b>Want to try</b> lists every saved place. Tap the star again to take it off; only the person who saved it, or ${host}, can.`),
     step(14, "What I ordered", `In ${pic("We dined — wrap up","wine")}, under your 1-to-10 score, fill in <b>🍽️ What did you order?</b> (up to 200 letters). The restaurant's page shows it as <b>Ordered:</b> next to your score, with <b>Last time you had …</b> at the top for you. On your next dinner there, the dinner card opens with <b>🍽️ Last time here</b>. Only you (or ${host}) can change your own line; a held review keeps its order line held too.`),
     step(15, "Question of the night", `${pic("Open dinner card","primary")} and look for <b>💬 Question of the night</b>. Everyone at the dinner sees the same question. The family's next dinner gets the next one in the list, so two dinners in a row never share a question, and none repeats until all 60 have been used. ${pic("Another question","ghost")} swaps it on your phone only.`),
+    step(16, "Standing dinners (host)", `${host} opens Host controls, finds <b>🔁 Standing dinners</b>, sets the name, <b>Which</b> (Every, First, Second, Third, Fourth or Last), the <b>Day</b>, the <b>Time</b>, when the <b>Vote opens</b> (2 to 14 days before) and the <b>Vote length</b>, and taps ${pic("Add standing dinner","primary")}. Each one shows when the next dinner is and when its vote opens. At 9 AM that day the vote opens by itself: three choices picked like the Concierge does (Want to Try first; nothing from the last 90 days, the Never Again list, closed places or bakeries), and everyone's bell rings. It can never open twice for the same date. ${pic("Pause")} stops it for now; ${pic("Delete","ghost")} removes it (votes already opened stay).`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1900,6 +1915,7 @@ function guideBody(k){
     step("F", "Saving a place for later", `Rosa hears about Bavette's in Chicago, opens it in Explore and taps ${pic("☆ Want to try")}. It reads ${pic("★ Want to try · Rosa")} on every phone. Back home, Derrick searches Google for “Ethiopian” and taps ${pic("☆ Want to try")} on a place he likes. On Sunday morning the Home screen's Concierge pick reads <b>“From our Want to Try list — Derrick saved it.”</b>`),
     step("G", "Remembering the dish", `After dinner at Char, Mario taps ${pic("We dined — wrap up","wine")}, gives it 9, and types “Bone-in rib-eye, medium · mac and cheese” under <b>What did you order?</b>. Three months later the family is back at Char; Mario opens ${pic("Open dinner card","primary")} and sees <b>“Last time here, you had Bone-in rib-eye, medium · mac and cheese.”</b> Rosa opens Char's page and sees Mario's 9 with his dish beside it.`),
     step("H", "A question at the table", `Seated at Gus's, Jasmine opens ${pic("Open dinner card","primary")} and reads the <b>Question of the night</b> aloud: “What's a prayer God answered for you, big or small?” Everyone answers in turn. Zoey asks for a lighter one, so Jasmine taps ${pic("Another question","ghost")} and gets “What's the funniest thing that happened to you this week?”.`),
+    step("I", "The first Sunday, every month", `${host} adds a standing dinner: “First Sunday Dinner”, First, Sunday, 5:30 PM, vote opens 6 days before. On the Monday before, at 9 AM, every bell rings: <b>“First Sunday Dinner on Sunday, November 1: the family vote is open. Tap to vote.”</b> The ballot already has three places, Acre first because Rosa saved it to Want to Try. Mario adds Char, Devonte taps ${pic("Start 10-minute vote","wine")}, and the family chooses.`),
   ].join("");
   if(k === "fix") return [
     ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
@@ -1924,17 +1940,20 @@ function guideBody(k){
     ["My dish doesn't show on the restaurant page", "It shows once you've saved the wrap-up with something in “What did you order?”. If your review is held for the host, the dish is held with it."],
     ["“Last time here” isn't on the dinner card", "It appears only when you have wrapped up a dinner at this same restaurant before and filled in what you ordered."],
     ["Our question changed when I tapped “Another question”", "That button changes it on your phone only. Everyone else still sees the dinner's own question; the next dinner gets a fresh one."],
+    ["A standing dinner's vote didn't open", "It opens at 9 AM on the day the rule says (the set number of days before the dinner). Check in Host controls that it isn't paused and that “next … vote opens …” shows the date you expect."],
+    ["Two votes for the same standing dinner?", "That can't happen: the server claims the date before it opens the vote, so a second try that day does nothing. A vote someone started by hand for the same day is a separate plan; cancel one."],
+    ["I don't see Standing dinners", `Only ${host} sets them, in Host controls. Everyone else just gets the vote when it opens.`],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2175,6 +2194,17 @@ function drawHost(){
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Held posts</h2><span class="num">${q.notes.length + q.reviews.length}</span></div>
       ${[...q.notes.map(n => ({k:"note", ...n})), ...q.reviews.map(r => ({k:"review", ...r, id:r.id || (r.id = uid("r"))}))].map(x => `<div class="person">${av(x.by,"sm")}<span style="min-width:0"><b>${esc(first(F(x.by).name))}</b><small>“${esc(x.text)}”</small></span><span class="actions" style="justify-content:flex-end"><button class="btn sm" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="ok">Allow</button><button class="btn sm wine" data-act="mod-post" data-k="${x.k}" data-id="${x.id}" data-v="del">Delete</button></span></div>`).join("") || none("Nothing held. Everyone's being kind.")}
+    </section>
+    <section class="card"><div class="sec-head"><h2 style="font-size:20px">🔁 Standing dinners</h2><span class="num">${(st.standing || []).length}</span></div>
+      <p class="small muted" style="margin:0">A dinner that repeats. At 9 AM, the set number of days before, the family vote opens by itself with three choices from the Concierge, and every phone is told.</p>
+      ${(st.standing || []).map(x => { const nx = sdNext(x); return `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">🔁</span><span style="min-width:0"><b>${esc(x.label)}</b><small>${esc(sdRule(x))}${x.active ? (nx ? ` · next ${fmtDate(iso(nx.d))}, vote opens ${fmtDate(iso(nx.opens))} at 9 AM` : "") : " · paused"}</small></span><span class="actions" style="justify-content:flex-end"><button class="btn sm" data-act="sd-toggle" data-id="${x.id}">${x.active ? "Pause" : "Resume"}</button><button class="btn sm ghost" data-act="sd-del" data-id="${x.id}">Delete</button></span></div>`; }).join("") || none("No standing dinners yet.")}
+      <div class="grid2"><div class="field"><label for="sd-label">Name</label><input class="input" id="sd-label" maxlength="60" value="First Sunday Dinner"></div>
+        <div class="field"><label for="sd-time">Time</label><input class="input" type="time" id="sd-time" value="17:30"></div></div>
+      <div class="grid2"><div class="field"><label for="sd-nth">Which</label><select class="input" id="sd-nth">${NTH.map(([k,l]) => `<option value="${k}" ${k==="1"?"selected":""}>${l}</option>`).join("")}</select></div>
+        <div class="field"><label for="sd-day">Day</label><select class="input" id="sd-day">${WEEKDAYS.map((w,i) => `<option value="${i}">${w}</option>`).join("")}</select></div></div>
+      <div class="grid2"><div class="field"><label for="sd-lead">Vote opens</label><select class="input" id="sd-lead">${[2,3,4,5,6,7,10,14].map(n => `<option value="${n}" ${n===6?"selected":""}>${n} days before</option>`).join("")}</select></div>
+        <div class="field"><label for="sd-min">Vote length</label><select class="input" id="sd-min">${VOTE_LENGTHS.map(m => `<option value="${m}" ${m===10?"selected":""}>${m} minutes</option>`).join("")}</select></div></div>
+      <button class="btn primary" style="justify-self:start" data-act="sd-add">Add standing dinner</button>
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Family seats</h2></div>
       ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>
@@ -2960,6 +2990,12 @@ document.addEventListener("click", e => {
     case "mod-post": { const list = b.dataset.k === "note" ? "notes" : "reviews"; const x = st[list].find(y => y.id === id); if(!x) break;
       if(b.dataset.v === "ok") x.status = "ok"; else st[list] = st[list].filter(y => y.id !== id);
       save(); if(!hostEl.hidden) drawHost(); else { closeSheet(); render(); } toast(b.dataset.v === "ok" ? "Post allowed" : "Post deleted"); break; }
+    case "sd-add": { if(!isAdmin()) return; const v = k => document.getElementById(k).value;
+      const label = v("sd-label").trim(); if(!label){ toast("Give the dinner a name"); return; }
+      const x = {id:uid("sd"), label:label.slice(0, 60), weekday:+v("sd-day"), nth:v("sd-nth") === "" ? null : +v("sd-nth"), time:v("sd-time") || "17:30", lead:+v("sd-lead"), voteMin:+v("sd-min"), dress:"Smart casual", active:true, by:st.me};
+      (st.standing ||= []).push(x); save(); drawHost(); const nx = sdNext(x); toast(nx ? `Set. The first vote opens ${fmtDate(iso(nx.opens))} at 9 AM.` : "Set."); break; }
+    case "sd-toggle": { const x = (st.standing || []).find(y => y.id === id); if(!x || !isAdmin()) return; x.active = !x.active; save(); drawHost(); toast(x.active ? `${x.label} is back on` : `${x.label} is paused`); break; }
+    case "sd-del": { if(!isAdmin()) return; const x = st.standing.find(y => y.id === id); st.standing = st.standing.filter(y => y.id !== id); save(); drawHost(); toast(`${x?.label || "Standing dinner"} deleted. Votes it already opened stay.`); break; }
     case "host-member": { const f = F(id); const v = b.dataset.v;
       if(v === "remove"){ if(b.dataset.armed){ st.fam = st.fam.filter(x => x.id !== id); save(); drawHost(); toast(`${first(f.name)} removed from the table`); } else { b.dataset.armed = "1"; b.textContent = "Tap again"; } break; }
       f.status = v === "pause" ? "suspended" : "active"; save(); drawHost(); toast(v === "pause" ? `${first(f.name)}'s seat is paused` : `${first(f.name)} is back at the table`); break; }
