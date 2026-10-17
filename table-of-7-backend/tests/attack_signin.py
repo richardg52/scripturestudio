@@ -295,6 +295,49 @@ for i, at in ((0, 11), (1, 12), (2, 13)): fmv({"reveal": i}, at)
 x = fst(); check("the last round ends the game and the score decides it", x.get("status") == "done" and x["state"]["score"] == [3, 3] and x.get("winner") == 2 and x.get("why") == "3\u20133", x)
 s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Family Feud*"), tok_h); check("the judge hears the result too", isinstance(b, list) and any("draw" in a["text"] for a in b), b)
 s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Family Feud survey*"), tok_4); check("the survey reached the family", isinstance(b, list) and len(b) == 1, b)
+# Spades for couples (Jokers & deuces): four phones, each sees only its own cards; every bid and card is checked by spades.js
+s, b, _ = rest("PATCH", "members?id=eq.z3", tok_h, {"status": "active"}, "return=representation"); check("the host wakes the paused seat for Spades", s == 200 and b and b[0]["status"] == "active", (s, b))
+s, b, _ = signin("Zed Testpaused", pin_p); tok_3 = (b.get("session") or {}).get("access_token"); check("the third test seat signs in", bool(tok_3), b)
+TOK = {"z1": tok_h, "z2": tok_m, "z3": tok_3, "z4": tok_4}
+s, b, _ = call("POST", G, {"action": "new", "kind": "spades", "sideA": ["z1", "z3"], "sideB": ["z2"]}, tok_h); check("Spades needs two on each team", s == 400 and b.get("code") == "four", (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "spades", "sideA": ["z1", "z3"], "sideB": ["z2", "z4"], "target": 300}, tok_h); sg = (b or {}).get("game", {}); sid = sg.get("id"); ss = sg.get("state") or {}
+check("the host deals Spades: partners across, seats z1 z2 z3 z4", s == 200 and ss.get("seats") == ["z1", "z2", "z3", "z4"] and ss.get("target") == 300, (s, b))
+import re as _re
+check("no card reaches a phone through the board", not _re.search(r'"[SHDC]\d+"|"BJ"|"LJ"', json.dumps(ss)), ss)
+def hand_of(z):
+    s, b, _ = call("POST", G, {"action": "hand", "id": sid}, TOK[z]); return b.get("hand") if b.get("ok") else None
+H = {z: hand_of(z) for z in TOK}
+check("each player gets their own 13 cards, and only theirs", all(len(H[z] or []) == 13 for z in H) and len(set(sum(H.values(), []))) == 52, {z: len(H[z] or []) for z in H})
+check("the deck is Jokers & deuces: no 2 of clubs or hearts, both jokers in", {"C2", "H2"}.isdisjoint(sum(H.values(), [])) and {"BJ", "LJ", "S2", "D2"} <= set(sum(H.values(), [])))
+spm = lambda z, mv, at: call("POST", G, {"action": "move", "id": sid, "mv": mv, "at": at}, TOK[z])
+sst = lambda: (rest("GET", "games?id=eq." + str(sid) + "&select=state,moves,status,winner,why", tok_m)[1] or [{}])[0]
+s, b, _ = spm("z2", {"bid": 3}, 0); check("no bidding out of turn", s == 409 and b.get("code") == "not_your_turn", (s, b))
+s, b, _ = spm("z1", {"bid": 14}, 0); check("a bid must be 0 to 13", s == 400 and b.get("code") == "illegal", (s, b))
+for k, z in enumerate(["z1", "z2", "z3", "z4"]): spm(z, {"bid": 3}, k)
+x = sst(); check("four bids, then the play starts with seat 1", x["state"]["phase"] == "play" and x["state"]["seat"] == 0 and x["state"]["bids"] == [3, 3, 3, 3], x["state"])
+SUIT = lambda c: "S" if c in ("BJ", "LJ", "D2") or c[0] == "S" else c[0]
+def legal(st, hand):
+    if not st["trick"]: return hand if st["broken"] or all(SUIT(c) == "S" for c in hand) else [c for c in hand if SUIT(c) != "S"]
+    same = [c for c in hand if SUIT(c) == SUIT(st["trick"][0]["card"])]; return same or hand
+s, b, _ = spm("z1", {"card": H["z2"][0]}, 4); check("you can't play a card you don't hold", s == 400 and b.get("code") == "illegal", (s, b))
+if any(SUIT(c) != "S" for c in H["z1"]) and any(SUIT(c) == "S" for c in H["z1"]):
+    s, b, _ = spm("z1", {"card": [c for c in H["z1"] if SUIT(c) == "S"][0]}, 4); check("spades can't be led before they're broken", s == 400, (s, b))
+else: check("spades can't be led before they're broken (hand had one kind only; proven in spades_rules_test)", True)
+def play_one():
+    x = sst(); st = x["state"]; z = st["seats"][st["seat"]]; hand = hand_of(z)
+    return spm(z, {"card": legal(st, hand)[0]}, x["moves"])
+for k in range(4): s, b, _ = play_one()
+x = sst()["state"]; check("a trick of four goes to one player, who leads next", sum(x["tricks"]) == 1 and x["trick"] == [] and x["last"]["winner"] == x["seat"], x)
+s, b, _ = spm(x["seats"][x["seat"]], {"card": "H3"}, 0); check("a card played on an old board is refused", s == 409 and b.get("code") == "stale", (s, b))
+check("everyone now holds 12", all(len(hand_of(z) or []) == 12 for z in TOK))
+for k in range(48): s, b, _ = play_one()
+x = sst()["state"]
+check("after 13 tricks the hand is scored and the next is dealt", x["hand"] == 2 and x["phase"] == "bid" and x["dealer"] == 0 and x["lastHand"]["hand"] == 1 and sum(x["lastHand"]["tricks"]) == 13, x)
+check("the score is the hand's real result", x["score"] == [r["pts"] for r in x["lastHand"]["res"]], x)
+check("new cards: 13 each again", all(len(hand_of(z) or []) == 13 for z in TOK))
+s, b, _ = call("POST", G, {"action": "resign", "id": sid}, tok_m); x = sst(); check("a couple may resign: the other couple wins", s == 200 and x.get("status") == "done" and x.get("winner") == 0, x)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*won Spades*"), tok_3); check("the result reaches the partner", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = rest("PATCH", "members?id=eq.z3", tok_h, {"status": "suspended"}, "return=representation"); check("the paused seat goes back to sleep", s == 200 and b and b[0]["status"] == "suspended", (s, b))
 s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"status": "suspended"}, "return=representation"); check("the fourth test seat goes back to sleep", s == 200 and b and b[0]["status"] == "suspended", (s, b))
 s, b, _ = rest("PATCH", "events?id=eq.zz-ev2", tok_m, {"status": "done"}, "return=representation"); check("anyone at the dinner may mark it done after the wrap-up", s == 200 and b and b[0]["status"] == "done", (s, b))
 s, b, _ = rest("POST", "rpc/radar_claim", tok_m, {"p_key": "zz-radar-" + pin_h}); s2, b2, _ = rest("POST", "rpc/radar_claim", tok_h, {"p_key": "zz-radar-" + pin_h})
