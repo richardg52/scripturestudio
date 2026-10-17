@@ -1735,7 +1735,7 @@ function eventCard(e){
   if(e.status === "set"){
     const r = RBY[e.chosen];
     body += res.status === "none" ? `<div class="strip"><span class="pill bad">Not reserved</span><span class="grow">Claim it so no one double-books.</span><button class="btn sm" data-act="res-claim" data-id="${e.id}">I'll book it</button></div>`
-      : res.status === "claimed" ? `<div class="strip"><span class="pill warn">Booking</span><span class="grow"><b>${esc(F(res.by).name)}</b> is calling ${esc(r.name)} now. Please don't book.${res.by===st.me && dietLine(e) ? `<br><b>Tell them:</b> ${esc(dietLine(e))}` : ""}</span>${res.by===st.me?`<button class="btn sm primary" data-act="res-book" data-id="${e.id}">Mark booked</button><button class="btn sm ghost" data-act="res-release" data-id="${e.id}">Release</button>`:""}</div>`
+      : res.status === "claimed" ? `<div class="strip"><span class="pill warn">Booking</span><span class="grow"><b>${esc(F(res.by).name)}</b> is calling ${esc(r.name)} now. Please don't book.${res.by===st.me && dietLine(e) ? `<br><b>Tell them:</b> ${esc(dietLine(e))}` : ""}</span>${res.by===st.me?`<button class="btn sm primary" data-act="res-book" data-id="${e.id}">Mark booked</button><button class="btn sm ghost" data-act="res-release" data-id="${e.id}">Release</button>`:""}</div>${res.by===st.me ? bookBox(e) : ""}`
       : `<div class="strip"><span class="pill good">Reserved</span><span class="grow">by ${esc(F(res.by).name)}${res.conf?` · conf <span class="num">${esc(res.conf)}</span>`:""} · party of ${partySize(e)}</span></div>`;
   }
   // dessert after
@@ -1862,7 +1862,7 @@ function sheetTips(){
     ["Host controls","Richard approves photos and cards, can pause or remove a seat, mark a guest not welcome, and delete any post. Hurtful posts about a person are held for him automatically."],
     ["Never Again","Had a bad night? Add the place to Never Again with a reason. It disappears from picks and votes."],
     ["Birthday radar","Add birthdays and dietary notes under Our Table. Three weeks out, everyone gets a nudge with the birthday person's favorites."],
-    ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Mark it booked with the confirmation number."],
+    ["Reservations","Tap “I'll book it” before you call. Everyone sees you're booking, so no one double-books. Then tap “📞 Booking options” for the restaurant's own website, phone number and Google Maps page. Book there, then mark it booked with the confirmation number."],
     ["The 90-day rule","The Sunday pick never repeats a restaurant chosen in the last 3 months. After that it comes “back in rotation”."],
     ["Concierge","On the night, open Concierge & tip for wine ideas, a tax-aware bill splitter and a tip based on how the service felt."],
     ["Wrap up","After dinner, give the place your score from 1 to 10, rate six details (food, service, price, selection, cleanliness, location), say who paid, and post a moment for the family. The family score on each restaurant is everyone's 1 to 10, averaged."],
@@ -1895,7 +1895,7 @@ function guideBody(k){
     step(2, "Home", `Today's date and time are at the top, then anything that <b>needs you</b>. Start from ${pic("Start a family vote")} or ${pic("Send an invitation")}. The bell ${pic("🔔")} holds your alerts; the ${pic("?")} opens this guide; your initial opens your seat menu.`),
     step(3, "Plan a dinner", `Pick the occasion, then ${pic("Family votes")} or ${pic("I decide · just invite")}. Choose the date, time and <b>Vote length</b> (5–60 minutes), the dress code, and up to 3 restaurants. Not in our list? ${pic("Search Google","primary")} below the choices, then ${pic("Add to choices","wine")}. A chain like Olive Garden asks <b>Which location?</b>: tap ${pic("Choose this one","wine")} so everyone goes to the same branch. Tap send.`),
     step(4, "The live vote", `On the plan, tap ${pic("Start 10-minute vote","wine")} (it shows the length you chose). Everyone picks one place. It closes when everyone has voted or time runs out; the plan's host can ${pic("Lock in winner","primary")} early. A tie goes to the host's vote. The winner opens on every phone.`),
-    step(5, "Booking", `So no one books twice, tap ${pic("I'll book it")} before you call, then ${pic("Mark booked")} with the confirmation number.`),
+    step(5, "Booking", `So no one books twice, tap ${pic("I'll book it")} first. Then tap ${pic("📞 Booking options","wine")}: the app asks Google for the restaurant's own ${pic("Website","primary")}, ${pic("Call (901) …")} number and ${pic("Google Maps")} page (Maps shows “Reserve a table” when the restaurant offers it). The app never books for you: finish there, then tap ${pic("Mark booked","primary")} with the confirmation number. A chain uses the branch the plan chose.`),
     step(6, "Dinner night", `${pic("Open dinner card","primary")} has directions and the menu. Tap ${pic("On my way")} ${pic("Running late")} ${pic("I've arrived")}; the first one seated taps ${pic("Our table is ready — tell everyone")}.`),
     step(7, "The Tab: one check", `Tap ${pic("The Tab","wine")}. One person taps ${pic("I'll pay the restaurant","primary")}. Everyone else adds what they ate and taps ${pic("Send my ticket to…","wine")}. The payer taps ${pic("Verify","primary")}, then <b>Confirm</b> or <b>Send back</b> with a note. Pay the payer yourself (Zelle, Apple Pay, Cash App or cash). When it arrives the payer taps ${pic("Send receipt","wine")} and you get a receipt: <b>PAID</b>, date and time, every line, tax, tip and total, signed like “Clark, R.”`),
     step(8, "After dinner", `${pic("We dined — wrap up")} to give your score from 1 to 10, rate six details and say who paid. Everyone's scores average into the restaurant's family score. ${pic("+ Add photos of the night")} shares photos (${host} approves family photos first). ${pic("Add to Never Again list")} hides a place for good.`),
@@ -1921,6 +1921,7 @@ function guideBody(k){
     step("H", "A question at the table", `Seated at Gus's, Jasmine opens ${pic("Open dinner card","primary")} and reads the <b>Question of the night</b> aloud: “What's a prayer God answered for you, big or small?” Everyone answers in turn. Zoey asks for a lighter one, so Jasmine taps ${pic("Another question","ghost")} and gets “What's the funniest thing that happened to you this week?”.`),
     step("I", "The first Sunday, every month", `${host} adds a standing dinner: “First Sunday Dinner”, First, Sunday, 5:30 PM, vote opens 6 days before. On the Monday before, at 9 AM, every bell rings: <b>“First Sunday Dinner on Sunday, November 1: the family vote is open. Tap to vote.”</b> The ballot already has three places, Acre first because Rosa saved it to Want to Try. Mario adds Char, Devonte taps ${pic("Start 10-minute vote","wine")}, and the family chooses.`),
     step("J", "Looking back in December", `On December 3 Home says <b>Your 2026 Year at the Table is ready</b>. Rosa opens it: 14 dinners shared, top-scored place Char at 9.2, most visited Gus's with 3 visits, 6 new places tried, 11 dishes remembered, and six photos from the best nights. She takes a screenshot to send to the family group.`),
+    step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
     ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
@@ -1950,11 +1951,14 @@ function guideBody(k){
     ["I don't see Standing dinners", `Only ${host} sets them, in Host controls. Everyone else just gets the vote when it opens.`],
     ["Year at the Table says no dinners", "It counts only dinners someone wrapped up (“We dined — wrap up”). Wrap up past dinners and they appear."],
     ["A photo is missing from Best photos", `Only photos ${host} approved count, up to six, from the year's highest-scored dinners.`],
+    ["I don't see “📞 Booking options”", "It appears for the person who tapped “I'll book it”, so two people never call at once. Tap “I'll book it” first."],
+    ["Booking options shows only Google Maps", "Google has no website or phone for that place. Open Google Maps; it shows how to reach them, and “Reserve a table” when they offer it."],
+    ["The Website button opens the home page, not a booking page", "Google gives the restaurant's own website. Look for “Reservations” or “Book” on it, or call instead."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
@@ -2714,6 +2718,39 @@ function setDessert(eid, rid){
   if(rid){ alertAll(`${first(ME().name)} added dessert after ${e.title}: ${RBY[rid].name}.`, e.id); toast(`${RBY[rid].name} is dessert after`); }
   else toast("Dessert stop removed");
 }
+/* Booking button (his order, 2026-10-17): after "I'll book it" (so no one double-books), the booker gets the
+   restaurant's own website, phone and Google Maps page, fetched live from Google ("More from Google", nothing
+   stored). The app never books; the booker finishes it there and taps Mark booked. */
+const bookPid = {}, bookInfo = {}, bookBusy = new Set();
+function bookBox(e){
+  const r = RBY[e.chosen], info = bookInfo[e.chosen];
+  if(!info) return `<div class="strip"><span class="grow small muted">Book with the restaurant itself: its website, phone or Google Maps.</span><button class="btn sm wine" data-act="book-opts" data-id="${e.id}" ${bookBusy.has(e.chosen) ? "disabled" : ""}>${bookBusy.has(e.chosen) ? "Asking Google…" : "📞 Booking options"}</button></div>`;
+  if(info.err) return `<div class="strip"><span class="grow small" style="color:var(--warn)">${esc(info.err)}</span><button class="btn sm" data-act="book-opts" data-id="${e.id}">Try again</button></div>`;
+  const tel = info.phone ? info.phone.replace(/[^\d+]/g, "") : "";
+  return `<div class="strip" style="flex-wrap:wrap"><span class="grow small"><b>${esc(info.name || r.name)}</b>${info.address ? `<br><span class="muted">${esc(info.address)}</span>` : ""}</span>
+    <span class="actions">${info.website ? `<a class="btn sm primary" href="${esc(info.website)}" target="_blank" rel="noopener">Website</a>` : ""}${tel ? `<a class="btn sm" href="tel:${tel}">Call ${esc(info.phone)}</a>` : ""}${info.mapsUri ? `<a class="btn sm" href="${esc(info.mapsUri)}" target="_blank" rel="noopener">Google Maps</a>` : ""}</span>
+    <span class="small muted" style="flex-basis:100%">The app doesn't book for you. Finish the booking there, then tap Mark booked with the confirmation number.${!info.website && !tel ? " Google has no website or phone for this place; try Google Maps." : ""}</span></div>`;
+}
+async function bookingOptions(e){
+  const rid = e.chosen, r = RBY[rid]; if(!r || bookBusy.has(rid)) return;
+  bookBusy.add(rid); delete bookInfo[rid]; render();
+  try {
+    let pid = r.google ? r.placeId : bookPid[rid];
+    if(!pid){
+      const city = GCITIES.includes(r.city) ? r.city : "Memphis";
+      const d = await placesCall({action:"search", q: r.addr ? `${r.name} ${r.addr}` : r.name, city});
+      if(!d.ok){ bookInfo[rid] = {err: gWhy(d.code)}; return; }
+      const key = whereKey(r.name), open = d.results.filter(x => x.status !== "CLOSED_PERMANENTLY");
+      const hit = open.find(x => key.some(w => x.name.toLowerCase().replace(/['’]/g, "").includes(w))) || open[0];
+      if(!hit){ bookInfo[rid] = {err: `Google couldn't find ${r.name}. Call them from their own listing.`}; return; }
+      pid = bookPid[rid] = hit.placeId;
+    }
+    const d2 = await placesCall({action:"details", ids:[pid], level:"full"});
+    if(!d2.ok || !d2.places[0]){ bookInfo[rid] = {err: gWhy(d2.code)}; return; }
+    const p = d2.places[0]; if(r.google) gApply(p, r.city);
+    bookInfo[rid] = {name:p.name, address:p.address, phone:p.phone, website:p.website, mapsUri:p.mapsUri};
+  } finally { bookBusy.delete(rid); render(); }
+}
 function sheetBallotAdd(){
   const e = ev(liveId);
   const pool = R.filter(r => r.city === "Memphis" && meals(r).dinner && !e.options.includes(r.id) && !isBlocked(r.id) && (!e.cap || r.price <= e.cap) && rotationState(r.id, e.date).state !== "resting").sort((a,b) => a.name.localeCompare(b.name));
@@ -2961,6 +2998,7 @@ document.addEventListener("click", e => {
       break; }
     case "want": toggleWant(b.dataset.rid); break;
     case "year": sheetYear(+b.dataset.y); break;
+    case "book-opts": { const e2 = ev(id); if(e2) bookingOptions(e2); break; }
     case "q-next": qOffset[id] = (qOffset[id] || 0) + 1; drawReveal(); break;
     case "g-want": { const pid = b.dataset.pid; b.disabled = true; b.textContent = "Saving…";
       gSave(pid, gSearch.city).then(ok => { if(!ok){ b.disabled = false; b.textContent = "☆ Want to try"; toast("Couldn't save that restaurant. Try again."); return; } toggleWant("g:" + pid); }); break; }
