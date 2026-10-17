@@ -433,6 +433,7 @@ textarea.input{min-height:76px;resize:vertical}
 <div id="reveal" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 (() => {
 "use strict";
@@ -539,6 +540,67 @@ const RAW = [
 ];
 const R = RAW.map(([id,name,city,cuisine,hood,addr,price,flags,blurb]) => ({id,name,city,cuisine,hood,addr,price,flags,blurb}));
 const RBY = Object.fromEntries(R.map(r => [r.id, r]));
+/* Google restaurants. Google's terms let us keep only a restaurant's Place ID, so a Google pick is
+   saved as "g:<place id>" and its name, address and details are fetched live through our server
+   (functions/places) and held in this phone's memory for the session only. */
+const GCITIES = ["Memphis","Germantown","Collierville","Bartlett","Cordova","Arlington","Lakeland","Millington","Southaven","Olive Branch","Nashville","Atlanta","New Orleans","Chicago","New York","Dallas","Houston","Los Angeles"];
+const gInfo = {};                          // place id → what Google said (memory only)
+const gSearch = {q:"", city:"Memphis", results:null, busy:false, msg:""};
+const gLoading = new Set();
+function gRest(id, city){
+  if(RBY[id]) return RBY[id];
+  const r = {id, google:true, placeId:id.slice(2), name:"Restaurant from Google", city:city || "Memphis", cuisine:["Restaurant"], hood:"", addr:"", price:0, flags:[], blurb:""};
+  R.push(r); RBY[id] = r; return r;
+}
+function gApply(p, city){
+  gInfo[p.placeId] = {...(gInfo[p.placeId] || {}), ...p};
+  const r = gRest(p.id, city); r.name = p.name || r.name; r.addr = p.address || r.addr; r.hood = p.short || r.hood;
+  r.cuisine = [p.type || "Restaurant"]; if(p.price) r.price = p.price; r.mapsUri = p.mapsUri || r.mapsUri; r.status = p.status;
+  return r;
+}
+async function placesCall(body){
+  try {
+    const {data} = await sb.auth.getSession();
+    const res = await fetch(SB_URL + "/functions/v1/places", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await res.json();
+  } catch { return {ok:false, code:"offline"}; }
+}
+const gWhy = code => code === "month" ? "Google search is resting until the 1st: the family's free amount for this month is used up." : code === "resting" ? "Google search is resting until tomorrow: the family's free daily amount is used up." : code === "short" ? "Type at least 2 letters." : code === "offline" ? "Can't reach Google right now. Check your connection." : "Google didn't answer. Try again in a moment.";
+/* fill in the names of the Google restaurants the family has saved (live, never stored) */
+async function gFillNames(){
+  const need = R.filter(r => r.google && !gInfo[r.placeId] && !gLoading.has(r.placeId)).map(r => r.placeId).slice(0, 10);
+  if(!need.length) return;
+  need.forEach(x => gLoading.add(x));
+  const d = await placesCall({action:"details", ids:need, level:"basic"});
+  need.forEach(x => gLoading.delete(x));
+  if(d.ok){ d.places.forEach(p => gApply(p)); redraw(); if(R.some(r => r.google && !gInfo[r.placeId])) gFillNames(); }
+}
+/* save a Google pick: only its ID and the city we searched */
+async function gSave(pid, city){
+  const r = gApply(gInfo[pid] || {placeId:pid, id:"g:" + pid}, city);
+  const {error} = await sb.from("restaurants").upsert({id:r.id, place_id:pid, city:r.city, source:"google"}, {onConflict:"id", ignoreDuplicates:true});
+  return !error;
+}
+function gBlock(where){
+  const s2 = gSearch;
+  return `<section class="card" style="gap:10px">
+    <div class="lbl">SEARCH GOOGLE · EVERY RESTAURANT${where === "plan" ? " · ADD TO YOUR CHOICES" : ""}</div>
+    <div class="grid2"><input class="input" id="g-q" type="search" placeholder="Pappadeaux, hibachi, soul food…" value="${esc(s2.q)}" aria-label="Search Google for a restaurant">
+      <select class="input" id="g-city" aria-label="City">${GCITIES.map(c => `<option ${c === s2.city ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+    <button class="btn primary" data-act="g-search" data-w="${where}" ${s2.busy ? "disabled" : ""}>${s2.busy ? "Searching…" : "Search Google"}</button>
+    ${s2.msg ? `<div class="small" style="color:var(--warn)">${esc(s2.msg)}</div>` : ""}
+    ${s2.results ? (s2.results.length ? s2.results.map(p => {
+      const closed = p.status === "CLOSED_PERMANENTLY" ? "Closed for good" : p.status === "CLOSED_TEMPORARILY" ? "Temporarily closed" : "";
+      const on = where === "plan" && draft?.options.includes(p.id);
+      return `<div class="r-row" style="cursor:default"><h3>${esc(p.name)}</h3><span class="score"></span>
+        <span class="sub">${esc(p.type)} · ${esc(p.short || p.address)}${closed ? ` · <b style="color:var(--bad)">${closed}</b>` : ""}</span>
+        <span class="actions">${p.mapsUri ? `<a class="btn sm" href="${p.mapsUri}" target="_blank" rel="noopener">Google Maps</a>` : ""}
+          <button class="btn sm" data-act="g-more" data-pid="${p.placeId}">More from Google</button>
+          ${closed === "Closed for good" ? "" : where === "plan" ? `<button class="btn sm ${on ? "" : "wine"}" data-act="g-add" data-pid="${p.placeId}" ${on ? "disabled" : ""}>${on ? "✓ Added" : "Add to choices"}</button>` : `<button class="btn sm wine" data-act="g-plan" data-pid="${p.placeId}">Plan here</button>`}</span></div>`; }).join("")
+      : `<div class="empty">Google found nothing like that in ${esc(s2.city)}.</div>`) : ""}
+    <p class="small muted" style="margin:0">Results from Google · up to 20 per search</p>
+  </section>`;
+}
 const CITIES = ["Memphis","Nashville","Atlanta","New Orleans","Chicago","New York","Dallas","Los Angeles"];
 const CUISINES = ["All","Steak","Italian","Hibachi","BBQ","Soul","Southern","Seafood","Breakfast","Burgers","Casual","Indian","French","Creole","Mediterranean","Fine Dining","Mexican","Thai","Vietnamese","American"];
 // Which meals a place serves. Default is dinner; flags/sets below add breakfast & lunch.
@@ -547,7 +609,7 @@ const LUNCH = new Set(["central-bbq","gus","four-way","alcenias","cozy-corner","
 const meals = r => ({breakfast: r.flags.includes("breakfast") || BRUNCH.has(r.id), lunch: r.flags.includes("lunch") || LUNCH.has(r.id) || BRUNCH.has(r.id), dinner: !r.flags.includes("nodinner")});
 const mealText = r => { const m = meals(r); return [m.breakfast&&(BRUNCH.has(r.id)?"Brunch":"Breakfast"), m.lunch&&"Lunch", m.dinner&&"Dinner"].filter(Boolean).join(" · "); };
 const COST = {1:"under $15",2:"$15–30",3:"$30–60",4:"$60+"};
-const costText = r => `${"$".repeat(r.price)} · ${COST[r.price]} per person`;
+const costText = r => r.price ? `${"$".repeat(r.price)} · ${COST[r.price]} per person` : "Price: tap More from Google";
 const addrOf = r => r.addr || `${r.hood === "Several locations" ? "Several locations" : r.hood} · ${r.city}`;
 const CRIT = [["food","Food quality"],["service","Service"],["price","Price / value"],["selection","Selection"],["clean","Cleanliness"],["location","Location"]];
 const OCCASIONS = [
@@ -596,6 +658,8 @@ const add = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
 const nextSunday = add(today0, (7 - today0.getDay()) % 7 || 7);
 const fmtDate = s => parse(s).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
 const fmtLong = s => parse(s).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+const nowLine = () => { const d = new Date(); return `${d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})} · ${d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}`; };
+setInterval(() => document.querySelectorAll("[data-now]").forEach(el => { el.textContent = nowLine(); }), 10000);
 const fmtTime = t => { if(!t) return ""; const [h,m] = t.split(":").map(Number); return new Date(2000,0,1,h,m).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); };
 const daysBetween = (a,b) => Math.round((parse(b)-parse(a))/DAY);
 const $ = n => "$".repeat(n);
@@ -604,8 +668,14 @@ const money = n => "$" + (Math.round(n*100)/100).toFixed(2);
 /* ================= State ================= */
 // DEMO = true fills the app with sample plans, reviews and photos-free history so it can be tried alone.
 // Set to false before going live: the app then starts clean with only the family list below.
-const DEMO = true;
+const DEMO = false;
 const KEY = DEMO ? "tableof7.v4" : "tableof7.live1";
+/* Shared backend (Supabase). The publishable key is meant to be public: the database's own rules
+   decide what each signed-in seat may read or write, and PINs are checked only on the server. */
+const SB_URL = "https://vhonljdavmklymrocgiu.supabase.co";
+const SB_KEY = "sb_publishable_F-Wjwoek1ZzMLKl_aoxK2w_pF2ac_Qw";
+const sb = window.supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"t7.auth"}});
+let pinSet = {};   // host view: which seats have set a PIN (read from the server, never the PIN itself)
 const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
@@ -616,7 +686,7 @@ function seed(){
     {id:"m5",name:"Mario Davison",color:COLORS[4],email:"",phone:""},
     {id:"m6",name:"Derrick Williams",color:COLORS[5],email:"",phone:""},
     {id:"m7",name:"Candyce Jackson",color:COLORS[6],email:"",phone:""},
-    {id:"m8",name:"Nikki",color:COLORS[7],email:"",phone:""}
+    {id:"m8",name:"Nikki Honorable",color:COLORS[7],email:"",phone:""}
   ];
   const contacts = [
     {id:"c1",name:"Tasha",relation:"Devonte's friend",email:"tasha@example.com",phone:""},
@@ -671,10 +741,191 @@ function seed(){
   if(!DEMO) return {v:3,fam,contacts:[],arrivals:{},alerts:[],photos:[],tableReady:{},radarSent:{},blocked:{},me:null,events:[],visits:[],reviews:[],ledger:[],notes:[],ui:{...UI0}};
   return {v:3,fam,contacts,arrivals:{},alerts,photos:[],tableReady:{},radarSent:{},blocked:{},me:null,events,visits,reviews,ledger,notes,ui:{...UI0}};
 }
-let st;
-try { st = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { st = seed(); }
-st.ui = {...UI0, ...(st.ui||{})}; st.contacts ||= []; st.arrivals ||= {}; st.alerts ||= []; st.photos ||= []; st.tableReady ||= {}; st.radarSent ||= {}; st.blocked ||= {}; st.cards ||= []; st.tabs ||= {}; st.pins ||= {}; st.pinLocks ||= {};
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); return true; } catch { return false; } };
+/* ================= The shared table (Supabase) =================
+   The family's data lives on the server, not on the phone. After sign-in, pull() reads everything this
+   seat may see and builds st from it. Each save() works out which rows changed since the last server
+   copy and writes only those; the server's rules decide what is allowed, and a refusal re-reads the
+   server so every phone shows the truth. Changes from other phones arrive live and re-read the table.
+   Only the screen you were on and the last name typed stay on this phone. */
+let st = seed();
+try { const loc = JSON.parse(localStorage.getItem(KEY)) || {}; st.ui = {...UI0, ...(loc.ui||{})}; st.lastName = loc.lastName || ""; } catch { st.ui = {...UI0}; }
+st.cards = []; st.tabs = {};
+let FAMILY = null;            // this seat's family id, from the server
+let snap = null;              // rows as the server last had them
+const keepLocal = () => { try { localStorage.setItem(KEY, JSON.stringify({ui:st.ui, lastName:st.lastName})); } catch {} };
+const save = () => { keepLocal(); if(FAMILY) queueSync(); return true; };
+
+const nz = v => (v === "" || v === undefined) ? null : v;
+const ms2iso = t => t ? new Date(t).toISOString() : null;
+const iso2ms = s => s ? Date.parse(s) : null;
+const hhmm = t => t ? String(t).slice(0,5) : "";
+const localDay = s => { const d = new Date(s); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+const SCORE_KEYS = ["food","service","price","selection","clean","location"];
+const PK = {members:["id"], contacts:["id"], events:["id"], event_options:["event_id","restaurant_id"], votes:["event_id","member_id"],
+  rsvps:["event_id","member_id"], guests:["id"], guest_hands:["guest_id","member_id"], reservations:["event_id"], arrivals:["event_id","member_id"],
+  table_ready:["event_id"], visits:["id"], reviews:["id"], payments:["id"], notes:["id"], never_again:["family_id","restaurant_id"],
+  media:["id"], cards:["id"], tabs:["event_id"], tab_tickets:["event_id","owner"], tab_lines:["id"], alerts:["id"]};
+const ORDER = Object.keys(PK);   // parents before children
+const isDefaultTicket = (k, owner) => !k.items.length && k.status === "draft" && k.covers.length === 1 && k.covers[0] === owner && +k.tip === 20 && !k.note && !k.paidVia;
+
+/* st → the rows it stands for (key → row, per table) */
+function rowsOf(s){
+  const R = {}; ORDER.forEach(t => R[t] = new Map());
+  const put = (t, row) => R[t].set(PK[t].map(k => row[k]).join("|"), row);
+  const fam = FAMILY;
+  s.fam.forEach(f => put("members", {id:f.id, family_id:fam, name:f.name, email:nz(f.email), mobile:nz(f.phone), birthday:nz(f.birthday), diet:nz(f.diet),
+    color:nz(f.color), status:f.status || "active", zelle:nz(f.zelle), cashtag:nz(f.cashtag), applepay:nz(f.applepay)}));
+  s.contacts.forEach(c => { c.addedBy ||= s.me; put("contacts", {id:c.id, family_id:fam, name:c.name, relation:nz(c.relation), email:nz(c.email), mobile:nz(c.phone), banned:!!c.banned, added_by:c.addedBy}); });
+  s.events.forEach(e => {
+    put("events", {id:e.id, family_id:fam, type:e.type, mode:e.mode, host:e.host, title:nz(e.title), date:e.date, time:e.time, dress:nz(e.dress), note:nz(e.note),
+      budget_cap:+e.cap || 0, vote_minutes:voteMin(e), vote_ends:ms2iso(e.voteEnds), chosen:nz(e.chosen), arrive_by:nz(e.arrive), theme:nz(e.theme), gifts:nz(e.gifts),
+      adults_only:!!e.adults, excluded:[...(e.excluded || [])], status:e.status});
+    e.optBy ||= {};
+    e.options.forEach((rid, i) => { e.optBy[rid] ||= s.me; put("event_options", {event_id:e.id, restaurant_id:rid, added_by:e.optBy[rid], pos:i}); });
+    Object.entries(e.votes).forEach(([m, rid]) => put("votes", {event_id:e.id, member_id:m, restaurant_id:rid}));
+    Object.entries(e.rsvp).forEach(([m, a]) => put("rsvps", {event_id:e.id, member_id:m, answer:a}));
+    e.guests.forEach(g => { put("guests", {id:g.id, event_id:e.id, contact_id:nz(g.contactId), name:nz(g.name), email:nz(g.email), asked_by:g.by});
+      g.hands.forEach(m => put("guest_hands", {guest_id:g.id, member_id:m})); });
+    const r = e.reservation || {status:"none"}; put("reservations", {event_id:e.id, status:r.status, by:nz(r.by), confirmation:nz(r.conf)});
+  });
+  Object.entries(s.arrivals).forEach(([eid, ms]) => Object.entries(ms).forEach(([m, a]) => put("arrivals", {event_id:eid, member_id:m, status:a.s, eta_min:a.eta ?? null, at:ms2iso(a.t)})));
+  Object.entries(s.tableReady).forEach(([eid, t]) => put("table_ready", {event_id:eid, by:t.by, at:ms2iso(t.t)}));
+  s.visits.forEach(v => { v.id ||= uid("v"); put("visits", {id:v.id, family_id:fam, restaurant_id:v.rid, date:v.date, event_id:nz(v.eventId)}); });
+  s.reviews.forEach(r => { r.id ||= uid("r"); put("reviews", {id:r.id, family_id:fam, restaurant_id:r.rid, member_id:r.by, event_id:nz(r.eventId), date:r.date,
+    ...Object.fromEntries(SCORE_KEYS.map(k => [k, r.scores?.[k] ?? null])), text:nz(r.text), status:r.status || "ok"}); });
+  s.ledger.forEach(l => { l.id ||= uid("l"); put("payments", {id:l.id, family_id:fam, event_id:nz(l.eventId), restaurant_id:nz(l.rid), date:l.date, payer:nz(l.payer),
+    mode:l.mode, for_member:nz(l.forWhom), amount:+l.amount || 0}); });
+  s.notes.forEach(n => { n.at ||= new Date().toISOString(); put("notes", {id:n.id, family_id:fam, event_id:nz(n.eventId), member_id:n.by, text:n.text, status:n.status || "ok", at:n.at}); });
+  Object.entries(s.blocked).forEach(([rid, b]) => put("never_again", {family_id:fam, restaurant_id:rid, by:nz(b.by), reason:nz(b.reason), date:b.date}));
+  s.photos.forEach(p => put("media", {id:p.id, family_id:fam, event_id:nz(p.eventId), restaurant_id:nz(p.rid), kind:"photo", category:nz(p.cat), caption:nz(p.caption),
+    storage_path:p.path || `${fam}/${p.id}.jpg`, by:p.by, status:p.status, at:ms2iso(p.t)}));
+  s.cards.forEach(c => put("cards", {id:c.id, family_id:fam, by:c.by, media_id:nz(c.photoId), style:c.style, message:nz(c.msg), event_id:nz(c.eventId),
+    restaurant_id:nz(c.rid), recipients:[...(c.to || [])], status:c.status, at:ms2iso(c.t), upload_path:c.upload ? (c.uploadPath || `${fam}/cards/${c.id}.jpg`) : null}));
+  Object.entries(s.tabs).forEach(([eid, t]) => {
+    if(!t.payer && !t.fromServer) return;          // a tab only exists once someone pays
+    put("tabs", {event_id:eid, payer:nz(t.payer), tax_rate:+t.tax, auto_gratuity:!!t.autoGrat, receipt_total:t.receipt ? +t.receipt : null, check_no:t.no, closed:!!t.closed});
+    Object.entries(t.tickets || {}).forEach(([owner, k]) => {
+      if(!k.fromServer && isDefaultTicket(k, owner)) return;   // an untouched ticket is the same as none
+      put("tab_tickets", {event_id:eid, owner, covers:[...k.covers], tip_pct:+k.tip, status:k.status, return_note:nz(k.note), paid_via:nz(k.paidVia)});
+      k.items.forEach(i => put("tab_lines", {id:i.id, event_id:eid, owner, category:i.cat, description:nz(i.desc), amount:+i.amount}));
+    });
+  });
+  s.alerts.forEach(a => put("alerts", {id:a.id, to_member:a.to, text:a.text, event_id:nz(a.eventId), read:!!a.read, at:ms2iso(a.t)}));
+  return R;
+}
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+/* server → st */
+async function pull(){
+  const all = t => sb.from(t).select("*").limit(5000);
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+  const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
+  const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
+  const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
+  // Restaurants live on the server too: any the app's own list doesn't carry are added, so a plan
+  // naming one can never break a screen (and the list can grow without a new build).
+  D.restaurants.forEach(x => { if(RBY[x.id]) return;
+    if(x.source === "google"){ gRest(x.id, x.city); return; }
+    const fresh = x.first_seen && (Date.now() - Date.parse(x.first_seen)) < 60*DAY;
+    const r = {id:x.id, name:x.name, city:x.city || "Memphis", cuisine:x.cuisines?.length ? x.cuisines : ["American"], hood:x.neighborhood || "", addr:x.address || "",
+      price:x.price || 2, flags:[...(x.meals || []), ...(fresh ? ["new"] : [])], blurb:x.blurb || ""};
+    R.push(r); RBY[r.id] = r; if(!CITIES.includes(r.city)) CITIES.push(r.city); });
+  const me = D.members.find(m => m.id === st.me) || D.members[0]; FAMILY = me?.family_id || null;
+  ADMIN = D.members.find(m => m.role === "host")?.id || ADMIN;
+  const n = {fam:[], contacts:[], events:[], arrivals:{}, tableReady:{}, visits:[], reviews:[], ledger:[], notes:[], blocked:{}, photos:[], cards:[], tabs:{}, alerts:[]};
+  n.fam = D.members.map(m => ({id:m.id, name:m.name, color:m.color || COLORS[0], email:m.email || "", phone:m.mobile || "", birthday:m.birthday || "", diet:m.diet || "",
+    zelle:m.zelle || "", cashtag:m.cashtag || "", applepay:m.applepay || "", status:m.status}));
+  n.contacts = D.contacts.map(c => ({id:c.id, name:c.name, relation:c.relation || "", email:c.email || "", phone:c.mobile || "", banned:c.banned, addedBy:c.added_by}));
+  const by = (rows, k) => rows.reduce((o, r) => ((o[r[k]] ||= []).push(r), o), {});
+  const O = by(D.event_options, "event_id"), V = by(D.votes, "event_id"), RS = by(D.rsvps, "event_id"), G = by(D.guests, "event_id"), H = by(D.guest_hands, "guest_id");
+  const RES = Object.fromEntries(D.reservations.map(r => [r.event_id, r]));
+  n.events = D.events.map(e => ({id:e.id, type:e.type, mode:e.mode, host:e.host, title:e.title || "", date:e.date, time:hhmm(e.time), dress:e.dress || "", note:e.note || "",
+    cap:e.budget_cap || 0, voteMin:e.vote_minutes || 10, voteEnds:iso2ms(e.vote_ends), chosen:e.chosen, arrive:hhmm(e.arrive_by), theme:e.theme || "", gifts:e.gifts || "", adults:e.adults_only,
+    excluded:e.excluded || [], status:e.status, warned2:e.warned2, created:localDay(e.created_at),
+    options:(O[e.id] || []).map(o => o.restaurant_id), optBy:Object.fromEntries((O[e.id] || []).map(o => [o.restaurant_id, o.added_by])),
+    votes:Object.fromEntries((V[e.id] || []).map(v => [v.member_id, v.restaurant_id])), rsvp:Object.fromEntries((RS[e.id] || []).map(v => [v.member_id, v.answer])),
+    guests:(G[e.id] || []).map(g => ({id:g.id, name:g.name || "", email:g.email || "", contactId:g.contact_id, by:g.asked_by, hands:(H[g.id] || []).map(h => h.member_id)})),
+    reservation:RES[e.id] ? {status:RES[e.id].status, by:RES[e.id].by, conf:RES[e.id].confirmation || ""} : {status:"none", by:null, conf:""}}));
+  D.arrivals.forEach(a => (n.arrivals[a.event_id] ||= {})[a.member_id] = {s:a.status, t:iso2ms(a.at), eta:a.eta_min});
+  D.table_ready.forEach(t => n.tableReady[t.event_id] = {by:t.by, t:iso2ms(t.at)});
+  n.visits = D.visits.map(v => ({id:v.id, rid:v.restaurant_id, date:v.date, eventId:v.event_id}));
+  n.reviews = D.reviews.map(r => ({id:r.id, rid:r.restaurant_id, by:r.member_id, eventId:r.event_id, date:r.date, scores:Object.fromEntries(SCORE_KEYS.map(k => [k, r[k]])), text:r.text || "", status:r.status}));
+  n.ledger = D.payments.map(l => ({id:l.id, eventId:l.event_id, rid:l.restaurant_id, date:l.date, payer:l.payer, mode:l.mode, forWhom:l.for_member, amount:+l.amount}));
+  n.notes = D.notes.map(x => ({id:x.id, by:x.member_id, eventId:x.event_id, text:x.text, status:x.status, at:x.at, date:localDay(x.at)}));
+  D.never_again.forEach(b => n.blocked[b.restaurant_id] = {by:b.by, reason:b.reason || "", date:b.date});
+  const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
+  const urls = {};
+  if(paths.length){ const {data} = await sb.storage.from("media").createSignedUrls(paths, 6*3600); (data || []).forEach(u => { if(u.signedUrl) urls[u.path] = u.signedUrl; }); }
+  n.photos = D.media.map(m => ({id:m.id, eventId:m.event_id, rid:m.restaurant_id, cat:m.category, caption:m.caption || "", by:m.by, t:iso2ms(m.at), status:m.status, path:m.storage_path, data:urls[m.storage_path] || ""}));
+  n.cards = D.cards.map(c => ({id:c.id, by:c.by, photoId:c.media_id, style:c.style, msg:c.message || "", eventId:c.event_id, rid:c.restaurant_id, to:c.recipients || [], status:c.status,
+    t:iso2ms(c.at), uploadPath:c.upload_path, upload:c.upload_path ? (urls[c.upload_path] || "") : null}));
+  const L = by(D.tab_lines, "event_id");
+  D.tabs.forEach(t => n.tabs[t.event_id] = {payer:t.payer, tax:+t.tax_rate, autoGrat:t.auto_gratuity, receipt:t.receipt_total == null ? "" : String(+t.receipt_total), closed:t.closed, no:t.check_no, fromServer:true, tickets:{}});
+  D.tab_tickets.forEach(k => { const t = n.tabs[k.event_id]; if(!t) return;
+    t.tickets[k.owner] = {items:(L[k.event_id] || []).filter(i => i.owner === k.owner).map(i => ({id:i.id, cat:i.category, desc:i.description || "", amount:+i.amount})),
+      covers:k.covers, tip:k.tip_pct, status:k.status, note:k.return_note || "", paidVia:k.paid_via, sentAt:iso2ms(k.sent_at), settledAt:iso2ms(k.settled_at), fromServer:true}; });
+  n.alerts = D.alerts.map(a => ({id:a.id, to:a.to_member, text:a.text, eventId:a.event_id, t:iso2ms(a.at), read:a.read}));
+  Object.assign(st, n);
+  snap = rowsOf(st);
+  gFillNames();
+}
+
+/* st → server: only what changed. Photos and card pictures are uploaded before their rows. */
+let syncing = Promise.resolve(), syncQueued = false;
+function queueSync(){ if(syncQueued) return; syncQueued = true; syncing = syncing.then(() => { syncQueued = false; return syncNow(); }); }
+const toBlob = async dataUrl => (await fetch(dataUrl)).blob();
+async function syncNow(){
+  if(!FAMILY || !snap) return;
+  try {
+    for(const p of st.photos) if(!p.path && p.data?.startsWith("data:")){ const path = `${FAMILY}/${p.id}.jpg`;
+      const {error} = await sb.storage.from("media").upload(path, await toBlob(p.data), {contentType:"image/jpeg", upsert:false}); if(error) throw error; p.path = path; }
+    for(const c of st.cards) if(c.upload?.startsWith("data:") && !c.uploadPath){ const path = `${FAMILY}/cards/${c.id}.jpg`;
+      const {error} = await sb.storage.from("media").upload(path, await toBlob(c.upload), {contentType:"image/jpeg", upsert:false}); if(error) throw error; c.uploadPath = path; }
+    const now = rowsOf(st);
+    for(const t of ORDER){
+      const ins = [];
+      for(const [k, row] of now[t]){ const old = snap[t].get(k);
+        if(!old){ ins.push(row); continue; }
+        const ch = Object.fromEntries(Object.keys(row).filter(c => !same(row[c], old[c])).map(c => [c, row[c]]));
+        if(Object.keys(ch).length){ const m = Object.fromEntries(PK[t].map(c => [c, row[c]]));
+          const {error, count} = await sb.from(t).update(ch, {count:"exact"}).match(m); if(error) throw error; if(!count) throw new Error("refused"); } }
+      if(ins.length){ const {error} = await sb.from(t).insert(ins); if(error) throw error; }
+    }
+    for(const t of [...ORDER].reverse()) for(const [k, old] of snap[t]) if(!now[t].has(k)){
+      const m = Object.fromEntries(PK[t].map(c => [c, old[c]]));
+      const {error} = await sb.from(t).delete().match(m); if(error) throw error;
+      if(t === "media" && old.storage_path) await sb.storage.from("media").remove([old.storage_path]);
+    }
+    snap = now;
+  } catch(err){
+    const msg = String(err?.message || "");
+    toast(/^(Only|This|That|The ballot|The host)/.test(msg) ? msg : msg === "refused" ? "That change isn't yours to make. Showing the table as it is." : "Couldn't save that. Showing the table as it is.");
+    await refresh(true);
+  }
+}
+
+/* live: anything another phone changes re-reads the table */
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+let chan = null, pullTimer = null, redrawLater = false;
+function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
+function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
+function onRemote(){ clearTimeout(pullTimer); pullTimer = setTimeout(() => refresh(), 350); }
+async function refresh(now = false){
+  if(!now) await syncing;
+  try { await pull(); } catch { return; }
+  redraw();
+}
+function redraw(){
+  if(app.hidden) return;
+  const a = document.activeElement; if(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && view.contains(a)){ redrawLater = true; return; }   // never wipe what someone is typing
+  // a plan cancelled on another phone closes whatever was open for it, instead of breaking the screen
+  if(liveId && !ev(liveId)){ clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = ""; toast("That plan was cancelled"); }
+  if(revealId && !ev(revealId)) closeReveal();
+  if(tabId && !ev(tabId)) closeTab();
+  if(inviteId && !ev(inviteId)) closeInvite();
+  render(); if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
+}
+document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
 
 /* ================= Lookups ================= */
 const F = id => st.fam.find(f => f.id === id) || {name:"Someone",color:"#666",id};
@@ -698,7 +949,7 @@ function critAvg(rid){
 const starStr = n => n == null ? "" : "★".repeat(Math.round(n)) + "☆".repeat(5-Math.round(n));
 const placeQ = r => r.name + ", " + (r.addr || (r.city === "Memphis" ? "Memphis, TN" : r.city));
 const mapsDir = r => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(placeQ(r))}`;
-const mapsPlace = r => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQ(r))}`;
+const mapsPlace = r => r.mapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQ(r))}`;
 const menuLink = r => `https://www.google.com/search?q=${encodeURIComponent(r.name + " " + r.city + " menu")}`;
 const pairing = r => { for(const c of r.cuisine){ if(WINE[c]) return WINE[c]; } return WINE.American; };
 
@@ -796,14 +1047,9 @@ splash.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ")
 setTimeout(endSplash, 3600);
 
 function partOfDay(){ const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
-/* Sign in: full name + 4-digit PIN. First time, each person creates their PIN.
-   Five wrong tries locks that name for 5 minutes. The host can reset anyone's PIN. */
+/* Sign in: full name + 4-digit PIN, checked on the server (pin-signin). First time, each person creates
+   their PIN. Five wrong tries locks that name for 5 minutes on every phone. The host can reset anyone's PIN. */
 const norm = n => String(n || "").trim().toLowerCase().replace(/\s+/g, " ");
-async function hashPin(id, pin){
-  const data = new TextEncoder().encode("t7:" + id + ":" + pin);
-  try { const buf = await crypto.subtle.digest("SHA-256", data); return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join(""); }
-  catch { let h = 5381; for(const c of data) h = ((h << 5) + h + c) >>> 0; return "d" + h.toString(16); }
-}
 let siMode = "signin", siWho = null;
 function showSignIn(msg = ""){
   app.hidden = true; closeSheet(); gate.hidden = false; gate.className = ""; siMode = "signin"; siWho = null;
@@ -828,31 +1074,46 @@ function showSignIn(msg = ""){
   f.addEventListener("submit", async ev2 => { ev2.preventDefault(); await trySignIn(); });
 }
 async function trySignIn(){
-  const err = document.getElementById("si-err"); err.style.color = ""; const name = document.getElementById("si-name").value; const pin = document.getElementById("si-pin").value.trim();
-  const who = st.fam.find(f => norm(f.name) === norm(name));
-  if(!who){ err.textContent = `We couldn't find “${name.trim()}” at the table. Use your full name, or ask ${first(F(ADMIN).name)} to add you.`; return; }
-  st.pinLocks ||= {}; const lk = st.pinLocks[who.id] || {fails:0, until:0};
-  if(lk.until > Date.now()){ err.textContent = `Too many tries. Try again in ${Math.ceil((lk.until - Date.now())/60000)} min, or ask ${first(F(ADMIN).name)} to reset your PIN.`; return; }
+  const err = document.getElementById("si-err"); err.style.color = ""; err.textContent = ""; const name = document.getElementById("si-name").value; const pin = document.getElementById("si-pin").value.trim();
+  const host = first(F(ADMIN).name);
+  if(!name.trim()){ err.textContent = "Type your full name."; return; }
   if(!/^\d{4}$/.test(pin)){ err.textContent = "Your PIN is 4 numbers."; return; }
-  st.pins ||= {};
-  if(!st.pins[who.id]){
-    if(siMode !== "create" || siWho !== who.id){
-      siMode = "create"; siWho = who.id;
-      document.getElementById("si-pin2-wrap").hidden = false; document.getElementById("si-pin-label").textContent = "Create a 4-digit PIN";
-      document.getElementById("si-go").textContent = "Save my PIN"; err.textContent = ""; err.style.color = "var(--brass)";
-      err.textContent = `Welcome, ${first(who.name)}! Choose a PIN only you know.`; document.getElementById("si-pin2").focus(); return;
-    }
-    const pin2 = document.getElementById("si-pin2").value.trim();
-    if(pin !== pin2){ err.style.color = ""; err.textContent = "Those PINs don't match. Try again."; document.getElementById("si-pin2").value = ""; return; }
-    st.pins[who.id] = await hashPin(who.id, pin);
-  } else if(await hashPin(who.id, pin) !== st.pins[who.id]){
-    lk.fails++; if(lk.fails >= 5){ lk.until = Date.now() + 5*60000; lk.fails = 0; } st.pinLocks[who.id] = lk; save();
-    err.style.color = ""; err.textContent = lk.until > Date.now() ? `Too many tries. Locked for 5 minutes.` : `That PIN isn't right. ${5 - lk.fails} ${5 - lk.fails === 1 ? "try" : "tries"} left.`;
-    document.getElementById("si-pin").value = ""; return;
+  const creating = siMode === "create";
+  const pin2 = creating ? document.getElementById("si-pin2").value.trim() : null;
+  if(creating && !pin2){ err.textContent = "Type the same PIN again."; document.getElementById("si-pin2").focus(); return; }
+  const goBtn = document.getElementById("si-go"); goBtn.disabled = true;
+  let r;
+  try {
+    const res = await fetch(SB_URL + "/functions/v1/pin-signin", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY}, body:JSON.stringify({name, pin, pin2})});
+    r = await res.json();
+  } catch { r = {ok:false, code:"offline"}; }
+  goBtn.disabled = false;
+  if(r.ok){
+    const who = {id:r.member_id};
+    const {error} = await sb.auth.setSession(r.session);
+    if(error){ err.textContent = "Something went wrong at the table. Try again in a moment."; return; }
+    st.me = who.id;
+    try { await pull(); } catch { err.textContent = "Can't reach the table right now. Check your connection and try again."; st.me = null; return; }
+    subscribe(); st.lastName = F(st.me).name; draft = null; keepLocal(); showGreeting(); return;
   }
-  delete st.pinLocks[who.id]; st.me = who.id; st.lastName = who.name; draft = null; save(); showGreeting();
+  switch(r.code){
+    case "no_name": err.textContent = `We couldn't find “${name.trim()}” at the table. Use your full name, or ask ${host} to add you.`; break;
+    case "create":
+      siMode = "create";
+      document.getElementById("si-pin2-wrap").hidden = false; document.getElementById("si-pin-label").textContent = "Create a 4-digit PIN";
+      document.getElementById("si-go").textContent = "Save my PIN"; err.style.color = "var(--brass)";
+      err.textContent = `Welcome, ${r.first || first(name)}! Choose a PIN only you know.`; document.getElementById("si-pin2").focus(); break;
+    case "mismatch": err.textContent = "Those PINs don't match. Try again."; document.getElementById("si-pin2").value = ""; break;
+    case "wrong": err.textContent = `That PIN isn't right. ${r.tries_left} ${r.tries_left === 1 ? "try" : "tries"} left.`; document.getElementById("si-pin").value = ""; break;
+    case "locked": err.textContent = `Too many tries. Try again in ${r.minutes} min, or ask ${host} to reset your PIN.`; document.getElementById("si-pin").value = ""; break;
+    case "ip_locked": err.textContent = `Too many wrong PINs from this network. Try again in ${r.minutes} min.`; break;
+    case "format": err.textContent = "Your PIN is 4 numbers."; break;
+    case "offline": err.textContent = "Can't reach the table right now. Check your connection and try again."; break;
+    default: err.textContent = "Something went wrong at the table. Try again in a moment.";
+  }
 }
-function lockApp(msg){ closeSheet(); clearInterval(liveTimer); ["live","reveal","gallery","host","cardov","tab","invite"].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; }); document.body.style.overflow = ""; liveId = null; revealId = null; tabId = null; showSignIn(msg); }
+function lockApp(msg){ sb.auth.signOut({scope:"local"}).catch(() => {}); unsubscribe(); FAMILY = null; snap = null; ADMIN = "m1";
+  { const ui = st.ui, ln = st.lastName; st = seed(); st.ui = ui; st.lastName = ln; st.cards = []; st.tabs = {}; } closeSheet(); clearInterval(liveTimer); ["live","reveal","gallery","host","cardov","tab","invite"].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; }); document.body.style.overflow = ""; liveId = null; revealId = null; tabId = null; showSignIn(msg); }
 /* Lock again after 10 minutes away from the app */
 let awayAt = 0;
 document.addEventListener("visibilitychange", () => { if(document.hidden) awayAt = Date.now(); else if(awayAt && Date.now() - awayAt > 10*60000 && !app.hidden) lockApp("Locked after 10 minutes away. Sign in again."); });
@@ -885,10 +1146,10 @@ function renderTabs(){
   document.getElementById("bell-btn").innerHTML = I.bell + (un ? `<span class="badge-dot">${un}</span>` : "");
 }
 function render(){
-  if(!liveId) st.events.forEach(e => { if(e.status === "open" && e.voteEnds && e.voteEnds < Date.now()) lockEvent(e); });
+  if(!liveId) st.events.forEach(e => { if(e.status === "open" && e.voteEnds && e.voteEnds < Date.now() && !closing.has(e.id)) closeVote(e); });
   st.fam.filter(f => f.birthday).forEach(f => { const [, m, d] = f.birthday.split("-").map(Number); let dt = new Date(today0.getFullYear(), m-1, d); if(dt < today0) dt = new Date(today0.getFullYear()+1, m-1, d);
     const days = Math.round((dt - today0)/DAY), key = f.id + "-" + dt.getFullYear();
-    if(days <= 21 && !st.radarSent[key]){ st.radarSent[key] = true; alertAll(`${first(f.name)}'s birthday is in ${days} days (${dt.toLocaleDateString(undefined,{month:"short",day:"numeric"})}). Time to plan?`, null, f.id); save(); } });
+    if(days <= 21 && !st.radarSent[key] && FAMILY){ st.radarSent[key] = true; sb.rpc("radar_claim", {p_key:key}).then(({data}) => { if(data){ alertAll(`${first(f.name)}'s birthday is in ${days} days (${dt.toLocaleDateString(undefined,{month:"short",day:"numeric"})}). Time to plan?`, null, f.id); save(); } }); } });
   renderTabs();
   const fn = {home:vHome,explore:vExplore,plan:vPlan,feed:vFeed,table:vTable}[st.ui.tab] || vHome;
   view.innerHTML = fn();
@@ -911,7 +1172,7 @@ function vHome(){
     : ["No reservation yet", `${t.e.title} at ${RBY[t.e.chosen].name}`];
   return `
   <section class="hello">
-    <div class="eyebrow">${fmtLong(iso(today0))}</div>
+    <div class="eyebrow" data-now>${nowLine()}</div>
     <h1>${partOfDay()}, <em>${esc(first(me.name))}</em>.</h1>
     <p>${todos.length ? `You have ${todos.length} open item${todos.length>1?"s":""} at the table.` : "Nothing waiting on you. Hungry?"}</p>
   </section>
@@ -931,7 +1192,7 @@ function vHome(){
       <button class="btn sm wine" style="justify-self:start" data-act="plan-bday" data-id="${x.f.id}">Plan ${esc(first(x.f.name))}'s birthday</button></div>`).join("")}
 
   <div class="grid2">
-    <button class="alt" data-act="quick-plan" data-m="vote"><span class="eyebrow" style="font-size:10px">Group decision</span><b>Start a family vote</b><span class="muted small">Everyone picks in 10 minutes</span></button>
+    <button class="alt" data-act="quick-plan" data-m="vote"><span class="eyebrow" style="font-size:10px">Group decision</span><b>Start a family vote</b><span class="muted small">Everyone picks live, on the clock</span></button>
     <button class="alt" data-act="quick-plan" data-m="host"><span class="eyebrow" style="font-size:10px">No vote needed</span><b>Send an invitation</b><span class="muted small">You decide, they RSVP</span></button>
   </div>
   <button class="todo" data-act="card-open"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✉</span><span><b>Send a card</b><small>A picture of us and our dinner, for anyone you love</small></span><span class="chev">${I.chev}</span></button>
@@ -964,7 +1225,7 @@ function vHome(){
     <div class="sec-head"><h2>New &amp; not yet tried</h2><button class="link-btn" data-act="explore-filter" data-f="untried">See all</button></div>
     <div class="scroller">${fresh.map(r => `<button class="alt" data-act="rest" data-rid="${r.id}">${r.flags.includes("new")?'<span class="pill wine" style="justify-self:start">New</span>':'<span class="pill brass" style="justify-self:start">Not tried</span>'}<b>${esc(r.name)}</b><span class="muted small">${r.cuisine.join(" · ")} · ${$(r.price)}</span></button>`).join("")}</div>
   </section>
-  <p class="proto">Prototype · data saves on this device only</p>`;
+  <p class="proto">Shared with the whole table · updates live on every phone</p>`;
 }
 function miniEvent(e){
   const r = e.chosen ? RBY[e.chosen] : null;
@@ -1003,9 +1264,10 @@ function vExplore(){
     <div class="search">${I.search}<input class="input" id="q" type="search" placeholder="Search restaurants, cuisines, neighborhoods" value="${esc(u.q)}" data-input="q"></div>
     <div class="chips" role="group" aria-label="Cuisine">${CUISINES.map(c => `<button class="chip" data-act="cuisine" data-c="${c}" aria-pressed="${c===u.cuisine}">${c}</button>`).join("")}</div>
   </section>
+  ${gBlock("explore")}
   <section class="sec" id="rlist">
-    ${list.length ? list.map(r => rRow(r,t)).join("") : `<div class="empty">No matches here yet. Try another cuisine or city.</div>`}
-    ${u.city === "Memphis" ? `<p class="proto">The full build pulls every Memphis restaurant live from Google Places, so this list becomes exhaustive and stays current.</p>` : ""}
+    <div class="lbl">OUR LIST</div>
+    ${list.length ? list.map(r => rRow(r,t)).join("") : `<div class="empty">No matches here yet. Try another cuisine or city, or search Google above.</div>`}
   </section>`;
 }
 function rRow(r,t){
@@ -1029,7 +1291,13 @@ function sheetRest(rid){
   const rs = rotationState(rid, iso(nextSunday));
   openSheet(`
     <div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">${r.cuisine.join(" · ")} · ${$(r.price)}</div><h2>${esc(r.name)}</h2></div>${a?`<div class="num" style="color:var(--brass);font-size:20px">★ ${a.toFixed(1)}</div>`:""}</div>
-    <p style="margin:0">${esc(r.blurb)}</p>
+    ${r.blurb ? `<p style="margin:0">${esc(r.blurb)}</p>` : ""}
+    ${r.google ? (() => { const g = gInfo[r.placeId] || {}; const full = g.rating !== undefined || g.price !== undefined;
+      return `<div class="card" style="gap:6px">${r.status === "CLOSED_PERMANENTLY" ? `<b style="color:var(--bad)">Google lists this place as closed for good.</b>` : ""}
+        ${full ? `<div>${g.price ? `${"$".repeat(g.price)} · ` : ""}${g.rating ? `★ ${g.rating.toFixed(1)}${g.ratings ? ` (${g.ratings.toLocaleString()})` : ""} · ` : ""}${g.openNow === true ? "Open now" : g.openNow === false ? "Closed right now" : ""}</div>
+          ${g.phone ? `<a href="tel:${esc(g.phone)}">${esc(g.phone)}</a>` : ""}${g.website ? `<a href="${esc(g.website)}" target="_blank" rel="noopener">Website</a>` : ""}`
+        : `<button class="btn sm" data-act="g-more" data-pid="${r.placeId}" style="justify-self:start">More from Google: price, rating, hours, phone</button>`}
+        <span class="small muted">Details from Google</span></div>`; })() : ""}
     <dl class="kv">
       <dt>Address</dt><dd><a href="${mapsPlace(r)}" target="_blank" rel="noopener">${esc(addrOf(r))}</a></dd>
       <dt>Typical cost</dt><dd>${costText(r)}</dd>
@@ -1057,7 +1325,7 @@ let draft = null;
 function newDraft(occ="sunday", rid=null){
   const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
   draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${first(ME().name)}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
-    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0, arrive:"", theme:"", gifts:"", adults:false};
+    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0, arrive:"", theme:"", gifts:"", adults:false, voteMin:10};
 }
 function vPlan(){
   if(!draft) newDraft();
@@ -1089,6 +1357,7 @@ function vPlan(){
       <div class="field"><label for="p-date">Date</label><input class="input" type="date" id="p-date" data-d="date" value="${d.date}"></div>
       <div class="field"><label for="p-time">Time</label><input class="input" type="time" id="p-time" data-d="time" value="${d.time}"></div>
     </div>
+    ${d.mode !== "host" ? `<div class="field"><label for="p-votemin">Vote length</label><select class="input" id="p-votemin" data-d="voteMin">${VOTE_LENGTHS.map(m => `<option value="${m}" ${+d.voteMin===m?"selected":""}>${m} minutes</option>`).join("")}</select><span class="small muted">The live vote runs this long once someone starts it. It closes early if everyone has voted.</span></div>` : ""}
     ${clash.length ? `<div class="warnbox">Heads up: ${clash.map(e => `${esc(F(e.host).name)}'s “${esc(e.title)}”`).join(", ")} is already on ${fmtDate(d.date)}. Pick another day or join that one instead.</div>` : ""}
     <div class="field"><label for="p-dress">Dress code</label><select class="input" id="p-dress" data-d="dress">${DRESS.map(x => `<option ${x===d.dress?"selected":""}>${x}</option>`).join("")}</select><span class="small muted">${DRESS_NOTE[d.dress] || ""}</span></div>
     <details class="card" style="padding:12px 14px"${d.arrive || d.theme || d.gifts || d.adults ? " open" : ""}><summary style="cursor:pointer;font-weight:600">Occasion details <span class="small muted">(optional)</span></summary>
@@ -1105,6 +1374,7 @@ function vPlan(){
     <div class="search">${I.search}<input class="input" id="p-q" type="search" placeholder="Search any city" value="${esc(d.q)}" data-d="q"></div>
     <div class="pick-list" id="pick-list">${pool.map(r => { const on = d.options.includes(r.id); const rs = rotationState(r.id,t); const rest = d.type==="sunday" && rs.state==="resting";
       return `<button class="pick" data-act="pick" data-rid="${r.id}" aria-pressed="${on}" ${rest&&!on?'data-resting="1"':""}><span class="check">${on?"✓":""}</span><span class="grow"><b>${esc(r.name)}</b><small>${r.cuisine[0]} · ${r.city==="Memphis"?esc(r.hood):r.city} · ${$(r.price)}${picks.includes(r.id)?" · ★ Concierge pick":""}${rest?` · resting until ${fmtDate(rs.back)}`:""}</small></span></button>`; }).join("")}</div>
+    ${gBlock("plan")}
   </section>
   <section class="sec">
     <div class="field"><label for="p-note">Personal note</label><textarea class="input" id="p-note" data-d="note" placeholder="${isHost?"A line for your invitation":"Anything the family should know"}">${esc(d.note)}</textarea></div>
@@ -1252,7 +1522,7 @@ function eventCard(e){
       <button class="btn sm wine" data-act="tab" data-id="${e.id}">The Tab</button><a class="btn sm" href="${mailInvite(e)}">Email invitation</a><button class="btn sm ghost" data-act="copy-invite" data-id="${e.id}">Copy text</button></div>`;
   }
   body += `<div class="actions" style="margin-top:2px">
-    ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:"Start 10-minute vote"}</button>`:""}
+    ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:`Start ${voteMin(e)}-minute vote`}</button>`:""}
     <button class="btn sm" data-act="ask-guest" data-id="${e.id}">+ Ask to bring a guest</button>
     ${e.status==="set"?`<button class="btn sm" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button><button class="btn sm wine" data-act="wrap" data-id="${e.id}">We dined — wrap up</button>`:""}
     ${isAdmin()?`<button class="btn sm ghost" data-act="ev-people" data-id="${e.id}">Who's invited</button>`:""}
@@ -1320,7 +1590,7 @@ function vTable(){
   </section>
   <section class="card">
     <p class="small muted" style="margin:0">You've written ${myReviews} review${myReviews===1?"":"s"}.</p>
-    <div class="actions"><button class="btn sm" data-act="tips">Quick tip guide</button><button class="btn sm ghost" data-act="reset-all">Reset prototype data</button></div>
+    <div class="actions"><button class="btn sm" data-act="tips">Quick tip guide</button></div>
   </section>`;
 }
 function personRow(kind, p){
@@ -1338,9 +1608,11 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet();
 
 function sheetTips(){
   const tips = [
-    ["Signing in","Type your full name and your 4-digit PIN. The first time, you create your PIN. Tap your initial (top right) to lock the app or change your PIN. Forgot it? Richard can reset it."],
+    ["Signing in","Type your full name and your 4-digit PIN. The first time, you create your PIN. Five wrong tries locks your name for 5 minutes on every phone. Tap your initial (top right) to lock the app, sign in as someone else, or change your PIN (you'll need your current one). Forgot it? Richard can reset it in Host controls."],
+    ["One table for everyone","Votes, invitations, check-ins, photos, alerts and The Tab show on every family phone the moment someone taps. Nothing about the family is kept on your phone: lock the app and it's gone until you sign in again."],
+    ["Every restaurant, from Google","In Explore, or under your choices when you plan, type what you want (Pappadeaux, hibachi, soul food, seafood) and pick a city. Google lists every match in that area, every location of a chain. Tap More from Google for price, rating, hours and phone, and Plan here or Add to choices to use it. It's free: if the family uses up this month's free searches, it rests until the 1st."],
     ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
-    ["The 10-minute vote","Tap “Start 10-minute vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
+    ["The live vote","When you make a family vote, choose how long it runs: 5, 10, 15, 20, 30 or 60 minutes (10 if you don't choose). Tap “Start vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
     ["Welcome to dinner","When the vote closes, the winner opens full screen with directions, the menu and tonight's highlights."],
     ["Check in","Tap “I'm on my way”, then “I've arrived”. Everyone can see who's at the table."],
     ["Guests","Pick guests from Contacts or add someone new. Each guest needs a show of hands from a majority of the family."],
@@ -1348,7 +1620,7 @@ function sheetTips(){
     ["Running late & table ready","On the dinner card, tap “Running late” and pick minutes. The first one there taps “Our table is ready”."],
     ["Sights & Sounds","Share photos of the food, the place and the family. They're arranged by month in the gallery. Richard approves family photos before they appear."],
     ["Send a card","Pick a photo, write a note, choose Keepsake or Snapshot, and send it to anyone from your phone's share menu. Cards from the family go to Richard first."],
-    ["The Tab","One person pays the restaurant on one check. Everyone fills out their own ticket (appetizer, drink, entrée, who they're paying for, tip) and sends it. The payer verifies it by name, confirms it or sends it back, and marks it settled when the money arrives. Then that ticket shows $0.00."],
+    ["The Tab","One person pays the restaurant on one check. Everyone fills out their own ticket (appetizer, drink, entrée, who they're paying for, tip) and sends it. The payer verifies it by name, confirms it or sends it back to be corrected. Pay the payer by Zelle, Apple Pay, Cash App or cash. When the money arrives, the payer taps “Send receipt” and you get a receipt: PAID, the date and time, every line, tax, tip and total, signed with the payer's last name and first initial. Concierge's even split is only a calculator; The Tab is where each person pays for what they ate."],
     ["Host controls","Richard approves photos and cards, can pause or remove a seat, mark a guest not welcome, and delete any post. Hurtful posts about a person are held for him automatically."],
     ["Never Again","Had a bad night? Add the place to Never Again with a reason. It disappears from picks and votes."],
     ["Birthday radar","Add birthdays and dietary notes under Our Table. Three weeks out, everyone gets a nudge with the birthday person's favorites."],
@@ -1362,10 +1634,33 @@ function sheetTips(){
 }
 function sheetSeat(){
   openSheet(`<div class="sheet-head"><div style="flex:1;display:flex;gap:12px;align-items:center">${av(st.me)}<div><div class="eyebrow">Signed in</div><h2 style="font-size:22px">${esc(ME().name)}</h2></div></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <button class="btn primary block" data-act="lock">Lock the app</button>
+    <button class="btn primary block" data-act="app-lock">Lock the app</button>
     <button class="btn block" data-act="lock-switch">Sign in as someone else</button>
     <button class="btn ghost block" data-act="pin-change">Change my PIN</button>
     <p class="small muted" style="margin:0">The app also locks itself after 10 minutes away.</p>`);
+}
+function sheetPinChange(){
+  openSheet(`<div class="sheet-head"><h2>Change my PIN</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="field"><label for="pc-old">Your current PIN</label><input class="input pin" id="pc-old" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="••••"></div>
+    <div class="field"><label for="pc-new">New 4-digit PIN</label><input class="input pin" id="pc-new" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="••••"></div>
+    <div class="field"><label for="pc-new2">Type the new PIN again</label><input class="input pin" id="pc-new2" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="••••"></div>
+    <div class="si-err" id="pc-err" role="alert"></div>
+    <button class="btn primary block" data-act="pin-change-go">Save my new PIN</button>
+    <p class="small muted" style="margin:0">Forgot your current PIN? Ask ${esc(first(F(ADMIN).name))} to reset it.</p>`);
+  document.getElementById("pc-old").focus();
+}
+async function pinChangeGo(){
+  const v = id => document.getElementById(id).value.trim(), err = document.getElementById("pc-err");
+  const o = v("pc-old"), n1 = v("pc-new"), n2 = v("pc-new2");
+  if(![o, n1].every(x => /^\d{4}$/.test(x))){ err.textContent = "PINs are 4 numbers."; return; }
+  if(n1 !== n2){ err.textContent = "The new PINs don't match."; document.getElementById("pc-new2").value = ""; return; }
+  const {data, error} = await sb.rpc("change_my_pin", {old_pin:o, new_pin:n1});
+  if(error || !data){ err.textContent = "Can't reach the table right now. Try again."; return; }
+  if(data.ok){ closeSheet(); toast("Your new PIN is set"); return; }
+  if(data.code === "wrong"){ err.textContent = `Your current PIN isn't right. ${data.tries_left} ${data.tries_left === 1 ? "try" : "tries"} left.`; document.getElementById("pc-old").value = ""; return; }
+  if(data.code === "locked"){ err.textContent = `Too many tries. Locked for ${data.minutes} min.`; return; }
+  if(data.code === "signed_out"){ lockApp("Please sign in again."); return; }
+  err.textContent = "PINs are 4 numbers.";
 }
 function sheetPerson(kind, id){
   const list = kind === "fam" ? st.fam : st.contacts;
@@ -1496,7 +1791,7 @@ function radarList(){
 /* ================= Host controls & moderation =================
    Richard is the table's host: family photos and cards wait for his OK, posts that look
    hurtful toward a person are held, and he can pause or remove anyone. */
-const ADMIN = "m1";
+let ADMIN = "m1";   // the table's host; after sign-in it is read from the server (members.role = host)
 const isAdmin = (id = st.me) => id === ADMIN;
 const active = f => f.status !== "suspended";
 const isSuspended = (id = st.me) => F(id).status === "suspended";
@@ -1514,7 +1809,8 @@ function hostQueue(){
 }
 const queueCount = () => { const q = hostQueue(); return q.photos.length + q.cards.length + q.notes.length + q.reviews.length; };
 const hostEl = document.getElementById("host");
-function openHost(){ if(!isAdmin()) return; hostEl.hidden = false; document.body.style.overflow = "hidden"; drawHost(); }
+function openHost(){ if(!isAdmin()) return; hostEl.hidden = false; document.body.style.overflow = "hidden"; drawHost();
+  sb.rpc("pin_status").then(({data}) => { if(data){ pinSet = Object.fromEntries(data.map(x => [x.member_id, x.has_pin])); if(!hostEl.hidden) drawHost(); } }); }
 function closeHost(){ hostEl.hidden = true; document.body.style.overflow = ""; render(); }
 function drawHost(){
   const q = hostQueue(); const none = t => `<div class="empty">${t}</div>`;
@@ -1533,7 +1829,7 @@ function drawHost(){
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Family seats</h2></div>
       ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;margin:-4px 0 6px"><span class="small muted">${st.pins?.[f.id] ? "PIN set" : "No PIN yet"}</span>${st.pins?.[f.id] && f.id !== ADMIN ? `<button class="link-btn" data-act="host-pin" data-id="${f.id}">Reset PIN</button>` : ""}</div>`).join("")}
+        <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;margin:-4px 0 6px"><span class="small muted">${pinSet[f.id] ? "PIN set" : "No PIN yet"}</span>${pinSet[f.id] && f.id !== ADMIN ? `<button class="link-btn" data-act="host-pin" data-id="${f.id}">Reset PIN</button>` : ""}</div>`).join("")}
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Guests &amp; contacts</h2></div>
       ${st.contacts.map(c => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(c.name[0])}</span><span style="min-width:0"><b>${esc(c.name)}</b><small>${c.banned ? "Not welcome: can't be invited" : esc(c.relation || "Contact")}</small></span><button class="btn sm ${c.banned ? "primary" : "ghost"}" data-act="host-contact" data-id="${c.id}">${c.banned ? "Welcome back" : "Not welcome"}</button></div>`).join("") || none("No contacts yet.")}
@@ -1584,7 +1880,7 @@ function drawCard(){
   document.getElementById("card-msg").addEventListener("input", x => { d.msg = x.target.value; clearTimeout(cardTimer); cardTimer = setTimeout(() => renderCard(document.getElementById("card-cv"), d), 200); });
   document.getElementById("card-file").addEventListener("change", async x => { const f = x.target.files?.[0]; if(!f) return; try { d.upload = await downscale(f); drawCard(); } catch { toast("That file isn't a photo this phone can read"); } });
 }
-const loadImg = src => new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = src; });
+const loadImg = src => new Promise((ok, bad) => { const i = new Image(); if(/^https?:/.test(src)) i.crossOrigin = "anonymous"; i.onload = () => ok(i); i.onerror = bad; i.src = src; });
 function coverDraw(ctx, img, x, y, w, h){ const k = Math.max(w/img.width, h/img.height), sw = w/k, sh = h/k; ctx.drawImage(img, (img.width-sw)/2, (img.height-sh)/2, sw, sh, x, y, w, h); }
 function wrapLines(ctx, text, maxW){ const out = []; let line = ""; String(text).split(/\s+/).forEach(w => { const t = line ? line + " " + w : w; if(ctx.measureText(t).width > maxW && line){ out.push(line); line = w; } else line = t; }); if(line) out.push(line); return out; }
 function fitFont(ctx, text, style, size, family, maxW){ let s = size; do { ctx.font = `${style} ${s}px ${family}`; s -= 2; } while(ctx.measureText(text).width > maxW && s > 18); }
@@ -1671,6 +1967,25 @@ function payOptions(payer, amt){
 }
 function openTab(id){ tabId = id; const t = tabOf(ev(id)); tabView = t.payer === st.me ? "wallet" : "mine"; tabEl.hidden = false; document.body.style.overflow = "hidden"; drawTab(); tabEl.scrollTop = 0; }
 function closeTab(){ tabEl.hidden = true; tabId = null; document.body.style.overflow = revealId ? "hidden" : ""; if(revealId) drawReveal(); else render(); }
+/* "Richard Clark" → "Clark, R." — how the payer signs a receipt */
+const lastFirst = n => { const p = String(n || "").trim().split(/\s+/); return p.length > 1 ? `${p[p.length-1]}, ${p[0][0]}.` : p[0] || ""; };
+const whenPaid = ms => new Date(ms || Date.now()).toLocaleString(undefined, {weekday:"short", month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit"});
+function receiptCard(e, t, owner){
+  const k = t.tickets[owner], m = tmath(t, k), r = RBY[e.chosen];
+  return `<section class="card receipt" style="border:2px solid var(--good);gap:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="lbl">RECEIPT · CHECK ${t.no}</div><span class="pill good">PAID</span></div>
+    <div style="font-family:var(--f-display);font-size:26px">${money(m.total)}</div>
+    <div class="small">Paid ${esc(whenPaid(k.settledAt))}${k.paidVia ? ` · by ${esc(k.paidVia)}` : ""}</div>
+    <div class="small muted">${esc(F(owner).name)} · ${esc(r.name)} · ${esc(e.title)}</div>
+    <div class="calc-out">${k.items.map(x => `<div class="line"><span>${esc(x.cat)}: ${esc(x.desc || x.cat)}</span><span class="num">${money(x.amount)}</span></div>`).join("")}
+      <div class="line"><span>Food &amp; drink</span><span class="num">${money(m.sub)}</span></div>
+      <div class="line"><span>Tax ${t.tax}%</span><span class="num">${money(m.tax)}</span></div>
+      <div class="line"><span>${t.autoGrat ? "Gratuity added by restaurant" : `Tip ${k.tip}%`}</span><span class="num">${money(m.tip)}</span></div>
+      <div class="line"><b>Total paid</b><b class="num">${money(m.total)}</b></div>
+      <div class="line"><span>Balance</span><span class="num">$0.00</span></div></div>
+    <div style="font-family:var(--f-script);font-size:24px;text-align:right">Received by ${esc(lastFirst(F(t.payer).name))}</div>
+  </section>`;
+}
 const STAMP = {sent:["Sent","sent"], confirmed:["Confirmed","ok"], returned:["Sent back","back"], settled:["Paid","paid"], payer:["Payer","ok"]};
 function guestCheck(e, t, owner, editable){
   const k = ticketOf(t, owner), m = tmath(t, k), r = RBY[e.chosen], d = parse(e.date);
@@ -1725,7 +2040,7 @@ function drawTab(){
           <div class="calc-out"><div class="line"><span>Settled</span><span class="num">${money(settled)}</span></div><div class="line"><span>Still owed to you</span><span class="num">${money(due)}</span></div></div>
         </section>
         <section class="card"><div class="lbl">TICKETS TO VERIFY · ${sent.length}</div>${sent.map(x => row(x, `<button class="btn sm primary" data-act="tk-verify" data-id="${x.o}">Verify</button>`)).join("") || `<div class="empty">No tickets waiting.</div>`}</section>
-        <section class="card"><div class="lbl">CONFIRMED · WAITING FOR MONEY · ${conf.length}</div>${conf.map(x => row(x, `<button class="btn sm wine" data-act="tk-settle" data-id="${x.o}">Mark settled</button>`)).join("") || `<div class="empty">Nothing outstanding.</div>`}</section>
+        <section class="card"><div class="lbl">CONFIRMED · WAITING FOR MONEY · ${conf.length}</div>${conf.map(x => row(x, `<button class="btn sm wine" data-act="tk-settle" data-id="${x.o}">Send receipt</button>`)).join("") || `<div class="empty">Nothing outstanding.</div>`}</section>
         <section class="card"><div class="lbl">SETTLED · ${done.length}</div>${done.map(x => row(x, `<span class="pill good">$0.00 ✓</span>`)).join("") || `<div class="empty">None yet.</div>`}</section>
         ${waiting.length ? `<section class="card"><div class="lbl">NOT ON A TICKET YET</div><p class="small muted" style="margin:0">${waiting.map(x => esc(first(x.name)) + (x.fam ? "" : " (guest)")).join(", ")}</p>
           <div class="actions">${waiting.filter(x => !x.fam).map(x => `<button class="btn sm" data-act="tk-cover-guest" data-id="${x.id}">Put ${esc(first(x.name))} on my ticket</button>`).join("")}${waiting.some(x => x.fam) ? `<button class="btn sm" data-act="tk-nudge">Remind them</button>` : ""}</div></section>` : ""}`;
@@ -1768,9 +2083,9 @@ function drawTab(){
       if(k.status === "confirmed") body += `<section class="card" style="border-color:var(--brass)"><div class="lbl">${pn} CONFIRMED YOUR TICKET</div>
           <div style="font-family:var(--f-display);font-size:28px">You owe ${money(m.total)}</div>
           <div class="actions">${payOptions(payer, m.total).map(([l, url, h]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener" data-act="tk-pay" data-m="${l}">${l}</a>` : `<button class="btn" data-act="tk-pay" data-m="${l}" data-h="${esc(h)}">${l}</button>`).join("")}</div>
-          ${k.paidVia ? `<div class="small">You told ${pn} you paid by <b>${esc(k.paidVia)}</b>. Your balance clears when ${pn} marks it settled.</div>` : `<p class="small muted" style="margin:0">Zelle or Apple Pay: tapping copies ${pn}'s info and your amount. Cash App opens with the amount filled in.</p>`}
+          ${k.paidVia ? `<div class="small">You told ${pn} you paid by <b>${esc(k.paidVia)}</b>. Your balance clears when ${pn} sends your receipt.</div>` : `<p class="small muted" style="margin:0">Zelle or Apple Pay: tapping copies ${pn}'s info and your amount. Cash App opens with the amount filled in.</p>`}
         </section>`;
-      if(k.status === "settled") body += `<div class="ready" style="font-size:18px;text-align:center">✓ Paid. ${pn} received your ${money(m.total)}. Balance $0.00</div>`;
+      if(k.status === "settled") body += receiptCard(e, t, st.me);
     }
   }
   tabEl.innerHTML = `<div class="ov-inner">
@@ -1810,38 +2125,55 @@ function mailInvite(e){
 }
 
 /* ---------- Live 10-minute vote ---------- */
-const VOTE_MS = 10 * 60 * 1000;
+const VOTE_LENGTHS = [5, 10, 15, 20, 30, 60];
+const voteMin = e => +(e && e.voteMin) || 10;
 const mmss = ms => { const s = Math.max(0, Math.ceil(ms/1000)); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; };
-function lockEvent(e){
-  const tally = {}; e.options.forEach(o => tally[o] = 0); Object.values(e.votes).forEach(o => { if(o in tally) tally[o]++; });
-  const lead = Math.max(...Object.values(tally)); const leaders = e.options.filter(o => tally[o] === lead);
-  const hv = e.votes[e.host];
-  e.chosen = leaders.includes(hv) ? hv : leaders[0]; e.status = "set"; save();
+const closing = new Set();
+async function closeVote(e, force = false){
+  closing.add(e.id);
+  await syncing;
+  const {data} = await sb.rpc("close_vote", {p_event:e.id, p_force:force});
+  closing.delete(e.id);
+  if(data?.ok) await refresh(true);
+  return data || {ok:false};
+}
+async function lockEvent(e){
+  const r = await closeVote(e, true);
+  if(!r.ok) toast(r.code === "no_votes" ? "No one has voted yet" : r.code === "not_host" ? "Only the host of this plan can lock it in" : "Couldn't lock it in. Try again.");
+  return r.ok;
 }
 const liveEl = document.getElementById("live"), revealEl = document.getElementById("reveal");
-let liveId = null, liveTimer = null, simOn = DEMO;
-function openLive(id){
+let liveId = null, liveTimer = null, finishing = false;
+async function openLive(id){
   const e = ev(id); if(!e || e.status !== "open") return;
-  if(!e.voteEnds){ e.voteEnds = Date.now() + VOTE_MS; alertAll(`${first(ME().name)} opened the 10-minute vote for ${e.title}. Vote now!`, e.id); save(); toast("Vote is open — the family has 10 minutes"); }
+  if(!e.voteEnds){
+    await syncing;
+    const {data} = await sb.rpc("open_live_vote", {p_event:id});
+    if(!data?.ok){ toast("That vote has closed."); await refresh(true); return; }
+    e.voteEnds = iso2ms(data.vote_ends); await refresh(true);
+    if(data.started) toast(`Vote is open — the family has ${data.minutes} minutes`);
+  }
   liveId = id; liveEl.hidden = false; document.body.style.overflow = "hidden"; drawLive();
   clearInterval(liveTimer); liveTimer = setInterval(tickLive, 1000);
 }
 function closeLive(){ clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = ""; render(); }
 function tickLive(){
   const e = ev(liveId); if(!e){ closeLive(); return; }
-  if(simOn && Math.random() < .2){
-    const missing = st.fam.filter(f => f.id !== st.me && !e.votes[f.id] && active(f));
-    if(missing.length){ const m = missing[Math.floor(Math.random()*missing.length)]; e.votes[m.id] = e.options[Math.floor(Math.random()*e.options.length)]; save(); drawLive(); toast(`${m.name} voted`); }
-  }
+  if(e.status !== "open"){ finishLive(e); return; }      // closed on another phone: show everyone the winner
   const left = e.voteEnds - Date.now();
-  if(left < 120000 && !e.warned2){ e.warned2 = true; st.fam.filter(f => !e.votes[f.id]).forEach(f => st.alerts.push({id:uid("a"),to:f.id,text:`2 minutes left to vote for ${e.title}.`,eventId:e.id,t:Date.now(),read:false})); save(); }
+  if(left < 120000 && !e.warned2){ e.warned2 = true; sb.rpc("vote_warn", {p_event:e.id}); }
   if(left <= 0 || Object.keys(e.votes).length >= st.fam.filter(active).length){ finishLive(e); return; }
   const c = document.getElementById("cd"); if(c){ c.textContent = mmss(left); c.classList.toggle("low", left < 60000); }
 }
-function finishLive(e){
-  if(e.status === "open"){ lockEvent(e); alertAll(`The family chose ${RBY[e.chosen].name} for ${e.title}. See you at ${fmtTime(e.time)}.`, e.id, null); save(); }
+async function finishLive(e){
+  if(finishing) return; finishing = true;
+  if(e.status === "open"){
+    const r = await closeVote(e);
+    if(!r.ok){ finishing = false; return; }        // the server's clock says not yet: the next tick asks again
+  }
+  finishing = false;
   clearInterval(liveTimer); liveEl.hidden = true; liveId = null; document.body.style.overflow = "";
-  render(); openReveal(e.id);
+  render(); if(ev(e.id)?.chosen) openReveal(e.id);
 }
 function drawLive(){
   const e = ev(liveId); const n = Object.keys(e.votes).length; const left = e.voteEnds - Date.now();
@@ -1868,11 +2200,9 @@ function drawLive(){
           <button class="btn ${mine?"primary":"wine"}" style="margin-left:auto" data-act="live-vote" data-rid="${o}">${mine?"Your vote ✓":"Vote for this"}</button></div>
       </article>`; }).join("")}
     ${e.options.length < 6 ? `<button class="btn block" data-act="live-add">+ Add a restaurant to the ballot</button>` : ""}
-    <label class="small muted" style="display:flex;gap:8px;align-items:center;justify-content:center"><input type="checkbox" id="sim" ${simOn?"checked":""}> Prototype: simulate the family's votes</label>
     ${e.host === st.me ? `<button class="btn ghost block" data-act="live-end">End the vote now</button>` : `<p class="proto">The vote closes when everyone has voted or time runs out. A tie goes to ${esc(F(e.host).name)}'s pick.</p>`}
   </div>`;
 }
-liveEl.addEventListener("change", e => { if(e.target.id === "sim") simOn = e.target.checked; });
 function sheetBallotAdd(){
   const e = ev(liveId);
   const pool = R.filter(r => r.city === "Memphis" && meals(r).dinner && !e.options.includes(r.id) && !isBlocked(r.id) && (!e.cap || r.price <= e.cap) && rotationState(r.id, e.date).state !== "resting").sort((a,b) => a.name.localeCompare(b.name));
@@ -1951,7 +2281,7 @@ function drawReveal(){
       ${superlatives(r).map(([ic,t]) => `<div class="sup"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}
     </section>
     <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
-    <p class="proto">In the full app, “I've arrived” sends everyone a quick alert.</p>
+    <p class="proto">“I've arrived” alerts everyone at the table right away.</p>
   </div>`;
 }
 function sheetBook(id){
@@ -1979,6 +2309,7 @@ function sheetConcierge(id){
         <div class="field"><label for="c-auto">Gratuity already on bill?</label><select class="input" id="c-auto" data-calc><option value="0">No</option><option value="1">Yes (party of 6+)</option></select></div>
       </div>
       <div class="calc-out" id="c-out"></div>
+      <button class="btn wine block" data-act="tab" data-id="${e.id}">Each person pays for what they ate? Open The Tab</button>
       <p class="small muted" style="margin:0">Tip is figured on the pre-tax subtotal. Many restaurants add 18–20% automatically for parties of 6 or more, so check the bill before tipping again.</p>
     </div>`);
   sheet.dataset.svc = "4";
@@ -2041,10 +2372,13 @@ document.addEventListener("click", e => {
     case "close": closeSheet(); break;
     case "tips": sheetTips(); break;
     case "seat": sheetSeat(); break;
-    case "lock": lockApp(); break;
+    case "app-lock": lockApp(); break;
     case "lock-switch": st.lastName = ""; save(); lockApp(); break;
-    case "pin-change": if(b.dataset.armed){ delete st.pins[st.me]; save(); lockApp("Type your full name, then create your new PIN."); } else { b.dataset.armed = "1"; b.textContent = "Tap again to set a new PIN"; } break;
-    case "host-pin": { delete st.pins[id]; delete (st.pinLocks||{})[id]; save(); drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); break; }
+    case "pin-change": sheetPinChange(); break;
+    case "pin-change-go": pinChangeGo(); break;
+    case "host-pin": sb.rpc("host_reset_pin", {p_member:id}).then(({data}) => {
+        if(data?.ok){ pinSet[id] = false; drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); }
+        else toast("Couldn't reset that PIN. Try again."); }); break;
     case "person-new": sheetPerson(b.dataset.kind, null); break;
     case "person-edit": sheetPerson(b.dataset.kind, id); break;
     case "person-save": {
@@ -2069,7 +2403,7 @@ document.addEventListener("click", e => {
     case "live-vote": { const e2 = ev(liveId); e2.votes[st.me] = b.dataset.rid; save(); drawLive(); toast(`You voted for ${RBY[b.dataset.rid].name}`); break; }
     case "live-add": sheetBallotAdd(); break;
     case "ballot-add": { const e2 = ev(liveId); if(e2 && e2.options.length < 6) e2.options.push(b.dataset.rid); save(); closeSheet(); drawLive(); toast(`${RBY[b.dataset.rid].name} is on the ballot`); break; }
-    case "live-end": finishLive(ev(liveId)); break;
+    case "live-end": { const e2 = ev(liveId); if(e2.host === st.me || isAdmin()) lockEvent(e2).then(ok => { if(ok) finishLive(ev(e2.id)); }); else finishLive(e2); break; }
     case "reveal": openReveal(id); break;
     case "reveal-close": closeReveal(); break;
     case "arrive": { const e2 = ev(revealId); const sv = b.dataset.s; st.arrivals[e2.id] ||= {}; st.arrivals[e2.id][st.me] = {s:sv, t:Date.now(), eta:sv === "late" ? 10 : null};
@@ -2080,11 +2414,34 @@ document.addEventListener("click", e => {
     case "photo": sheetPhoto(id); break;
     case "photo-del": st.photos = st.photos.filter(x => x.id !== id); save(); closeSheet(); render(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); toast("Photo removed"); break;
     case "copy-invite": { const txt = inviteText(ev(id)); navigator.clipboard?.writeText(txt).then(() => toast("Invitation copied — paste it into a text"), () => toast("Couldn't copy on this device")); break; }
-    case "reset-all": if(b.dataset.armed){ localStorage.removeItem(KEY); st = seed(); st.me = "m1"; save(); draft = null; render(); toast("Prototype data reset"); } else { b.dataset.armed = "1"; b.textContent = "Tap again to reset"; } break;
     case "rest": sheetRest(b.dataset.rid); break;
+    case "g-search": {
+      const q = (document.getElementById("g-q")?.value || "").trim(), city = document.getElementById("g-city")?.value || "Memphis";
+      Object.assign(gSearch, {q, city, busy:true, msg:""}); render();
+      placesCall({action:"search", q, city}).then(d => {
+        gSearch.busy = false;
+        if(d.ok){ gSearch.results = d.results; d.results.forEach(x => { gInfo[x.placeId] = {...(gInfo[x.placeId] || {}), ...x}; }); }
+        else { gSearch.results = null; gSearch.msg = gWhy(d.code); }
+        render(); });
+      break; }
+    case "g-more": { const pid = b.dataset.pid; b.disabled = true; b.textContent = "Asking Google…";
+      placesCall({action:"details", ids:[pid], level:"full"}).then(d => {
+        if(d.ok && d.places[0]){ gApply(d.places[0], gSearch.city); sheetRest("g:" + pid); }
+        else { b.disabled = false; b.textContent = "More from Google"; toast(gWhy(d.code)); } });
+      break; }
+    case "g-plan": { const pid = b.dataset.pid; gSave(pid, gSearch.city).then(ok => { if(!ok){ toast("Couldn't save that restaurant. Try again."); return; } newDraft("sunday", "g:" + pid); go("plan"); }); break; }
+    case "g-add": { const pid = b.dataset.pid, id = "g:" + pid, max = draft.mode === "host" ? 1 : 3;
+      if(draft.options.includes(id)) break;
+      if(draft.mode !== "host" && draft.options.length >= max){ toast("Up to 3 choices for a vote"); break; }
+      gSave(pid, gSearch.city).then(ok => { if(!ok){ toast("Couldn't save that restaurant. Try again."); return; }
+        if(draft.mode === "host") draft.options = [id]; else draft.options.push(id); render(); toast(`${RBY[id].name} added`); });
+      break; }
     case "explore-filter": st.ui.filter = b.dataset.f; st.ui.city = "Memphis"; go("explore"); break;
     case "cuisine": st.ui.cuisine = b.dataset.c; save(); render(); break;
-    case "plan-with": newDraft(b.dataset.occ || "sunday", b.dataset.rid); closeSheet(); go("plan"); break;
+    case "plan-with": { const rid = b.dataset.rid, r = RBY[rid];
+      const start = () => { newDraft(b.dataset.occ || "sunday", rid); closeSheet(); go("plan"); };
+      if(r?.google) gSave(r.placeId, r.city).then(ok => ok ? start() : toast("Couldn't save that restaurant. Try again.")); else start();
+      break; }
     case "event": go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth",block:"start"}), 60); break;
     // plan
     case "occ": { const keep = draft.options; newDraft(b.dataset.k); draft.options = keep.slice(0, draft.mode==="host"?1:3); render(); break; }
@@ -2103,7 +2460,7 @@ document.addEventListener("click", e => {
     case "reset-plan": newDraft(); render(); break;
     case "send": {
       const d = draft; if(!d.options.length) return;
-      const e2 = {id:uid("e"),type:d.type,mode:d.mode,cap:+d.cap||0,arrive:d.arrive,theme:d.theme.trim(),gifts:d.gifts,adults:!!d.adults,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
+      const e2 = {id:uid("e"),type:d.type,mode:d.mode,voteMin:+d.voteMin||10,cap:+d.cap||0,arrive:d.arrive,theme:d.theme.trim(),gifts:d.gifts,adults:!!d.adults,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options],
         chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(g => ({id:uid("g"),name:g.name,email:g.email||"",contactId:g.contactId||null,by:st.me,hands:[st.me]})),
         reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
       st.events.push(e2);
@@ -2144,7 +2501,7 @@ document.addEventListener("click", e => {
     case "card-to": { const i = cardDraft.to.indexOf(id); i >= 0 ? cardDraft.to.splice(i,1) : cardDraft.to.push(id); b.setAttribute("aria-pressed", i < 0); break; }
     case "card-send": sendCard(); break;
     case "card-reopen": { const c = st.cards.find(x => x.id === id); if(c) openCard({card:c}); break; }
-    case "tab": openTab(id || revealId); break;
+    case "tab": closeSheet(); openTab(id || revealId); break;
     case "tab-close": closeTab(); break;
     case "tab-view": tabView = b.dataset.k; drawTab(); tabEl.scrollTop = 0; break;
     case "tab-payer": { const e2 = ev(tabId), t = tabOf(e2); t.payer = id || null;
@@ -2179,8 +2536,9 @@ document.addEventListener("click", e => {
       k.paidVia = m; st.alerts.push({id:uid("a"),to:t.payer,text:`${first(ME().name)} says they paid you ${money(amt)} by ${m}. Mark it settled when it arrives.`,eventId:e2.id,t:Date.now(),read:false});
       save(); drawTab(); toast(m === "Cash" ? `Hand ${first(F(t.payer).name)} ${money(amt)}` : b.dataset.h ? `Copied ${b.dataset.h} and ${money(amt)}` : `Opening ${m}…`); break; }
     case "tk-settle": { const e2 = ev(tabId), t = tabOf(e2), k = t.tickets[id]; k.status = "settled"; k.settledAt = Date.now();
-      st.alerts.push({id:uid("a"),to:id,text:`Paid ✓ ${first(ME().name)} received your ${money(tmath(t, k).total)} for ${e2.title}. Your balance is $0.00.`,eventId:e2.id,t:Date.now(),read:false});
-      save(); drawTab(); toast(`${first(F(id).name)} is settled · $0.00`); break; }
+      { const m = tmath(t, k);
+        st.alerts.push({id:uid("a"),to:id,text:`Receipt · PAID ${money(m.total)} for ${e2.title} at ${RBY[e2.chosen].name}, ${whenPaid(k.settledAt)}${k.paidVia ? ` by ${k.paidVia}` : ""}. Food ${money(m.sub)} · tax ${money(m.tax)} · ${t.autoGrat ? "gratuity incl." : `tip ${money(m.tip)}`}. Balance $0.00. Received by ${lastFirst(ME().name)} — open The Tab to see your receipt.`,eventId:e2.id,t:Date.now(),read:false}); }
+      save(); drawTab(); toast(`Receipt sent to ${first(F(id).name)} · $0.00`); break; }
     case "tk-nudge": { const e2 = ev(tabId), t = tabOf(e2); diners(e2).filter(x => x.fam && x.id !== t.payer && !coveredBy(t, x.id) && !["sent","confirmed","settled"].includes(t.tickets[x.id]?.status)).forEach(x => st.alerts.push({id:uid("a"),to:x.id,text:`${first(ME().name)} is waiting on your ticket for ${e2.title}. Open The Tab to fill it out.`,eventId:e2.id,t:Date.now(),read:false})); save(); toast("Reminders sent"); break; }
     case "tab-close-out": { const e2 = ev(tabId), t = tabOf(e2); const total = Object.values(t.tickets).reduce((a2, k) => a2 + tmath(t, k).total, 0); t.closed = true;
       st.ledger = st.ledger.filter(l => l.eventId !== e2.id); st.ledger.push({eventId:e2.id, rid:e2.chosen, date:e2.date, payer:t.payer, mode:"tab", forWhom:null, amount:total});
@@ -2198,7 +2556,7 @@ document.addEventListener("click", e => {
     case "alert-go": closeSheet(); if(id){ const e2 = ev(id); if(e2 && e2.status === "set" && e2.rsvp[st.me] === undefined) openInvite(id); else { go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth"}), 60); } } break;
     // feed
     case "vote": { const e2 = ev(id); if(e2.status !== "open") return; e2.votes[st.me] = b.dataset.rid; save(); render(); toast(`Voted for ${RBY[b.dataset.rid].name}`); break; }
-    case "lock": { const e2 = ev(id); lockEvent(e2); render(); openReveal(id); break; }
+    case "lock": { const e2 = ev(id); lockEvent(e2).then(ok => { if(ok){ render(); openReveal(id); } }); break; }
     case "rsvp": ev(id).rsvp[st.me] = b.dataset.v; save(); render(); break;
     case "hand": { const g = ev(id).guests.find(x => x.id === b.dataset.g); const i = g.hands.indexOf(st.me); i >= 0 ? g.hands.splice(i,1) : g.hands.push(st.me); save(); render(); if(guestApproved(g)){ toast(`${g.name} is welcome at the table`); alertAll(`The family said yes: ${g.name} is joining ${ev(id).title}.`, id); save(); } break; }
     case "ask-guest": sheetAskGuest(id); break;
@@ -2242,10 +2600,12 @@ tabEl.addEventListener("change", e => { if(!tabId) return; const t = tabOf(ev(ta
   if(e.target.id === "tab-auto"){ t.autoGrat = e.target.checked; save(); drawTab(); }
   if(e.target.id === "tab-receipt"){ t.receipt = e.target.value.replace(/[^0-9.]/g,""); save(); drawTab(); } });
 document.addEventListener("change", e => {
+  if(e.target.id === "g-city"){ gSearch.city = e.target.value; return; }
   const c = e.target.dataset.change; if(!c) return;
   st.ui[c] = e.target.value; save(); render();
 });
 document.addEventListener("input", e => {
+  if(e.target.id === "g-q") gSearch.q = e.target.value;
   if(e.target.dataset.input === "q"){ st.ui.q = e.target.value; save();
     const list = document.getElementById("rlist"); const pos = e.target.selectionStart; view.innerHTML = vExplore(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos,pos); }
 });
