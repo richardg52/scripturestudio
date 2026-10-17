@@ -3,9 +3,26 @@
 //   move    {id, mv, at}  only a player on the side whose turn it is; the move is checked by rules.js;
 //                         `at` (the move count the phone saw) stops two phones moving at once
 //   resign  {id}          a player gives the game to the other side
+// Trivia Night (kind 'trivia'): new also takes {cat: 'mix'|'music'|'tv'|'bible', table?: true}. Teams of 1–4; table
+// mode = the caller runs both teams on one phone. The right answer stays in game_secrets until the move is checked.
 // Alerts (they reach phones by push): a challenge, and the result.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { GAMES, gameInit, gameApply } from "./rules.js";
+import { TRIVIA, TRIVIA_CATS } from "./trivia.js";
+
+const LABEL: Record<string, string> = { ...GAMES, trivia: "Trivia Night" };
+const TOTAL = 10;
+const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+function triviaDeck(cat: string) {
+  const cats = cat === "mix" ? Object.keys(TRIVIA) : [cat];
+  const all = cats.flatMap(c => (TRIVIA as Record<string, string[][]>)[c].map((_, i) => [c, i] as [string, number]));
+  return shuffle(all).slice(0, TOTAL);
+}
+function triviaAsk(card: [string, number]) {      // -> what phones see, and the secret right answer
+  const [c, i] = card, row = (TRIVIA as Record<string, string[][]>)[c][i];
+  const order = shuffle([0, 1, 2, 3]);
+  return { q: { text: row[0], options: order.map(k => row[1 + k]), cat: (TRIVIA_CATS as Record<string, string>)[c] }, correct: order.indexOf(0), answer: row[1] };
+}
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -33,44 +50,76 @@ Deno.serve(async (req) => {
 
     if (body.action === "new") {
       const kind = String(body.kind ?? "");
-      if (!(kind in GAMES)) return reply({ ok: false, code: "kind" }, 400);
-      const A = [...new Set((body.sideA ?? []).map(String))], B = [...new Set((body.sideB ?? []).map(String))];
+      if (!(kind in LABEL)) return reply({ ok: false, code: "kind" }, 400);
+      const table = kind === "trivia" && body.table === true, most = kind === "trivia" ? 4 : 2;
+      const A = table ? [me.id] : [...new Set((body.sideA ?? []).map(String))], B = table ? [me.id] : [...new Set((body.sideB ?? []).map(String))];
       if (!A.includes(me.id)) return reply({ ok: false, code: "not_on_side" }, 403);
-      if (A.length < 1 || A.length > 2 || B.length < 1 || B.length > 2 || A.some(x => B.includes(x))) return reply({ ok: false, code: "sides" }, 400);
+      if (!table && (A.length < 1 || A.length > most || B.length < 1 || B.length > most || A.some(x => B.includes(x)))) return reply({ ok: false, code: "sides" }, 400);
       const { data: seats } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", [...A, ...B]);
-      if ((seats ?? []).length !== A.length + B.length || (seats ?? []).some(s => s.status !== "active")) return reply({ ok: false, code: "seats" }, 403);
-      const { data: g, error } = await admin.from("games").insert({ family_id: me.family_id, kind, side_a: A, side_b: B, state: gameInit(kind), created_by: me.id }).select().single();
+      if ((seats ?? []).length !== new Set([...A, ...B]).size || (seats ?? []).some(s => s.status !== "active")) return reply({ ok: false, code: "seats" }, 403);
+      let state: unknown, secret: unknown = null;
+      if (kind === "trivia") {
+        const cat = String(body.cat ?? "mix"); if (cat !== "mix" && !(cat in TRIVIA)) return reply({ ok: false, code: "cat" }, 400);
+        const deck = triviaDeck(cat), ask = triviaAsk(deck[0]);
+        state = { cat, n: 1, total: TOTAL, q: ask.q, score: [0, 0], last: null, table, teams: table ? (body.teams ?? ["Team 1", "Team 2"]).slice(0, 2).map((t: unknown) => String(t).slice(0, 24)) : null };
+        secret = { deck, correct: ask.correct, answer: ask.answer };
+      } else state = gameInit(kind);
+      const { data: g, error } = await admin.from("games").insert({ family_id: me.family_id, kind, side_a: A, side_b: B, state, created_by: me.id }).select().single();
       if (error) return reply({ ok: false, code: "server" }, 500);
-      await alert([...A, ...B].filter(x => x !== me.id), `${first} started ${GAMES[kind as keyof typeof GAMES]} with you. Open the Game Room to play.`);
+      if (secret) await admin.from("game_secrets").insert({ game_id: g.id, data: secret });
+      if (!table) await alert([...new Set([...A, ...B])].filter(x => x !== me.id), `${first} started ${LABEL[kind]} with you. Open the Game Room to play.`);
       return reply({ ok: true, game: g });
     }
 
     const { data: g } = await admin.from("games").select("*").eq("id", String(body.id ?? "")).maybeSingle();
     if (!g || g.family_id !== me.family_id) return reply({ ok: false, code: "no_game" }, 404);
     if (g.status !== "live") return reply({ ok: false, code: "over" }, 409);
-    const mySide = g.side_a.includes(me.id) ? 0 : g.side_b.includes(me.id) ? 1 : -1;
+    const isTable = g.kind === "trivia" && g.state?.table === true;
+    const mySide = isTable ? (g.side_a.includes(me.id) ? g.turn : -1) : g.side_a.includes(me.id) ? 0 : g.side_b.includes(me.id) ? 1 : -1;
     if (mySide < 0) return reply({ ok: false, code: "not_player" }, 403);
     const sideNames = async (side: number) => { const ids = side === 0 ? g.side_a : g.side_b;
       const { data } = await admin.from("members").select("id,name").in("id", ids); return (data ?? []).map(m => String(m.name).split(" ")[0]).join(" & "); };
     const finish = async (winner: number, why: string) => {
-      const label = GAMES[g.kind as keyof typeof GAMES];
+      if (isTable) return;
+      const label = LABEL[g.kind];
       const text = winner === 2 ? `${label} ended in a draw (${why}).` : `${await sideNames(winner)} won ${label} (${why}).`;
-      await alert([...g.side_a, ...g.side_b], text);
+      await alert([...new Set([...g.side_a, ...g.side_b])], text);
     };
 
     if (body.action === "move") {
       if (g.turn !== mySide) return reply({ ok: false, code: "not_your_turn" }, 409);
       if (Number(body.at) !== g.moves) return reply({ ok: false, code: "stale" }, 409);
-      let r;
-      try { r = gameApply(g.kind, g.state, mySide, body.mv ?? {}); } catch { return reply({ ok: false, code: "illegal" }, 400); }
+      let r, nextSecret: unknown = null;
+      if (g.kind === "trivia") {
+        const pick = Number(body.mv?.pick);
+        if (!Number.isInteger(pick) || pick < 0 || pick > 3) return reply({ ok: false, code: "illegal" }, 400);
+        const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
+        if (!sec) return reply({ ok: false, code: "server" }, 500);
+        const st = structuredClone(g.state), right = pick === sec.data.correct;
+        if (right) st.score[mySide] += 1;
+        st.last = { side: mySide, pick, right, answer: sec.data.answer, q: st.q.text };
+        let over = null, data = sec.data;
+        if (st.n >= st.total) {
+          over = { winner: st.score[0] === st.score[1] ? 2 : st.score[0] > st.score[1] ? 0 : 1, why: `${st.score[0]}–${st.score[1]}` };
+          data = { ...data, correct: -1, answer: "" };
+        } else {
+          const ask = triviaAsk(data.deck[st.n]); st.n += 1; st.q = ask.q; data = { ...data, correct: ask.correct, answer: ask.answer };
+        }
+        nextSecret = data;                                  // written only after the move itself is recorded
+        r = { st, turn: isTable ? 1 - g.turn : 1 - mySide, over };
+      } else {
+        try { r = gameApply(g.kind, g.state, mySide, body.mv ?? {}); } catch { return reply({ ok: false, code: "illegal" }, 400); }
+      }
       const patch: Record<string, unknown> = { state: r.st, turn: r.turn, moves: g.moves + 1, last: { by: me.id, mv: body.mv }, updated_at: new Date().toISOString() };
       if (r.over) Object.assign(patch, { status: "done", winner: r.over.winner, why: r.over.why });
       const { data: done } = await admin.from("games").update(patch).eq("id", g.id).eq("moves", g.moves).eq("status", "live").select("id");
       if (!done?.length) return reply({ ok: false, code: "stale" }, 409);
+      if (nextSecret) await admin.from("game_secrets").update({ data: nextSecret }).eq("game_id", g.id);
       if (r.over) await finish(r.over.winner, r.over.why);
       return reply({ ok: true });
     }
     if (body.action === "resign") {
+      if (isTable) { await admin.from("games").update({ status: "done", winner: 2, why: "stopped", updated_at: new Date().toISOString() }).eq("id", g.id); return reply({ ok: true }); }
       const { data: done } = await admin.from("games").update({ status: "done", winner: 1 - mySide, why: `${first} resigned`, updated_at: new Date().toISOString() })
         .eq("id", g.id).eq("status", "live").select("id");
       if (!done?.length) return reply({ ok: false, code: "stale" }, 409);
