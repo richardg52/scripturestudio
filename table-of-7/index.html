@@ -249,6 +249,9 @@ textarea.input{min-height:76px;resize:vertical}
 .alert-row.unread b{color:var(--brass)}
 .alert-row small{color:var(--muted)}
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cards{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.pc{min-width:40px;height:56px;padding:0 4px;border:1px solid var(--line,#ccc);border-radius:7px;background:#fff;color:#1b1b1b;font:800 15px/1 var(--f-body);display:grid;place-items:center}
+.pc.red{color:#b3261e}.pc:disabled{opacity:.35}.pc.big{min-width:54px;height:72px;font-size:18px}
 .gboard{display:grid;gap:4px;margin:0 auto;width:100%;max-width:360px;touch-action:manipulation}
 .gboard button{aspect-ratio:1;border:0;border-radius:8px;background:var(--surface-2);color:var(--ink);font:800 28px/1 var(--f-display);padding:0;display:grid;place-items:center}
 .gboard.ttt{grid-template-columns:repeat(3,1fr)}
@@ -1813,7 +1816,7 @@ function vTable(){
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
-  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMySide(g) === g.turn) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Spades, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMine(g)) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
@@ -1894,7 +1897,8 @@ function sheetTips(){
     ["Year at the Table","From December 1 to January 15, Home shows “Your Year at the Table is ready”. Open it any time from Our Table. It counts the dinners we shared, our top-scored and most-visited places, the new places we tried, the dishes we remembered, and the best photos of the year."],
     ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Tic-Tac-Toe, Connect Four and Checkers. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."],
     ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. The right answer shows only after a team answers."],
-    ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."]
+    ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."],
+    ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1933,6 +1937,7 @@ function guideBody(k){
     step(18, "Game Room", `Tap ${pic("Our Table")} → <b>🎲 Game Room</b>, or ${pic("🎲 Play while you wait")} on the dinner card. <b>Pass &amp; play on this phone:</b> tap ${pic("Tic-Tac-Toe")} ${pic("Connect Four")} or ${pic("Checkers")} and hand the phone back and forth (it isn't saved and doesn't count). <b>Play the family:</b> tap a ${pic("Checkers","wine")} button, choose your opponent (and partners, for couple against couple), and tap ${pic("Start Checkers","primary")}. Everyone is notified and plays from their own phone; your side moves first. In Checkers tap a piece, then a gold dot: a jump must be taken, you keep jumping while you can, and reaching the far row crowns a king ♛. The game is a draw after 40 moves each with no capture. ${pic("Resign","ghost")} gives the game away; ${pic("Play again","primary")} starts a rematch. Finished family games fill the <b>🏆 Family standings</b>.`),
     step(19, "Trivia Night", `In the Game Room, under <b>🎤 Trivia Night</b>: ${pic("At the table · one phone","primary")} runs the whole game on one phone (name the two teams, then pass the phone or read each question aloud), or ${pic("Family teams · own phones","wine")} lets you put each person on <b>My team</b> or <b>Other team</b>, up to four a team, each answering on their own phone. Pick a category (Music, TV &amp; Movies, Bible, or a mix) and tap ${pic("Start Trivia Night","primary")}. The teams take turns: ten questions, one each in turn, four answers to choose from. Tap an answer and the screen shows ✓ or ✗ and the right answer, then the next team's question. The score sits at the top. Family-teams games count toward the 🏆 standings; at-the-table games don't, because one phone can't say who answered. ${pic("End the game","ghost")} stops an at-the-table game; ${pic("Play again","primary")} plays ten new questions.`),
     step(20, "Family Feud", `In the Game Room, under <b>📋 Family Feud</b>, tap ${pic("Start a survey","primary")}. Five questions are filled in for you; change any, tap ${pic("🔀 Different questions")} for new ones, then ${pic("Send the survey to the family","primary")}. Everyone is notified and taps ${pic("Answer the survey","primary")} to answer privately, a few words each; no one, not even the host, sees anyone's answers. When enough people have answered (at least two), the person who started it or the host taps ${pic("Close the survey","wine")}. At the table, one person taps ${pic("Play Family Feud")} and becomes the <b>judge</b>: they put each person on Team 1 or Team 2 and tap ${pic("Start Family Feud","primary")}. The judge's phone shows the family's answers; everyone else sees the hidden board. The team on turn calls out answers: the judge taps ${pic("Reveal","primary")} on a match (its points, one for each person who said it, go into the bank) or ${pic("✗ Strike","wine")}. Three strikes and the other team gets one guess to steal the bank. When the board is cleared or the steal is decided, the round's points go to the winner; the judge taps ${pic("Next round","primary")}. Most points after the last question wins. Similar answers count together when only the spelling differs (“Pizza” and “pizzas”); different words stay separate, and the judge decides at the table whether a guess matches.`),
+    step(21, "Spades for couples", `In the Game Room tap ${pic("Deal a game of Spades","wine")}, pick your partner and the other couple, choose 300 or 500 points, and tap ${pic("Deal Spades","primary")}. All four get a notification and play on their own phones; each phone shows only its own cards. <b>Our house rules, Jokers &amp; deuces:</b> 2♣ and 2♥ are out and both jokers are in; the trumps, highest first, are Big Joker, Little Joker, 2♠, 2♦, then A♠ down to 3♠; the 2♦ and the jokers count as spades. <b>Bidding:</b> when it's your turn, tap how many tricks you'll take, or ${pic("Nil","wine")} for none. <b>Play:</b> tap a card. Cards you may not play are greyed out: follow the suit led if you can, and spades can't be led until one has been played. The highest spade wins a trick, or else the highest card of the suit led. <b>Scoring:</b> make your team's bid and score 10 a trick bid plus 1 for each extra trick (a bag); miss it and lose 10 a trick bid. Nil made is +100, nil broken is −100. Every 10 bags cost 100. First couple to the target wins; a couple at −200 loses. ${pic("Resign for our team","ghost")} gives the game to the other couple.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1949,6 +1954,7 @@ function guideBody(k){
     step("L", "Couples at the checkerboard", `While the food comes, Mario taps ${pic("🎲 Play while you wait")} → ${pic("Checkers","wine")}, picks Rosa as his partner and Jasmine and Devonte as the other couple, and taps ${pic("Start Checkers","primary")}. Jasmine's phone buzzes: “Mario started Checkers with you.” Rosa makes Red's first move; Devonte answers for Black. Jasmine double-jumps and crowns a king ♛. The bell rings on every phone: <b>“Jasmine &amp; Devonte won Checkers (no moves left).”</b> The standings move them to the top.`),
     step("M", "Trivia while the food comes", `Zoey taps ${pic("At the table · one phone","primary")}, names the teams “Kids” and “Grown-ups”, picks <b>TV &amp; Movies</b> and taps ${pic("Start Trivia Night","primary")}. She reads out: “Who played Steve Urkel on Family Matters?” The kids tap <b>Jaleel White</b>: <b>✓ Kids got it</b>. The grown-ups miss the next one and the screen says <b>“✗ It was Chicago.”</b> After ten questions: <b>🏆 Kids won, 6–4.</b> Mario taps ${pic("Play again","primary")} for a rematch.`),
     step("N", "Family Feud at Sunday dinner", `On Tuesday Jasmine taps ${pic("Start a survey","primary")}, keeps “Name something the family always orders when we eat out”, and sends it. Everyone's phone buzzes; by Saturday six have answered, and Jasmine taps ${pic("Close the survey","wine")}. At dinner Richard taps ${pic("Play Family Feud")}, puts the kids on Team 1 and the grown-ups on Team 2, and judges. Team 1 shouts “Wings!” Richard taps ${pic("Reveal","primary")}: <b>Wings · 3</b>, because three of the six said it. Then “Salad?”: ${pic("✗ Strike","wine")}. After three strikes the grown-ups steal with “Catfish” and take the bank.`),
+    step("O", "Couples at the card table", `Richard taps ${pic("Deal a game of Spades","wine")}, picks Jasmine as his partner and Mario and Rosa as the other couple, and taps ${pic("Deal Spades","primary")}. Everyone's phone shows their own 13 cards. Richard bids 4, Mario bids Nil, Jasmine 3, Rosa 5. Hearts are led; Jasmine has none and trumps with the 2♦, but Rosa drops the Big Joker and takes it. At the end of the hand the card reads <b>“Richard &amp; Jasmine bid 7, took 8 → +71”</b>. Mario's nil holds: +100 for his couple.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -1986,6 +1992,9 @@ function guideBody(k){
     ["“The board just changed. Look again.”", "Your partner or opponent moved at the same moment. Look at the new board and move again."],
     ["A checker won't move where I tap", "When any jump is possible you must jump, so only pieces that can jump are tappable. Mid-jump, the same piece must keep jumping."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
+    ["My cards are grey in Spades", "It isn't your turn, or that card isn't allowed: follow the suit led if you can, and don't lead a spade until spades are broken (unless you hold only spades)."],
+    ["Spades says “Picking up your cards…”", "Your phone is getting your hand from the server after the last move. It takes a second; if it stays, close the game and open it again."],
+    ["“Spades needs two on each team.”", "Pick your partner and both players of the other couple: four different people."],
     ["“Wait until at least two people have answered.”", "A survey closes only after two or more people have answered. Ask the family to tap Answer the survey."],
     ["I can't see anyone's survey answers", "That's on purpose. Answers stay on the server until the judge's board in the game, and even then without names."],
     ["Two answers on the board mean the same thing", "Answers group together only when the spelling differs (Pizza, pizzas). Different words (soda, pop) stay apart, each with its own real count. The judge decides whether a guess matches."],
@@ -1996,13 +2005,13 @@ function guideBody(k){
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Play Spades yet: it comes next</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2831,11 +2840,103 @@ function gameApply(kind, st0, side, mv){
   return { st, turn: other, over: null };
 }
 /* GAME RULES END */
+/* SPADES RULES START */
+// Table of 7 Spades for couples (his order, 2026-10-17). HIS RULES: JOKERS & DEUCES. ONE copy of the rules: the
+// server (functions/games) checks every bid and card with it; the app carries the identical text (index.html, between
+// the SPADES RULES markers) to grey out cards you can't play. tests/spades_rules_test.mjs proves both.
+// The deck: 2♣ and 2♥ come out, the two jokers go in (52 cards, 13 each). Trumps, highest first: Big Joker, Little
+// Joker, 2♠, 2♦, then A♠ down to 3♠. The 2♦ and both jokers ARE spades: they follow spades and count as spades.
+// Four players, partners sit across: seats 0 and 2 are team 1, seats 1 and 3 are team 2. Each hand: bids from the
+// left of the dealer (0 = nil), then 13 tricks; follow suit if you can; spades can't be led until one has been played
+// (unless you hold nothing else). Scoring: make your team's bid = 10 a trick bid + 1 a trick over (a "bag"); miss it =
+// minus 10 a trick bid. Nil: +100 if that player takes no trick, -100 if they take any (their tricks are bags). Every
+// 10 bags = minus 100. First team to the target (300 or 500) wins; a team at minus 200 loses. A tie keeps playing.
+// Cards: suit letter + rank, ranks 3..14 (11 J, 12 Q, 13 K, 14 A): "S14" is A♠, "H3" is 3♥; "S2", "D2", "LJ", "BJ".
+const SP_TARGETS = [300, 500];
+function spDeck(){
+  const d = ["BJ", "LJ", "S2", "D2"];
+  for(const s of ["S", "H", "D", "C"]) for(let r = 3; r <= 14; r++) d.push(s + r);
+  return d;
+}
+const spSuit = c => c === "BJ" || c === "LJ" || c === "D2" || c[0] === "S" ? "S" : c[0];
+function spPower(c){
+  if(c === "BJ") return 104; if(c === "LJ") return 103; if(c === "S2") return 102; if(c === "D2") return 101;
+  return Number(c.slice(1)) + (spSuit(c) === "S" ? 80 : 0);
+}
+const SUIT_ORDER = { S: 0, H: 1, C: 2, D: 3 };
+const spSort = h => [...h].sort((a, b) => SUIT_ORDER[spSuit(a)] - SUIT_ORDER[spSuit(b)] || spPower(b) - spPower(a));
+function spDeal(rand = Math.random){
+  const d = spDeck(); for(let i = d.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
+  return [0, 1, 2, 3].map(k => spSort(d.slice(k * 13, k * 13 + 13)));
+}
+function spFresh(st, dealer){
+  return Object.assign(st, { dealer, phase: "bid", seat: (dealer + 1) % 4, bids: [null, null, null, null], tricks: [0, 0, 0, 0],
+    trick: [], last: null, broken: false, counts: [13, 13, 13, 13] });
+}
+// seats: [team 1, team 2, team 1, team 2] member ids -> public state (no cards in it)
+function spInit(seats, target){
+  return spFresh({ seats, target: SP_TARGETS.includes(target) ? target : 500, hand: 1, score: [0, 0], bags: [0, 0], lastHand: null }, 3);
+}
+function spLegal(st, hand){
+  if(st.phase !== "play") return [];
+  if(!st.trick.length) return st.broken || hand.every(c => spSuit(c) === "S") ? [...hand] : hand.filter(c => spSuit(c) !== "S");
+  const led = spSuit(st.trick[0].card), same = hand.filter(c => spSuit(c) === led);
+  return same.length ? same : [...hand];
+}
+function spWinner(trick){
+  const led = spSuit(trick[0].card), trump = trick.some(t => spSuit(t.card) === "S") ? "S" : led;
+  return trick.filter(t => spSuit(t.card) === trump).sort((a, b) => spPower(b.card) - spPower(a.card))[0].seat;
+}
+function spScoreHand(st){
+  const out = [0, 1].map(t => {
+    const seats = [t, t + 2], bid = seats.reduce((s, k) => s + (st.bids[k] || 0), 0);
+    const won = seats.filter(k => st.bids[k] !== 0).reduce((s, k) => s + st.tricks[k], 0);
+    let pts = 0, bags = 0; const notes = [];
+    for(const k of seats) if(st.bids[k] === 0){
+      if(st.tricks[k] === 0){ pts += 100; notes.push({ seat: k, nil: true }); } else { pts -= 100; bags += st.tricks[k]; notes.push({ seat: k, nil: false }); }
+    }
+    if(bid > 0){ if(won >= bid){ pts += 10 * bid + (won - bid); bags += won - bid; } else pts -= 10 * bid; }
+    else bags += won;
+    return { bid, won, pts, bags, notes };
+  });
+  return out;
+}
+// mv: {bid: 0..13} in the bidding, {card} in the play. hands: the four hands (server only). Returns
+// { st, hands, over } with over null or { winner: 0 | 1, why }. deal() makes the next hand's cards.
+function spApply(st0, hands0, seat, mv, deal = spDeal){
+  const st = JSON.parse(JSON.stringify(st0)), hands = hands0.map(h => [...h]);
+  if(seat !== st.seat) throw new Error("turn");
+  if(st.phase === "bid"){
+    const b = mv && mv.bid;
+    if(!Number.isInteger(b) || b < 0 || b > 13) throw new Error("illegal");
+    st.bids[seat] = b; st.seat = (seat + 1) % 4;
+    if(st.bids.every(x => x !== null)){ st.phase = "play"; st.seat = (st.dealer + 1) % 4; }
+    return { st, hands, over: null };
+  }
+  if(st.phase !== "play") throw new Error("illegal");
+  const card = mv && mv.card;
+  if(!spLegal(st, hands[seat]).includes(card)) throw new Error("illegal");
+  hands[seat] = hands[seat].filter(c => c !== card); st.counts[seat] -= 1;
+  st.trick.push({ seat, card }); if(spSuit(card) === "S") st.broken = true;
+  if(st.trick.length < 4){ st.seat = (seat + 1) % 4; return { st, hands, over: null }; }
+  const w = spWinner(st.trick); st.tricks[w] += 1; st.last = { trick: st.trick, winner: w }; st.trick = []; st.seat = w;
+  if(st.counts.some(n => n > 0)) return { st, hands, over: null };
+  // the hand is over: score it, then deal the next one (or end the game)
+  const res = spScoreHand(st);
+  res.forEach((r, t) => { st.score[t] += r.pts; st.bags[t] += r.bags; r.bagPenalty = false;
+    if(st.bags[t] >= 10){ st.score[t] -= 100; st.bags[t] -= 10; r.bagPenalty = true; } });
+  st.lastHand = { hand: st.hand, bids: st.bids, tricks: st.tricks, res };
+  const [a, b] = st.score, done = (a >= st.target || b >= st.target || a <= -200 || b <= -200) && a !== b;
+  if(done) return { st, hands, over: { winner: a > b ? 0 : 1, why: `${a} to ${b}` } };
+  st.hand += 1; spFresh(st, (st.dealer + 1) % 4);
+  return { st, hands: deal(), over: null };
+}
+/* SPADES RULES END */
 /* Game Room (his order, 2026-10-17). Pass & play keeps the game on this phone only. A family game lives on the
    server: every move goes through functions/games, which checks the player, the turn and the move with the very same
    rules above, so the board on every phone agrees and no one can move for someone else. */
 const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"], trivia: ["Team 1", "Team 2"] };
-const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud" };
+const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades" };
 /* FEUD PROMPTS START (a copy of functions/games/feud.js FEUD_PROMPTS; tests/feud_rules_test.mjs proves they match) */
 const FEUD_PROMPTS = [
   "Name something the family always orders when we eat out.",
@@ -2875,6 +2976,7 @@ const gTable = g => g.kind === "trivia" && g.st?.table === true;     // Trivia a
 let gView = null;            // {local:true, kind, st, turn, over, names} or {id} for a family game
 let gSel = null;             // checkers: the piece picked up
 const gFeud = g => g.kind === "feud", gJudge = g => gFeud(g) && g.by === st.me;
+const gMine = g => g.kind === "spades" ? g.st.seats[g.st.seat] === st.me : gMySide(g) === g.turn;   // is it my move now?
 const gMySide = g => gFeud(g) ? (gJudge(g) ? g.turn : -1) : gTable(g) ? ((g.a || []).includes(st.me) ? g.turn : -1) : (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
 const gNames = ids => (ids || []).map(id => first(F(id)?.name || "Someone")).join(" & ");
 const gSideName = (g, side) => gTable(g) ? (g.st.teams || GLOOK.trivia)[side] : gNames(side === 0 ? g.a : g.b);
@@ -2886,7 +2988,7 @@ async function gamesCall(body){
 const gWhyNot = c => ({not_your_turn:"It's not your turn yet.", stale:"The board just changed. Look again.", illegal:"That move isn't allowed.", over:"That game is over.",
   not_player:"Only the players can move.", seats:"Everyone has to be an active family seat.", sides:"Pick one or two players for each side.", offline:"Can't reach the table right now.", cat:"Pick a category.", judge_plays:"The judge can't be on a team.", survey_open:"There's already a survey open. Finish that one first.",
   survey_closed:"That survey is closed.", blank:"Answer every question.", few:"Wait until at least two people have answered.", not_starter:"Only the person who started the survey, or the host, can close it.",
-  no_answers:"Nobody answered that survey.", not_judge:"Only the judge runs the board.", prompts:"Write at least one question.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
+  no_answers:"Nobody answered that survey.", four:"Spades needs two on each team.", not_judge:"Only the judge runs the board.", prompts:"Write at least one question.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
 function gStandings(){
   const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g)).forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
     if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
@@ -2894,7 +2996,7 @@ function gStandings(){
 }
 function sheetGames(){
   gView = null; gSel = null;
-  const live = (st.games || []).filter(g => g.status === "live").sort((a, b) => (gMySide(b) === b.turn) - (gMySide(a) === a.turn) || b.t - a.t);
+  const live = (st.games || []).filter(g => g.status === "live").sort((a, b) => gMine(b) - gMine(a) || b.t - a.t);
   const done = (st.games || []).filter(g => g.status === "done").sort((a, b) => b.t - a.t).slice(0, 5);
   const table = gStandings();
   openSheet(`<div class="sheet-head" data-room><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Play at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
@@ -2902,13 +3004,15 @@ function sheetGames(){
     <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn" data-act="g-local" data-k="${k}">${l}</button>`).join("")}</div>
     <div class="lbl">PLAY THE FAMILY · EACH ON THEIR OWN PHONE</div>
     <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn wine" data-act="g-new" data-k="${k}">${l}</button>`).join("")}</div>
+    <div class="lbl">♠️ SPADES FOR COUPLES · JOKERS &amp; DEUCES</div>
+    <div class="actions"><button class="btn wine" data-act="sp-new">Deal a game of Spades</button></div>
     <div class="lbl">🎤 TRIVIA NIGHT · MUSIC, TV &amp; MOVIES, BIBLE</div>
     <div class="actions"><button class="btn primary" data-act="tv-new" data-k="table">At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">Family teams · own phones</button></div>
     <div class="lbl">📋 FAMILY FEUD · THE FAMILY IS THE SURVEY</div>
     ${feudRoom()}
-    ${live.length ? `<div class="lbl">GAMES IN PLAY</div>${live.map(g => { const me = gMySide(g), mine = me === g.turn;
-      const tv = g.kind === "trivia", note = gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
-      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">${gFeud(g) ? "📋" : tv ? "🎤" : "🎲"}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
+    ${live.length ? `<div class="lbl">GAMES IN PLAY</div>${live.map(g => { const me = gMySide(g), mine = gMine(g);
+      const tv = g.kind === "trivia", note = g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
+      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">${g.kind === "spades" ? "♠️" : gFeud(g) ? "📋" : tv ? "🎤" : "🎲"}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
     <div class="lbl">🏆 FAMILY STANDINGS</div>
     ${table.length ? table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${i + 1}. ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("") : `<div class="empty">No family games finished yet. Pass &amp; play and at-the-table trivia don't count.</div>`}
     ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
@@ -2992,6 +3096,49 @@ function drawFeud(g){
     ${g.judge && live ? `<div class="actions" style="justify-content:center">${s.phase === "between" ? `<button class="btn primary" data-act="g-move" data-m='{"next":true}'>Next round</button>` : `<button class="btn wine" data-act="g-move" data-m='{"strike":true}'>${s.phase === "steal" ? "✗ No steal" : "✗ Strike"}</button>`}<button class="btn sm ghost" data-act="g-resign">Stop the game</button></div>
       ${board ? "" : `<p class="small muted" style="margin:0;text-align:center">Loading your answer key…</p>`}` : live ? `<p class="small muted" style="margin:0;text-align:center">The judge runs the board. Call out your answers!</p>` : ""}`);
 }
+function sheetSpadesNew(){
+  const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
+  const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Spades for couples</div><h2>♠️ Jokers &amp; deuces</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Four players, two couples, partners sit across. Each plays on their own phone and sees only their own cards. Trumps, highest first: Big Joker, Little Joker, 2♠, 2♦, then A♠ down. 2♣ and 2♥ are out of the deck.</p>
+    <div class="field"><label for="sp-a2">Your partner</label><select class="input" id="sp-a2">${others.map((f, i) => opt(f.id, i === 0)).join("")}</select></div>
+    <div class="field"><label for="sp-b1">Other couple</label><select class="input" id="sp-b1">${others.map((f, i) => opt(f.id, i === 1)).join("")}</select></div>
+    <div class="field"><label for="sp-b2">…and their partner</label><select class="input" id="sp-b2">${others.map((f, i) => opt(f.id, i === 2)).join("")}</select></div>
+    <div class="field"><label for="sp-t">Play to</label><select class="input" id="sp-t"><option value="300">300 points (a shorter game)</option><option value="500" selected>500 points (the full game)</option></select></div>
+    <button class="btn primary block" data-act="sp-start">Deal Spades</button>
+    <p class="small muted" style="margin:0">Everyone in the game gets a notification.</p>`);
+}
+const SPR = { 11: "J", 12: "Q", 13: "K", 14: "A" }, SPS = { S: "♠", H: "♥", D: "♦", C: "♣" };
+function spFace(c){ if(c === "BJ") return {t:"Big 🃏", red:true}; if(c === "LJ") return {t:"Little 🃏", red:false};
+  const r = +c.slice(1); return {t:(SPR[r] || r) + SPS[c[0]], red:c[0] === "H" || c[0] === "D"}; }
+const spCard = (c, attrs = "", big = false) => { const f = spFace(c); return `<button class="pc ${f.red ? "red" : ""} ${big ? "big" : ""}" ${attrs}>${f.t}</button>`; };
+const spHands = {};       // this phone's own cards, per game and move, fetched from the server
+function drawSpades(g){
+  const s = g.st, live = g.status === "live", mySeat = s.seats.indexOf(st.me), key = `${g.id}:${g.moves}`;
+  if(live && mySeat >= 0 && !spHands[key]){ spHands[key] = "…"; gamesCall({action:"hand", id:g.id}).then(d => { spHands[key] = d.ok ? d.hand : null; if(!d.ok) setTimeout(() => { delete spHands[key]; if(gView?.id === g.id) drawGame(); }, 1500); if(gView?.id === g.id) drawGame(); }); }
+  const hand = Array.isArray(spHands[key]) ? spHands[key] : null, myTurn = live && s.seat === mySeat;
+  const who = k => esc(first(F(s.seats[k])?.name || "Seat " + (k + 1))), team = k => k % 2;
+  const legal = myTurn && hand ? spLegal(s, hand) : [];
+  const seatRow = k => { const played = s.trick.find(t => t.seat === k);
+    return `<div class="strip" style="justify-content:space-between;${s.seat === k && live ? "outline:2px solid var(--brass)" : ""}"><span><b>${who(k)}</b> <span class="small muted">· team ${team(k) + 1}${k === mySeat ? " · you" : ""}</span><br><span class="small">${s.bids[k] === null ? "no bid yet" : s.bids[k] === 0 ? "bid Nil" : "bid " + s.bids[k]} · ${s.tricks[k]} ${s.tricks[k] === 1 ? "trick" : "tricks"}</span></span>${played ? spCard(played.card, "disabled style='opacity:1'") : ""}</div>`; };
+  const order = mySeat >= 0 ? [0, 1, 2, 3].map(i => (mySeat + i) % 4) : [0, 1, 2, 3];
+  const L = s.lastHand, lastLine = L && s.phase === "bid" && s.bids.every(b => b === null) ? `<div class="strip"><span class="small">Hand ${L.hand}: ${L.res.map((r, t) => `${esc(g.names[t])} bid ${r.bid}, took ${r.won}${r.notes.map(n => n.nil ? " · nil made" : " · nil broken").join("")} → ${r.pts > 0 ? "+" : ""}${r.pts}${r.bagPenalty ? " (−100 for 10 bags)" : ""}`).join("<br>")}</span></div>` : "";
+  const lastTrick = s.last && !s.trick.length ? `<div class="small muted" style="text-align:center">Last trick to ${who(s.last.winner)}: ${s.last.trick.map(t => spFace(t.card).t).join(" · ")}</div>` : "";
+  const status = !live ? (g.why === "stopped" ? "Game stopped" : `🏆 ${esc(g.names[g.winner])} won Spades, ${esc(g.why)}`)
+    : s.phase === "bid" ? (myTurn ? "Your bid: how many tricks will you take?" : `${who(s.seat)} is bidding…`)
+    : myTurn ? (s.trick.length ? "Your turn: follow suit if you can" : "Your lead") : `${who(s.seat)} to play…`;
+  const bidPad = myTurn && s.phase === "bid" ? `<div class="cards">${Array.from({length:14}, (_, b) => `<button class="btn sm ${b === 0 ? "wine" : ""}" data-act="g-move" data-m='${JSON.stringify({bid:b})}'>${b === 0 ? "Nil" : b}</button>`).join("")}</div>` : "";
+  const handRow = mySeat < 0 ? "" : !live ? "" : !hand ? `<p class="small muted" style="text-align:center;margin:0">Picking up your cards…</p>`
+    : `<div class="lbl" style="text-align:center">YOUR CARDS · ${hand.length}</div><div class="cards">${hand.map(c => spCard(c, `data-act="g-move" data-m='${JSON.stringify({card:c})}' ${s.phase === "play" && legal.includes(c) ? "" : "disabled"} aria-label="${esc(spFace(c).t)}"`, true)).join("")}</div>`;
+  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Spades · hand ${s.hand} · to ${s.target}${s.broken ? " · spades broken" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2><div class="small muted">Bags: ${s.bags[0]} · ${s.bags[1]}</div></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
+    <div class="card" style="text-align:center;font-weight:700">${status}</div>
+    ${lastLine}
+    <div style="display:grid;gap:6px">${order.map(seatRow).join("")}</div>
+    ${lastTrick}
+    ${bidPad}
+    ${handRow}
+    <div class="actions" style="justify-content:center">${live ? (mySeat >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign for our team</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>`);
+}
 function gCurrent(){
   if(!gView) return null;
   if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.turn, local:true};
@@ -3014,6 +3161,7 @@ function drawGame(){
   const g = gCurrent(); if(!g){ sheetGames(); return; }
   if(g.kind === "trivia"){ drawTrivia(g); return; }
   if(g.kind === "feud"){ drawFeud(g); return; }
+  if(g.kind === "spades"){ drawSpades(g); return; }
   const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
   const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
   const disc = s => s === null || s === undefined ? "" : g.kind === "ttt" ? look[s] : `<span class="disc p${s}"></span>`;
@@ -3332,6 +3480,11 @@ document.addEventListener("click", e => {
     case "g-open": gView = {id}; gSel = null; drawGame(); break;
     case "tv-new": sheetTriviaNew(b.dataset.k === "table"); break;
     case "fs-new": sheetSurveyNew(); break;
+    case "sp-new": sheetSpadesNew(); break;
+    case "sp-start": { const v = x => document.getElementById(x).value, A = [st.me, v("sp-a2")], B = [v("sp-b1"), v("sp-b2")];
+      if(new Set([...A, ...B]).size !== 4){ toast("Pick four different people."); return; } b.disabled = true; b.textContent = "Dealing…";
+      gamesCall({action:"new", kind:"spades", sideA:A, sideB:B, target:+v("sp-t")}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Deal Spades"; toast(gWhyNot(d.code)); return; }
+        await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Cards are dealt! Everyone's been told."); }); break; }
     case "fs-send": { const prompts = [0,1,2,3,4].map(i => document.getElementById("fs-q" + i).value.trim()).filter(Boolean);
       if(!prompts.length){ toast(gWhyNot("prompts")); return; } b.disabled = true; b.textContent = "Sending…";
       gamesCall({action:"survey_new", prompts}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Send the survey to the family"; toast(gWhyNot(d.code)); return; }
@@ -3361,12 +3514,13 @@ document.addEventListener("click", e => {
     case "g-ck": { const i = +b.dataset.i, g = gCurrent(); if(!g) break; const legal = gameLegal(g.kind, g.st, g.turn);
       if(gSel !== null && legal.some(m => m.f === gSel && m.t === i)){ gMove({f:gSel, t:i}); break; }
       gSel = legal.some(m => m.f === i) ? i : null; drawGame(); break; }
-    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
+    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "spades" ? "Resign this game of Spades for your team?" : g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
       if(g.local){ gView.over = {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
       gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
     case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gSel = null; drawGame(); break; }
       const old = st.games.find(x => x.id === g.id), flip = !gTable(old) && gMySide(old) === 1, again = {action:"new", kind:g.kind, sideA:flip ? old.b : old.a, sideB:flip ? old.a : old.b};
       if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, table:gTable(old), teams:old.st.teams || undefined});
+      if(g.kind === "spades") Object.assign(again, {sideA:[st.me, old.st.seats[(old.st.seats.indexOf(st.me) + 2) % 4]], sideB:[old.st.seats[(old.st.seats.indexOf(st.me) + 1) % 4], old.st.seats[(old.st.seats.indexOf(st.me) + 3) % 4]], target:old.st.target});
       gamesCall(again).then(async d => {
         if(!d.ok){ toast(gWhyNot(d.code)); return; } await refresh(true); gView = {id:d.game.id}; drawGame(); }); break; }
     case "book-opts": { const e2 = ev(id); if(e2) bookingOptions(e2); break; }
