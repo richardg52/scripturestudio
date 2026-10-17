@@ -894,7 +894,7 @@ function rowsOf(s){
   Object.entries(s.tableReady).forEach(([eid, t]) => put("table_ready", {event_id:eid, by:t.by, at:ms2iso(t.t)}));
   s.visits.forEach(v => { v.id ||= uid("v"); put("visits", {id:v.id, family_id:fam, restaurant_id:v.rid, date:v.date, event_id:nz(v.eventId)}); });
   s.reviews.forEach(r => { r.id ||= uid("r"); put("reviews", {id:r.id, family_id:fam, restaurant_id:r.rid, member_id:r.by, event_id:nz(r.eventId), date:r.date,
-    ...Object.fromEntries(SCORE_KEYS.map(k => [k, r.scores?.[k] ?? null])), overall:r.overall ?? null, text:nz(r.text), status:r.status || "ok"}); });
+    ...Object.fromEntries(SCORE_KEYS.map(k => [k, r.scores?.[k] ?? null])), overall:r.overall ?? null, text:nz(r.text), ordered:nz(r.ordered), status:r.status || "ok"}); });
   s.ledger.forEach(l => { l.id ||= uid("l"); put("payments", {id:l.id, family_id:fam, event_id:nz(l.eventId), restaurant_id:nz(l.rid), date:l.date, payer:nz(l.payer),
     mode:l.mode, for_member:nz(l.forWhom), amount:+l.amount || 0}); });
   s.notes.forEach(n => { n.at ||= new Date().toISOString(); put("notes", {id:n.id, family_id:fam, event_id:nz(n.eventId), member_id:n.by, text:n.text, status:n.status || "ok", at:n.at}); });
@@ -952,7 +952,7 @@ async function pull(){
   D.arrivals.forEach(a => (n.arrivals[a.event_id] ||= {})[a.member_id] = {s:a.status, t:iso2ms(a.at), eta:a.eta_min});
   D.table_ready.forEach(t => n.tableReady[t.event_id] = {by:t.by, t:iso2ms(t.at)});
   n.visits = D.visits.map(v => ({id:v.id, rid:v.restaurant_id, date:v.date, eventId:v.event_id}));
-  n.reviews = D.reviews.map(r => ({id:r.id, rid:r.restaurant_id, by:r.member_id, eventId:r.event_id, date:r.date, scores:Object.fromEntries(SCORE_KEYS.map(k => [k, r[k]])), overall:r.overall, text:r.text || "", status:r.status}));
+  n.reviews = D.reviews.map(r => ({id:r.id, rid:r.restaurant_id, by:r.member_id, eventId:r.event_id, date:r.date, scores:Object.fromEntries(SCORE_KEYS.map(k => [k, r[k]])), overall:r.overall, text:r.text || "", ordered:r.ordered || "", status:r.status}));
   n.ledger = D.payments.map(l => ({id:l.id, eventId:l.event_id, rid:l.restaurant_id, date:l.date, payer:l.payer, mode:l.mode, forWhom:l.for_member, amount:+l.amount}));
   n.notes = D.notes.map(x => ({id:x.id, by:x.member_id, eventId:x.event_id, text:x.text, status:x.status, at:x.at, date:localDay(x.at)}));
   D.never_again.forEach(b => n.blocked[b.restaurant_id] = {by:b.by, reason:b.reason || "", date:b.date});
@@ -1073,6 +1073,8 @@ function rotationState(rid, target){
 /* Want to Try (his order, 2026-10-17): anyone saves a place they're curious about; the list shows who added
    it, and the Concierge suggests from it first. Only the person who saved it, or the host, takes it off. */
 const wantOf = rid => st.want?.[rid] || null;
+/* What I ordered (his order, 2026-10-17): my most recent dish at a place, from my own wrap-ups */
+const lastOrder = rid => st.reviews.filter(r => r.rid === rid && r.by === st.me && r.ordered).sort((a,b) => String(b.date).localeCompare(String(a.date)))[0] || null;
 function wantBtn(rid, sm = true){
   const w = wantOf(rid), cls = sm ? "btn sm" : "btn";
   if(!w) return `<button class="${cls}" data-act="want" data-rid="${rid}">☆ Want to try</button>`;
@@ -1447,8 +1449,9 @@ function sheetRest(rid){
     <div class="wine"><span class="eyebrow">Sommelier's note</span><b>${esc(wine)}</b><span class="small">${esc(dish)}</span><span class="small muted">${NA}</span></div>
     ${a ? `<div class="sec"><div class="lbl">FAMILY SCORE</div><div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 34px/1 var(--f-display);color:var(--brass)">${fmt10(a)}</span><span class="muted">out of 10 · ${reviewsOf(rid).filter(x => scoreOf(x) != null).length} ${reviewsOf(rid).filter(x => scoreOf(x) != null).length === 1 ? "score" : "scores"}</span></div></div>
     <div class="sec"><div class="lbl">THE DETAILS (1 TO 5)</div>${CRIT.map(([k,l]) => ca[k] ? `<div class="crit"><span class="small">${l}</span><div style="display:flex;align-items:center;gap:8px"><div class="meter" style="flex:1"><i style="width:${ca[k]/5*100}%"></i></div><span class="num small">${ca[k].toFixed(1)}</span></div></div>` : "").join("")}</div>` : ""}
+    ${lastOrder(rid) ? `<div class="sup"><span class="ic">🍽️</span><span><b>Last time you had:</b> ${esc(lastOrder(rid).ordered)} <span class="muted">· ${fmtDate(lastOrder(rid).date)}</span></span></div>` : ""}
     <div class="sec"><div class="lbl">WHAT WE SAID</div>
-      ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="num" style="margin-left:auto;color:var(--brass)">${scoreOf(rv) ? fmt10(scoreOf(rv)) + "/10" : ""}</span></div><p>${rv.status === "held" && rv.by !== st.me && !isAdmin() ? '<span class="muted">Held for review.</span>' : esc(rv.text)}${isAdmin() ? ` <button class="link-btn" data-act="mod-post" data-k="review" data-id="${rv.id || (rv.id = uid("r"))}" data-v="del" style="color:var(--bad)">Delete</button>` : ""}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
+      ${reviewsOf(rid).map(rv => `<div class="review"><div class="top">${av(rv.by,"xs")}<b>${esc(F(rv.by).name)}</b><span class="muted">${fmtDate(rv.date)}</span><span class="num" style="margin-left:auto;color:var(--brass)">${scoreOf(rv) ? fmt10(scoreOf(rv)) + "/10" : ""}</span></div>${rv.ordered && !(rv.status === "held" && rv.by !== st.me && !isAdmin()) ? `<p class="small" style="margin:0">🍽️ <b>Ordered:</b> ${esc(rv.ordered)}</p>` : ""}<p>${rv.status === "held" && rv.by !== st.me && !isAdmin() ? '<span class="muted">Held for review.</span>' : esc(rv.text)}${isAdmin() ? ` <button class="link-btn" data-act="mod-post" data-k="review" data-id="${rv.id || (rv.id = uid("r"))}" data-v="del" style="color:var(--bad)">Delete</button>` : ""}</p></div>`).join("") || `<div class="empty">No family reviews yet. Be the first after you dine.</div>`}
     </div>
     ${isBlocked(rid) ? "" : `<button class="btn ghost sm" data-act="block" data-rid="${rid}" style="justify-self:start;color:var(--bad)">Add to Never Again list</button>`}
     <p class="proto">Hours, menus and reservations change. Confirm with the restaurant before booking.</p>`);
@@ -1774,7 +1777,8 @@ function sheetTips(){
     ["Wrap up","After dinner, give the place your score from 1 to 10, rate six details (food, service, price, selection, cleanliness, location), say who paid, and post a moment for the family. The family score on each restaurant is everyone's 1 to 10, averaged."],
     ["Bakeries & dessert","In Explore, tap the “Bakery & Dessert” chip, or set Meal to “Dessert & treats”, for bakeries, donut, cookie, candy and ice cream shops in every city. Google search finds them too: try “cupcakes”, “gelato” or a shop's name."],
     ["Dessert after","Add a second stop to any plan: a bakery, ice cream or dessert shop. When you plan, tap “+ Dessert after” under the restaurants; on a plan already sent, its host can add or change it. Everyone gets its own directions on the invitation, the plan and the dinner card."],
-    ["Want to Try","Curious about a place? Open it and tap “☆ Want to try” (it works on Google results too). It shows who saved it, the Concierge suggests those places first, and Explore → Show → “Want to try” lists them all. Only the person who saved a place, or Richard, can take it off."]
+    ["Want to Try","Curious about a place? Open it and tap “☆ Want to try” (it works on Google results too). It shows who saved it, the Concierge suggests those places first, and Explore → Show → “Want to try” lists them all. Only the person who saved a place, or Richard, can take it off."],
+    ["What I ordered","In the wrap-up, under your score, type what you ordered. It shows next to your score on the restaurant's page, and the next time the family dines there your dinner card says “Last time here, you had …”."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1806,6 +1810,7 @@ function guideBody(k){
     step(11, "Finding a place", `Tap ${pic("Explore")} and choose a <b>City</b>. Narrow it with <b>Show</b>, <b>Budget</b> and <b>Meal</b> (Breakfast, Lunch, Dinner or <b>Dessert &amp; treats</b>), or tap a chip such as ${pic("Steak")} ${pic("Fine Dining")} ${pic("Bakery & Dessert")}. Tap a place to see its family score, cost, menu and map. Not in our list? ${pic("Search Google","primary")} finds restaurants, bakeries and dessert shops. Our bakeries and dessert shops are a stop, not a dinner, so they stay out of dinner votes and the Concierge. Add one as <b>Dessert after</b> instead.`),
     step(12, "Dessert after", `When you plan, tap ${pic("+ Dessert after")} under the restaurants and pick a bakery, ice cream or dessert shop from our list, or search Google in the same sheet. A chain asks <b>Which location?</b> first. On a plan already sent, the plan's host taps ${pic("+ Dessert after")} or ${pic("Change","ghost")} on the plan. The stop shows on the invitation, the plan, the shared text and the dinner card with ${pic("Directions to dessert","primary")}. Everyone is told when it's added. ${pic("No dessert stop","ghost")} removes it.`),
     step(13, "Want to Try", `Open any restaurant (or a Google result) and tap ${pic("☆ Want to try")}. It turns into ${pic("★ Want to try · Zoey")} so everyone sees who saved it. The Concierge's Sunday picks on Home come from this list first, and Explore → <b>Show</b> → <b>Want to try</b> lists every saved place. Tap the star again to take it off; only the person who saved it, or ${host}, can.`),
+    step(14, "What I ordered", `In ${pic("We dined — wrap up","wine")}, under your 1-to-10 score, fill in <b>🍽️ What did you order?</b> (up to 200 letters). The restaurant's page shows it as <b>Ordered:</b> next to your score, with <b>Last time you had …</b> at the top for you. On your next dinner there, the dinner card opens with <b>🍽️ Last time here</b>. Only you (or ${host}) can change your own line; a held review keeps its order line held too.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1815,6 +1820,7 @@ function guideBody(k){
     step("D", "Running late", `Derrick taps ${pic("Running late")} and picks 15 minutes. Everyone is told “Derrick is running late, about 15 minutes.” At the door he taps ${pic("I've arrived")}.`),
     step("E", "Something sweet after", `Jasmine plans Sunday Dinner at Gus's, taps ${pic("+ Dessert after")} and picks <b>Muddy's Bake Shop</b>. The invitation now reads “and after, dessert at Muddy's Bake Shop” with ${pic("Directions to dessert","primary")}. Everyone's bell rings: “Jasmine added dessert after Sunday Dinner: Muddy's Bake Shop.” After dinner, Mario opens the dinner card and taps ${pic("Directions to dessert","primary")}. Wanting gelato instead, Jasmine taps ${pic("Change","ghost")}, types “gelato” and taps ${pic("Search Google")}, then ${pic("Choose this one","wine")}.`),
     step("F", "Saving a place for later", `Rosa hears about Bavette's in Chicago, opens it in Explore and taps ${pic("☆ Want to try")}. It reads ${pic("★ Want to try · Rosa")} on every phone. Back home, Derrick searches Google for “Ethiopian” and taps ${pic("☆ Want to try")} on a place he likes. On Sunday morning the Home screen's Concierge pick reads <b>“From our Want to Try list — Derrick saved it.”</b>`),
+    step("G", "Remembering the dish", `After dinner at Char, Mario taps ${pic("We dined — wrap up","wine")}, gives it 9, and types “Bone-in rib-eye, medium · mac and cheese” under <b>What did you order?</b>. Three months later the family is back at Char; Mario opens ${pic("Open dinner card","primary")} and sees <b>“Last time here, you had Bone-in rib-eye, medium · mac and cheese.”</b> Rosa opens Char's page and sees Mario's 9 with his dish beside it.`),
   ].join("");
   if(k === "fix") return [
     ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
@@ -1836,17 +1842,19 @@ function guideBody(k){
     ["“… saved it. Only they or … can take it off.”", `A Want to Try star belongs to the person who saved it. Ask them, or ${host}.`],
     ["My Want to Try place isn't the Concierge pick", "The Concierge still skips places resting under the 90-day rule, places on Never Again, and places that don't serve dinner. Everything else on the list comes first."],
     ["“Your seat is paused, so saving places is off for now.”", `A paused seat can look but not save. Talk to ${host}.`],
+    ["My dish doesn't show on the restaurant page", "It shows once you've saved the wrap-up with something in “What did you order?”. If your review is held for the host, the dish is held with it."],
+    ["“Last time here” isn't on the dinner card", "It appears only when you have wrapped up a dinner at this same restaurant before and filled in what you ordered."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2602,6 +2610,7 @@ function drawReveal(){
       <button class="btn wine" data-act="tab" data-id="${e.id}">The Tab · one check</button>
       <button class="btn" data-act="card-open" data-id="${e.id}">Send a card</button>
     </div>
+    ${lastOrder(e.chosen) ? `<section class="card"><div class="lbl">🍽️ LAST TIME HERE</div><span>You had <b>${esc(lastOrder(e.chosen).ordered)}</b> <span class="muted small">· ${fmtDate(lastOrder(e.chosen).date)}</span></span></section>` : ""}
     ${RBY[e.dessert] ? (dz => `<section class="card"><div class="lbl">🍰 DESSERT AFTER</div><b>${esc(dz.name)}</b><span class="small muted">${esc(addrOf(dz))}${dz.price ? ` · ${costText(dz)}` : ""}</span>
       <div class="actions"><a class="btn primary" href="${mapsDir(dz)}" target="_blank" rel="noopener">Directions to dessert</a><a class="btn" href="${mapsPlace(dz)}" target="_blank" rel="noopener">Location</a></div></section>`)(RBY[e.dessert]) : ""}
     <section class="card">
@@ -2694,6 +2703,7 @@ function sheetWrap(id){
   wrapDraft = {id, overall:0, scores:{food:0,service:0,price:0,selection:0,clean:0,location:0}, pay:"all", forWhom: st.fam.find(f => f.id !== st.me).id};
   openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">How was it?</div><h2>${esc(r.name)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="field"><span class="lbl">YOUR SCORE, 1 TO 10</span><div class="dots ten" role="group" aria-label="Your score, 1 to 10">${[1,2,3,4,5,6,7,8,9,10].map(n => `<button data-act="overall" data-n="${n}" aria-pressed="false">${n}</button>`).join("")}</div><span class="small muted">The family score is everyone's average.</span></div>
+    <div class="field"><label for="w-ordered">🍽️ What did you order?</label><input class="input" id="w-ordered" maxlength="200" placeholder="e.g. Rib-eye, medium · peach cobbler"><span class="small muted">Shown next to your score, so next time you remember the dish.</span></div>
     <div class="lbl" style="margin-bottom:-6px">THE DETAILS, 1 TO 5</div>
     <div class="sec" style="gap:10px">${CRIT.map(([k,l]) => `<div class="crit"><span class="small">${l}</span><div class="dots" role="group" aria-label="${l}">${[1,2,3,4,5].map(n => `<button data-act="score" data-k="${k}" data-n="${n}" aria-pressed="false">${n}</button>`).join("")}</div></div>`).join("")}</div>
     <div class="field"><label for="w-text">Brief feedback (everyone sees it)</label><textarea class="input" id="w-text" placeholder="What should the family remember?"></textarea></div>
@@ -2958,10 +2968,11 @@ document.addEventListener("click", e => {
       if(!wrapDraft.overall){ toast("Give it a score from 1 to 10"); return; }
       if(Object.values(sc).some(v => !v)){ toast("Rate all six details to save"); return; }
       const text = document.getElementById("w-text").value.trim();
+      const ordered = (document.getElementById("w-ordered")?.value || "").trim().slice(0, 200);
       const amt = parseFloat(document.getElementById("w-amt").value) || 0;
       const moment = document.getElementById("w-note").value.trim();
       const pay = wrapDraft.pay;
-      st.reviews.push({id:uid("r"),rid:e2.chosen,by:st.me,date:e2.date,scores:{...sc},overall:wrapDraft.overall,text:text||"(no comment)",status:needsReview(text)?"held":"ok"}); if(needsReview(text)) alertAdmin(`A review from ${first(ME().name)} is waiting for your review.`);
+      st.reviews.push({id:uid("r"),rid:e2.chosen,by:st.me,date:e2.date,scores:{...sc},overall:wrapDraft.overall,text:text||"(no comment)",ordered,status:needsReview(text + " " + ordered)?"held":"ok"}); if(needsReview(text + " " + ordered)) alertAdmin(`A review from ${first(ME().name)} is waiting for your review.`);
       if(!st.visits.some(v => v.eventId === e2.id)) st.visits.push({rid:e2.chosen,date:e2.date,eventId:e2.id});
       st.ledger = st.ledger.filter(l => l.eventId !== e2.id);
       st.ledger.push({eventId:e2.id,rid:e2.chosen,date:e2.date,payer:pay==="all"||pay==="for"?st.me:null,mode:pay,forWhom:pay==="for"?document.getElementById("w-for").value:null,amount:amt});
