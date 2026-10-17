@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Table of 7 - attack the live sign-in and the database rules.
 
-Runs ONLY against the test family 'zztest' (seats z1 host, z2 member, z3 paused).
+Runs ONLY against the test family 'zztest' (seats z1 host, z2 member, z3 paused; z4 starts paused and is woken
+only for the Family Feud proofs, which need a judge and two teams).
 It never touches a real family seat. Reads the project URL and public key below
 (both are public by design; the service key is never used here).
 
@@ -79,7 +80,7 @@ s, b, _ = rest("GET", "members?select=*", None); check("public sees no members",
 # --- family walls ---
 s, b, _ = rest("GET", "members?select=id,name", tok_m)
 ids = sorted(x["id"] for x in b) if isinstance(b, list) else b
-check("test member sees only the test family (never the Clark seats)", ids == ["z1", "z2", "z3"], ids)
+check("test member sees only the test family (never the Clark seats)", ids == ["z1", "z2", "z3", "z4"], ids)
 check("member rows carry no PIN", isinstance(b, list) and all("pin_hash" not in x for x in b), b)
 
 # --- seat powers ---
@@ -249,6 +250,52 @@ check("the table phone answers for each team in turn", s1 == 200 and s2 == 200, 
 s, b, _ = call("POST", G, {"action": "resign", "id": tt.get("id")}, tok_h); s2, b2, _ = rest("GET", "games?id=eq." + str(tt.get("id")) + "&select=status,winner,why", tok_h)
 check("ending a table game stops it without a winner", s == 200 and b2 == [{"status": "done", "winner": 2, "why": "stopped"}], (s, b2))
 s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Trivia Night*"), tok_m); check("only the family-teams game alerted the other team (table trivia alerts no one)", isinstance(b, list) and len(b) == 2, b)
+# Family Feud: the family is the survey. Answers live in feud_answers, which no phone can read; only the judge moves
+s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"status": "active"}, "return=representation"); check("the host wakes the fourth test seat", s == 200 and b and b[0]["status"] == "active", (s, b))
+pin_4 = f"{random.randint(0, 9999):04d}"; s, b, _ = signin("Zed Testfour", pin_4, pin_4); tok_4 = (b.get("session") or {}).get("access_token"); check("a fourth test seat signs in", bool(tok_4), b)
+s, b, _ = rest("POST", "feud_surveys", tok_h, {"family_id": "zztest", "prompts": ["x"]}); check("no phone can write a survey directly", s >= 400, (s, b))
+s, b, _ = call("POST", G, {"action": "survey_new", "prompts": ["", "  "]}, tok_h); check("a survey needs a question", s == 400 and b.get("code") == "prompts", (s, b))
+s, b, _ = call("POST", G, {"action": "survey_new", "prompts": ["Name a food", "Name a colour", "Name a letter"]}, tok_h); sv = (b or {}).get("survey", {}).get("id")
+check("the host starts a survey", s == 200 and bool(sv), (s, b))
+s, b, _ = call("POST", G, {"action": "survey_new", "prompts": ["Another"]}, tok_m); check("only one survey open at a time", s == 409 and b.get("code") == "survey_open", (s, b))
+s, b, _ = call("POST", G, {"action": "survey_close", "id": sv}, tok_h); check("a survey can't close before two people answer", s == 409 and b.get("code") == "few", (s, b))
+s, b, _ = call("POST", G, {"action": "survey_answer", "id": sv, "answers": ["Pizza", "", "x"]}, tok_m); check("every question needs an answer", s == 400 and b.get("code") == "blank", (s, b))
+for tok, ans in ((tok_m, ["Pizza", "Red", "x"]), (tok_h, ["pizzas", "Blue", "y"]), (tok_4, ["Wings", "red", "z"])):
+    s, b, _ = call("POST", G, {"action": "survey_answer", "id": sv, "answers": ans}, tok)
+check("three people answer", s == 200, (s, b))
+s, b, _ = rest("GET", "feud_answers?select=*", tok_h); check("no phone can read anyone's survey answers", s >= 400 or b == [], (s, b))
+s, b, _ = rest("GET", "feud_surveys?id=eq." + str(sv) + "&select=*", tok_m); row = (b or [{}])[0]
+check("the family sees who answered, never what", len(row.get("answered", [])) == 3 and "izza" not in json.dumps(row) and "Wings" not in json.dumps(row), row)
+s, b, _ = call("POST", G, {"action": "survey_mine", "id": sv}, tok_m); check("you can read back only your own answers", b.get("answers") == ["Pizza", "Red", "x"], b)
+s, b, _ = call("POST", G, {"action": "survey_close", "id": sv}, tok_m); check("only the starter or the host closes a survey", s == 403 and b.get("code") == "not_starter", (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "feud", "survey": sv, "sideA": ["z2"], "sideB": ["z4"]}, tok_h); check("no game from a survey still open", s == 409 and b.get("code") == "survey_open", (s, b))
+s, b, _ = call("POST", G, {"action": "survey_close", "id": sv}, tok_h); check("the host closes the survey", s == 200, (s, b))
+s, b, _ = call("POST", G, {"action": "survey_answer", "id": sv, "answers": ["Tacos", "Green", "q"]}, tok_m); check("no answers after it closes", s == 409 and b.get("code") == "survey_closed", (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "feud", "survey": sv, "sideA": ["z1", "z2"], "sideB": ["z4"]}, tok_h); check("the judge can't be on a team", s == 403 and b.get("code") == "judge_plays", (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "feud", "survey": sv, "sideA": ["z2"], "sideB": ["z4"]}, tok_h); fg = (b or {}).get("game", {}); fid = fg.get("id"); fs = fg.get("state") or {}
+check("the host judges Family Feud: kids vs grown-ups", s == 200 and bool(fid), (s, b))
+check("the board starts hidden: no answer reaches a phone", fs.get("slots") == 2 and fs.get("shown") == [None, None] and "izza" not in json.dumps(fs) and "Wings" not in json.dumps(fs), fs)
+check("the board says how many of the family were asked", fs.get("people") == 3 and fs.get("prompt") == "Name a food", fs)
+s, b, _ = call("POST", G, {"action": "peek", "id": fid}, tok_m); check("a player can't peek at the answers", s == 403 and b.get("code") == "not_judge", (s, b))
+s, b, _ = call("POST", G, {"action": "peek", "id": fid}, tok_h); check("the judge sees the real counts: 2 said pizza, 1 said wings", [x.get("n") for x in b.get("board", [])] == [2, 1] and b["board"][1]["t"] == "Wings", b)
+s, b, _ = call("POST", G, {"action": "move", "id": fid, "mv": {"reveal": 0}, "at": 0}, tok_m); check("only the judge runs the board", s == 403 and b.get("code") == "not_judge", (s, b))
+fmv = lambda mv, at: call("POST", G, {"action": "move", "id": fid, "mv": mv, "at": at}, tok_h)
+fst = lambda: (rest("GET", "games?id=eq." + str(fid) + "&select=state,status,winner,why", tok_m)[1] or [{}])[0]
+s, b, _ = fmv({"reveal": 0}, 0); x = fst()["state"]; check("a reveal shows the answer and banks its 2 points", s == 200 and x["shown"][0]["n"] == 2 and x["bank"] == 2, x)
+s, b, _ = fmv({"reveal": 0}, 1); check("the same answer can't be revealed twice", s == 400, (s, b))
+for at in (1, 2, 3): fmv({"strike": True}, at)
+x = fst()["state"]; check("three strikes: the other team may steal", x["phase"] == "steal" and x["turn"] == 1, x)
+fmv({"reveal": 1}, 4); x = fst()["state"]; check("a good steal takes the bank (2 + 1)", x["score"] == [0, 3] and x["phase"] == "between" and all(x["shown"]), x)
+s, b, _ = fmv({"strike": True}, 5); check("between rounds only Next round", s == 400, (s, b))
+fmv({"next": True}, 5); x = fst()["state"]; check("round 2: the other team starts, real counts (red/Red = 2)", x["round"] == 2 and x["turn"] == 1 and x["slots"] == 2, x)
+for at in (6, 7, 8): fmv({"strike": True}, at)
+fmv({"strike": True}, 9); x = fst()["state"]; check("a missed steal gives the bank to the team that built it", x["score"] == [0, 3] and x["phase"] == "between", x)
+fmv({"next": True}, 10)
+for i, at in ((0, 11), (1, 12), (2, 13)): fmv({"reveal": i}, at)
+x = fst(); check("the last round ends the game and the score decides it", x.get("status") == "done" and x["state"]["score"] == [3, 3] and x.get("winner") == 2 and x.get("why") == "3\u20133", x)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Family Feud*"), tok_h); check("the judge hears the result too", isinstance(b, list) and any("draw" in a["text"] for a in b), b)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Family Feud survey*"), tok_4); check("the survey reached the family", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"status": "suspended"}, "return=representation"); check("the fourth test seat goes back to sleep", s == 200 and b and b[0]["status"] == "suspended", (s, b))
 s, b, _ = rest("PATCH", "events?id=eq.zz-ev2", tok_m, {"status": "done"}, "return=representation"); check("anyone at the dinner may mark it done after the wrap-up", s == 200 and b and b[0]["status"] == "done", (s, b))
 s, b, _ = rest("POST", "rpc/radar_claim", tok_m, {"p_key": "zz-radar-" + pin_h}); s2, b2, _ = rest("POST", "rpc/radar_claim", tok_h, {"p_key": "zz-radar-" + pin_h})
 check("a birthday reminder is claimed by one phone only", b is True and b2 is False, (b, b2))

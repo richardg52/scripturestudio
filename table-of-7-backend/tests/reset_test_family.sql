@@ -1,13 +1,14 @@
 -- Run in the Supabase SQL editor (or through the MCP) before attack_signin.py.
--- Touches ONLY the test family 'zztest' (seats z1, z2, z3). Never a Clark seat.
+-- Touches ONLY the test family 'zztest' (seats z1, z2, z3, z4). Never a Clark seat.
 insert into families(id,name) values ('zztest','TEST FAMILY - delete after proof') on conflict do nothing;
-insert into members(id,family_id,name,role) values ('z1','zztest','Zed Testhost','host'),('z2','zztest','Zed Testmember','member'),('z3','zztest','Zed Testpaused','member') on conflict do nothing;
+insert into members(id,family_id,name,role) values ('z1','zztest','Zed Testhost','host'),('z2','zztest','Zed Testmember','member'),('z3','zztest','Zed Testpaused','member'),('z4','zztest','Zed Testfour','member') on conflict do nothing;
 -- (the test uses real restaurants from our list, gus and acre; it never adds a restaurant every family could see)
 delete from events where family_id = 'zztest';
 delete from media where family_id = 'zztest';
-delete from alerts where to_member in ('z1','z2','z3');
+delete from alerts where to_member in ('z1','z2','z3','z4');
 update members set status = 'active', diet = null where family_id = 'zztest';
-insert into member_secrets(member_id) values ('z1'),('z2'),('z3') on conflict (member_id) do update set pin_hash = null, fails = 0, locked_until = null;
+update members set status = 'suspended' where id = 'z4';   -- z4 waits paused; attack_signin.py wakes it only for the Family Feud proofs
+insert into member_secrets(member_id) values ('z1'),('z2'),('z3'),('z4') on conflict (member_id) do update set pin_hash = null, fails = 0, locked_until = null;
 delete from signin_ip_attempts;
 delete from radar_sent where family_id = 'zztest';
 delete from contacts where family_id = 'zztest';
@@ -16,3 +17,4 @@ delete from payments where family_id = 'zztest'; delete from never_again where f
 delete from want_to_try where family_id = 'zztest';
 delete from standing_dinners where family_id = 'zztest';
 delete from games where family_id = 'zztest';
+delete from feud_surveys where family_id = 'zztest';
