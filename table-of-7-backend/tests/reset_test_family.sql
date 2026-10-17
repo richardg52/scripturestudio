@@ -14,3 +14,4 @@ delete from contacts where family_id = 'zztest';
 delete from visits where family_id = 'zztest'; delete from reviews where family_id = 'zztest'; delete from notes where family_id = 'zztest';
 delete from payments where family_id = 'zztest'; delete from never_again where family_id = 'zztest';
 delete from want_to_try where family_id = 'zztest';
+delete from standing_dinners where family_id = 'zztest';
