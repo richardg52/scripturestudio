@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Table of 7</title>
+<meta name="author" content="Richard G. Clark">
+<meta name="copyright" content="© 2026 Richard G. Clark. All rights reserved.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -661,6 +663,8 @@ const add = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
 const nextSunday = add(today0, (7 - today0.getDay()) % 7 || 7);
 const fmtDate = s => parse(s).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
 const fmtLong = s => parse(s).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+const CREDIT = "Built, designed and created by Richard G. Clark · © 2026 Richard G. Clark. All rights reserved.";
+const creditHtml = () => `<p class="small muted" style="margin:0;text-align:center;font-size:12px;line-height:1.5">${CREDIT}</p>`;
 const nowLine = () => { const d = new Date(); return `${d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"})} · ${d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}`; };
 setInterval(() => document.querySelectorAll("[data-now]").forEach(el => { el.textContent = nowLine(); }), 10000);
 const fmtTime = t => { if(!t) return ""; const [h,m] = t.split(":").map(Number); return new Date(2000,0,1,h,m).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); };
@@ -1070,6 +1074,7 @@ function showSignIn(msg = ""){
       <button class="btn primary block" type="submit" id="si-go">Sign in</button>
     </form>
     <p class="muted small" style="max-width:300px;margin:0">First time? Type your full name and you'll be asked to create a 4-digit PIN. Forgot it? Ask ${esc(first(F(ADMIN).name))} to reset it.</p>
+    ${creditHtml()}
   </div>`;
   const f = document.getElementById("signin");
   (st.lastName ? document.getElementById("si-pin") : document.getElementById("si-name")).focus();
@@ -1228,7 +1233,8 @@ function vHome(){
     <div class="sec-head"><h2>New &amp; not yet tried</h2><button class="link-btn" data-act="explore-filter" data-f="untried">See all</button></div>
     <div class="scroller">${fresh.map(r => `<button class="alt" data-act="rest" data-rid="${r.id}">${r.flags.includes("new")?'<span class="pill wine" style="justify-self:start">New</span>':'<span class="pill brass" style="justify-self:start">Not tried</span>'}<b>${esc(r.name)}</b><span class="muted small">${r.cuisine.join(" · ")} · ${$(r.price)}</span></button>`).join("")}</div>
   </section>
-  <p class="proto">Shared with the whole table · updates live on every phone</p>`;
+  <p class="proto">Shared with the whole table · updates live on every phone</p>
+  ${creditHtml()}`;
 }
 function miniEvent(e){
   const r = e.chosen ? RBY[e.chosen] : null;
@@ -1637,7 +1643,8 @@ function sheetTips(){
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
   openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Table of 7 guide</div><h2>${part[1]} ${part[2]}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="chips" role="tablist" aria-label="Guide parts" style="flex-wrap:wrap">${GUIDE_PARTS.map(([k, ic, l]) => `<button class="chip" role="tab" data-act="guide" data-k="${k}" aria-pressed="${k === part[0]}">${ic} ${l}</button>`).join("")}</div>
-    ${body}`);
+    ${body}
+    ${creditHtml()}`);
 }
 /* The six-part guide (his standing order, 2026-10-12): tips, manual, voice, sample conversations,
    troubleshooting, can & cannot. Every line is read off this file; the button pictures are the app's
