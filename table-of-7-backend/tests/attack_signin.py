@@ -227,5 +227,17 @@ check("a member cannot add to the family's own restaurant list", s >= 400, (s, b
 s, b, _ = rest("POST", "rpc/places_take", tok_m, {"p_sku": "text_pro", "p_n": -1000})
 check("phones cannot touch the free-amount counter", s in (401, 403, 404), (s, b))
 
+# --- notifications: only your own phone, and only the database can send ---
+s, b, _ = call("POST", URL + "/functions/v1/push", {"action": "key"})
+check("the notification key needs a signed-in seat", s == 401, (s, b))
+s, b, _ = call("POST", URL + "/functions/v1/push", {"action": "send", "alert_id": "x"})
+check("nobody but the database can send a notification", s == 403, (s, b))
+s, b, _ = call("POST", URL + "/functions/v1/push", {"action": "send", "alert_id": "x"}, None, {"x-t7-token": "guess"})
+check("a guessed pass cannot send a notification", s == 403, (s, b))
+s, b, _ = rest("POST", "push_subscriptions", tok_m, {"member_id": "z1", "endpoint": "https://example.invalid/not-yours", "keys": {}})
+check("you cannot register a phone for someone else's notifications", s >= 400, (s, b))
+s, b, _ = rest("POST", "rpc/push_config_get", tok_m, {})
+check("phones cannot read the notification keys", s in (401, 403, 404), (s, b))
+
 print(f"\n{fails} FAILED" if fails else "\nALL PROOFS HOLD")
 sys.exit(1 if fails else 0)
