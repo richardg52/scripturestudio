@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600..900;1,600..900&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Pinyon+Script&display=swap">
 <style>
 /* Layout: one-column phone app shell (max 480px) — sticky header, scrolling view, fixed tab bar. Evening dining room: bottle green, brass, wine. */
 :root{
@@ -23,7 +23,7 @@
   --ink:#efe9dc; --muted:#a3b0a6; --brass:#cfab6c; --brass-ink:#1a160c; --wine:#9a3343; --wine-soft:rgba(154,51,67,.18);
   --good:#86c596; --warn:#e3b45c; --bad:#e58474; --scrim:rgba(5,10,8,.62); --card-shadow:0 10px 30px rgba(0,0,0,.28);
   --paper:#f6f1e6; --paper-ink:#2a1f14; --paper-line:#c9b083;
-  --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --f-display:"Nunito","Avenir Next","Avenir","Segoe UI",system-ui,sans-serif;
   --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
   --f-script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
@@ -50,7 +50,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:6px}
 a{color:var(--brass)}
-h1,h2,h3{font-family:var(--f-display);font-weight:500;text-wrap:balance;margin:0;letter-spacing:.005em}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;text-wrap:balance;margin:0;letter-spacing:0}
 .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:600}
 .muted{color:var(--muted)}
@@ -131,7 +131,7 @@ nav.tabs .plan-btn span.disc{width:44px;height:44px;margin-top:-18px;border-radi
 .feature .plate{position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(244,217,168,.35);box-shadow:inset 0 0 0 14px rgba(244,217,168,.06)}
 .alts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left;display:grid;gap:2px;min-width:0}
-.alt b{font-family:var(--f-display);font-weight:500;font-size:17px;line-height:1.2}
+.alt b{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.2}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);padding:9px 16px;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);white-space:nowrap}
 .btn.primary{background:var(--brass);color:var(--brass-ink);border-color:transparent}
 .btn.wine{background:var(--wine);color:#fff;border-color:transparent}
@@ -185,7 +185,7 @@ textarea.input{min-height:76px;resize:vertical}
 .opt.mine{border-color:var(--brass)}
 .opt .bar{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--brass) 12%,transparent);z-index:0;transition:width .4s}
 .opt > *:not(.bar){position:relative;z-index:1}
-.opt b{font-family:var(--f-display);font-weight:500;font-size:17px}
+.opt b{font-family:var(--f-display);font-weight:700;font-size:17px}
 .opt .count{font-family:var(--f-mono);font-size:13px}
 .strip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:13px;flex-wrap:wrap}
 .strip .grow{flex:1;min-width:150px}
@@ -208,7 +208,7 @@ textarea.input{min-height:76px;resize:vertical}
 .i-mono{width:60px;height:60px;border-radius:50%;border:1px solid #b08d4c;box-shadow:inset 0 0 0 3px #fcf9f1,inset 0 0 0 4px rgba(176,141,76,.5);display:grid;place-items:center;font-family:var(--f-display);font-style:italic;font-size:22px;color:#8a6a2c}
 .i-caps{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#8a6a2c;font-weight:600;max-width:30ch;line-height:1.7}
 .i-script{font-family:var(--f-script);font-size:38px;line-height:1.05;color:#5a1622;font-weight:400}
-.i-title{font-family:var(--f-display);font-size:26px;line-height:1.15;letter-spacing:.08em;text-transform:uppercase;font-weight:500;text-wrap:balance;max-width:16ch}
+.i-title{font-family:var(--f-display);font-size:26px;line-height:1.15;letter-spacing:.08em;text-transform:uppercase;font-weight:800;text-wrap:balance;max-width:16ch}
 .i-host{font-family:var(--f-display);font-style:italic;font-size:16px;color:#5b4a36}
 .i-flour{width:150px;height:14px;color:#b08d4c}
 .i-when{font-family:var(--f-display);font-size:17px;line-height:1.55}
@@ -277,7 +277,7 @@ textarea.input{min-height:76px;resize:vertical}
 .calc-out .total{font-size:18px;font-weight:700;border-top:1px dashed var(--line);padding-top:8px}
 .calc-out .pp{font-family:var(--f-display);font-size:28px;color:var(--brass);text-align:center}
 .wine{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--wine-soft);border:1px solid color-mix(in srgb,var(--wine) 30%,transparent)}
-.wine b{font-family:var(--f-display);font-weight:500;font-size:17px}
+.wine b{font-family:var(--f-display);font-weight:700;font-size:17px}
 .tip{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
 .tip .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);display:grid;place-items:center;font-family:var(--f-display);font-style:italic}
 .tip p{margin:2px 0 0;font-size:14px;color:var(--muted)}
@@ -287,7 +287,7 @@ textarea.input{min-height:76px;resize:vertical}
 .fav{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .fav:last-child{border-bottom:0}
 .fav .rank{font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--brass);text-align:center}
-.fav b{font-family:var(--f-display);font-weight:500;font-size:17px;display:block;line-height:1.2}
+.fav b{font-family:var(--f-display);font-weight:700;font-size:17px;display:block;line-height:1.2}
 .meter{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
 .meter i{display:block;height:100%;background:var(--brass)}
 .note{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:12px;border-radius:12px;background:var(--surface)}
@@ -375,7 +375,7 @@ textarea.input{min-height:76px;resize:vertical}
 .g-hero{position:relative;border-radius:16px;overflow:hidden;padding:0;border:0;width:100%;background:var(--surface);display:block;text-align:left;color:#fff}
 .g-hero img{display:block;width:100%;max-width:100%;aspect-ratio:4/3;object-fit:cover}
 .g-hero .cap{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.72));display:grid;gap:2px}
-.g-hero .cap b{font-family:var(--f-display);font-weight:500;font-size:22px;line-height:1.15}
+.g-hero .cap b{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.15}
 .g-hero .cap span{font-size:12px;opacity:.85}
 .g-month{font-family:var(--f-display);font-style:italic;font-size:20px;color:var(--brass);margin:6px 0 -4px}
 .masonry{columns:2;column-gap:8px}
@@ -390,6 +390,9 @@ textarea.input{min-height:76px;resize:vertical}
 .strip-photos img{width:100%;height:100%;object-fit:cover;display:block}
 
 @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+/* Heading font: Nunito, bold and clear (his request, 2026-10-17: "rounder, clearer, crisper") */
+.greet,.brand,.splash-title,.round .tabletop,.cd,.rv-name,.gc-title,.calc-out .pp,.i-rest,.mark .five,.fav .rank,.tip .n,.g-month,.seal{font-weight:800}
+.i-host,.i-when,.i-note,.envelope .d{font-weight:600}
 </style>
 </head>
 <body>
@@ -1195,7 +1198,7 @@ function vHome(){
     return `<div class="livebar">${ov.voteEnds?`<span class="cd num" data-cd="${ov.id}">${mmss(ov.voteEnds - Date.now())}</span>`:`<span class="dotlive"></span>`}<span class="grow"><b>${esc(ov.title)} vote</b><br><span class="small muted">${Object.keys(ov.votes).length} of ${st.fam.length} voted · ${ov.options.length} restaurants on the ballot</span></span><button class="btn wine sm" data-act="live" data-id="${ov.id}">${ov.voteEnds?"Join":"Start vote"}</button></div>`; })()}
 
   ${radarList().map(x => `<div class="radar"><span class="eyebrow">Birthday radar</span>
-      <b style="font-family:var(--f-display);font-weight:500;font-size:21px">${esc(first(x.f.name))}'s birthday is ${x.days === 0 ? "today" : x.days === 1 ? "tomorrow" : `in ${x.days} days`}</b>
+      <b style="font-family:var(--f-display);font-weight:700;font-size:21px">${esc(first(x.f.name))}'s birthday is ${x.days === 0 ? "today" : x.days === 1 ? "tomorrow" : `in ${x.days} days`}</b>
       <span class="small muted">${x.date.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"})}${x.favs.length ? ` · ${esc(first(x.f.name))}'s favorites: ${x.favs.map(([rid,a]) => `${esc(RBY[rid].name)} (★${a.toFixed(1)})`).join(", ")}` : ""}</span>
       <button class="btn sm wine" style="justify-self:start" data-act="plan-bday" data-id="${x.f.id}">Plan ${esc(first(x.f.name))}'s birthday</button></div>`).join("")}
 
@@ -1546,7 +1549,7 @@ const partySize = e => st.fam.filter(f => e.rsvp[f.id] === "yes").length + e.gue
 function pastCard(e){
   const r = RBY[e.chosen]; const led = st.ledger.find(l => l.eventId === e.id); const ns = st.notes.filter(n => n.eventId === e.id);
   return `<article class="card">
-    <div style="display:flex;gap:10px;align-items:center">${av(e.host,"sm")}<div style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-weight:500;font-size:18px">${esc(r.name)}</b><div class="small muted">${esc(e.title)} · ${fmtDate(e.date)}${led?` · ${ledgerText(led)}`:""}</div></div>${avgOf(r.id)?`<span class="num small" style="color:var(--brass)">★ ${avgOf(r.id).toFixed(1)}</span>`:""}</div>
+    <div style="display:flex;gap:10px;align-items:center">${av(e.host,"sm")}<div style="flex:1;min-width:0"><b style="font-family:var(--f-display);font-weight:700;font-size:18px">${esc(r.name)}</b><div class="small muted">${esc(e.title)} · ${fmtDate(e.date)}${led?` · ${ledgerText(led)}`:""}</div></div>${avgOf(r.id)?`<span class="num small" style="color:var(--brass)">★ ${avgOf(r.id).toFixed(1)}</span>`:""}</div>
     ${ns.filter(n => n.status !== "held" || n.by === st.me || isAdmin()).map(n => `<div class="note">${av(n.by,"sm")}<div><b class="small">${esc(F(n.by).name)}</b> <span class="small muted">${fmtDate(n.date)}</span>${n.status === "held" ? ' <span class="pill warn">Held for review</span>' : ""}${isAdmin() ? ` <button class="link-btn" data-act="mod-post" data-k="note" data-id="${n.id}" data-v="del" style="color:var(--bad)">Delete</button>` : ""}<p>${esc(n.text)}</p></div></div>`).join("")}
     ${photoGrid(e.id)}
     <button class="btn sm" style="justify-self:start" data-act="photo-add" data-id="${e.id}">+ Add photos of the night</button>
@@ -1580,7 +1583,7 @@ function vTable(){
     <div class="lbl" style="margin-top:6px">TREATS SO FAR</div>
     <div style="display:flex;flex-wrap:wrap;gap:12px">${st.fam.map(f => `<span style="display:flex;align-items:center;gap:6px">${av(f.id,"sm")}<span class="num">${treatCount(f.id)}</span></span>`).join("")}</div>
   </section>
-  <button class="g-hero" data-act="gallery" style="${st.photos.some(approved) ? "" : "padding:22px;background:var(--surface);border:1px solid var(--line);color:var(--ink)"}">${st.photos.some(approved) ? `<img src="${st.photos.filter(approved).sort((a,b)=>b.t-a.t)[0].data}" alt=""><span class="cap"><span>${st.photos.filter(approved).length} moments</span><b>Sights &amp; Sounds</b><span>Open the family gallery</span></span>` : `<span class="eyebrow">Gallery</span><br><b style="font-family:var(--f-display);font-weight:500;font-size:22px">Sights &amp; Sounds</b><br><span class="small muted">Food, places and family photos, all in one album.</span>`}</button>
+  <button class="g-hero" data-act="gallery" style="${st.photos.some(approved) ? "" : "padding:22px;background:var(--surface);border:1px solid var(--line);color:var(--ink)"}">${st.photos.some(approved) ? `<img src="${st.photos.filter(approved).sort((a,b)=>b.t-a.t)[0].data}" alt=""><span class="cap"><span>${st.photos.filter(approved).length} moments</span><b>Sights &amp; Sounds</b><span>Open the family gallery</span></span>` : `<span class="eyebrow">Gallery</span><br><b style="font-family:var(--f-display);font-weight:700;font-size:22px">Sights &amp; Sounds</b><br><span class="small muted">Food, places and family photos, all in one album.</span>`}</button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Never Again</h2><span class="small muted num">${Object.keys(st.blocked).length}</span></div>
     <p class="small muted" style="margin:0">Places with a bad experience. They're hidden from recommendations, votes and planning.</p>
@@ -1998,13 +2001,13 @@ function wrapLines(ctx, text, maxW){ const out = []; let line = ""; String(text)
 function fitFont(ctx, text, style, size, family, maxW){ let s = size; do { ctx.font = `${style} ${s}px ${family}`; s -= 2; } while(ctx.measureText(text).width > maxW && s > 18); }
 async function renderCard(cv, d){
   if(!cv) return; const ctx = cv.getContext("2d"); const W = 1200, H = 1500;
-  try { await Promise.all(['64px "Pinyon Script"','italic 40px "Bodoni Moda"','500 44px "Bodoni Moda"','600 28px Figtree'].map(f => document.fonts.load(f))); } catch {}
+  try { await Promise.all(['64px "Pinyon Script"','italic 700 40px Nunito','800 44px Nunito','600 28px Figtree'].map(f => document.fonts.load(f))); } catch {}
   const src = d.upload || st.photos.find(p => p.id === d.photoId)?.data; const img = src ? await loadImg(src).catch(() => null) : null;
   const e = d.eventId ? ev(d.eventId) : null; const r = e?.chosen ? RBY[e.chosen] : d.rid ? RBY[d.rid] : null;
   const place = r ? r.name : "Table of 7";
   const when = (e ? parse(e.date) : new Date()).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   const from = `— ${first(F(d.by || st.me).name)} & the Table of 7`;
-  const BOD = '"Bodoni Moda", Didot, Georgia, serif', SCR = '"Pinyon Script", "Snell Roundhand", cursive', SANS = 'Figtree, system-ui, sans-serif';
+  const BOD = 'Nunito, "Avenir Next", system-ui, sans-serif', SCR = '"Pinyon Script", "Snell Roundhand", cursive', SANS = 'Figtree, system-ui, sans-serif';
   ctx.clearRect(0, 0, W, H); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
   if(d.style === "snapshot"){
     const g = ctx.createRadialGradient(W/2, 300, 50, W/2, 600, 1100); g.addColorStop(0, "#1d3a30"); g.addColorStop(1, "#0b1512"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -2014,7 +2017,7 @@ async function renderCard(cv, d){
     ctx.fillStyle = "#5a1622"; fitFont(ctx, place, "", 64, SCR, 820); ctx.fillText(place, 0, 430);
     ctx.restore();
     ctx.fillStyle = "#cfab6c"; ctx.font = `600 26px ${SANS}`; ctx.fillText(when.toUpperCase().split("").join(String.fromCharCode(8202)), W/2, 1205);
-    ctx.fillStyle = "#efe9dc"; ctx.font = `italic 40px ${BOD}`; wrapLines(ctx, d.msg, 1000).slice(0, 3).forEach((l, i) => ctx.fillText(l, W/2, 1280 + i*54));
+    ctx.fillStyle = "#efe9dc"; ctx.font = `italic 700 40px ${BOD}`; wrapLines(ctx, d.msg, 1000).slice(0, 3).forEach((l, i) => ctx.fillText(l, W/2, 1280 + i*54));
     ctx.fillStyle = "#cfab6c"; ctx.font = `28px ${SANS}`; ctx.fillText(from, W/2, 1450);
   } else {
     const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#fcf9f1"); g.addColorStop(1, "#f1e8d5"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -2026,7 +2029,7 @@ async function renderCard(cv, d){
     ctx.fillStyle = "#8a6a2c"; ctx.font = `600 24px ${SANS}`; ctx.fillText(when.toUpperCase(), W/2, 1098);
     ctx.strokeStyle = "#b08d4c"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(W/2-150, 1135); ctx.lineTo(W/2-22, 1135); ctx.moveTo(W/2+22, 1135); ctx.lineTo(W/2+150, 1135); ctx.stroke();
     ctx.fillStyle = "#b08d4c"; ctx.beginPath(); ctx.moveTo(W/2, 1125); ctx.lineTo(W/2+10, 1135); ctx.lineTo(W/2, 1145); ctx.lineTo(W/2-10, 1135); ctx.fill();
-    ctx.fillStyle = "#5b4a36"; ctx.font = `italic 40px ${BOD}`; wrapLines(ctx, d.msg, 980).slice(0, 4).forEach((l, i) => ctx.fillText(l, W/2, 1215 + i*52));
+    ctx.fillStyle = "#5b4a36"; ctx.font = `italic 700 40px ${BOD}`; wrapLines(ctx, d.msg, 980).slice(0, 4).forEach((l, i) => ctx.fillText(l, W/2, 1215 + i*52));
     ctx.fillStyle = "#8a6a2c"; ctx.font = `28px ${SANS}`; ctx.fillText(from, W/2, 1430);
   }
 }
