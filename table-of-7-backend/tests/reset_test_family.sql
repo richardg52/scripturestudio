@@ -2,7 +2,7 @@
 -- Touches ONLY the test family 'zztest' (seats z1, z2, z3). Never a Clark seat.
 insert into families(id,name) values ('zztest','TEST FAMILY - delete after proof') on conflict do nothing;
 insert into members(id,family_id,name,role) values ('z1','zztest','Zed Testhost','host'),('z2','zztest','Zed Testmember','member'),('z3','zztest','Zed Testpaused','member') on conflict do nothing;
-insert into restaurants(id,name,city) values ('zz-a','Test Place A','Memphis'),('zz-b','Test Place B','Memphis') on conflict do nothing;
+-- (the test uses real restaurants from our list, gus and acre; it never adds a restaurant every family could see)
 delete from events where family_id = 'zztest';
 delete from media where family_id = 'zztest';
 delete from alerts where to_member in ('z1','z2','z3');
