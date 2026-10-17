@@ -1073,6 +1073,82 @@ function rotationState(rid, target){
 /* Want to Try (his order, 2026-10-17): anyone saves a place they're curious about; the list shows who added
    it, and the Concierge suggests from it first. Only the person who saved it, or the host, takes it off. */
 const wantOf = rid => st.want?.[rid] || null;
+/* Question of the night (his order, 2026-10-17): a conversation starter on the dinner card, family- and
+   faith-friendly. Each dinner takes the next question in a fixed shuffle of the list (step 7 through 60),
+   ordered by the family's dinners by date, so two dinners in a row never share one and none repeats until all
+   60 are used. "Another question" changes it on that phone only. Our own words. */
+const QUESTIONS = [
+  "What was the best part of your week, and who was there?",
+  "What's one thing you're grateful for today that you almost didn't notice?",
+  "If our family had a motto, what should it say?",
+  "What's a favorite memory you have from a family dinner?",
+  "Who taught you something important when you were young, and what was it?",
+  "What's a prayer God answered for you, big or small?",
+  "Which Bible story would you most like to have seen with your own eyes?",
+  "If you could cook one meal for the whole family, what would it be?",
+  "What's something you're looking forward to this month?",
+  "What's the funniest thing that happened to you this week?",
+  "Who in this family has made you proud lately, and why?",
+  "What's a song that always makes you think of home?",
+  "What's one kind thing someone did for you recently?",
+  "If you could visit any place in the world together, where would we go?",
+  "What's a family tradition you hope we never stop?",
+  "What's a verse or saying that has carried you through a hard time?",
+  "What would you like to get better at this year?",
+  "What's the best advice you've ever been given?",
+  "If you wrote a book about our family, what would the title be?",
+  "What's something new you learned this week?",
+  "Who is someone we could bless or encourage this week?",
+  "What's a moment you felt especially close to God?",
+  "What's your favorite thing about the person sitting across from you?",
+  "What did you want to be when you grew up, and why?",
+  "What's a meal from childhood you'd love to taste again?",
+  "If you had a free Saturday with no plans, how would you spend it?",
+  "What's a hard thing you did that you're glad you did?",
+  "What's one thing you'd tell your younger self?",
+  "What does a perfect Sunday look like to you?",
+  "Which family member are you most like, and how?",
+  "What's a story from Grandma or Grandpa you want us to remember?",
+  "What's something that made you laugh until you cried?",
+  "What's one way we could serve our church or neighbors together?",
+  "What's a talent someone at this table has that others might not know about?",
+  "What's a place in Memphis that feels like home to you?",
+  "If you could ask God one question tonight, what would it be?",
+  "What's your favorite holiday memory with this family?",
+  "What's a small habit that makes your day better?",
+  "Who is a hero of yours, and what makes them one?",
+  "What's the best gift you've ever received that didn't cost money?",
+  "What's a time someone forgave you, or you forgave someone?",
+  "What's one thing on your heart you'd like us to pray about?",
+  "If our family were a restaurant, what would be on the menu?",
+  "What's something you're proud of that no one has asked you about?",
+  "What's a game or activity we should do together more often?",
+  "What's a lesson you learned the hard way?",
+  "What does it mean to you to be a good neighbor?",
+  "What's a dream you haven't told many people about?",
+  "What's your favorite way to rest and recharge?",
+  "Which hymn or worship song means the most to you, and why?",
+  "What's the most beautiful place you've ever seen?",
+  "What's a family recipe we should write down before it's lost?",
+  "If you could have dinner with anyone from history, who would it be?",
+  "What's something this family does better than anyone?",
+  "What's a time you saw faith make a real difference?",
+  "What would you like this family to be known for?",
+  "What's a question you'd like to ask everyone at this table?",
+  "What's one thing you want to remember about tonight?",
+  "What made you smile today?",
+  "Where have you seen God's goodness this week?"
+];
+const qOffset = {};
+function questionFor(e){
+  const order = st.events.filter(x => x.status !== "open" || x.id === e.id).sort((a,b) => a.date.localeCompare(b.date) || String(a.created||"").localeCompare(String(b.created||"")) || a.id.localeCompare(b.id));
+  const i = Math.max(0, order.findIndex(x => x.id === e.id));
+  // "Another question" takes a question as far as possible from this dinner in the cycle (about 30 dinners away, then
+  // spreading outward), so it neither repeats a recent dinner's question nor spoils one of the next dinners'.
+  const o = qOffset[e.id] || 0, K = [0,30,35,25,40,20,45,15,50,10,55,5];
+  const k = o < K.length ? K[o] : 30 + o;
+  return QUESTIONS[((i + k) * 7) % QUESTIONS.length];
+}
 /* What I ordered (his order, 2026-10-17): my most recent dish at a place, from my own wrap-ups */
 const lastOrder = rid => st.reviews.filter(r => r.rid === rid && r.by === st.me && r.ordered).sort((a,b) => String(b.date).localeCompare(String(a.date)))[0] || null;
 function wantBtn(rid, sm = true){
@@ -1778,7 +1854,8 @@ function sheetTips(){
     ["Bakeries & dessert","In Explore, tap the “Bakery & Dessert” chip, or set Meal to “Dessert & treats”, for bakeries, donut, cookie, candy and ice cream shops in every city. Google search finds them too: try “cupcakes”, “gelato” or a shop's name."],
     ["Dessert after","Add a second stop to any plan: a bakery, ice cream or dessert shop. When you plan, tap “+ Dessert after” under the restaurants; on a plan already sent, its host can add or change it. Everyone gets its own directions on the invitation, the plan and the dinner card."],
     ["Want to Try","Curious about a place? Open it and tap “☆ Want to try” (it works on Google results too). It shows who saved it, the Concierge suggests those places first, and Explore → Show → “Want to try” lists them all. Only the person who saved a place, or Richard, can take it off."],
-    ["What I ordered","In the wrap-up, under your score, type what you ordered. It shows next to your score on the restaurant's page, and the next time the family dines there your dinner card says “Last time here, you had …”."]
+    ["What I ordered","In the wrap-up, under your score, type what you ordered. It shows next to your score on the restaurant's page, and the next time the family dines there your dinner card says “Last time here, you had …”."],
+    ["Question of the night","Every dinner card has a conversation starter: family memories, gratitude, faith. Go around the table. The next dinner gets a different one, and none repeats until all 60 have been asked. Tap “Another question” to change it on your phone."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1811,6 +1888,7 @@ function guideBody(k){
     step(12, "Dessert after", `When you plan, tap ${pic("+ Dessert after")} under the restaurants and pick a bakery, ice cream or dessert shop from our list, or search Google in the same sheet. A chain asks <b>Which location?</b> first. On a plan already sent, the plan's host taps ${pic("+ Dessert after")} or ${pic("Change","ghost")} on the plan. The stop shows on the invitation, the plan, the shared text and the dinner card with ${pic("Directions to dessert","primary")}. Everyone is told when it's added. ${pic("No dessert stop","ghost")} removes it.`),
     step(13, "Want to Try", `Open any restaurant (or a Google result) and tap ${pic("☆ Want to try")}. It turns into ${pic("★ Want to try · Zoey")} so everyone sees who saved it. The Concierge's Sunday picks on Home come from this list first, and Explore → <b>Show</b> → <b>Want to try</b> lists every saved place. Tap the star again to take it off; only the person who saved it, or ${host}, can.`),
     step(14, "What I ordered", `In ${pic("We dined — wrap up","wine")}, under your 1-to-10 score, fill in <b>🍽️ What did you order?</b> (up to 200 letters). The restaurant's page shows it as <b>Ordered:</b> next to your score, with <b>Last time you had …</b> at the top for you. On your next dinner there, the dinner card opens with <b>🍽️ Last time here</b>. Only you (or ${host}) can change your own line; a held review keeps its order line held too.`),
+    step(15, "Question of the night", `${pic("Open dinner card","primary")} and look for <b>💬 Question of the night</b>. Everyone at the dinner sees the same question. The family's next dinner gets the next one in the list, so two dinners in a row never share a question, and none repeats until all 60 have been used. ${pic("Another question","ghost")} swaps it on your phone only.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1821,6 +1899,7 @@ function guideBody(k){
     step("E", "Something sweet after", `Jasmine plans Sunday Dinner at Gus's, taps ${pic("+ Dessert after")} and picks <b>Muddy's Bake Shop</b>. The invitation now reads “and after, dessert at Muddy's Bake Shop” with ${pic("Directions to dessert","primary")}. Everyone's bell rings: “Jasmine added dessert after Sunday Dinner: Muddy's Bake Shop.” After dinner, Mario opens the dinner card and taps ${pic("Directions to dessert","primary")}. Wanting gelato instead, Jasmine taps ${pic("Change","ghost")}, types “gelato” and taps ${pic("Search Google")}, then ${pic("Choose this one","wine")}.`),
     step("F", "Saving a place for later", `Rosa hears about Bavette's in Chicago, opens it in Explore and taps ${pic("☆ Want to try")}. It reads ${pic("★ Want to try · Rosa")} on every phone. Back home, Derrick searches Google for “Ethiopian” and taps ${pic("☆ Want to try")} on a place he likes. On Sunday morning the Home screen's Concierge pick reads <b>“From our Want to Try list — Derrick saved it.”</b>`),
     step("G", "Remembering the dish", `After dinner at Char, Mario taps ${pic("We dined — wrap up","wine")}, gives it 9, and types “Bone-in rib-eye, medium · mac and cheese” under <b>What did you order?</b>. Three months later the family is back at Char; Mario opens ${pic("Open dinner card","primary")} and sees <b>“Last time here, you had Bone-in rib-eye, medium · mac and cheese.”</b> Rosa opens Char's page and sees Mario's 9 with his dish beside it.`),
+    step("H", "A question at the table", `Seated at Gus's, Jasmine opens ${pic("Open dinner card","primary")} and reads the <b>Question of the night</b> aloud: “What's a prayer God answered for you, big or small?” Everyone answers in turn. Zoey asks for a lighter one, so Jasmine taps ${pic("Another question","ghost")} and gets “What's the funniest thing that happened to you this week?”.`),
   ].join("");
   if(k === "fix") return [
     ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
@@ -1844,17 +1923,18 @@ function guideBody(k){
     ["“Your seat is paused, so saving places is off for now.”", `A paused seat can look but not save. Talk to ${host}.`],
     ["My dish doesn't show on the restaurant page", "It shows once you've saved the wrap-up with something in “What did you order?”. If your review is held for the host, the dish is held with it."],
     ["“Last time here” isn't on the dinner card", "It appears only when you have wrapped up a dinner at this same restaurant before and filled in what you ordered."],
+    ["Our question changed when I tapped “Another question”", "That button changes it on your phone only. Everyone else still sees the dinner's own question; the next dinner gets a fresh one."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2610,6 +2690,9 @@ function drawReveal(){
       <button class="btn wine" data-act="tab" data-id="${e.id}">The Tab · one check</button>
       <button class="btn" data-act="card-open" data-id="${e.id}">Send a card</button>
     </div>
+    <section class="card"><div class="lbl">💬 QUESTION OF THE NIGHT</div><b style="font-family:var(--f-display);font-size:20px;line-height:1.3">${esc(questionFor(e))}</b>
+      <span class="small muted">Go around the table. Everyone answers, even the youngest.</span>
+      <button class="btn sm ghost" style="justify-self:start" data-act="q-next" data-id="${e.id}">Another question</button></section>
     ${lastOrder(e.chosen) ? `<section class="card"><div class="lbl">🍽️ LAST TIME HERE</div><span>You had <b>${esc(lastOrder(e.chosen).ordered)}</b> <span class="muted small">· ${fmtDate(lastOrder(e.chosen).date)}</span></span></section>` : ""}
     ${RBY[e.dessert] ? (dz => `<section class="card"><div class="lbl">🍰 DESSERT AFTER</div><b>${esc(dz.name)}</b><span class="small muted">${esc(addrOf(dz))}${dz.price ? ` · ${costText(dz)}` : ""}</span>
       <div class="actions"><a class="btn primary" href="${mapsDir(dz)}" target="_blank" rel="noopener">Directions to dessert</a><a class="btn" href="${mapsPlace(dz)}" target="_blank" rel="noopener">Location</a></div></section>`)(RBY[e.dessert]) : ""}
@@ -2804,6 +2887,7 @@ document.addEventListener("click", e => {
         render(); });
       break; }
     case "want": toggleWant(b.dataset.rid); break;
+    case "q-next": qOffset[id] = (qOffset[id] || 0) + 1; drawReveal(); break;
     case "g-want": { const pid = b.dataset.pid; b.disabled = true; b.textContent = "Saving…";
       gSave(pid, gSearch.city).then(ok => { if(!ok){ b.disabled = false; b.textContent = "☆ Want to try"; toast("Couldn't save that restaurant. Try again."); return; } toggleWant("g:" + pid); }); break; }
     case "g-more": { const pid = b.dataset.pid; b.disabled = true; b.textContent = "Asking Google…";
