@@ -249,6 +249,19 @@ textarea.input{min-height:76px;resize:vertical}
 .alert-row.unread b{color:var(--brass)}
 .alert-row small{color:var(--muted)}
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gboard{display:grid;gap:4px;margin:0 auto;width:100%;max-width:360px;touch-action:manipulation}
+.gboard button{aspect-ratio:1;border:0;border-radius:8px;background:var(--surface-2);color:var(--ink);font:800 28px/1 var(--f-display);padding:0;display:grid;place-items:center}
+.gboard.ttt{grid-template-columns:repeat(3,1fr)}
+.gboard.c4{grid-template-columns:repeat(7,1fr);background:#1f4f8a;padding:6px;border-radius:12px;gap:5px}
+.gboard.c4 button{border-radius:50%;background:#0f2b4d}
+.gboard.ck{grid-template-columns:repeat(8,1fr);gap:0;border:3px solid #5a3b22;border-radius:6px;overflow:hidden}
+.gboard.ck button{border-radius:0;background:#e9d8b4}
+.gboard.ck button.dk{background:#6b4a2b}
+.gboard.ck button.sel{outline:3px solid var(--brass);outline-offset:-3px}
+.gboard button.to::after{content:"";width:28%;height:28%;border-radius:50%;background:var(--brass);opacity:.85}
+.disc{width:78%;height:78%;border-radius:50%;display:grid;place-items:center;font:800 15px/1 var(--f-display)}
+.disc.p0{background:#c0392b;color:#fff}.disc.p1{background:#f1c40f;color:#5a4500}
+.ck .disc.p0{background:#c0392b;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}.ck .disc.p1{background:#1c1c1c;color:#f1c40f;box-shadow:inset 0 -3px 0 rgba(255,255,255,.15)}
 .photos button{padding:0;border:0;background:none;border-radius:8px;overflow:hidden}
 .photos img{display:block;width:100%;aspect-ratio:1;object-fit:cover;max-width:100%}
 .eta{display:flex;gap:6px;flex-wrap:wrap}
@@ -924,7 +937,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","media","cards","tabs","tab_tickets","tab_lines","alerts"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -938,7 +951,7 @@ async function pull(){
     R.push(r); RBY[r.id] = r; if(!CITIES.includes(r.city)) CITIES.push(r.city); });
   const me = D.members.find(m => m.id === st.me) || D.members[0]; FAMILY = me?.family_id || null;
   ADMIN = D.members.find(m => m.role === "host")?.id || ADMIN;
-  const n = {fam:[], contacts:[], events:[], arrivals:{}, tableReady:{}, visits:[], reviews:[], ledger:[], notes:[], blocked:{}, want:{}, standing:[], runs:[], photos:[], cards:[], tabs:{}, alerts:[]};
+  const n = {fam:[], contacts:[], events:[], arrivals:{}, tableReady:{}, visits:[], reviews:[], ledger:[], notes:[], blocked:{}, want:{}, standing:[], runs:[], games:[], photos:[], cards:[], tabs:{}, alerts:[]};
   n.fam = D.members.map(m => ({id:m.id, name:m.name, color:m.color || COLORS[0], email:m.email || "", phone:m.mobile || "", birthday:m.birthday || "", diet:m.diet || "",
     zelle:m.zelle || "", cashtag:m.cashtag || "", applepay:m.applepay || "", status:m.status}));
   n.contacts = D.contacts.map(c => ({id:c.id, name:c.name, relation:c.relation || "", email:c.email || "", phone:c.mobile || "", banned:c.banned, addedBy:c.added_by}));
@@ -962,6 +975,7 @@ async function pull(){
   D.want_to_try.forEach(w => n.want[w.restaurant_id] = {by:w.added_by, t:iso2ms(w.at)});
   n.standing = D.standing_dinners.map(x => ({id:x.id, label:x.label, weekday:x.weekday, nth:x.nth, time:hhmm(x.time), lead:x.lead_days, voteMin:x.vote_minutes, dress:x.dress, active:x.active, by:x.created_by}));
   n.runs = D.standing_runs.map(x => ({sid:x.standing_id, date:x.dinner_date, eventId:x.event_id}));
+  n.games = D.games.map(x => ({id:x.id, kind:x.kind, a:x.side_a, b:x.side_b, st:x.state, turn:x.turn, status:x.status, winner:x.winner, why:x.why || "", moves:x.moves, by:x.created_by, t:iso2ms(x.updated_at)}));
   const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
   const urls = {};
   if(paths.length){ const {data} = await sb.storage.from("media").createSignedUrls(paths, 6*3600); (data || []).forEach(u => { if(u.signedUrl) urls[u.path] = u.signedUrl; }); }
@@ -1014,7 +1028,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","media","cards","tabs","tab_tickets","tab_lines","alerts"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1032,7 +1046,7 @@ function redraw(){
   if(revealId && !ev(revealId)) closeReveal();
   if(tabId && !ev(tabId)) closeTab();
   if(inviteId && !ev(inviteId)) closeInvite();
-  render(); if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
+  render(); if(gView && wrap.classList.contains("open") && sheet.querySelector(".gboard")) drawGame(); if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
 
@@ -1796,6 +1810,7 @@ function vTable(){
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
+  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four and Checkers, one on one or couples${(st.games || []).some(g => g.status === "live" && gMySide(g) === g.turn) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
@@ -1873,7 +1888,8 @@ function sheetTips(){
     ["What I ordered","In the wrap-up, under your score, type what you ordered. It shows next to your score on the restaurant's page, and the next time the family dines there your dinner card says “Last time here, you had …”."],
     ["Question of the night","Every dinner card has a conversation starter: family memories, gratitude, faith. Go around the table. The next dinner gets a different one, and none repeats until all 60 have been asked. Tap “Another question” to change it on your phone."],
     ["Standing dinners","Richard can set a dinner that repeats, like the first Sunday of every month. At 9 AM, a few days before (he chooses how many), the family vote opens by itself with three choices from the Concierge, and every phone is told. Then it works like any vote: tap Start, vote, lock in."],
-    ["Year at the Table","From December 1 to January 15, Home shows “Your Year at the Table is ready”. Open it any time from Our Table. It counts the dinners we shared, our top-scored and most-visited places, the new places we tried, the dishes we remembered, and the best photos of the year."]
+    ["Year at the Table","From December 1 to January 15, Home shows “Your Year at the Table is ready”. Open it any time from Our Table. It counts the dinners we shared, our top-scored and most-visited places, the new places we tried, the dishes we remembered, and the best photos of the year."],
+    ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Tic-Tac-Toe, Connect Four and Checkers. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1909,6 +1925,7 @@ function guideBody(k){
     step(15, "Question of the night", `${pic("Open dinner card","primary")} and look for <b>💬 Question of the night</b>. Everyone at the dinner sees the same question. The family's next dinner gets the next one in the list, so two dinners in a row never share a question, and none repeats until all 60 have been used. ${pic("Another question","ghost")} swaps it on your phone only.`),
     step(16, "Standing dinners (host)", `${host} opens Host controls, finds <b>🔁 Standing dinners</b>, sets the name, <b>Which</b> (Every, First, Second, Third, Fourth or Last), the <b>Day</b>, the <b>Time</b>, when the <b>Vote opens</b> (2 to 14 days before) and the <b>Vote length</b>, and taps ${pic("Add standing dinner","primary")}. Each one shows when the next dinner is and when its vote opens. At 9 AM that day the vote opens by itself: three choices picked like the Concierge does (Want to Try first; nothing from the last 90 days, the Never Again list, closed places or bakeries), and everyone's bell rings. It can never open twice for the same date. ${pic("Pause")} stops it for now; ${pic("Delete","ghost")} removes it (votes already opened stay).`),
     step(17, "Year at the Table", `From December 1 to January 15, Home shows <b>🎄 Your Year at the Table is ready</b>; any time, tap ${pic("Our Table")} → <b>Year at the Table</b>. It reads only what the family already saved: <b>dinners shared</b> (each wrap-up), the <b>top-scored place</b> (everyone's 1 to 10 that year, averaged), the <b>most visited</b>, the <b>new places tried</b> (first visit ever that year), <b>dishes remembered</b>, and up to six <b>best photos</b> (approved photos from the highest-scored dinners). Tap a year chip to look back at an earlier year.`),
+    step(18, "Game Room", `Tap ${pic("Our Table")} → <b>🎲 Game Room</b>, or ${pic("🎲 Play while you wait")} on the dinner card. <b>Pass &amp; play on this phone:</b> tap ${pic("Tic-Tac-Toe")} ${pic("Connect Four")} or ${pic("Checkers")} and hand the phone back and forth (it isn't saved and doesn't count). <b>Play the family:</b> tap a ${pic("Checkers","wine")} button, choose your opponent (and partners, for couple against couple), and tap ${pic("Start Checkers","primary")}. Everyone is notified and plays from their own phone; your side moves first. In Checkers tap a piece, then a gold dot: a jump must be taken, you keep jumping while you can, and reaching the far row crowns a king ♛. The game is a draw after 40 moves each with no capture. ${pic("Resign","ghost")} gives the game away; ${pic("Play again","primary")} starts a rematch. Finished family games fill the <b>🏆 Family standings</b>.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1922,6 +1939,7 @@ function guideBody(k){
     step("H", "A question at the table", `Seated at Gus's, Jasmine opens ${pic("Open dinner card","primary")} and reads the <b>Question of the night</b> aloud: “What's a prayer God answered for you, big or small?” Everyone answers in turn. Zoey asks for a lighter one, so Jasmine taps ${pic("Another question","ghost")} and gets “What's the funniest thing that happened to you this week?”.`),
     step("I", "The first Sunday, every month", `${host} adds a standing dinner: “First Sunday Dinner”, First, Sunday, 5:30 PM, vote opens 6 days before. On the Monday before, at 9 AM, every bell rings: <b>“First Sunday Dinner on Sunday, November 1: the family vote is open. Tap to vote.”</b> The ballot already has three places, Acre first because Rosa saved it to Want to Try. Mario adds Char, Devonte taps ${pic("Start 10-minute vote","wine")}, and the family chooses.`),
     step("J", "Looking back in December", `On December 3 Home says <b>Your 2026 Year at the Table is ready</b>. Rosa opens it: 14 dinners shared, top-scored place Char at 9.2, most visited Gus's with 3 visits, 6 new places tried, 11 dishes remembered, and six photos from the best nights. She takes a screenshot to send to the family group.`),
+    step("L", "Couples at the checkerboard", `While the food comes, Mario taps ${pic("🎲 Play while you wait")} → ${pic("Checkers","wine")}, picks Rosa as his partner and Jasmine and Devonte as the other couple, and taps ${pic("Start Checkers","primary")}. Jasmine's phone buzzes: “Mario started Checkers with you.” Rosa makes Red's first move; Devonte answers for Black. Jasmine double-jumps and crowns a king ♛. The bell rings on every phone: <b>“Jasmine &amp; Devonte won Checkers (no moves left).”</b> The standings move them to the top.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -1955,17 +1973,21 @@ function guideBody(k){
     ["I don't see “📞 Booking options”", "It appears for the person who tapped “I'll book it”, so two people never call at once. Tap “I'll book it” first."],
     ["Booking options shows only Google Maps", "Google has no website or phone for that place. Open Google Maps; it shows how to reach them, and “Reserve a table” when they offer it."],
     ["The Website button opens the home page, not a booking page", "Google gives the restaurant's own website. Look for “Reservations” or “Book” on it, or call instead."],
+    ["“It's not your turn yet.”", "Wait for the other side's move; the board updates by itself."],
+    ["“The board just changed. Look again.”", "Your partner or opponent moved at the same moment. Look at the new board and move again."],
+    ["A checker won't move where I tap", "When any jump is possible you must jump, so only pieces that can jump are tappable. Mid-jump, the same piece must keep jumping."],
+    ["My pass & play game isn't in the standings", "Only family games (each on their own phone) count. Pass & play stays on one phone and isn't saved."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Play Spades, trivia or Family Feud yet: those come next</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2719,6 +2741,162 @@ function setDessert(eid, rid){
   if(rid){ alertAll(`${first(ME().name)} added dessert after ${e.title}: ${RBY[rid].name}.`, e.id); toast(`${RBY[rid].name} is dessert after`); }
   else toast("Dessert stop removed");
 }
+/* GAME RULES START */
+// Table of 7 Game Room rules (his order, 2026-10-17). ONE copy of the rules: the server (functions/games) checks
+// every move with it, and the app carries the identical text (index.html, between the GAME RULES markers) to draw
+// the board and show legal moves. tests/games_rules_test.mjs proves the rules and that both copies match.
+// Sides: 0 moves first, 1 second. A move is {i} (Tic-Tac-Toe square), {c} (Connect Four column) or {f,t} (Checkers).
+const GAMES = { ttt: "Tic-Tac-Toe", c4: "Connect Four", checkers: "Checkers" };
+function gameInit(kind){
+  if(kind === "ttt") return { b: Array(9).fill(null) };
+  if(kind === "c4") return { b: Array(42).fill(null) };
+  if(kind === "checkers"){
+    const b = Array(64).fill(null);
+    for(let i = 0; i < 64; i++){ const r = Math.floor(i / 8), c = i % 8; if((r + c) % 2 !== 1) continue;
+      if(r <= 2) b[i] = { s: 1, k: false }; else if(r >= 5) b[i] = { s: 0, k: false }; }
+    return { b, chain: null, quiet: 0 };
+  }
+  throw new Error("kind");
+}
+const TTT_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function ckSteps(p){ const dirs = []; if(p.s === 0 || p.k) dirs.push([-1,-1],[-1,1]); if(p.s === 1 || p.k) dirs.push([1,-1],[1,1]); return dirs; }
+const onB = (r, c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+function ckJumps(b, i){ const p = b[i], r = Math.floor(i / 8), c = i % 8, out = [];
+  for(const [dr, dc] of ckSteps(p)){ const mr = r + dr, mc = c + dc, tr = r + 2*dr, tc = c + 2*dc;
+    if(onB(tr, tc) && b[mr*8+mc] && b[mr*8+mc].s !== p.s && !b[tr*8+tc]) out.push({ f: i, t: tr*8+tc }); }
+  return out; }
+function ckSlides(b, i){ const p = b[i], r = Math.floor(i / 8), c = i % 8, out = [];
+  for(const [dr, dc] of ckSteps(p)){ const tr = r + dr, tc = c + dc; if(onB(tr, tc) && !b[tr*8+tc]) out.push({ f: i, t: tr*8+tc }); }
+  return out; }
+function gameLegal(kind, st, side){
+  if(kind === "ttt") return st.b.map((v, i) => v === null ? { i } : null).filter(Boolean);
+  if(kind === "c4") return [0,1,2,3,4,5,6].filter(c => st.b[c] === null).map(c => ({ c }));
+  if(kind === "checkers"){
+    if(st.chain != null) return ckJumps(st.b, st.chain);
+    let jumps = [], slides = [];
+    st.b.forEach((p, i) => { if(p && p.s === side){ jumps = jumps.concat(ckJumps(st.b, i)); slides = slides.concat(ckSlides(st.b, i)); } });
+    return jumps.length ? jumps : slides;      // a jump, when there is one, must be taken
+  }
+  return [];
+}
+const gSame = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+function c4Win(b, side){ const at = (r, c) => r >= 0 && r < 6 && c >= 0 && c < 7 && b[r*7+c] === side;
+  for(let r = 0; r < 6; r++) for(let c = 0; c < 7; c++) for(const [dr, dc] of [[0,1],[1,0],[1,1],[1,-1]])
+    if([0,1,2,3].every(k => at(r + k*dr, c + k*dc))) return true; return false; }
+// returns { st, turn, over } where over is null or { winner: 0 | 1 | 2 (draw), why }
+function gameApply(kind, st0, side, mv){
+  const legal = gameLegal(kind, st0, side);
+  const pick = kind === "ttt" ? { i: mv && mv.i } : kind === "c4" ? { c: mv && mv.c } : { f: mv && mv.f, t: mv && mv.t };
+  if(!legal.some(m => gSame(m, pick))) throw new Error("illegal");
+  const st = JSON.parse(JSON.stringify(st0)), other = 1 - side;
+  if(kind === "ttt"){
+    st.b[pick.i] = side;
+    if(TTT_LINES.some(l => l.every(i => st.b[i] === side))) return { st, turn: other, over: { winner: side, why: "three in a row" } };
+    if(st.b.every(v => v !== null)) return { st, turn: other, over: { winner: 2, why: "board full" } };
+    return { st, turn: other, over: null };
+  }
+  if(kind === "c4"){
+    let r = 5; while(st.b[r*7 + pick.c] !== null) r--;
+    st.b[r*7 + pick.c] = side;
+    if(c4Win(st.b, side)) return { st, turn: other, over: { winner: side, why: "four in a row" } };
+    if(st.b.every(v => v !== null)) return { st, turn: other, over: { winner: 2, why: "board full" } };
+    return { st, turn: other, over: null };
+  }
+  // checkers
+  const p = st.b[pick.f]; st.b[pick.f] = null; st.b[pick.t] = p;
+  const fr = Math.floor(pick.f / 8), tr = Math.floor(pick.t / 8), jumped = Math.abs(tr - fr) === 2;
+  if(jumped){ const mid = ((fr + tr) / 2) * 8 + ((pick.f % 8) + (pick.t % 8)) / 2; st.b[mid] = null; }
+  let crowned = false;
+  if(!p.k && ((p.s === 0 && tr === 0) || (p.s === 1 && tr === 7))){ p.k = true; crowned = true; }
+  st.quiet = jumped || crowned ? 0 : (st.quiet || 0) + 1;
+  if(jumped && !crowned && ckJumps(st.b, pick.t).length){ st.chain = pick.t; return { st, turn: side, over: null }; }  // keep jumping
+  st.chain = null;
+  if(!gameLegal(kind, st, other).length) return { st, turn: other, over: { winner: side, why: "no moves left" } };
+  if(st.quiet >= 80) return { st, turn: other, over: { winner: 2, why: "40 moves each without a capture" } };
+  return { st, turn: other, over: null };
+}
+/* GAME RULES END */
+/* Game Room (his order, 2026-10-17). Pass & play keeps the game on this phone only. A family game lives on the
+   server: every move goes through functions/games, which checks the player, the turn and the move with the very same
+   rules above, so the board on every phone agrees and no one can move for someone else. */
+const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"] };
+let gView = null;            // {local:true, kind, st, turn, over, names} or {id} for a family game
+let gSel = null;             // checkers: the piece picked up
+const gMySide = g => (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
+const gNames = ids => (ids || []).map(id => first(F(id)?.name || "Someone")).join(" & ");
+async function gamesCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/games", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const gWhyNot = c => ({not_your_turn:"It's not your turn yet.", stale:"The board just changed. Look again.", illegal:"That move isn't allowed.", over:"That game is over.",
+  not_player:"Only the players can move.", seats:"Everyone has to be an active family seat.", sides:"Pick one or two players for each side.", offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+function gStandings(){
+  const w = {}; (st.games || []).filter(g => g.status === "done").forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
+    if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
+  return Object.entries(w).sort((x, y) => y[1].w - x[1].w || y[1].d - x[1].d);
+}
+function sheetGames(){
+  gView = null; gSel = null;
+  const live = (st.games || []).filter(g => g.status === "live").sort((a, b) => (gMySide(b) === b.turn) - (gMySide(a) === a.turn) || b.t - a.t);
+  const done = (st.games || []).filter(g => g.status === "done").sort((a, b) => b.t - a.t).slice(0, 5);
+  const table = gStandings();
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Play at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="lbl">PASS &amp; PLAY ON THIS PHONE</div>
+    <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn" data-act="g-local" data-k="${k}">${l}</button>`).join("")}</div>
+    <div class="lbl">PLAY THE FAMILY · EACH ON THEIR OWN PHONE</div>
+    <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn wine" data-act="g-new" data-k="${k}">${l}</button>`).join("")}</div>
+    ${live.length ? `<div class="lbl">GAMES IN PLAY</div>${live.map(g => { const me = gMySide(g), mine = me === g.turn;
+      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">🎲</span><span><b>${GAMES[g.kind]} · ${esc(gNames(g.a))} vs ${esc(gNames(g.b))}</b><small>${mine ? "Your move!" : me < 0 ? "Watching" : `Waiting on ${esc(gNames(g.turn === 0 ? g.a : g.b))}`}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
+    <div class="lbl">🏆 FAMILY STANDINGS</div>
+    ${table.length ? table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${i + 1}. ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("") : `<div class="empty">No family games finished yet. Pass &amp; play games don't count.</div>`}
+    ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GAMES[g.kind]}: ${g.winner === 2 ? `${esc(gNames(g.a))} and ${esc(gNames(g.b))} drew` : `${esc(gNames(g.winner === 0 ? g.a : g.b))} beat ${esc(gNames(g.winner === 0 ? g.b : g.a))}`} · ${esc(g.why)}</div>`).join("")}` : ""}`);
+}
+function sheetGameNew(kind){
+  const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
+  const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">New family game</div><h2>${GAMES[kind]}</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Each player plays on their own phone. Your side moves first (${GLOOK[kind][0]}). Couples take turns for their side.</p>
+    <div class="field"><label for="gn-a2">Your partner (optional)</label><select class="input" id="gn-a2"><option value="">Just me</option>${others.map(f => opt(f.id)).join("")}</select></div>
+    <div class="field"><label for="gn-b1">Opponent</label><select class="input" id="gn-b1">${others.map((f, i) => opt(f.id, i === 0)).join("")}</select></div>
+    <div class="field"><label for="gn-b2">Opponent's partner (optional)</label><select class="input" id="gn-b2"><option value="">No partner</option>${others.map(f => opt(f.id)).join("")}</select></div>
+    <button class="btn primary block" data-act="g-start" data-k="${kind}">Start ${GAMES[kind]}</button>
+    <p class="small muted" style="margin:0">Everyone in the game gets a notification.</p>`);
+}
+function gCurrent(){
+  if(!gView) return null;
+  if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.turn, local:true};
+  const g = (st.games || []).find(x => x.id === gView.id); if(!g) return null;
+  return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gNames(g.a), gNames(g.b)], me:gMySide(g), moves:g.moves, id:g.id};
+}
+function drawGame(){
+  const g = gCurrent(); if(!g){ sheetGames(); return; }
+  const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
+  const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
+  const disc = s => s === null || s === undefined ? "" : g.kind === "ttt" ? look[s] : `<span class="disc p${s}"></span>`;
+  let board = "";
+  if(g.kind === "ttt") board = `<div class="gboard ttt">${g.st.b.map((v, i) => `<button data-act="g-move" data-m='${JSON.stringify({i})}' ${myTurn && v === null ? "" : "disabled"} aria-label="Square ${i + 1}">${disc(v)}</button>`).join("")}</div>`;
+  if(g.kind === "c4") board = `<div class="gboard c4">${g.st.b.map((v, i) => `<button data-act="g-move" data-m='${JSON.stringify({c:i % 7})}' ${myTurn && g.st.b[i % 7] === null ? "" : "disabled"} aria-label="Column ${i % 7 + 1}">${disc(v)}</button>`).join("")}</div>`;
+  if(g.kind === "checkers"){
+    const froms = new Set(legal.map(m => m.f)), tos = new Set(legal.filter(m => m.f === gSel).map(m => m.t));
+    board = `<div class="gboard ck">${g.st.b.map((p, i) => { const dk = (Math.floor(i / 8) + i % 8) % 2 === 1;
+      return `<button class="${dk ? "dk" : ""} ${gSel === i ? "sel" : ""} ${tos.has(i) ? "to" : ""}" data-act="g-ck" data-i="${i}" ${dk && (froms.has(i) || tos.has(i)) ? "" : "disabled"} aria-label="Square ${i}">${p ? `<span class="disc p${p.s}">${p.k ? "♛" : ""}</span>` : ""}</button>`; }).join("")}</div>`;
+  }
+  const status = g.status === "done" ? (g.winner === 2 ? `🤝 A draw (${esc(g.why)})` : `🏆 ${esc(g.names[g.winner])} won (${esc(g.why)})`)
+    : myTurn ? `Your move, ${look[g.turn]}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping" : ""}${g.local ? ` (${esc(g.names[g.turn])})` : ""}` : `Waiting on ${esc(g.names[g.turn])} (${look[g.turn]})`;
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">${GAMES[g.kind]}${g.local ? " · pass & play" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">(${look[0]})</span> vs ${esc(g.names[1])} <span class="muted">(${look[1]})</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
+    <div class="card" style="text-align:center;font-weight:700">${status}</div>
+    ${board}
+    <div class="actions" style="justify-content:center">${g.status === "live" ? (g.local || g.me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>
+    ${g.kind === "checkers" ? `<p class="small muted" style="margin:0">Tap a piece, then a dot. A jump must be taken; keep jumping when you can. Reach the far row to be crowned ♛.</p>` : ""}`);
+}
+async function gMove(mv){
+  const g = gCurrent(); if(!g || g.status !== "live") return;
+  if(g.local){ try { const r = gameApply(g.kind, gView.st, gView.turn, mv); gView.st = r.st; gView.turn = r.turn; gView.over = r.over; } catch { toast("That move isn't allowed."); } gSel = null; drawGame(); return; }
+  const d = await gamesCall({action:"move", id:g.id, mv, at:g.moves}); gSel = null;
+  if(!d.ok) toast(gWhyNot(d.code));
+  await refresh(true); drawGame();
+}
 /* Booking button (his order, 2026-10-17): after "I'll book it" (so no one double-books), the booker gets the
    restaurant's own website, phone and Google Maps page, fetched live from Google ("More from Google", nothing
    stored). The app never books; the booker finishes it there and taps Mark booked. */
@@ -2800,6 +2978,7 @@ function drawReveal(){
       <button class="btn" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button>
       <button class="btn wine" data-act="tab" data-id="${e.id}">The Tab · one check</button>
       <button class="btn" data-act="card-open" data-id="${e.id}">Send a card</button>
+      <button class="btn" data-act="games">🎲 Play while you wait</button>
     </div>
     <section class="card"><div class="lbl">💬 QUESTION OF THE NIGHT</div><b style="font-family:var(--f-display);font-size:20px;line-height:1.3">${esc(questionFor(e))}</b>
       <span class="small muted">Go around the table. Everyone answers, even the youngest.</span>
@@ -2999,6 +3178,25 @@ document.addEventListener("click", e => {
       break; }
     case "want": toggleWant(b.dataset.rid); break;
     case "year": sheetYear(+b.dataset.y); break;
+    case "games": sheetGames(); break;
+    case "g-local": { const k = b.dataset.k; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["Player 1", "Player 2"]}; gSel = null; drawGame(); break; }
+    case "g-new": sheetGameNew(b.dataset.k); break;
+    case "g-start": { const v = x => document.getElementById(x).value, A = [st.me, v("gn-a2")].filter(Boolean), B = [v("gn-b1"), v("gn-b2")].filter(Boolean);
+      if(new Set([...A, ...B]).size !== A.length + B.length){ toast("Each person can play on one side only."); return; }
+      b.disabled = true; b.textContent = "Starting…";
+      gamesCall({action:"new", kind:b.dataset.k, sideA:A, sideB:B}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start"; toast(gWhyNot(d.code)); return; }
+        await refresh(true); gView = {id:d.game.id}; gSel = null; drawGame(); toast("Game on! Everyone's been told."); }); break; }
+    case "g-open": gView = {id}; gSel = null; drawGame(); break;
+    case "g-move": gMove(JSON.parse(b.dataset.m)); break;
+    case "g-ck": { const i = +b.dataset.i, g = gCurrent(); if(!g) break; const legal = gameLegal(g.kind, g.st, g.turn);
+      if(gSel !== null && legal.some(m => m.f === gSel && m.t === i)){ gMove({f:gSel, t:i}); break; }
+      gSel = legal.some(m => m.f === i) ? i : null; drawGame(); break; }
+    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(`Resign this ${GAMES[g.kind]} game?`)) break;
+      if(g.local){ gView.over = {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
+      gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
+    case "g-again": { const g = gCurrent(); if(!g) break; if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gSel = null; drawGame(); break; }
+      const old = st.games.find(x => x.id === g.id); gamesCall({action:"new", kind:g.kind, sideA:gMySide(old) === 1 ? old.b : old.a, sideB:gMySide(old) === 1 ? old.a : old.b}).then(async d => {
+        if(!d.ok){ toast(gWhyNot(d.code)); return; } await refresh(true); gView = {id:d.game.id}; drawGame(); }); break; }
     case "book-opts": { const e2 = ev(id); if(e2) bookingOptions(e2); break; }
     case "q-next": qOffset[id] = (qOffset[id] || 0) + 1; drawReveal(); break;
     case "g-want": { const pid = b.dataset.pid; b.disabled = true; b.textContent = "Saving…";
