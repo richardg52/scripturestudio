@@ -187,6 +187,13 @@ s, b, _ = rest("DELETE", "want_to_try?family_id=eq.zztest&restaurant_id=eq.gus",
 rest("DELETE", "want_to_try?family_id=eq.zztest&restaurant_id=eq.acre", tok_h)
 rest("POST", "want_to_try", tok_m, {"family_id": "zztest", "restaurant_id": "rendezvous", "added_by": "z2"})
 s, b, _ = rest("DELETE", "want_to_try?family_id=eq.zztest&restaurant_id=eq.rendezvous", tok_m, None, "return=representation"); check("a member takes their own saved place off", s < 300 and len(b) == 1, (s, b))
+# --- What I ordered (2026-10-17): the dish lives on the reviewer's own review ---
+s, b, _ = rest("POST", "reviews", tok_m, {"id": "zz-rv1", "family_id": "zztest", "restaurant_id": "gus", "member_id": "z2", "date": "2030-01-06", "overall": 9, "text": "Great night", "ordered": "Three-piece dark, spicy"}, "return=representation"); check("a member saves what they ordered with their review", s < 300 and b and b[0]["ordered"] == "Three-piece dark, spicy", (s, b))
+s, b, _ = rest("POST", "reviews", tok_m, {"id": "zz-rv2", "family_id": "zztest", "restaurant_id": "gus", "member_id": "z1", "date": "2030-01-06", "overall": 2, "ordered": "Words put in his mouth"}); check("a member cannot write a review or order in someone else's name", s >= 400, (s, b))
+s, b, _ = rest("POST", "reviews", tok_h, {"id": "zz-rv3", "family_id": "zztest", "restaurant_id": "acre", "member_id": "z1", "date": "2030-01-06", "overall": 8, "ordered": "Pork chop"})
+s, b, _ = rest("PATCH", "reviews?id=eq.zz-rv3", tok_m, {"ordered": "Changed by someone else"}, "return=representation"); check("a member cannot change someone else's order line", s >= 400 or b == [], (s, b))
+s, b, _ = rest("POST", "reviews", tok_m, {"id": "zz-rv4", "family_id": "zztest", "restaurant_id": "acre", "member_id": "z2", "date": "2030-01-07", "overall": 7, "ordered": "x" * 201}); check("an order line longer than 200 letters is refused", s >= 400, (s, b))
+s, b, _ = rest("GET", "reviews?id=eq.zz-rv1&select=ordered", tok_h); check("the family reads the order line", b == [{"ordered": "Three-piece dark, spicy"}], b)
 s, b, _ = rest("PATCH", "events?id=eq.zz-ev2", tok_m, {"status": "done"}, "return=representation"); check("anyone at the dinner may mark it done after the wrap-up", s == 200 and b and b[0]["status"] == "done", (s, b))
 s, b, _ = rest("POST", "rpc/radar_claim", tok_m, {"p_key": "zz-radar-" + pin_h}); s2, b2, _ = rest("POST", "rpc/radar_claim", tok_h, {"p_key": "zz-radar-" + pin_h})
 check("a birthday reminder is claimed by one phone only", b is True and b2 is False, (b, b2))
