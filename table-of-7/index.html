@@ -443,7 +443,7 @@ const COLORS = ["#9a3343","#2f6b5a","#8a6526","#4a4f8c","#8a4a6e","#3d6f8a","#6b
 // [id, name, city, cuisines, neighborhood, address, price 1-4, flags, blurb]
 const RAW = [
  ["rendezvous","Charlie Vergos' Rendezvous","Memphis",["BBQ"],"Downtown","52 S 2nd St, Memphis, TN 38103",2,[],"Charcoal-broiled dry-rub ribs down a downtown alley since 1948."],
- ["central-bbq","Central BBQ","Memphis",["BBQ"],"Midtown","2249 Central Ave, Memphis, TN 38104",2,[],"Hickory-smoked ribs, pulled pork and the city's favorite BBQ nachos."],
+ ["central-bbq","Central BBQ","Memphis",["BBQ"],"Several locations","",2,[],"Hickory-smoked ribs, pulled pork and the city's favorite BBQ nachos."],
  ["cozy-corner","Cozy Corner","Memphis",["BBQ"],"Uptown","735 N Parkway, Memphis, TN 38105",1,[],"Barbecued Cornish hens and ribs from a family-run pit."],
  ["four-way","The Four Way","Memphis",["Soul"],"South Memphis","998 Mississippi Blvd, Memphis, TN 38126",1,[],"Soul food landmark since 1946 — fried catfish, greens, peach cobbler."],
  ["alcenias","Alcenia's","Memphis",["Soul"],"Pinch District","317 N Main St, Memphis, TN 38103",1,[],"Comfort food served with a hug. Save room for the chess pie."],
@@ -456,32 +456,32 @@ const RAW = [
  ["erling-jensen","Erling Jensen","Memphis",["Fine Dining"],"East Memphis","1044 S Yates Rd, Memphis, TN 38119",4,[],"Chef-driven tasting menus and game dishes in a quiet house."],
  ["amik","Andrew Michael Italian Kitchen","Memphis",["Italian"],"East Memphis","712 W Brookhaven Cir, Memphis, TN 38117",3,[],"Handmade pasta, Southern accent. A family favorite for a reason."],
  ["hog-hominy","Hog & Hominy","Memphis",["Italian","Southern"],"East Memphis","707 W Brookhaven Cir, Memphis, TN 38117",3,[],"Wood-fired pizza and Southern-Italian plates, plus a bocce court."],
- ["bari","Bari Ristorante e Enoteca","Memphis",["Italian"],"Midtown","22 S Cooper St, Memphis, TN 38104",3,[],"Puglian seafood and an all-Italian wine list."],
+ ["bari","Bari Ristorante e Enoteca","Memphis",["Italian"],"Midtown","",3,[],"Puglian seafood and an all-Italian wine list."],
  ["libro","Libro at Novel","Memphis",["Italian"],"East Memphis","387 Perkins Ext, Memphis, TN 38117",2,[],"Bright café-trattoria inside Novel bookstore — great for brunch."],
  ["colettas","Coletta's","Memphis",["Italian"],"South Parkway","1063 S Parkway E, Memphis, TN 38106",1,[],"Old-school red sauce and the original BBQ pizza."],
  ["ecco","Ecco on Overton Park","Memphis",["Mediterranean"],"Midtown","1585 Overton Park Ave, Memphis, TN 38112",2,[],"Neighborhood Mediterranean bistro with a charming patio."],
- ["jims-place","Jim's Place Grille","Memphis",["Greek","American"],"East Memphis","518 Perkins Ext, Memphis, TN 38117",3,[],"Family-owned since 1921 — Greek-style fish and steaks."],
+ ["jims-place","Jim's Place Grille","Memphis",["Greek","American"],"Collierville","",3,[],"Family-owned since 1921 — Greek-style fish and steaks."],
  ["india-palace","India Palace","Memphis",["Indian"],"Midtown","1720 Poplar Ave, Memphis, TN 38104",2,[],"Northern Indian classics; tandoori and a generous lunch buffet."],
- ["bhan-thai","Bhan Thai","Memphis",["Thai"],"Midtown","1324 Peabody Ave, Memphis, TN 38104",2,[],"Thai in a restored Midtown house with a lantern-lit patio."],
- ["saigon-le","Saigon Le","Memphis",["Vietnamese"],"Midtown","51 N Cleveland St, Memphis, TN 38104",1,[],"Long-loved Vietnamese and Chinese — pho, vermicelli bowls."],
+ ["bhan-thai","Bhan Thai","Memphis",["Thai"],"Midtown","1324 Peabody Ave, Memphis, TN 38104",2,["gone"],"Thai in a restored Midtown house with a lantern-lit patio."],
+ ["saigon-le","Saigon Le","Memphis",["Vietnamese"],"Midtown","51 N Cleveland St, Memphis, TN 38104",1,["gone"],"Long-loved Vietnamese and Chinese — pho, vermicelli bowls."],
  ["paulettes","Paulette's","Memphis",["Continental"],"Harbor Town","50 Harbor Town Square, Memphis, TN 38103",3,[],"Crêpes, filets and the famous popovers with strawberry butter."],
  ["itta-bena","Itta Bena","Memphis",["Southern"],"Beale Street","145 Beale St, Memphis, TN 38103",3,[],"Speakeasy-style Delta dining upstairs from B.B. King's."],
- ["felicia","Felicia Suzanne's","Memphis",["Southern"],"Downtown","80 Monroe Ave, Memphis, TN 38103",3,[],"Elevated Southern cooking with New Orleans soul."],
+ ["felicia","Felicia Suzanne's","Memphis",["Southern"],"Downtown","",3,[],"Elevated Southern cooking with New Orleans soul."],
  ["acre","Acre","Memphis",["Southern","American"],"East Memphis","690 S Perkins Rd, Memphis, TN 38117",3,[],"Modern Southern tasting-forward menu, seasonal and local."],
  ["flight","Flight Restaurant & Wine Bar","Memphis",["American"],"Downtown","39 S Main St, Memphis, TN 38103",3,[],"Order in 'flights' of three — wine, small plates, desserts."],
  ["majestic","The Majestic Grille","Memphis",["American"],"Downtown","145 S Main St, Memphis, TN 38103",2,[],"1913 silent-movie house turned grill; silent films on the wall."],
- ["interim","Interim","Memphis",["American"],"East Memphis","5040 Sanderlin Ave, Memphis, TN 38117",3,[],"Polished neighborhood bistro with a strong Sunday brunch."],
+ ["interim","Interim","Memphis",["American"],"East Memphis","5040 Sanderlin Ave, Memphis, TN 38117",3,["gone"],"Polished neighborhood bistro with a strong Sunday brunch."],
  ["owen-brennans","Owen Brennan's","Memphis",["Creole"],"East Memphis","6150 Poplar Ave, Memphis, TN 38119",3,[],"New Orleans Creole and a jazz brunch on Sundays."],
- ["second-line","The Second Line","Memphis",["Creole"],"Midtown","2144 Monroe Ave, Memphis, TN 38104",2,[],"Casual po'boys, BBQ shrimp and beignets."],
+ ["second-line","The Second Line","Memphis",["Creole"],"East Memphis","",2,[],"Casual po'boys, BBQ shrimp and beignets."],
  ["beauty-shop","The Beauty Shop","Memphis",["Eclectic"],"Cooper-Young","966 S Cooper St, Memphis, TN 38104",2,[],"Global menu served in a former 1960s beauty salon — dryer chairs and all."],
- ["mahogany","Mahogany Memphis","Memphis",["Southern","Fine Dining"],"Poplar Corridor","Poplar Ave, Memphis, TN",3,["new"],"Upscale Southern supper club — newer on the scene."],
+ ["mahogany","Mahogany Memphis","Memphis",["Southern","Fine Dining"],"Harbor Town","",3,["new"],"Upscale Southern supper club — newer on the scene."],
  // Memphis — steak & grill (casual to high end). Empty address = several locations; maps finds the nearest.
  ["firebirds","Firebirds Wood Fired Grill","Memphis",["Steak","American"],"Several locations","",2,["lunch"],"Wood-fired steaks, seafood and a lodge-style room. A step up from casual without the big bill."],
  ["longhorn","LongHorn Steakhouse","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Dependable grilled steaks at an easy price. Good with a big group."],
  ["coltons","Colton's Steak House & Grill","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Hand-cut steaks and warm rolls with honey butter."],
  ["texas-roadhouse","Texas Roadhouse","Memphis",["Steak","Casual"],"Several locations","",2,[],"Fresh-baked rolls, hand-cut steaks and a lively room."],
  ["outback","Outback Steakhouse","Memphis",["Steak","Casual"],"Several locations","",2,["lunch"],"Bloomin' Onion and steak dinners that work for every age."],
- ["houstons","Houston's","Memphis",["American","Steak"],"East Memphis","5000 Poplar Ave, Memphis, TN 38117",3,["lunch"],"Classic American: spinach dip, prime rib and a famous burger."],
+ ["houstons","Houston's","Memphis",["American","Steak"],"East Memphis","5000 Poplar Ave, Memphis, TN 38117",3,["gone","lunch"],"Classic American: spinach dip, prime rib and a famous burger."],
  ["seasons52","Seasons 52","Memphis",["American"],"East Memphis","",3,["lunch"],"Seasonal fresh grill with a deep wine-by-the-glass list."],
  ["flemings","Fleming's Prime Steakhouse","Memphis",["Steak","Fine Dining"],"East Memphis","",4,[],"Prime steaks and a big wine list. Built for the high-end night."],
  // casual family
@@ -515,7 +515,7 @@ const RAW = [
  ["sunrise","Sunrise Memphis","Memphis",["Breakfast"],"Downtown","670 Jefferson Ave, Memphis, TN 38105",1,["breakfast","lunch","nodinner"],"Big Southern breakfasts and biscuits."],
  ["cafe-eclectic","Café Eclectic","Memphis",["Breakfast","American"],"Midtown","603 N McLean Blvd, Memphis, TN 38107",1,["breakfast","lunch"],"Neighborhood café for brunch, sandwiches and pastries."],
  ["first-watch","First Watch","Memphis",["Breakfast","Casual"],"Several locations","",1,["breakfast","lunch","nodinner"],"Daytime menu: pancakes, bowls and fresh juice."],
- ["blue-plate","Blue Plate Cafe","Memphis",["Breakfast","Southern"],"East Memphis","",1,["breakfast","lunch"],"Country breakfasts and Southern plate lunches."],
+ ["blue-plate","Blue Plate Cafe","Memphis",["Breakfast","Southern"],"East Memphis","",1,["breakfast","gone","lunch"],"Country breakfasts and Southern plate lunches."],
  ["husk-nash","Husk","Nashville",["Southern"],"Rutledge Hill","37 Rutledge St, Nashville, TN 37210",3,[],"Sean Brock's ingredient-driven Southern in a historic mansion."],
  ["kayne-prime","Kayne Prime","Nashville",["Steak"],"The Gulch","1103 McGavock St, Nashville, TN 37203",4,[],"Modern steakhouse with playful sides."],
  ["rolf","Rolf and Daughters","Nashville",["Italian"],"Germantown","700 Taylor St, Nashville, TN 37208",3,[],"Pasta-centric, communal tables, great energy."],
@@ -538,8 +538,11 @@ const RAW = [
  ["republique","République","Los Angeles",["French"],"Mid-City","624 S La Brea Ave, Los Angeles, CA 90036",3,[],"French bistro in a 1920s Charlie Chaplin-built hall."],
  ["bavel","Bavel","Los Angeles",["Mediterranean"],"Arts District","500 Mateo St, Los Angeles, CA 90013",3,[],"Middle Eastern hearth cooking."]
 ];
-const R = RAW.map(([id,name,city,cuisine,hood,addr,price,flags,blurb]) => ({id,name,city,cuisine,hood,addr,price,flags,blurb}));
-const RBY = Object.fromEntries(R.map(r => [r.id, r]));
+/* Checked against Google 2026-10-16: places Google no longer lists carry the "gone" flag. They are left
+   out of every list and pick, and stay known by name for past visits, reviews and payments. */
+const ALL_R = RAW.map(([id,name,city,cuisine,hood,addr,price,flags,blurb]) => ({id,name,city,cuisine,hood,addr,price,flags,blurb}));
+const R = ALL_R.filter(r => !r.flags.includes("gone"));
+const RBY = Object.fromEntries(ALL_R.map(r => [r.id, r]));
 /* Google restaurants. Google's terms let us keep only a restaurant's Place ID, so a Google pick is
    saved as "g:<place id>" and its name, address and details are fetched live through our server
    (functions/places) and held in this phone's memory for the session only. */
@@ -1005,7 +1008,7 @@ const ago = t => { const m = Math.round((Date.now() - t)/60000); return m < 1 ? 
 function sheetAlerts(){
   const mine = st.alerts.filter(a => a.to === st.me).sort((a,b) => b.t - a.t).slice(0,60);
   openSheet(`<div class="sheet-head"><h2>Alerts</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:0">On the live app these arrive as notifications on ${esc(first(ME().name))}'s phone.</p>
+    <p class="small muted" style="margin:0">Turn on notifications (tap your initial) and these reach ${esc(first(ME().name))}'s lock screen too.</p>
     <div>${mine.map(a => `<button class="alert-row ${a.read?"":"unread"}" data-act="alert-go" data-id="${a.eventId||""}"><span class="ic" style="color:var(--brass)">${I.bell}</span><span><b style="font-weight:600">${esc(a.text)}</b><br><small>${ago(a.t)}</small></span></button>`).join("") || `<div class="empty">You're all caught up.</div>`}</div>`);
   mine.forEach(a => a.read = true); save(); renderTabs();
 }
@@ -1611,6 +1614,7 @@ function sheetTips(){
     ["Signing in","Type your full name and your 4-digit PIN. The first time, you create your PIN. Five wrong tries locks your name for 5 minutes on every phone. Tap your initial (top right) to lock the app, sign in as someone else, or change your PIN (you'll need your current one). Forgot it? Richard can reset it in Host controls."],
     ["One table for everyone","Votes, invitations, check-ins, photos, alerts and The Tab show on every family phone the moment someone taps. Nothing about the family is kept on your phone: lock the app and it's gone until you sign in again."],
     ["Every restaurant, from Google","In Explore, or under your choices when you plan, type what you want (Pappadeaux, hibachi, soul food, seafood) and pick a city. Google lists every match in that area, every location of a chain. Tap More from Google for price, rating, hours and phone, and Plan here or Add to choices to use it. It's free: if the family uses up this month's free searches, it rests until the 1st."],
+    ["Notifications","Tap your initial (top right) → Turn on notifications, and allow them when your phone asks. On iPhone, first add Table of 7 to your Home Screen (Share → Add to Home Screen) and open it from there. Then votes, invitations, check-ins, tickets and receipts reach your lock screen even when the app is closed."],
     ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
     ["The live vote","When you make a family vote, choose how long it runs: 5, 10, 15, 20, 30 or 60 minutes (10 if you don't choose). Tap “Start vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
     ["Welcome to dinner","When the vote closes, the winner opens full screen with directions, the menu and tonight's highlights."],
@@ -1637,8 +1641,52 @@ function sheetSeat(){
     <button class="btn primary block" data-act="app-lock">Lock the app</button>
     <button class="btn block" data-act="lock-switch">Sign in as someone else</button>
     <button class="btn ghost block" data-act="pin-change">Change my PIN</button>
-    <p class="small muted" style="margin:0">The app also locks itself after 10 minutes away.</p>`);
+    <p class="small muted" style="margin:0">The app also locks itself after 10 minutes away.</p>
+    <div class="card" style="gap:8px"><div class="lbl">NOTIFICATIONS ON THIS PHONE</div><div id="push-state" class="small muted">Checking…</div><div id="push-btns" class="actions"></div></div>`);
+  pushPanel();
 }
+/* Lock-screen notifications. Every alert the app writes is also sent to the phones its person has
+   turned on (server: functions/push). iPhone allows this only for apps added to the Home Screen. */
+const pushOK = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent);
+const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const b64u = s => { const p = "=".repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from([...b].map(c => c.charCodeAt(0))); };
+async function pushCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/push", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+async function pushPanel(){
+  const stEl = document.getElementById("push-state"), bEl = document.getElementById("push-btns"); if(!stEl) return;
+  const say = (t, btns = "") => { stEl.textContent = t; bEl.innerHTML = btns; };
+  if(!pushOK()){
+    if(isIOS() && !isStandalone()) return say("On iPhone, notifications work once Table of 7 is on your Home Screen: tap Share (the square with the arrow), then Add to Home Screen. Open Table of 7 from the Home Screen and come back here.");
+    return say("This browser can't show notifications. On iPhone, add Table of 7 to your Home Screen first.");
+  }
+  if(Notification.permission === "denied") return say("Notifications are blocked for Table of 7 on this phone. Turn them on in your phone's Settings, then come back here.");
+  const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription();
+  if(sub) say("On. Votes, invitations, check-ins and The Tab reach this phone even when the app is closed.", `<button class="btn sm" data-act="push-test">Send me a test</button><button class="btn sm ghost" data-act="push-off">Turn off</button>`);
+  else say("Off. Turn on to hear about votes, invitations, check-ins and The Tab even when the app is closed.", `<button class="btn sm primary" data-act="push-on">Turn on notifications</button>`);
+}
+async function pushOn(){
+  const perm = await Notification.requestPermission();
+  if(perm !== "granted"){ toast("Notifications weren't allowed on this phone"); pushPanel(); return; }
+  const k = await pushCall({action:"key"});
+  if(!k.ok){ toast("Can't reach the table right now. Try again."); return; }
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(k.key)});
+  const j = sub.toJSON();
+  const {error} = await sb.from("push_subscriptions").upsert({member_id:st.me, endpoint:j.endpoint, keys:j.keys, user_agent:navigator.userAgent.slice(0, 200)}, {onConflict:"endpoint"});
+  if(error){ await sub.unsubscribe(); toast("Couldn't turn notifications on. Try again."); pushPanel(); return; }
+  await pushCall({action:"test"});
+  toast("Notifications are on. A test is on its way."); pushPanel();
+}
+async function pushOff(){
+  const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription();
+  if(sub){ await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint); await sub.unsubscribe(); }
+  toast("Notifications are off on this phone"); pushPanel();
+}
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 function sheetPinChange(){
   openSheet(`<div class="sheet-head"><h2>Change my PIN</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="field"><label for="pc-old">Your current PIN</label><input class="input pin" id="pc-old" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="••••"></div>
@@ -2375,6 +2423,9 @@ document.addEventListener("click", e => {
     case "app-lock": lockApp(); break;
     case "lock-switch": st.lastName = ""; save(); lockApp(); break;
     case "pin-change": sheetPinChange(); break;
+    case "push-on": b.disabled = true; pushOn().catch(() => { toast("Couldn't turn notifications on. Try again."); pushPanel(); }); break;
+    case "push-off": b.disabled = true; pushOff(); break;
+    case "push-test": b.disabled = true; pushCall({action:"test"}).then(() => { toast("Test sent. It should arrive in a moment."); b.disabled = false; }); break;
     case "pin-change-go": pinChangeGo(); break;
     case "host-pin": sb.rpc("host_reset_pin", {p_member:id}).then(({data}) => {
         if(data?.ok){ pinSet[id] = false; drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); }
