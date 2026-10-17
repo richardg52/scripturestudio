@@ -40,7 +40,7 @@ Your host soundboard. Open this in Chrome on event day. Drag and drop MP3 files 
 
 ### Key Links
 - Book Society page: https://scripturestudio.app/book-society/
-- Token generator (admin): https://scripturestudio.netlify.app/admin
+- Token generator (admin): RETIRED 2026-10-16 — the May 23 session is over and its links expired. Do not reuse its old fallback password anywhere; it remains readable in this public repo's history.
 - Daily.co room: https://scripturestudio.daily.co/book-society
 - Main site book section: https://scripturestudio.app#book
 
