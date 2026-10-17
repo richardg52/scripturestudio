@@ -1593,7 +1593,7 @@ function vTable(){
   </section>
   <section class="card">
     <p class="small muted" style="margin:0">You've written ${myReviews} review${myReviews===1?"":"s"}.</p>
-    <div class="actions"><button class="btn sm" data-act="tips">Quick tip guide</button></div>
+    <div class="actions"><button class="btn sm" data-act="tips">Guide: tips, manual, troubleshooting</button></div>
   </section>`;
 }
 function personRow(kind, p){
@@ -1633,8 +1633,65 @@ function sheetTips(){
     ["Concierge","On the night, open Concierge & tip for wine ideas, a tax-aware bill splitter and a tip based on how the service felt."],
     ["Wrap up","After dinner, rate six things (food, service, price, selection, cleanliness, location), say who paid, and post a moment for the family."]
   ];
-  openSheet(`<div class="sheet-head"><h2>Quick tip guide</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    ${tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("")}`);
+  const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
+  const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Table of 7 guide</div><h2>${part[1]} ${part[2]}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="chips" role="tablist" aria-label="Guide parts" style="flex-wrap:wrap">${GUIDE_PARTS.map(([k, ic, l]) => `<button class="chip" role="tab" data-act="guide" data-k="${k}" aria-pressed="${k === part[0]}">${ic} ${l}</button>`).join("")}</div>
+    ${body}`);
+}
+/* The six-part guide (his standing order, 2026-10-12): tips, manual, voice, sample conversations,
+   troubleshooting, can & cannot. Every line is read off this file; the button pictures are the app's
+   own buttons, drawn with the same styles and made untappable. */
+let guidePart = "tips";
+const GUIDE_PARTS = [["tips","💡","Quick tips"],["manual","📖","Manual"],["voice","🎙️","Voice"],["talk","💬","Sample conversations"],["fix","🛠️","Troubleshooting"],["can","✅","Can & cannot"]];
+const pic = (label, cls = "") => `<span class="btn sm ${cls}" aria-hidden="true" style="pointer-events:none;display:inline-flex;margin:2px 2px 2px 0">${label}</span>`;
+const step = (n, title, html) => `<div class="tip"><span class="n">${n}</span><div><b>${title}</b><p>${html}</p></div></div>`;
+function guideBody(k){
+  const host = esc(first(F(ADMIN).name));
+  if(k === "manual") return [
+    step(1, "Getting in", `Open the family link, type the site password, then your <b>full name</b> and your 4-digit PIN and tap ${pic("Sign in","primary")}. The first time, type your new PIN twice and tap ${pic("Save my PIN","primary")}.`),
+    step(2, "Home", `Today's date and time are at the top, then anything that <b>needs you</b>. Start from ${pic("Start a family vote")} or ${pic("Send an invitation")}. The bell ${pic("🔔")} holds your alerts; the ${pic("?")} opens this guide; your initial opens your seat menu.`),
+    step(3, "Plan a dinner", `Pick the occasion, then ${pic("Family votes")} or ${pic("I decide · just invite")}. Choose the date, time and <b>Vote length</b> (5–60 minutes), the dress code, and up to 3 restaurants. Not in our list? ${pic("Search Google","primary")} below the choices, then ${pic("Add to choices","wine")}. Tap send.`),
+    step(4, "The live vote", `On the plan, tap ${pic("Start 10-minute vote","wine")} (it shows the length you chose). Everyone picks one place. It closes when everyone has voted or time runs out; the plan's host can ${pic("Lock in winner","primary")} early. A tie goes to the host's vote. The winner opens on every phone.`),
+    step(5, "Booking", `So no one books twice, tap ${pic("I'll book it")} before you call, then ${pic("Mark booked")} with the confirmation number.`),
+    step(6, "Dinner night", `${pic("Open dinner card","primary")} has directions and the menu. Tap ${pic("On my way")} ${pic("Running late")} ${pic("I've arrived")}; the first one seated taps ${pic("Our table is ready — tell everyone")}.`),
+    step(7, "The Tab: one check", `Tap ${pic("The Tab","wine")}. One person taps ${pic("I'll pay the restaurant","primary")}. Everyone else adds what they ate and taps ${pic("Send my ticket to…","wine")}. The payer taps ${pic("Verify","primary")}, then <b>Confirm</b> or <b>Send back</b> with a note. Pay the payer yourself (Zelle, Apple Pay, Cash App or cash). When it arrives the payer taps ${pic("Send receipt","wine")} and you get a receipt: <b>PAID</b>, date and time, every line, tax, tip and total, signed like “Clark, R.”`),
+    step(8, "After dinner", `${pic("We dined — wrap up")} to rate six things and say who paid. ${pic("+ Add photos of the night")} shares photos (${host} approves family photos first). ${pic("Add to Never Again list")} hides a place for good.`),
+    step(9, "Guests", `${pic("+ Ask to bring a guest")} asks the family; a guest joins when a majority raise a hand ${pic("✋ 5/8")}.`),
+    step(10, "Notifications", `Tap your initial, then ${pic("Turn on notifications","primary")} and allow them. On iPhone add Table of 7 to your Home Screen first (Share → Add to Home Screen).`),
+  ].join("");
+  if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
+  if(k === "talk") return [
+    step("A", "A Sunday vote", `Jasmine taps ${pic("Start a family vote")}, offers Central BBQ, Gus's and Babalu with a 15-minute vote, and sends it. Everyone's bell rings. Devonte opens it and taps ${pic("Start 15-minute vote","wine")}; the clock starts for all. Rosa and Mario vote; when everyone has voted it closes and every phone shows <b>“The family chose Gus's.”</b>`),
+    step("B", "A birthday invitation", `${host} taps ${pic("Send an invitation")}, chooses Birthday and Chez Philippe, adds “Wear red”, and sends. Each person sees a sealed envelope, opens it and taps <b>Accept</b>, <b>Maybe</b> or <b>Decline</b>; ${host} is told each answer.`),
+    step("C", "One check at dinner", `Mario taps ${pic("I'll pay the restaurant","primary")}. Rosa adds “Rib plate $21” and “Sweet tea $3.50” and sends her ticket: $24.50, plus 9.75% tax and a 20% tip, is $31.79. Mario sends it back: “You also had the mac and cheese.” Rosa adds it and sends again. Mario confirms; Rosa pays by Zelle and taps Zelle; when it arrives Mario taps ${pic("Send receipt","wine")} and Rosa gets her receipt, <b>Balance $0.00</b>.`),
+    step("D", "Running late", `Derrick taps ${pic("Running late")} and picks 15 minutes. Everyone is told “Derrick is running late, about 15 minutes.” At the door he taps ${pic("I've arrived")}.`),
+  ].join("");
+  if(k === "fix") return [
+    ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
+    ["“That PIN isn't right. N tries left.”", `Five wrong tries locks your name for 5 minutes on every phone. Forgot it? ${host} can reset it in Host controls; then you make a new one.`],
+    ["“Too many wrong PINs from this network.”", "Wait 15 minutes, then try again."],
+    ["“Can't reach the table right now.”", "Check Wi-Fi or mobile data and try again."],
+    ["“Locked after 10 minutes away.”", "That's on purpose. Sign in again with your PIN."],
+    ["“Your seat is paused.”", `You can look but not vote or post. Talk to ${host}.`],
+    [`“${host} has taken you off this event.”`, `Only ${host} can put you back on that plan.`],
+    ["“Couldn't save that. Showing the table as it is.”", "Someone changed it at the same moment. Look again and redo your tap."],
+    ["“Only the host can …”", "That step belongs to the plan's host, the payer, or the table's host. The message says which."],
+    ["“That plan was cancelled.”", "Its host cancelled it; the screen closes by itself."],
+    ["“Google search is resting until tomorrow / until the 1st.”", "The family used the free Google searches for now. Our own list still works; Google comes back then."],
+    ["“Google found nothing like that in …”", "Try another word (a dish, a chain, a cuisine) or a nearby city."],
+    ["Notifications don't arrive", "Tap your initial and look at Notifications. On iPhone open Table of 7 from the Home Screen icon, not Safari. If it says blocked, turn notifications on for Table of 7 in the phone's Settings."],
+    ["The site asks for a password", `That's the family password, not your PIN. Ask ${host}.`],
+  ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
+  if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li>
+      <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
+      <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+    <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
+      <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
+      <li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+  return "";
 }
 function sheetSeat(){
   openSheet(`<div class="sheet-head"><div style="flex:1;display:flex;gap:12px;align-items:center">${av(st.me)}<div><div class="eyebrow">Signed in</div><h2 style="font-size:22px">${esc(ME().name)}</h2></div></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
@@ -2418,7 +2475,8 @@ document.addEventListener("click", e => {
   if((a === "person-new" || a === "person-del") && b.dataset.kind === "fam" && !isAdmin()){ toast(`Only ${first(F(ADMIN).name)} can change who sits at the table.`); return; }
   switch(a){
     case "close": closeSheet(); break;
-    case "tips": sheetTips(); break;
+    case "tips": guidePart = "tips"; sheetTips(); break;
+    case "guide": guidePart = b.dataset.k; sheetTips(); sheet.scrollTop = 0; break;
     case "seat": sheetSeat(); break;
     case "app-lock": lockApp(); break;
     case "lock-switch": st.lastName = ""; save(); lockApp(); break;
