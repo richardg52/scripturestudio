@@ -10,7 +10,8 @@
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Table of 7">
-<link rel="manifest" href="manifest.webmanifest">
+<!-- the site sits behind the family password; without use-credentials the browser fetches the app description WITHOUT the password pass, gets 401, and the phone never treats Table of 7 as a Home Screen app (no notifications) -->
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
