@@ -20,7 +20,16 @@ const cors = (o: string | null) => ({
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin",
 });
-const SEARCH_FIELDS = "places.id,places.displayName,places.formattedAddress,places.shortFormattedAddress,places.primaryTypeDisplayName,places.businessStatus,places.googleMapsUri,nextPageToken";
+const SEARCH_FIELDS = "places.id,places.displayName,places.formattedAddress,places.shortFormattedAddress,places.types,places.primaryTypeDisplayName,places.businessStatus,places.googleMapsUri,nextPageToken";
+// Places the family can eat at. The search used to ask Google for type "restaurant" only, and Google
+// files most bakeries, dessert and ice cream shops under their own types, so Muddy's, Gibson's Donuts
+// and Café Du Monde never came back. Now Google is asked without a type and we keep any eating place:
+// a restaurant of any kind, or a bakery, café, dessert, ice cream, donut, candy or chocolate shop.
+// ("food" alone is not enough: Google gives it to grocery stores too.) types is the same Pro tier.
+const EAT = new Set(["restaurant","bakery","cafe","coffee_shop","dessert_shop","dessert_restaurant","ice_cream_shop","donut_shop",
+  "confectionery","candy_store","chocolate_shop","chocolate_factory","bagel_shop","pastry_shop","cake_shop","juice_shop","tea_house",
+  "meal_takeaway","bar_and_grill","diner","food_court","snack_bar","cafeteria","deli","sandwich_shop","bistro","brunch_restaurant"]);
+const isEat = (p: any) => (p.types ?? []).some((t: string) => EAT.has(t) || t.endsWith("_restaurant"));
 const BASIC_FIELDS = "id,displayName,formattedAddress,shortFormattedAddress,primaryTypeDisplayName,businessStatus,googleMapsUri";
 const FULL_FIELDS = BASIC_FIELDS + ",priceLevel,rating,userRatingCount,currentOpeningHours.openNow,nationalPhoneNumber,websiteUri";
 const PRICE: Record<string, number> = { PRICE_LEVEL_FREE: 1, PRICE_LEVEL_INEXPENSIVE: 1, PRICE_LEVEL_MODERATE: 2, PRICE_LEVEL_EXPENSIVE: 3, PRICE_LEVEL_VERY_EXPENSIVE: 4 };
@@ -67,12 +76,12 @@ Deno.serve(async (req) => {
       if (q.length < 2) return reply({ ok: false, code: "short" });
       const box = AREA[city]; if (!box) return reply({ ok: false, code: "city" });
       if (!(await take("text_pro"))) return reply({ ok: false, code: "month" });
-      const payload: Record<string, unknown> = { textQuery: q, pageSize: 20, includedType: "restaurant", strictTypeFiltering: false,
+      const payload: Record<string, unknown> = { textQuery: q, pageSize: 20,
         locationRestriction: { rectangle: { low: { latitude: box[0], longitude: box[1] }, high: { latitude: box[2], longitude: box[3] } } } };
       if (body.pageToken) payload.pageToken = String(body.pageToken);
       const g = await google("https://places.googleapis.com/v1/places:searchText", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }, SEARCH_FIELDS);
       if (g.error) return reply({ ok: false, code: g.error });
-      return reply({ ok: true, results: (g.data.places ?? []).map(shape), next: g.data.nextPageToken ?? null, attribution: "Results from Google" });
+      return reply({ ok: true, results: (g.data.places ?? []).filter(isEat).map(shape), next: g.data.nextPageToken ?? null, attribution: "Results from Google" });
     }
 
     if (body.action === "details") {
