@@ -937,7 +937,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -975,6 +975,7 @@ async function pull(){
   D.want_to_try.forEach(w => n.want[w.restaurant_id] = {by:w.added_by, t:iso2ms(w.at)});
   n.standing = D.standing_dinners.map(x => ({id:x.id, label:x.label, weekday:x.weekday, nth:x.nth, time:hhmm(x.time), lead:x.lead_days, voteMin:x.vote_minutes, dress:x.dress, active:x.active, by:x.created_by}));
   n.runs = D.standing_runs.map(x => ({sid:x.standing_id, date:x.dinner_date, eventId:x.event_id}));
+  n.surveys = D.feud_surveys.map(x => ({id:x.id, prompts:x.prompts, status:x.status, answered:x.answered || [], by:x.created_by, t:iso2ms(x.updated_at)}));
   n.games = D.games.map(x => ({id:x.id, kind:x.kind, a:x.side_a, b:x.side_b, st:x.state, turn:x.turn, status:x.status, winner:x.winner, why:x.why || "", moves:x.moves, by:x.created_by, t:iso2ms(x.updated_at)}));
   const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
   const urls = {};
@@ -1028,7 +1029,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1046,7 +1047,9 @@ function redraw(){
   if(revealId && !ev(revealId)) closeReveal();
   if(tabId && !ev(tabId)) closeTab();
   if(inviteId && !ev(inviteId)) closeInvite();
-  render(); if(gView && wrap.classList.contains("open") && sheet.querySelector(".gboard")) drawGame(); if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
+  render();
+  // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
+  if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
 
@@ -1810,7 +1813,7 @@ function vTable(){
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
-  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers and Trivia Night, one on one, couples or teams${(st.games || []).some(g => g.status === "live" && gMySide(g) === g.turn) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMySide(g) === g.turn) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
@@ -1890,7 +1893,8 @@ function sheetTips(){
     ["Standing dinners","Richard can set a dinner that repeats, like the first Sunday of every month. At 9 AM, a few days before (he chooses how many), the family vote opens by itself with three choices from the Concierge, and every phone is told. Then it works like any vote: tap Start, vote, lock in."],
     ["Year at the Table","From December 1 to January 15, Home shows “Your Year at the Table is ready”. Open it any time from Our Table. It counts the dinners we shared, our top-scored and most-visited places, the new places we tried, the dishes we remembered, and the best photos of the year."],
     ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Tic-Tac-Toe, Connect Four and Checkers. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."],
-    ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. The right answer shows only after a team answers."]
+    ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. The right answer shows only after a team answers."],
+    ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1928,6 +1932,7 @@ function guideBody(k){
     step(17, "Year at the Table", `From December 1 to January 15, Home shows <b>🎄 Your Year at the Table is ready</b>; any time, tap ${pic("Our Table")} → <b>Year at the Table</b>. It reads only what the family already saved: <b>dinners shared</b> (each wrap-up), the <b>top-scored place</b> (everyone's 1 to 10 that year, averaged), the <b>most visited</b>, the <b>new places tried</b> (first visit ever that year), <b>dishes remembered</b>, and up to six <b>best photos</b> (approved photos from the highest-scored dinners). Tap a year chip to look back at an earlier year.`),
     step(18, "Game Room", `Tap ${pic("Our Table")} → <b>🎲 Game Room</b>, or ${pic("🎲 Play while you wait")} on the dinner card. <b>Pass &amp; play on this phone:</b> tap ${pic("Tic-Tac-Toe")} ${pic("Connect Four")} or ${pic("Checkers")} and hand the phone back and forth (it isn't saved and doesn't count). <b>Play the family:</b> tap a ${pic("Checkers","wine")} button, choose your opponent (and partners, for couple against couple), and tap ${pic("Start Checkers","primary")}. Everyone is notified and plays from their own phone; your side moves first. In Checkers tap a piece, then a gold dot: a jump must be taken, you keep jumping while you can, and reaching the far row crowns a king ♛. The game is a draw after 40 moves each with no capture. ${pic("Resign","ghost")} gives the game away; ${pic("Play again","primary")} starts a rematch. Finished family games fill the <b>🏆 Family standings</b>.`),
     step(19, "Trivia Night", `In the Game Room, under <b>🎤 Trivia Night</b>: ${pic("At the table · one phone","primary")} runs the whole game on one phone (name the two teams, then pass the phone or read each question aloud), or ${pic("Family teams · own phones","wine")} lets you put each person on <b>My team</b> or <b>Other team</b>, up to four a team, each answering on their own phone. Pick a category (Music, TV &amp; Movies, Bible, or a mix) and tap ${pic("Start Trivia Night","primary")}. The teams take turns: ten questions, one each in turn, four answers to choose from. Tap an answer and the screen shows ✓ or ✗ and the right answer, then the next team's question. The score sits at the top. Family-teams games count toward the 🏆 standings; at-the-table games don't, because one phone can't say who answered. ${pic("End the game","ghost")} stops an at-the-table game; ${pic("Play again","primary")} plays ten new questions.`),
+    step(20, "Family Feud", `In the Game Room, under <b>📋 Family Feud</b>, tap ${pic("Start a survey","primary")}. Five questions are filled in for you; change any, tap ${pic("🔀 Different questions")} for new ones, then ${pic("Send the survey to the family","primary")}. Everyone is notified and taps ${pic("Answer the survey","primary")} to answer privately, a few words each; no one, not even the host, sees anyone's answers. When enough people have answered (at least two), the person who started it or the host taps ${pic("Close the survey","wine")}. At the table, one person taps ${pic("Play Family Feud")} and becomes the <b>judge</b>: they put each person on Team 1 or Team 2 and tap ${pic("Start Family Feud","primary")}. The judge's phone shows the family's answers; everyone else sees the hidden board. The team on turn calls out answers: the judge taps ${pic("Reveal","primary")} on a match (its points, one for each person who said it, go into the bank) or ${pic("✗ Strike","wine")}. Three strikes and the other team gets one guess to steal the bank. When the board is cleared or the steal is decided, the round's points go to the winner; the judge taps ${pic("Next round","primary")}. Most points after the last question wins. Similar answers count together when only the spelling differs (“Pizza” and “pizzas”); different words stay separate, and the judge decides at the table whether a guess matches.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1943,6 +1948,7 @@ function guideBody(k){
     step("J", "Looking back in December", `On December 3 Home says <b>Your 2026 Year at the Table is ready</b>. Rosa opens it: 14 dinners shared, top-scored place Char at 9.2, most visited Gus's with 3 visits, 6 new places tried, 11 dishes remembered, and six photos from the best nights. She takes a screenshot to send to the family group.`),
     step("L", "Couples at the checkerboard", `While the food comes, Mario taps ${pic("🎲 Play while you wait")} → ${pic("Checkers","wine")}, picks Rosa as his partner and Jasmine and Devonte as the other couple, and taps ${pic("Start Checkers","primary")}. Jasmine's phone buzzes: “Mario started Checkers with you.” Rosa makes Red's first move; Devonte answers for Black. Jasmine double-jumps and crowns a king ♛. The bell rings on every phone: <b>“Jasmine &amp; Devonte won Checkers (no moves left).”</b> The standings move them to the top.`),
     step("M", "Trivia while the food comes", `Zoey taps ${pic("At the table · one phone","primary")}, names the teams “Kids” and “Grown-ups”, picks <b>TV &amp; Movies</b> and taps ${pic("Start Trivia Night","primary")}. She reads out: “Who played Steve Urkel on Family Matters?” The kids tap <b>Jaleel White</b>: <b>✓ Kids got it</b>. The grown-ups miss the next one and the screen says <b>“✗ It was Chicago.”</b> After ten questions: <b>🏆 Kids won, 6–4.</b> Mario taps ${pic("Play again","primary")} for a rematch.`),
+    step("N", "Family Feud at Sunday dinner", `On Tuesday Jasmine taps ${pic("Start a survey","primary")}, keeps “Name something the family always orders when we eat out”, and sends it. Everyone's phone buzzes; by Saturday six have answered, and Jasmine taps ${pic("Close the survey","wine")}. At dinner Richard taps ${pic("Play Family Feud")}, puts the kids on Team 1 and the grown-ups on Team 2, and judges. Team 1 shouts “Wings!” Richard taps ${pic("Reveal","primary")}: <b>Wings · 3</b>, because three of the six said it. Then “Salad?”: ${pic("✗ Strike","wine")}. After three strikes the grown-ups steal with “Catfish” and take the bank.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -1980,19 +1986,23 @@ function guideBody(k){
     ["“The board just changed. Look again.”", "Your partner or opponent moved at the same moment. Look at the new board and move again."],
     ["A checker won't move where I tap", "When any jump is possible you must jump, so only pieces that can jump are tappable. Mid-jump, the same piece must keep jumping."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
+    ["“Wait until at least two people have answered.”", "A survey closes only after two or more people have answered. Ask the family to tap Answer the survey."],
+    ["I can't see anyone's survey answers", "That's on purpose. Answers stay on the server until the judge's board in the game, and even then without names."],
+    ["Two answers on the board mean the same thing", "Answers group together only when the spelling differs (Pizza, pizzas). Different words (soda, pop) stay apart, each with its own real count. The judge decides whether a guess matches."],
+    ["Only the judge can tap the board", "Family Feud is run by the judge, the person who started the game. Everyone else watches and calls out answers."],
     ["My Trivia Night isn't in the standings", "At-the-table trivia runs on one phone, so it can't tell who answered and doesn't count. Family teams on their own phones do count."],
     ["My pass & play game isn't in the standings", "Only family games (each on their own phone) count. Pass & play stays on one phone and isn't saved."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
-      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li>
+      <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
       <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Play Spades or Family Feud yet: those come next</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Play Spades yet: it comes next</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2825,12 +2835,47 @@ function gameApply(kind, st0, side, mv){
    server: every move goes through functions/games, which checks the player, the turn and the move with the very same
    rules above, so the board on every phone agrees and no one can move for someone else. */
 const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"], trivia: ["Team 1", "Team 2"] };
-const GLABEL = { ...GAMES, trivia: "Trivia Night" };
+const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud" };
+/* FEUD PROMPTS START (a copy of functions/games/feud.js FEUD_PROMPTS; tests/feud_rules_test.mjs proves they match) */
+const FEUD_PROMPTS = [
+  "Name something the family always orders when we eat out.",
+  "Name a reason someone shows up late to a family dinner.",
+  "Name a side dish that has to be on the table at Thanksgiving.",
+  "Name something you'd find in Grandma's purse.",
+  "Name a dessert you could never turn down.",
+  "Name something people do right after a big meal.",
+  "Name a restaurant chain everyone in the family knows.",
+  "Name a word that describes our family.",
+  "Name something you bring to a church potluck.",
+  "Name a reason to call a family meeting.",
+  "Name a board game or card game families play.",
+  "Name something that is always in the family fridge.",
+  "Name a place the family should go on a trip together.",
+  "Name a chore nobody wants to do.",
+  "Name something people argue about at the dinner table.",
+  "Name a food that's better the next day.",
+  "Name something you say grace for.",
+  "Name a song everyone knows the words to.",
+  "Name something kids ask for at a restaurant.",
+  "Name a hymn or gospel song sung at church.",
+  "Name something you do on a Sunday afternoon.",
+  "Name a TV show the whole family can watch together.",
+  "Name a topping you'd put on a pizza.",
+  "Name something that makes a birthday special.",
+  "Name a reason to leave a restaurant a big tip.",
+  "Name a famous person you'd invite to Sunday dinner.",
+  "Name a holiday tradition in our family.",
+  "Name something you'd find at a family reunion.",
+  "Name something that gets left behind at a restaurant.",
+  "Name a food you'd order at a soul food restaurant.",
+];
+/* FEUD PROMPTS END */
 const TCATS = { mix: "A mix of everything", music: "Music", tv: "TV & Movies", bible: "Bible" };
 const gTable = g => g.kind === "trivia" && g.st?.table === true;     // Trivia at the table: one phone runs both teams
 let gView = null;            // {local:true, kind, st, turn, over, names} or {id} for a family game
 let gSel = null;             // checkers: the piece picked up
-const gMySide = g => gTable(g) ? ((g.a || []).includes(st.me) ? g.turn : -1) : (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
+const gFeud = g => g.kind === "feud", gJudge = g => gFeud(g) && g.by === st.me;
+const gMySide = g => gFeud(g) ? (gJudge(g) ? g.turn : -1) : gTable(g) ? ((g.a || []).includes(st.me) ? g.turn : -1) : (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
 const gNames = ids => (ids || []).map(id => first(F(id)?.name || "Someone")).join(" & ");
 const gSideName = (g, side) => gTable(g) ? (g.st.teams || GLOOK.trivia)[side] : gNames(side === 0 ? g.a : g.b);
 async function gamesCall(body){
@@ -2839,7 +2884,9 @@ async function gamesCall(body){
     return await r.json(); } catch { return {ok:false, code:"offline"}; }
 }
 const gWhyNot = c => ({not_your_turn:"It's not your turn yet.", stale:"The board just changed. Look again.", illegal:"That move isn't allowed.", over:"That game is over.",
-  not_player:"Only the players can move.", seats:"Everyone has to be an active family seat.", sides:"Pick one or two players for each side.", offline:"Can't reach the table right now.", cat:"Pick a category.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
+  not_player:"Only the players can move.", seats:"Everyone has to be an active family seat.", sides:"Pick one or two players for each side.", offline:"Can't reach the table right now.", cat:"Pick a category.", judge_plays:"The judge can't be on a team.", survey_open:"There's already a survey open. Finish that one first.",
+  survey_closed:"That survey is closed.", blank:"Answer every question.", few:"Wait until at least two people have answered.", not_starter:"Only the person who started the survey, or the host, can close it.",
+  no_answers:"Nobody answered that survey.", not_judge:"Only the judge runs the board.", prompts:"Write at least one question.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
 function gStandings(){
   const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g)).forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
     if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
@@ -2850,16 +2897,18 @@ function sheetGames(){
   const live = (st.games || []).filter(g => g.status === "live").sort((a, b) => (gMySide(b) === b.turn) - (gMySide(a) === a.turn) || b.t - a.t);
   const done = (st.games || []).filter(g => g.status === "done").sort((a, b) => b.t - a.t).slice(0, 5);
   const table = gStandings();
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Play at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+  openSheet(`<div class="sheet-head" data-room><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Play at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="lbl">PASS &amp; PLAY ON THIS PHONE</div>
     <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn" data-act="g-local" data-k="${k}">${l}</button>`).join("")}</div>
     <div class="lbl">PLAY THE FAMILY · EACH ON THEIR OWN PHONE</div>
     <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn wine" data-act="g-new" data-k="${k}">${l}</button>`).join("")}</div>
     <div class="lbl">🎤 TRIVIA NIGHT · MUSIC, TV &amp; MOVIES, BIBLE</div>
     <div class="actions"><button class="btn primary" data-act="tv-new" data-k="table">At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">Family teams · own phones</button></div>
+    <div class="lbl">📋 FAMILY FEUD · THE FAMILY IS THE SURVEY</div>
+    ${feudRoom()}
     ${live.length ? `<div class="lbl">GAMES IN PLAY</div>${live.map(g => { const me = gMySide(g), mine = me === g.turn;
-      const tv = g.kind === "trivia", note = tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
-      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">${tv ? "🎤" : "🎲"}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
+      const tv = g.kind === "trivia", note = gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
+      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">${gFeud(g) ? "📋" : tv ? "🎤" : "🎲"}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
     <div class="lbl">🏆 FAMILY STANDINGS</div>
     ${table.length ? table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${i + 1}. ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("") : `<div class="empty">No family games finished yet. Pass &amp; play and at-the-table trivia don't count.</div>`}
     ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
@@ -2887,18 +2936,74 @@ function sheetTriviaNew(table){
     <button class="btn primary block" data-act="tv-start" data-k="${table ? "table" : "teams"}">Start Trivia Night</button>
     ${table ? "" : `<p class="small muted" style="margin:0">Everyone in the game gets a notification.</p>`}`);
 }
+function feudRoom(){
+  const sv = (st.surveys || []).slice().sort((a, b) => b.t - a.t), open = sv.find(x => x.status === "open"), closed = sv.filter(x => x.status === "closed").slice(0, 3);
+  const canClose = s => s.by === st.me || st.me === ADMIN;
+  let h = "";
+  if(open){ const did = open.answered.includes(st.me);
+    h += `<div class="card" style="gap:8px"><b>Survey open · ${open.answered.length} ${open.answered.length === 1 ? "person has" : "people have"} answered</b>
+      <span class="small muted">${open.prompts.length} ${open.prompts.length === 1 ? "question" : "questions"}, started by ${esc(first(F(open.by)?.name || "family"))}. Answers stay secret until the game.</span>
+      <div class="actions"><button class="btn ${did ? "" : "primary"}" data-act="fs-answer" data-id="${open.id}">${did ? "✓ Change my answers" : "Answer the survey"}</button>${canClose(open) ? `<button class="btn wine" data-act="fs-close" data-id="${open.id}" ${open.answered.length < 2 ? "disabled" : ""}>Close the survey</button>` : ""}</div></div>`;
+  } else h += `<div class="actions"><button class="btn primary" data-act="fs-new">Start a survey</button></div>`;
+  h += closed.map(x => `<button class="todo" data-act="fd-new" data-id="${x.id}"><span class="ic">📋</span><span><b>Play Family Feud</b><small>From the survey of ${esc(new Date(x.t).toLocaleDateString(undefined, {month:"short", day:"numeric"}))} · ${x.answered.length} answered · you judge</small></span><span class="chev">${I.chev}</span></button>`).join("");
+  return h;
+}
+function feudPick(n){ const a = [...FEUD_PROMPTS]; for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); }
+function sheetSurveyNew(){
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 New survey</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Everyone gets these questions and answers them privately on their own phone. The game board is built from their real answers: an answer is worth one point for each person who gave it. Change any question, or leave one blank to skip it.</p>
+    ${feudPick(5).map((q, i) => `<div class="field"><label for="fs-q${i}">Question ${i + 1}</label><input class="input" id="fs-q${i}" maxlength="120" value="${esc(q)}"></div>`).join("")}
+    <div class="actions"><button class="btn" data-act="fs-new">🔀 Different questions</button></div>
+    <button class="btn primary block" data-act="fs-send">Send the survey to the family</button>`);
+}
+async function sheetSurveyAnswer(id){
+  const sv = (st.surveys || []).find(x => x.id === id); if(!sv) return;
+  const d = await gamesCall({action:"survey_mine", id}), mine = d.answers || [];
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud survey</div><h2>📋 Your answers</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Say the first thing that comes to mind, in a few words. Only you can see what you wrote; it shows up only on the game board, without your name.</p>
+    ${sv.prompts.map((q, i) => `<div class="field"><label for="fa-${i}">${esc(q)}</label><input class="input" id="fa-${i}" maxlength="40" value="${esc(mine[i] || "")}"></div>`).join("")}
+    <button class="btn primary block" data-act="fs-save" data-id="${id}">Save my answers</button>`);
+}
+function sheetFeudNew(survey){
+  const people = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
+  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 You're the judge</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">You run the board on your phone: you see the family's answers, the teams call out guesses, and you tap Reveal when a guess matches or ✗ Strike when it doesn't. Three strikes and the other team gets one guess to steal. Everyone else watches the board on their own phone.</p>
+    <div class="lbl">THE TEAMS · UP TO 4 EACH</div>
+    ${people.map(f => `<div class="field" style="display:flex;align-items:center;gap:10px"><label for="fd-p-${f.id}" style="flex:1;margin:0">${esc(f.name)}</label><select class="input" style="width:auto" id="fd-p-${f.id}" data-fpid="${f.id}"><option value="">Not playing</option><option value="a">Team 1</option><option value="b">Team 2</option></select></div>`).join("")}
+    <button class="btn primary block" data-act="fd-start" data-id="${survey}">Start Family Feud</button>
+    <p class="small muted" style="margin:0">Everyone on a team gets a notification.</p>`);
+}
+const feudPeek = {};      // the judge's own copy of this round's board, fetched from the server
+function drawFeud(g){
+  const s = g.st, live = g.status === "live", key = `${g.id}:${s.round}`, L = s.last || {};
+  if(g.judge && live && !feudPeek[key]){ feudPeek[key] = "…"; gamesCall({action:"peek", id:g.id}).then(d => { feudPeek[key] = d.ok ? d.board : null; if(gView?.id === g.id) drawGame(); }); }
+  const board = g.judge && Array.isArray(feudPeek[key]) ? feudPeek[key] : null, other = 1 - s.turn;
+  const say = s.phase === "between" ? (L.round ? `🏆 ${esc(g.names[L.round.win])} ${L.kind === "stole" ? "stole the round" : "won the round"}: +${L.round.bank}` : "")
+    : s.phase === "steal" ? `${esc(g.names[s.turn])} can steal ${s.bank} with one guess` : `${esc(g.names[s.turn])} is guessing · ${"✗".repeat(s.strikes) || "no strikes"}`;
+  const lastLine = L.kind === "hit" ? `✓ ${esc(L.t)} · ${L.n}` : L.kind === "strike" ? `✗ Strike ${L.strikes}` : L.kind === "nosteal" ? `✗ No steal: the bank goes to ${esc(g.names[1 - L.side])}` : L.kind === "stole" ? `✓ Stolen with ${esc(L.t)}` : "";
+  const status = !live ? (g.why === "stopped" ? "Game stopped" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won Family Feud, ${esc(g.why)}`) : say;
+  const slots = Array.from({length:s.slots}, (_, i) => { const x = s.shown[i];
+    return `<div class="strip" style="justify-content:space-between;${x ? "" : "opacity:.75"}"><b>${i + 1}. ${x ? esc(x.t) : "· · · · ·"}</b><span>${x ? x.n : ""}</span>${g.judge && live && s.phase !== "between" && !x && board ? `<button class="btn sm primary" data-act="g-move" data-m='${JSON.stringify({reveal:i})}'>Reveal: ${esc(board[i]?.t || "")} (${board[i]?.n ?? ""})</button>` : ""}</div>`; }).join("");
+  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud · round ${s.round} of ${s.rounds} · judge ${esc(first(F(g.by)?.name || "family"))}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
+    <div class="card" style="text-align:center;font-weight:700">${status}</div>
+    <div class="card"><div class="eyebrow">We asked ${s.people} of the family</div><p style="font:700 19px/1.35 var(--f-display);margin:6px 0 4px">${esc(s.prompt)}</p>
+      ${s.phase !== "between" ? `<div class="small muted">In the bank: <b>${s.bank}</b>${lastLine ? ` · ${lastLine}` : ""}</div>` : ""}</div>
+    <div style="display:grid;gap:6px">${slots}</div>
+    ${g.judge && live ? `<div class="actions" style="justify-content:center">${s.phase === "between" ? `<button class="btn primary" data-act="g-move" data-m='{"next":true}'>Next round</button>` : `<button class="btn wine" data-act="g-move" data-m='{"strike":true}'>${s.phase === "steal" ? "✗ No steal" : "✗ Strike"}</button>`}<button class="btn sm ghost" data-act="g-resign">Stop the game</button></div>
+      ${board ? "" : `<p class="small muted" style="margin:0;text-align:center">Loading your answer key…</p>`}` : live ? `<p class="small muted" style="margin:0;text-align:center">The judge runs the board. Call out your answers!</p>` : ""}`);
+}
 function gCurrent(){
   if(!gView) return null;
   if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.turn, local:true};
   const g = (st.games || []).find(x => x.id === gView.id); if(!g) return null;
-  return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gSideName(g, 0), gSideName(g, 1)], me:gMySide(g), moves:g.moves, id:g.id, table:gTable(g)};
+  return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gSideName(g, 0), gSideName(g, 1)], me:gMySide(g), moves:g.moves, id:g.id, table:gTable(g), judge:gJudge(g), by:g.by};
 }
 function drawTrivia(g){
   const s = g.st, myTurn = g.status === "live" && g.me === g.turn, L = s.last;
   const last = L ? `<div class="strip"><span class="grow small">${L.right ? `✓ <b>${esc(g.names[L.side])}</b> got it: <b>${esc(L.answer)}</b>` : `✗ <b>${esc(g.names[L.side])}</b> missed it. It was <b>${esc(L.answer)}</b>`}<br><span class="muted">${esc(L.q)}</span></span></div>` : "";
   const status = g.status === "done" ? (g.why === "stopped" ? "Game stopped early" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won, ${esc(g.why)}`)
     : myTurn ? (g.table ? `${esc(g.names[g.turn])}, this one's yours` : "Your team's question!") : `${esc(g.names[g.turn])} is answering…`;
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night · ${esc(TCATS[s.cat] || "")}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
+  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night · ${esc(TCATS[s.cat] || "")}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
     <div class="card" style="text-align:center;font-weight:700">${status}</div>
     ${last}
     ${g.status === "live" ? `<div class="card"><div class="eyebrow">Question ${s.n} of ${s.total} · ${esc(s.q.cat)}</div><p style="font:700 19px/1.35 var(--f-display);margin:6px 0 12px">${esc(s.q.text)}</p>
@@ -2908,6 +3013,7 @@ function drawTrivia(g){
 function drawGame(){
   const g = gCurrent(); if(!g){ sheetGames(); return; }
   if(g.kind === "trivia"){ drawTrivia(g); return; }
+  if(g.kind === "feud"){ drawFeud(g); return; }
   const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
   const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
   const disc = s => s === null || s === undefined ? "" : g.kind === "ttt" ? look[s] : `<span class="disc p${s}"></span>`;
@@ -2921,7 +3027,7 @@ function drawGame(){
   }
   const status = g.status === "done" ? (g.winner === 2 ? `🤝 A draw (${esc(g.why)})` : `🏆 ${esc(g.names[g.winner])} won (${esc(g.why)})`)
     : myTurn ? `Your move, ${look[g.turn]}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping" : ""}${g.local ? ` (${esc(g.names[g.turn])})` : ""}` : `Waiting on ${esc(g.names[g.turn])} (${look[g.turn]})`;
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">${GAMES[g.kind]}${g.local ? " · pass & play" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">(${look[0]})</span> vs ${esc(g.names[1])} <span class="muted">(${look[1]})</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
+  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">${GAMES[g.kind]}${g.local ? " · pass & play" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">(${look[0]})</span> vs ${esc(g.names[1])} <span class="muted">(${look[1]})</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
     <div class="card" style="text-align:center;font-weight:700">${status}</div>
     ${board}
     <div class="actions" style="justify-content:center">${g.status === "live" ? (g.local || g.me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>
@@ -3225,6 +3331,24 @@ document.addEventListener("click", e => {
         await refresh(true); gView = {id:d.game.id}; gSel = null; drawGame(); toast("Game on! Everyone's been told."); }); break; }
     case "g-open": gView = {id}; gSel = null; drawGame(); break;
     case "tv-new": sheetTriviaNew(b.dataset.k === "table"); break;
+    case "fs-new": sheetSurveyNew(); break;
+    case "fs-send": { const prompts = [0,1,2,3,4].map(i => document.getElementById("fs-q" + i).value.trim()).filter(Boolean);
+      if(!prompts.length){ toast(gWhyNot("prompts")); return; } b.disabled = true; b.textContent = "Sending…";
+      gamesCall({action:"survey_new", prompts}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Send the survey to the family"; toast(gWhyNot(d.code)); return; }
+        await refresh(true); toast("Survey sent! Answer it yourself too."); sheetSurveyAnswer(d.survey.id); }); break; }
+    case "fs-answer": sheetSurveyAnswer(id); break;
+    case "fs-save": { const sv = (st.surveys || []).find(x => x.id === id); if(!sv) break; const answers = sv.prompts.map((_, i) => document.getElementById("fa-" + i).value.trim());
+      if(answers.some(a => !a)){ toast(gWhyNot("blank")); return; } b.disabled = true; b.textContent = "Saving…";
+      gamesCall({action:"survey_answer", id, answers}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Save my answers"; toast(gWhyNot(d.code)); return; }
+        await refresh(true); toast("Saved. Your answers are secret until the game."); sheetGames(); }); break; }
+    case "fs-close": { if(!confirm("Close the survey? No one can answer after this, and the game can start.")) break;
+      gamesCall({action:"survey_close", id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); sheetGames(); }); break; }
+    case "fd-new": sheetFeudNew(id); break;
+    case "fd-start": { const picks = [...document.querySelectorAll("[data-fpid]")], sideA = picks.filter(x => x.value === "a").map(x => x.dataset.fpid), sideB = picks.filter(x => x.value === "b").map(x => x.dataset.fpid);
+      if(!sideA.length || !sideB.length){ toast("Put at least one person on each team."); return; } if(sideA.length > 4 || sideB.length > 4){ toast("Four players a team at most."); return; }
+      b.disabled = true; b.textContent = "Starting…";
+      gamesCall({action:"new", kind:"feud", survey:id, sideA, sideB}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start Family Feud"; toast(gWhyNot(d.code)); return; }
+        await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Survey says… let's play!"); }); break; }
     case "tv-start": { const table = b.dataset.k === "table", cat = document.getElementById("tv-cat").value, body = {action:"new", kind:"trivia", cat};
       if(table){ const t = x => document.getElementById(x).value.trim(); body.table = true; body.teams = [t("tv-t1") || "Team 1", t("tv-t2") || "Team 2"]; }
       else { const picks = [...document.querySelectorAll("[data-pid]")]; body.sideA = [st.me, ...picks.filter(x => x.value === "a").map(x => x.dataset.pid)]; body.sideB = picks.filter(x => x.value === "b").map(x => x.dataset.pid);
@@ -3237,10 +3361,10 @@ document.addEventListener("click", e => {
     case "g-ck": { const i = +b.dataset.i, g = gCurrent(); if(!g) break; const legal = gameLegal(g.kind, g.st, g.turn);
       if(gSel !== null && legal.some(m => m.f === gSel && m.t === i)){ gMove({f:gSel, t:i}); break; }
       gSel = legal.some(m => m.f === i) ? i : null; drawGame(); break; }
-    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
+    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
       if(g.local){ gView.over = {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
       gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
-    case "g-again": { const g = gCurrent(); if(!g) break; if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gSel = null; drawGame(); break; }
+    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gSel = null; drawGame(); break; }
       const old = st.games.find(x => x.id === g.id), flip = !gTable(old) && gMySide(old) === 1, again = {action:"new", kind:g.kind, sideA:flip ? old.b : old.a, sideB:flip ? old.a : old.b};
       if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, table:gTable(old), teams:old.st.teams || undefined});
       gamesCall(again).then(async d => {
