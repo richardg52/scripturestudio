@@ -385,6 +385,67 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .hand .pcard:first-child{margin-left:0}
 .hand .pcard:disabled{opacity:1;cursor:default}
 .hand .pcard.ok{transform:translateY(-12px)}
+/* Round 3: Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess */
+.gt-wc,.todo .ic.gt-wc{background:linear-gradient(150deg,#ff3b5c,#7b1fe0)}.gt-bw,.todo .ic.gt-bw{background:linear-gradient(150deg,#1b4f9e,#0b1f48)}
+.gt-dm,.todo .ic.gt-dm{background:linear-gradient(150deg,#0f7a43,#08311c)}.gt-mm,.todo .ic.gt-mm{background:linear-gradient(150deg,#ff8a1f,#e3264f)}.gt-wg,.todo .ic.gt-wg{background:linear-gradient(150deg,#14b8a6,#0b5f72)}
+.wctable{border-radius:28px;padding:14px;display:grid;gap:12px;background:radial-gradient(ellipse at 50% 40%,#3b2a7a,#1a1040 70%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.12),0 18px 40px rgba(0,0,0,.55)}
+.wcopps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.wcopp{display:grid;justify-items:center;gap:4px;padding:6px 10px;border-radius:16px;background:rgba(0,0,0,.3);border:2px solid transparent;color:#fff;font-size:calc(13px*var(--gs))}
+.wcopp.turn{border-color:#ffd36b;box-shadow:0 0 16px rgba(255,211,107,.7)}
+.wcopp .who{display:flex;align-items:center;gap:6px;font:800 calc(14px*var(--gs)) var(--f-display)}
+.wcopp .who i,.dmscores i{width:calc(24px*var(--gs));height:calc(24px*var(--gs));border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff;font-size:calc(12px*var(--gs))}
+.wcopp .backs svg{width:calc(16px*var(--gs));margin-left:calc(-11px*var(--gs))}.wcopp .backs svg:first-child{margin-left:0}
+.wcmid{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:center;gap:10px}
+.wcpile{display:grid;justify-items:center;gap:4px;color:#d9d0ff}.wcpile .card-svg{width:min(22vw,110px)}
+.wctop .card-svg{width:min(30vw,150px);margin:auto;filter:drop-shadow(0 0 18px var(--glow)) drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.wcnow{display:grid;justify-items:center;gap:4px;color:#fff;font-size:calc(14px*var(--gs))}
+.wcdot{width:calc(38px*var(--gs));height:calc(38px*var(--gs));border-radius:50%;box-shadow:0 0 0 4px #fff,0 0 18px rgba(255,255,255,.6)}
+.wclast{color:#efe9ff;font-size:calc(14px*var(--gs));text-align:center}
+.wccolors{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:8px}
+.wccolors button{min-height:calc(58px*var(--gs));border:0;border-radius:16px;background:var(--c);color:#fff;font:900 calc(16px*var(--gs)) var(--f-display);box-shadow:0 4px 0 rgba(0,0,0,.35)}
+.wccolors button:disabled{filter:grayscale(.6) brightness(.6)}
+.bwbids{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.bwbids .btn{flex-direction:column;gap:0;padding:8px 4px;min-height:calc(54px*var(--gs));font-size:calc(12.5px*var(--gs))}
+.bwbids .btn b{font-size:calc(20px*var(--gs))}
+.dmscores{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.dmscores>div{border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.07);border:2px solid transparent;display:grid;gap:4px}
+.dmscores>div.on{border-color:#ffd36b;box-shadow:0 0 14px rgba(255,211,107,.5)}
+.dmscores span{display:flex;align-items:center;gap:6px;color:#fff;font-size:calc(14px*var(--gs))}
+.dmscores .pts{font:900 calc(24px*var(--gs)) var(--f-display);color:#ffd36b}
+.dmscores small{color:#b8c4dc}
+.dmscores .meter{height:7px;border-radius:9px;background:rgba(255,255,255,.14);overflow:hidden}.dmscores .meter i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ffd36b,#ff8a1f);transition:width .5s}
+.dmboard{border-radius:24px;padding:14px;display:grid;gap:10px;justify-items:center;background:radial-gradient(ellipse at 50% 40%,#1f8a4c,#0b4d27 75%);box-shadow:inset 0 0 0 10px #6b3a17,inset 0 0 0 13px #a8692d,0 18px 40px rgba(0,0,0,.55);padding:24px 18px}
+.dmline{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:3px;max-width:100%}
+.dmt.h{width:calc(54px*var(--gs));height:calc(27px*var(--gs))}.dmt.v{width:calc(27px*var(--gs));height:calc(54px*var(--gs))}
+.dmt{filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
+.dmarm{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:center}.dmarm small{color:#cfe9d5;width:100%;text-align:center}
+.dmcount{background:rgba(0,0,0,.35);border-radius:999px;padding:4px 14px;color:#fff;font-size:calc(14px*var(--gs))}.dmcount.hit{background:#ffd36b;color:#3a2200;font-weight:900}
+.dmhand{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.dmh{border:0;background:none;padding:0;transition:transform .15s}
+.dmh .dmt.v{width:calc(44px*var(--gs));height:calc(88px*var(--gs))}
+.dmh.ok{transform:translateY(-8px)}.dmh.ok .dmt{filter:drop-shadow(0 0 8px rgba(255,211,107,.9))}
+.dmh.pick{transform:translateY(-18px) scale(1.08)}.dmh:disabled{cursor:default}
+.mmgrid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:10px;max-width:560px;margin-inline:auto;width:100%}
+.mmc{aspect-ratio:1;border:0;padding:0;background:none;perspective:600px}
+.mmc .in{position:relative;display:block;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.mmc.up .in{transform:rotateY(180deg)}
+.mmc .back,.mmc .face{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;display:grid;place-items:center}
+.mmc .back{background:repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 6px,transparent 6px 14px),linear-gradient(150deg,#ff8a1f,#e3264f);box-shadow:0 5px 0 rgba(0,0,0,.35),inset 0 0 0 3px rgba(255,255,255,.4)}
+.mmc .back::after{content:"T7";font:900 calc(20px*var(--gs)) var(--f-display);color:rgba(255,255,255,.85)}
+.mmc .face{transform:rotateY(180deg);background:#fffdf7;font-size:calc(min(11vw,58px)*var(--gs));box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.mmc.done .face{background:#d9ffe8;box-shadow:0 0 0 4px #2fe08a,0 5px 0 rgba(0,0,0,.2)}
+.wgballoons{display:flex;justify-content:center;gap:6px;font-size:calc(38px*var(--gs))}
+.wgb{animation:gfloat 2.4s ease-in-out infinite;animation-delay:calc(var(--h) * 1ms);filter:hue-rotate(calc(var(--h) * 1deg))}
+.wgb.pop{animation:none;filter:none}
+@keyframes gfloat{50%{transform:translateY(-8px)}}
+.wgword{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.wgword .l{width:calc(34px*var(--gs));height:calc(46px*var(--gs));border-bottom:4px solid #ffd36b;display:grid;place-items:center;font:900 calc(28px*var(--gs)) var(--f-display);color:#fff}
+.wgword .l.on{animation:ghop .3s}
+.wgword .gap{width:calc(18px*var(--gs))}
+.wgkeys{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.wgkeys button{aspect-ratio:1;border:0;border-radius:12px;background:linear-gradient(180deg,#3d6cff,#1f4fd6);color:#fff;font:900 calc(18px*var(--gs)) var(--f-display);box-shadow:0 4px 0 #0f2a7a;padding:0;min-width:0}
+.wgkeys button.hit{background:linear-gradient(180deg,#2fe08a,#10a35c);box-shadow:0 4px 0 #0a5a32}
+.wgkeys button.miss{background:#3a3f55;box-shadow:none;color:#8890a8}
 .hand .pcard.ok .card-svg{filter:drop-shadow(0 0 7px rgba(255,211,107,.95)) drop-shadow(0 4px 6px rgba(0,0,0,.4))}
 .hand .pcard.pick{transform:translateY(-30px) scale(1.1);z-index:5}
 .hand .pcard.pick .card-svg{filter:drop-shadow(0 0 12px #ffd36b) drop-shadow(0 8px 10px rgba(0,0,0,.5))}
@@ -2159,6 +2220,11 @@ function sheetTips(){
     ["Play the computer","Tic-Tac-Toe, Connect Four and Checkers: tap Easy, Medium or Hard. Spades: “Me and a computer partner”, or pick 🤖 Computer for any empty seat in a family game. Trivia: “Just me, against the clock”. Blackjack: “Just me vs the dealer”. Your record against the computer stays on your phone and never counts in the family standings."],
     ["Blackjack","Game Room → 🃏 Blackjack. Alone against the dealer, or a family table of up to four on their own phones. Tap chips to make your bet (10 to 500), then Bet; then Hit, Stand, Double or Split. Blackjack pays 3 to 2; the dealer stands on 17. Everyone starts with 1,000 points. Chips are points for fun, never money."],
     ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt."],
+    ["Wild Card","Game Room → 🌈 Wild Card: Uno's rules. Match the colour, the number or the symbol; a Wild lets you name the colour. Down to two cards? Tap 🔔 before you play, or anyone can tap 🚨 Catch and you draw 2. Play 1, 2 or 3 computers, or a family game of up to four, one round or first to 200."],
+    ["Bid Whist","Game Room → ♣ Bid Whist: couples, partners across, jokers in. Bid 4 to 7 Uptown, Downtown or No Trump; the top bidder takes the kitty, puts back 6 and names trump. First to 7 wins, no trump counts double, and taking all 13 books (a Boston) wins outright."],
+    ["Dominoes","Game Room → 🁫 Dominoes, All Fives. Tap a glowing tile; if it fits two ends, pick Left, Right, Top or Bottom. When the open ends add up to 5, 10, 15 or more by fives, you score it. Can't play? Draw from the boneyard. First to 150."],
+    ["Memory Match","Game Room → 🧠 Memory Match. Flip two cards; a pair stays up. Alone, beat your best number of turns; with 2 to 4 players, pass the phone and the most pairs wins. Easy 12 cards, Medium 16, Hard 20."],
+    ["Word Guess","Game Room → 🔤 Word Guess. Pick Bible, Music or Family & Food and tap letters before all six balloons pop. Or tap “Write a word”, type one secretly and hand the phone over."],
     ["Game sounds","Tap 🔇 at the top of any game to turn sounds on (🔊), and again to turn them off. They start off. Cards, chips, pieces, right and wrong answers, a buzzer for a strike, a fanfare for a win."],
     ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out. The cards you can play lift up and glow gold: tap one, then tap it again (or Play) to put it down."]
   ];
@@ -2204,6 +2270,11 @@ function guideBody(k){
     step(23, "Blackjack", `Tap the <b>Blackjack</b> picture. ${pic("🤖 Just me vs the dealer","primary")} plays on your phone; ${pic("👨‍👩‍👧 Family table · own phones","wine")} opens a table for up to four (pick who's playing, then ${pic("Open the table","primary")}). Everyone starts with <b>1,000 points</b>. Tap the chips (10, 25, 50, 100, 500) to build your bet, then ${pic("Bet","primary")}. When everyone has bet, the cards are dealt: the dealer shows one card. On your turn tap ${pic("Hit","primary")} for another card, ${pic("Stand","wine")} to stay, ${pic("Double")} to double your bet for exactly one more card, or ${pic("Split")} to play a pair as two hands. Over 21 is a bust. The dealer then plays, standing on 17; closest to 21 wins. A blackjack (an ace and a ten-card) pays 3 to 2. ${pic("Deal the next hand","primary")} starts the next round; ${pic("Close the table for everyone","ghost")} ends it and lists everyone's final stack, and the biggest stacks show in the Game Room. <b>Chips are points for fun, never money.</b>`),
     step(24, "Game sounds", `At the top of every game, next to ${pic("A+")}, tap ${pic("🔇")} to turn sounds on; it becomes ${pic("🔊")}. Tap again to turn them off. Sounds start off, and your phone remembers your choice.`),
     step(25, "Movie Night", `Tap ${pic("Our Table")} → <b>🎬 Movie Night</b> → ${pic("🍿 Plan a movie night","primary")}. <b>Pick a movie:</b> posters of what's in theaters now, or type any title and tap ${pic("Search","primary")}. Tap a poster for the story, the age rating, the length, the TMDB score, the cast, viewer reviews and ${pic("▶ Watch the trailer","wine")}. Tap ${pic("🍿 Plan a movie night for this","primary")}: choose the date and the showtime you want, tap ${pic("Find theaters","primary")} and pick one, choose who's invited (and, if you like, which dinner it follows), and tap ${pic("🎬 Send the invitation","primary")}. Everyone invited is told. <b>On the night's page:</b> tap ${pic("Going","primary")}, ${pic("Maybe")} or ${pic("Can't go")}. <b>Tickets:</b> one person going taps ${pic("🎟️ I'll buy the tickets","primary")} so nobody buys twice, then ${pic("Fandango","primary")} or ${pic("Theater website")} to buy them there (the app never buys tickets or moves money). Back in the app they fill in how many, the price, the fees, the seats, the auditorium and the confirmation number, and tap ${pic("✓ I bought the tickets","wine")}. <b>Settling up:</b> everyone going sees their share and the buyer's Zelle, Cash App or Apple Pay; pay them yourself, then tap ${pic("I paid by Zelle","primary")} (or how you paid). Or tap ${pic("I'm paying for my own ticket instead")}. The buyer taps ${pic("✓ Received","wine")} when the money arrives, and your <b>🧾 receipt</b> appears: the movie, date and showtime, theater and address, seats, auditorium, confirmation, your share and “Received by” the buyer.`),
+    step(26, "Wild Card", `Tap the <b>Wild Card</b> picture. ${pic("vs 1 computer")} ${pic("vs 2 computers","primary")} ${pic("vs 3 computers","wine")} play on your phone; ${pic("👨‍👩‍👧 Family game · own phones","wine")} lets you pick up to three players (or 🤖 Computer) and one round or first to 200, then ${pic("Deal Wild Card","primary")}. On your turn the cards you can play glow: tap one, then tap it again or ${pic("Play it","primary")}. A Wild asks for the new colour. Nothing glows? Tap ${pic("🂠 Draw a card")}; if the new card plays you may play it, or tap ${pic("Pass")}. With two cards left tap ${pic("🔔 Call “Last card!”")} first. If someone forgets, ${pic("🚨 Catch","wine")} appears for everyone else.`),
+    step(27, "Bid Whist", `Tap the <b>Bid Whist</b> picture. ${pic("🤖 Me and a computer partner","primary")} plays on your phone; ${pic("👨‍👩‍👧 Deal a family game","wine")} lets you pick your partner and the other couple (🤖 Computer for any seat). <b>Bidding:</b> tap a bid such as ${pic("5 Uptown ⬆","primary")} or ${pic("Pass")}; a higher number beats a lower one, and No Trump beats the same number. If all pass, the dealer must bid. <b>The kitty:</b> the winner gets 6 more cards, taps 6 to put back, then taps a trump suit (or Uptown/Downtown for No Trump). <b>Play:</b> follow suit if you can; the kitty counts as your first book. You need 6 books plus your bid.`),
+    step(28, "Dominoes", `Tap the <b>Dominoes</b> picture: ${pic("vs 1 computer")} to ${pic("vs 3 computers","wine")}, or ${pic("👨‍👩‍👧 Family game · own phones","wine")}. Your tiles that fit glow and rise: tap one. If it fits more than one end, tap ${pic("⬅ Left")} ${pic("Right ➡")} ${pic("⬆ Top")} or ${pic("⬇ Bottom")}. The gold bubble shows the open ends' total; a multiple of 5 scores it. Nothing fits? ${pic("🁢 Draw from the boneyard","primary")}. Going out scores everyone else's leftover dots.`),
+    step(29, "Memory Match", `Tap the <b>Memory Match</b> picture, choose who's playing (just you, or 2 to 4 passing the phone), then ${pic("Easy · 12 cards")} ${pic("Medium · 16 cards","primary")} or ${pic("Hard · 20 cards","wine")}. Tap two cards. A pair glows green and stays up; a miss flips back and, with players, passes the turn. ${pic("Start over")} deals again.`),
+    step(30, "Word Guess", `Tap the <b>Word Guess</b> picture and a category: ${pic("📖 Bible","primary")} ${pic("🎵 Music")} ${pic("🍗 Family & Food","wine")}. Tap letters: right ones turn green and fill in; wrong ones pop a balloon. Six balloons, then the word is shown. ${pic("✍️ Write a word for someone to guess")} hides your word behind dots while you type; tap ${pic("Hide it and start","primary")} and hand the phone over.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2223,6 +2294,11 @@ function guideBody(k){
     step("O", "Couples at the card table", `Richard taps ${pic("Deal a game of Spades","wine")}, picks Jasmine as his partner and Mario and Rosa as the other couple, and taps ${pic("Deal Spades","primary")}. Everyone's phone shows their own 13 cards. Richard bids 4, Mario bids Nil, Jasmine 3, Rosa 5. Hearts are led; Jasmine has none and trumps with the 2♦, but Rosa drops the Big Joker and takes it. At the end of the hand the card reads <b>“Richard &amp; Jasmine bid 7, took 8 → +71”</b>. Mario's nil holds: +100 for his couple.`),
     step("P", "Blackjack after dessert", `Devonte taps the <b>Blackjack</b> picture, then ${pic("👨‍👩‍👧 Family table · own phones","wine")}, marks Mario and Candyce as <b>Playing</b> and taps ${pic("Open the table","primary")}. Each taps chips to bet (Mario goes 100, Candyce 25) and taps ${pic("Bet","primary")}. Devonte has 16 against the dealer's 10 and taps ${pic("Hit","primary")}: a 4, twenty. Candyce has a pair of 8s and taps ${pic("Split")}. The dealer stands on 18; Devonte wins 100. After a few hands Devonte taps ${pic("Close the table for everyone","ghost")}, and the Game Room shows the biggest stacks. Later, waiting for the check, Zoey plays ${pic("Hard","wine")} Connect Four against the computer.`),
     step("Q", "Movie night after Sunday dinner", `Jasmine opens ${pic("🎬 Movie Night")} and taps ${pic("🍿 Plan a movie night","primary")}, finds a family movie in theaters now, reads two viewer reviews and watches the trailer. She picks Saturday at 7:30, taps ${pic("Find theaters","primary")}, chooses one in Memphis, marks it “after” the family dinner, and sends it. Mario taps ${pic("Going","primary")} and ${pic("🎟️ I'll buy the tickets","primary")}, buys five seats on Fandango, and fills in F7–F11, the fees and the confirmation number. Nikki pays Mario $14 by Cash App and taps ${pic("I paid by Cash App","primary")}; Mario taps ${pic("✓ Received","wine")} and Nikki's receipt appears. Devonte already has a gift card, so he taps ${pic("I'm paying for my own ticket instead")}.`),
+    step("R", "Wild Card at the kids' table", `Zoey taps ${pic("👨‍👩‍👧 Family game · own phones","wine")} under Wild Card, picks Mario and Jasmine, and taps ${pic("Deal Wild Card","primary")}. Mario plays a Blue Skip; Jasmine misses her turn. Zoey is down to two, taps ${pic("🔔 Call “Last card!”")} and plays a Wild: “Red!” Mario has no red and draws. Zoey's last card goes down and the confetti falls: “🏆 Zoey wins!”`),
+    step("S", "Bid Whist, the old way", `Richard deals Bid Whist with Jasmine as his partner against Mario and Rosa. Mario passes, Jasmine bids ${pic("4 Uptown ⬆","primary")}, Rosa passes, and Richard, holding both jokers, bids ${pic("5 No Trump ∅","wine")}. He takes the kitty, puts back 6 and taps ${pic("Downtown ⬇")}. They take 12 books: 6 over, doubled for no trump, +12. Seven and out: the game is theirs.`),
+    step("T", "Dominoes on the porch", `Mario plays Dominoes against two computers. The 6-6 goes down first, then the 6-4: the ends show <b>16</b>. He sets the 4-3 on the right: <b>15 ✓ scores!</b> The bubble turns gold and he gets 15. Later he goes out first and takes everyone's leftover dots, rounded to 5.`),
+    step("U", "Memory Match with Grandma", `Jasmine picks <b>2 players</b> and ${pic("Easy · 12 cards")}. She finds the 🍕 pair and goes again; then misses, and the phone goes to Rosa, who remembers where both 🍰 were. Final: Rosa 4, Jasmine 2. “🏆 Player 2 wins!”`),
+    step("V", "A word for Dad", `Zoey taps ${pic("✍️ Write a word for someone to guess")}, types PEACH COBBLER behind the dots and hands the phone to Richard. He tries E, A, then R, and has it with four balloons still floating.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2268,6 +2344,12 @@ function guideBody(k){
     ["Find theaters shows nothing", "Pick another area in the list next to it. Google only lists cinemas inside the area you choose."],
     ["I can't tap I'll buy the tickets", "Tap Going first. And only one person can be buying: if someone already is, their name shows instead."],
     ["My movie receipt isn't there", "It appears when the buyer taps Received. If you paid for your own ticket, tap Paying for myself and it shows at once."],
+    ["Wild Card won't let me play my card", "Only glowing cards play: same colour, same number or symbol, or a Wild. After you draw, only the card you drew can play; otherwise tap Pass."],
+    ["Someone caught me at Wild Card", "You went down to one card without calling “Last card!”. Tap 🔔 before you play your second-to-last card next time."],
+    ["I can't pass in Bid Whist", "Everyone else passed and you're the dealer: the dealer must bid."],
+    ["The trump buttons are grey", "Pick exactly 6 cards to put back first. The counter shows how many you've picked."],
+    ["My domino won't go down", "It has to match an open end. The top and bottom of the first double only open once both of its sides have a tile."],
+    ["“Picking up your cards…” stays on", "Your phone is asking the table for your hand. Check your signal; it tries again by itself."],
     ["I don't hear any sounds", "Tap 🔇 at the top of the game so it shows 🔊, and check your phone isn't on silent."],
     ["The Trivia clock ran out", "Time's up passes the same question to the other team for one steal. Nobody can stop the clock: it's kept on our server, not on any phone."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
@@ -2286,10 +2368,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Play seven family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud and Blackjack</li><li>Play against the computer (Easy, Medium, Hard), with computers filling empty Spades seats</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Play twelve games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match and Word Guess</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match or Word Guess across phones: they're one-phone games</li><li>Undo a card or tile once it's played</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -3242,6 +3324,388 @@ function spBotPlay(st, hand, seat){
   const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
 }
 /* SPADES RULES END */
+/* DOMINOES RULES START */
+// Table of 7 Dominoes, ALL FIVES TO 150 (his choice, 2026-10-17). ONE copy of the rules: the server (functions/games)
+// runs family games with it, the app carries the identical text (index.html, between the DOMINOES RULES markers) for
+// games against the computer. tests/dominoes_rules_test.mjs proves both.
+// A double-six set (28 tiles). 2 players take 7 tiles each; 3 or 4 players take 5. The first round starts with the
+// highest double; after that the round's winner sets down any tile. Match an open end. If the first tile is a double it
+// is the spinner: once both its sides are played on, its top and bottom open too. Can't play? Draw from the boneyard
+// until you can; when it's empty, pass. Points: after you play, add up the open ends (a double at an end counts both
+// halves; an untouched side of the spinner counts its number). If the total is 5, 10, 15 … you score it. A player who
+// plays their last tile scores everyone else's leftover pips, rounded to the nearest 5. If nobody can play, the lowest
+// hand wins those points. First to 150 wins.
+// A tile is [a, b] with a <= b. A move is {tile:[a,b], end:"E"|"W"|"N"|"S"} (no end for the first tile), {draw:true}
+// or {pass:true}.
+const DM_TARGET = 150;
+function dmSet(){ const s = []; for(let a = 0; a <= 6; a++) for(let b = a; b <= 6; b++) s.push([a, b]); return s; }
+const dmShuffle = (a, rand) => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const dmSame = (x, y) => Math.min(x[0], x[1]) === Math.min(y[0], y[1]) && Math.max(x[0], x[1]) === Math.max(y[0], y[1]);   // either way round
+const dmPips = h => h.reduce((a, t) => a + t[0] + t[1], 0);
+const dmRound5 = n => Math.round(n / 5) * 5;
+function dmDeal(st, sec, starter, rand){
+  const d = dmShuffle(dmSet(), rand), each = st.n === 2 ? 7 : 5;
+  sec.hands = st.seats.map((_, k) => d.slice(k * each, k * each + each)); sec.yard = d.slice(st.n * each);
+  let turn = starter;
+  if(starter === null){                                       // the first round: the highest double starts
+    let best = -1; sec.hands.forEach((h, k) => h.forEach(t => { if(t[0] === t[1] && t[0] > best){ best = t[0]; turn = k; } }));
+    if(turn === null) turn = 0;
+  }
+  Object.assign(st, { center: null, arms: { E: [], W: [], N: [], S: [] }, turn, passes: 0, last: null, counts: sec.hands.map(h => h.length), yard: sec.yard.length });
+}
+function dmInit(seats, rand = Math.random){
+  const st = { seats, n: seats.length, score: seats.map(() => 0), round: 1, lastRound: null, winSeat: null }, sec = {};
+  dmDeal(st, sec, null, rand); return { st, sec };
+}
+const dmSpinner = st => st.center && st.center[0] === st.center[1];
+// the open ends: each is {end, val, dbl} (val is the number to match; dbl when a double sits at that end)
+function dmEnds(st){
+  if(!st.center) return [];
+  const c = st.center, out = [];
+  for(const e of ["W", "E"]){ const arm = st.arms[e]; if(arm.length){ const t = arm[arm.length - 1]; out.push({ end: e, val: t[1], dbl: t[0] === t[1] }); } else out.push({ end: e, val: e === "W" ? c[0] : c[1], dbl: dmSpinner(st) }); }
+  if(dmSpinner(st) && st.arms.E.length && st.arms.W.length) for(const e of ["N", "S"]){ const arm = st.arms[e]; if(arm.length){ const t = arm[arm.length - 1]; out.push({ end: e, val: t[1], dbl: t[0] === t[1] }); } else out.push({ end: e, val: c[0], open: true }); }
+  return out;
+}
+// the open-end total that scores when it is a multiple of 5
+function dmCount(st){
+  if(!st.center) return 0;
+  const c = st.center, sp = dmSpinner(st);
+  if(!st.arms.E.length && !st.arms.W.length) return c[0] + c[1];
+  let t = 0;
+  for(const e of ["W", "E"]){ const arm = st.arms[e]; if(arm.length){ const x = arm[arm.length - 1]; t += x[0] === x[1] ? x[1] * 2 : x[1]; } else t += sp ? c[0] : (e === "W" ? c[0] : c[1]); }
+  for(const e of ["N", "S"]){ const arm = st.arms[e]; if(arm.length){ const x = arm[arm.length - 1]; t += x[0] === x[1] ? x[1] * 2 : x[1]; } }
+  return t;
+}
+function dmMoves(st, hand){
+  if(!st.center) return hand.map(t => ({ tile: t }));
+  const out = [];
+  for(const t of hand) for(const e of dmEnds(st)) if(t[0] === e.val || t[1] === e.val) out.push({ tile: t, end: e.end });
+  return out;
+}
+function dmApply(st0, sec0, seat, mv, rand = Math.random){
+  const st = JSON.parse(JSON.stringify(st0)), sec = JSON.parse(JSON.stringify(sec0));
+  if(seat !== st.turn) throw new Error("turn");
+  const hand = sec.hands[seat], moves = dmMoves(st, hand);
+  const sync = () => { st.counts = sec.hands.map(h => h.length); st.yard = sec.yard.length; };
+  const next = () => { st.turn = (seat + 1) % st.n; };
+  if(mv && mv.draw === true){
+    if(moves.length || !sec.yard.length) throw new Error("illegal");
+    hand.push(sec.yard.pop()); st.last = { seat, drew: true }; sync(); return { st, sec, over: null };
+  }
+  if(mv && mv.pass === true){
+    if(moves.length || sec.yard.length) throw new Error("illegal");
+    st.passes += 1; st.last = { seat, passed: true }; next();
+    if(st.passes >= st.n){                                    // blocked: the lowest hand takes the points
+      const tot = sec.hands.map(dmPips), low = Math.min(...tot), w = tot.indexOf(low);
+      return dmEndRound(st, sec, w, dmRound5(tot.reduce((a, x, i) => a + (i === w ? 0 : x), 0)), "blocked", rand);
+    }
+    sync(); return { st, sec, over: null };
+  }
+  const t = mv && mv.tile; if(!Array.isArray(t) || t.length !== 2) throw new Error("illegal");
+  const tile = [Math.min(t[0], t[1]), Math.max(t[0], t[1])];
+  const ok = moves.find(m => dmSame(m.tile, tile) && (!st.center || m.end === mv.end));
+  if(!ok) throw new Error("illegal");
+  sec.hands[seat] = hand.filter(x => !dmSame(x, tile));
+  if(!st.center) st.center = tile;
+  else {
+    const e = dmEnds(st).find(x => x.end === mv.end);
+    st.arms[mv.end].push(tile[0] === e.val ? [tile[0], tile[1]] : [tile[1], tile[0]]);   // [the side that matches, the new open side]
+  }
+  st.passes = 0;
+  const count = dmCount(st), pts = count > 0 && count % 5 === 0 ? count : 0;
+  st.score[seat] += pts; st.last = { seat, tile, end: mv.end || null, count, pts };
+  if(!sec.hands[seat].length){
+    const bonus = dmRound5(sec.hands.reduce((a, h, i) => a + (i === seat ? 0 : dmPips(h)), 0));
+    return dmEndRound(st, sec, seat, bonus, "domino", rand);
+  }
+  if(st.score[seat] >= DM_TARGET){ st.winSeat = seat; sync(); return { st, sec, over: { winSeat: seat, why: `${st.score[seat]} points` } }; }
+  next(); sync(); return { st, sec, over: null };
+}
+function dmEndRound(st, sec, w, bonus, how, rand){
+  st.score[w] += bonus; st.lastRound = { round: st.round, winner: w, bonus, how };
+  if(Math.max(...st.score) >= DM_TARGET){ const top = Math.max(...st.score), ws = st.score.indexOf(top); st.winSeat = ws;
+    st.counts = sec.hands.map(h => h.length); st.yard = sec.yard.length; return { st, sec, over: { winSeat: ws, why: `${top} points` } }; }
+  st.round += 1; dmDeal(st, sec, w, rand);
+  return { st, sec, over: null };
+}
+// ---- the computer player: the move that scores most, else the heaviest tile (doubles first)
+function dmBot(st, hand, seat){
+  if(seat !== st.turn) return null;
+  const moves = dmMoves(st, hand);
+  if(!moves.length) return st.yard > 0 ? { draw: true } : { pass: true };
+  const val = m => { const x = dmApply(st, { hands: st.seats.map((_, i) => i === seat ? hand : []), yard: [] }, seat, m, () => 0.5);
+    return (x.st.last?.pts || 0) * 10 + m.tile[0] + m.tile[1] + (m.tile[0] === m.tile[1] ? 3 : 0); };
+  return [...moves].map(m => ({ m, v: (() => { try { return val(m); } catch { return -1; } })() })).sort((a, b) => b.v - a.v)[0].m;
+}
+/* DOMINOES RULES END */
+/* BIDWHIST RULES START */
+// Table of 7 Bid Whist (his order, 2026-10-17), HIS HOUSE RULES: JOKERS IN, FIRST TO 7, NO-TRUMP COUNTS DOUBLE, A
+// BOSTON WINS. ONE copy of the rules: the server (functions/games) runs family games with it, the app carries the
+// identical text (index.html, between the BIDWHIST RULES markers) for a game with computer partners.
+// tests/bidwhist_rules_test.mjs proves both.
+// 54 cards (both jokers in). Four players, partners across: seats 0 and 2 are team 1, seats 1 and 3 are team 2.
+// 12 cards each, 6 to the kitty. Bidding: once around from the dealer's left. A bid is 4 to 7 books over six, called
+// uptown (high cards win), downtown (low cards win: A, 2, 3 … K) or no trump. A bid must beat the one before it: a
+// bigger number, or the same number in no trump over a trump bid. Everyone may pass, except the dealer when everyone
+// else has passed: then the dealer must bid at least 4. The winner picks up the kitty, puts 6 cards back (they count as
+// the team's first book), names trump (in no trump: the direction) and leads. Follow suit if you can. In a trump game
+// the Big Joker, then the Little Joker, then the trump suit win; the jokers ARE trumps. In no trump the jokers belong to
+// no suit and never win a book. Scoring: the bidding team needs 6 + the bid in books (the kitty is one). Made: the
+// books over six. Set: minus the bid. No trump counts double. All 13 books (a Boston) wins the game. First to 7 wins;
+// a team at minus 7 loses.
+// Cards: suit letter + rank 2..14 (11 J, 12 Q, 13 K, 14 A), "BJ", "LJ".
+const BW_TARGET = 7;
+function bwDeck(){ const d = ["BJ", "LJ"]; for(const s of ["S", "H", "D", "C"]) for(let r = 2; r <= 14; r++) d.push(s + r); return d; }
+const bwShuffle = (a, rand) => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const bwJoker = c => c === "BJ" || c === "LJ";
+// the suit a card follows in play: jokers are trumps in a trump game, and have no suit in no trump
+const bwSuit = (st, c) => bwJoker(c) ? (st.trump ? st.trump : null) : c[0];
+// higher wins: uptown A K Q … 2, downtown A 2 3 … K
+function bwRankPower(st, c){ const r = Number(c.slice(1)); return st.dir === "down" ? (r === 14 ? 14 : 15 - r) : r; }
+function bwPower(st, c){
+  if(bwJoker(c)) return st.trump ? (c === "BJ" ? 200 : 199) : -1;
+  return bwRankPower(st, c) + (st.trump && c[0] === st.trump ? 100 : 0);
+}
+const BW_SUIT_ORDER = { S: 0, H: 1, D: 2, C: 3 };
+const bwSort = h => [...h].sort((a, b) => (bwJoker(a) ? -1 : BW_SUIT_ORDER[a[0]]) - (bwJoker(b) ? -1 : BW_SUIT_ORDER[b[0]]) || (bwJoker(a) || bwJoker(b) ? (a === "BJ" ? -1 : 1) : Number(b.slice(1)) - Number(a.slice(1))));
+function bwFresh(st, sec, dealer, rand){
+  const d = bwShuffle(bwDeck(), rand);
+  sec.hands = [0, 1, 2, 3].map(k => bwSort(d.slice(k * 12, k * 12 + 12))); sec.kitty = d.slice(48);
+  Object.assign(st, { dealer, phase: "bid", seat: (dealer + 1) % 4, bids: [null, null, null, null], high: null, bidder: null,
+    trump: null, dir: "up", nt: false, trick: [], last: null, books: [0, 0], counts: [12, 12, 12, 12] });
+}
+function bwInit(seats, rand = Math.random){
+  const st = { seats, score: [0, 0], hand: 1, lastHand: null }, sec = {};
+  bwFresh(st, sec, 3, rand); return { st, sec };
+}
+const bwBidRank = b => b.n * 2 + (b.mode === "nt" ? 1 : 0);
+function bwCanBid(st, b){
+  if(!b || !Number.isInteger(b.n) || b.n < 4 || b.n > 7 || !["up", "down", "nt"].includes(b.mode)) return false;
+  return !st.high || bwBidRank(b) > bwBidRank(st.high);
+}
+function bwLegal(st, hand){
+  if(st.phase !== "play") return [];
+  if(!st.trick.length) return [...hand];
+  const lead = st.trick.map(t => bwSuit(st, t.card)).find(s => s !== null);
+  if(!lead) return [...hand];                                  // only a no-trump joker has been played
+  const same = hand.filter(c => bwSuit(st, c) === lead);
+  return same.length ? same : [...hand];
+}
+function bwWinner(st, trick){
+  const lead = trick.map(t => bwSuit(st, t.card)).find(s => s !== null);
+  let best = null;
+  for(const t of trick){
+    const s = bwSuit(st, t.card), trumpCard = st.trump && s === st.trump, p = bwPower(st, t.card);
+    if(p < 0) continue;
+    const ok = trumpCard || s === lead;
+    if(!ok) continue;
+    const score = (trumpCard ? 1000 : 0) + p;
+    if(!best || score > best.score) best = { seat: t.seat, score };
+  }
+  return best ? best.seat : trick[0].seat;
+}
+// mv: {bid:{n, mode} | null} while bidding · {discard:[6 cards], trump?:suit, dir?} for the bidder with the kitty · {card}
+function bwApply(st0, sec0, seat, mv, rand = Math.random){
+  const st = JSON.parse(JSON.stringify(st0)), sec = JSON.parse(JSON.stringify(sec0));
+  if(seat !== st.seat) throw new Error("turn");
+  if(st.phase === "bid"){
+    const b = mv ? mv.bid : undefined, dealer = seat === st.dealer;
+    if(b === null || b === undefined){
+      if(dealer && !st.high) throw new Error("dealer");        // everyone passed: the dealer must bid
+      st.bids[seat] = "pass";
+    } else { if(!bwCanBid(st, b)) throw new Error("illegal"); st.bids[seat] = { n: b.n, mode: b.mode }; st.high = { n: b.n, mode: b.mode }; st.bidder = seat; }
+    if(dealer){
+      st.phase = "kitty"; st.seat = st.bidder; st.nt = st.high.mode === "nt"; st.dir = st.high.mode === "down" ? "down" : "up";
+      sec.hands[st.bidder] = bwSort([...sec.hands[st.bidder], ...sec.kitty]); sec.kitty = []; st.counts[st.bidder] = 18;
+    } else st.seat = (seat + 1) % 4;
+    return { st, sec, over: null };
+  }
+  if(st.phase === "kitty"){
+    const dis = mv && mv.discard, hand = sec.hands[seat];
+    if(!Array.isArray(dis) || dis.length !== 6 || new Set(dis).size !== 6 || !dis.every(c => hand.includes(c))) throw new Error("illegal");
+    if(st.nt){ if(!["up", "down"].includes(mv.dir)) throw new Error("illegal"); st.dir = mv.dir; st.trump = null; }
+    else { if(!["S", "H", "D", "C"].includes(mv.trump)) throw new Error("illegal"); st.trump = mv.trump; }
+    sec.hands[seat] = bwSort(hand.filter(c => !dis.includes(c))); sec.kitty = dis; st.counts[seat] = 12;
+    st.books[seat % 2] += 1;                                   // the kitty is the bidding team's first book
+    st.phase = "play"; st.seat = seat;                         // the bidder leads
+    return { st, sec, over: null };
+  }
+  if(st.phase !== "play") throw new Error("illegal");
+  const card = mv && mv.card;
+  if(!bwLegal(st, sec.hands[seat]).includes(card)) throw new Error("illegal");
+  sec.hands[seat] = sec.hands[seat].filter(c => c !== card); st.counts[seat] -= 1;
+  st.trick.push({ seat, card });
+  if(st.trick.length < 4){ st.seat = (seat + 1) % 4; return { st, sec, over: null }; }
+  const w = bwWinner(st, st.trick); st.books[w % 2] += 1; st.last = { trick: st.trick, winner: w }; st.trick = []; st.seat = w;
+  if(st.counts.some(n => n > 0)) return { st, sec, over: null };
+  // the hand is over
+  const team = st.bidder % 2, got = st.books[team], need = 6 + st.high.n, mult = st.nt ? 2 : 1;
+  const boston = got === 13, made = got >= need, pts = made ? (got - 6) * mult : -st.high.n * mult;
+  st.score[team] += pts;
+  st.lastHand = { hand: st.hand, bidder: st.bidder, bid: st.high, trump: st.trump, dir: st.dir, books: st.books, made, pts, boston };
+  const [a, b] = st.score;
+  if(boston) return { st, sec, over: { winner: team, why: "a Boston" } };
+  if(a >= BW_TARGET || b >= BW_TARGET || a <= -BW_TARGET || b <= -BW_TARGET){
+    const winner = a <= -BW_TARGET ? 1 : b <= -BW_TARGET ? 0 : a === b ? team : a > b ? 0 : 1;
+    return { st, sec, over: { winner, why: `${a} to ${b}` } };
+  }
+  st.hand += 1; bwFresh(st, sec, (st.dealer + 1) % 4, rand);
+  return { st, sec, over: null };
+}
+// ---- the computer player
+function bwStrength(hand, mode){
+  const j = hand.filter(bwJoker).length, plain = hand.filter(c => !bwJoker(c));
+  const by = {}; plain.forEach(c => (by[c[0]] ||= []).push(Number(c.slice(1))));
+  const longest = Math.max(0, ...Object.values(by).map(x => x.length));
+  let t = 0;
+  for(const rs of Object.values(by)) for(const r of rs){
+    if(r === 14) t += 1;
+    else if(mode === "down" ? r === 2 : r === 13) t += rs.length >= 2 ? 0.7 : 0.3;
+    else if(mode === "down" ? r === 3 : r === 12) t += rs.length >= 3 ? 0.4 : 0;
+  }
+  return t + (mode === "nt" ? 0 : j + Math.max(0, longest - 3) * 0.8);
+}
+function bwBot(st, hand, seat){
+  if(seat !== st.seat) return null;
+  if(st.phase === "bid"){
+    const best = ["up", "down"].map(m => ({ m, s: bwStrength(hand, m) })).sort((a, b) => b.s - a.s)[0];
+    const n = Math.min(7, Math.floor(1 + best.s + 3 - 6 + 0.5));   // the kitty + my sure books + about 3 from my partner
+    const bid = { n: Math.max(4, n), mode: best.m };
+    if(n >= 4 && bwCanBid(st, bid)) return { bid };
+    if(seat === st.dealer && !st.high) return { bid: { n: 4, mode: best.m } };
+    return { bid: null };
+  }
+  if(st.phase === "kitty"){
+    const by = {}; hand.filter(c => !bwJoker(c)).forEach(c => (by[c[0]] ||= []).push(c));
+    const trump = Object.entries(by).sort((a, b) => b[1].length - a[1].length)[0][0];
+    const keep = c => bwJoker(c) || (!st.nt && c[0] === trump);
+    const weak = hand.filter(c => !keep(c)).sort((a, b) => bwRankPower({ dir: st.dir }, a) - bwRankPower({ dir: st.dir }, b));
+    const discard = (weak.length >= 6 ? weak : [...weak, ...hand.filter(keep).reverse()]).slice(0, 6);
+    return st.nt ? { discard, dir: "up" } : { discard, trump };
+  }
+  const legal = bwLegal(st, hand); if(legal.length === 1) return { card: legal[0] };
+  const pw = c => bwPower(st, c) + (st.trump && bwSuit(st, c) === st.trump ? 1000 : 0);
+  const low = cs => [...cs].sort((a, b) => pw(a) - pw(b))[0], high = cs => [...cs].sort((a, b) => pw(b) - pw(a))[0];
+  const isTrump = c => st.trump && bwSuit(st, c) === st.trump, side = legal.filter(c => !isTrump(c));
+  const cheap = cs => { const plain = cs.filter(c => !isTrump(c) && bwPower(st, c) >= 0); return low(plain.length ? plain : cs); };
+  if(!st.trick.length){                                       // leading: the bidders pull trumps, the others cash their best side card
+    const trumps = legal.filter(isTrump);
+    if(seat % 2 === st.bidder % 2 && trumps.length >= 2) return { card: high(trumps) };
+    return { card: side.length ? high(side) : high(legal) };
+  }
+  const wins = legal.filter(c => bwWinner(st, [...st.trick, { seat, card: c }]) === seat);
+  const partner = (seat + 2) % 4, now = bwWinner(st, st.trick);
+  if(now === partner && (st.trick.length === 3 || bwPower(st, st.trick.find(t => t.seat === partner).card) >= 113)) return { card: cheap(legal) };
+  return { card: wins.length ? low(wins) : cheap(legal) };
+}
+/* BIDWHIST RULES END */
+/* WILDCARD RULES START */
+// Table of 7 Wild Card (his order, 2026-10-17: "add UNO"). Uno's rules under our own name and card art (UNO is
+// Mattel's). ONE copy of the rules: the server (functions/games) runs family games with it, the app carries the
+// identical text (index.html, between the WILDCARD RULES markers) for games against the computer.
+// tests/wildcard_rules_test.mjs proves both.
+// 108 cards: red, yellow, green, blue — one 0, two each of 1-9, Skip, Reverse and Draw Two — plus 4 Wild and 4 Wild
+// Draw Four. 7 cards each; the first card turned up is always a number. Match the color, the number or the symbol, or
+// play a Wild (you name the color). Can't play? Draw one; if it plays you may play it, else your turn ends. Skip: the
+// next player misses a turn. Reverse: the direction turns (with two players it works as a Skip). Draw Two / Wild Draw
+// Four: the next player draws 2 / 4 and misses a turn. Going down to one card? Call "Last card!" as you play it, or any
+// other player can catch you before the next move and you draw 2. First to play their last card wins the round and
+// scores the cards left in everyone else's hand (numbers at face value, action cards 20, wilds 50). One round, or to 200.
+// Cards: color letter + 0-9 | S (skip) | R (reverse) | D (draw two); "W" and "W4" for the wilds.
+const WC_COLORS = ["R", "Y", "G", "B"], WC_TARGETS = [0, 200];
+function wcDeck(){
+  const d = [];
+  for(const c of WC_COLORS){ d.push(c + "0"); for(let n = 1; n <= 9; n++) d.push(c + n, c + n); for(const a of ["S", "R", "D"]) d.push(c + a, c + a); }
+  for(let i = 0; i < 4; i++) d.push("W", "W4");
+  return d;
+}
+const wcShuffle = (a, rand) => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const wcWild = c => c === "W" || c === "W4";
+const wcColor = c => wcWild(c) ? null : c[0];
+const wcFace = c => wcWild(c) ? c : c.slice(1);
+const wcPoints = c => wcWild(c) ? 50 : /^[SRD]$/.test(wcFace(c)) ? 20 : Number(wcFace(c));
+const wcPlayable = (st, c) => wcWild(c) || wcColor(c) === st.color || wcFace(c) === wcFace(st.top);
+function wcDraw(sec, rand){
+  if(!sec.pile.length){ const top = sec.discard.pop(); sec.pile = wcShuffle(sec.discard, rand); sec.discard = [top]; }
+  return sec.pile.pop();
+}
+function wcDealRound(st, sec, start, rand){
+  sec.pile = wcShuffle(wcDeck(), rand); sec.discard = [];
+  sec.hands = st.seats.map(() => []);
+  for(let k = 0; k < 7; k++) sec.hands.forEach(h => h.push(sec.pile.pop()));
+  let top = sec.pile.pop(); while(!/^\d$/.test(wcFace(top))){ sec.pile.unshift(top); top = sec.pile.pop(); }
+  sec.discard.push(top);
+  Object.assign(st, { top, color: wcColor(top), turn: start, start, dir: 1, drew: false, unsafe: null, last: null, counts: sec.hands.map(h => h.length), pile: sec.pile.length });
+}
+// seats: 2-4 player ids (computer seats "bot:1".."bot:3") -> { st (public), sec (hands, draw pile, discards) }
+function wcInit(seats, target, rand = Math.random){
+  const st = { seats, n: seats.length, target: WC_TARGETS.includes(target) ? target : 0, score: seats.map(() => 0), round: 1, lastRound: null, winSeat: null };
+  const sec = {}; wcDealRound(st, sec, 0, rand); return { st, sec };
+}
+const wcStep = (st, from, k) => ((from + k * st.dir) % st.n + st.n * 4) % st.n;
+// what the player whose turn it is may play now (after drawing, only the drawn card)
+function wcLegal(st, hand){
+  if(st.drew) return hand.length && wcPlayable(st, hand[hand.length - 1]) ? [hand[hand.length - 1]] : [];
+  return hand.filter(c => wcPlayable(st, c));
+}
+// mv: {card, color?, last?} | {draw:true} | {pass:true} | {catch:true} (any other player, while someone forgot "Last card!")
+function wcApply(st0, sec0, seat, mv, rand = Math.random){
+  const st = JSON.parse(JSON.stringify(st0)), sec = JSON.parse(JSON.stringify(sec0));
+  const sync = () => { st.counts = sec.hands.map(h => h.length); st.pile = sec.pile.length; };
+  if(mv && mv.catch === true){
+    if(st.unsafe === null || seat === st.unsafe || seat < 0 || seat >= st.n) throw new Error("illegal");
+    const v = st.unsafe; sec.hands[v].push(wcDraw(sec, rand), wcDraw(sec, rand)); st.unsafe = null; st.last = { seat, caught: v }; sync();
+    return { st, sec, over: null };
+  }
+  if(seat !== st.turn) throw new Error("turn");
+  st.unsafe = null;
+  const hand = sec.hands[seat];
+  if(mv && mv.draw === true){
+    if(st.drew) throw new Error("illegal");
+    const c = wcDraw(sec, rand); hand.push(c); st.drew = true; st.last = { seat, drew: true };
+    if(!wcPlayable(st, c)){ st.drew = false; st.turn = wcStep(st, seat, 1); st.last.passed = true; }
+    sync(); return { st, sec, over: null };
+  }
+  if(mv && mv.pass === true){
+    if(!st.drew) throw new Error("illegal");
+    st.drew = false; st.turn = wcStep(st, seat, 1); st.last = { seat, passed: true }; sync(); return { st, sec, over: null };
+  }
+  const c = mv && mv.card;
+  if(!wcLegal(st, hand).includes(c)) throw new Error("illegal");
+  if(wcWild(c) && !WC_COLORS.includes(mv.color)) throw new Error("color");
+  hand.splice(hand.lastIndexOf(c), 1); sec.discard.push(c);
+  st.top = c; st.color = wcWild(c) ? mv.color : wcColor(c); st.drew = false;
+  st.last = { seat, card: c, color: st.color };
+  const f = wcFace(c);
+  let next = wcStep(st, seat, 1);
+  if(f === "S") next = wcStep(st, seat, 2);
+  else if(f === "R"){ st.dir *= -1; next = st.n === 2 ? seat : wcStep(st, seat, 1); }
+  else if(f === "D" || c === "W4"){ const v = wcStep(st, seat, 1); const k = f === "D" ? 2 : 4; for(let i = 0; i < k; i++) sec.hands[v].push(wcDraw(sec, rand)); st.last.hit = v; next = wcStep(st, seat, 2); }
+  if(!hand.length){                                   // the round is won
+    const pts = sec.hands.reduce((a, h, i) => a + (i === seat ? 0 : h.reduce((x, y) => x + wcPoints(y), 0)), 0);
+    st.score[seat] += pts; st.lastRound = { round: st.round, winner: seat, pts };
+    if(!st.target || st.score[seat] >= st.target){ st.winSeat = seat; sync(); return { st, sec, over: { winSeat: seat, why: st.target ? `${st.score[seat]} points` : `played out in round ${st.round}` } }; }
+    st.round += 1; wcDealRound(st, sec, (st.start + 1) % st.n, rand); return { st, sec, over: null };
+  }
+  if(hand.length === 1 && mv.last !== true) st.unsafe = seat;
+  if(hand.length === 1 && mv.last === true) st.last.called = true;
+  st.turn = next; sync();
+  return { st, sec, over: null };
+}
+// ---- the computer player: plays only legal cards; keeps wilds for last; hits the next player when they're close to out
+function wcBot(st, hand, seat, rand = Math.random){
+  if(st.unsafe !== null && st.unsafe !== seat && rand() < 0.5) return { catch: true };
+  if(seat !== st.turn) return null;
+  const legal = wcLegal(st, hand);
+  if(!legal.length) return st.drew ? { pass: true } : { draw: true };
+  const nextCount = st.counts[wcStep(st, seat, 1)];
+  const by = c => (nextCount <= 2 && /^[SD]$|^W4$/.test(wcFace(c)) ? 100 : 0) + (wcWild(c) ? -50 : 0) + wcPoints(c);
+  const card = [...legal].sort((a, b) => by(b) - by(a))[0];
+  const mv = { card, last: hand.length === 2 && rand() < 0.9 };
+  if(wcWild(card)){ const cnt = { R: 0, Y: 0, G: 0, B: 0 }; hand.forEach(x => { if(!wcWild(x)) cnt[wcColor(x)]++; }); mv.color = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0][0]; }
+  return mv;
+}
+/* WILDCARD RULES END */
 /* BLACKJACK RULES START */
 // Table of 7 Blackjack (his order, 2026-10-17). ONE copy of the rules: the server (functions/games) runs a family
 // table with it, and the app carries the identical text (index.html, between the BLACKJACK RULES markers) for a game
@@ -3354,7 +3818,7 @@ function bjCan(st, p){
    server: every move goes through functions/games, which checks the player, the turn and the move with the very same
    rules above, so the board on every phone agrees and no one can move for someone else. */
 const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"], trivia: ["Team 1", "Team 2"] };
-const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack" };
+const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack", wildcard: "Wild Card", bidwhist: "Bid Whist", dominoes: "Dominoes", memory: "Memory Match", wordguess: "Word Guess" };
 /* FEUD PROMPTS START (a copy of functions/games/feud.js FEUD_PROMPTS; tests/feud_rules_test.mjs proves they match) */
 const FEUD_PROMPTS = [
   "Name something the family always orders when we eat out.",
@@ -3394,7 +3858,8 @@ const gTable = g => g.kind === "trivia" && g.st?.table === true;     // Trivia a
 let gView = null;            // {local:true, kind, st, turn, over, names} or {id} for a family game
 let gSel = null;             // checkers: the piece picked up
 const gFeud = g => g.kind === "feud", gJudge = g => gFeud(g) && g.by === st.me;
-const gMine = g => g.kind === "spades" ? g.st.seats[g.st.seat] === st.me : g.kind === "blackjack" ? bjMine(g) : gMySide(g) === g.turn;   // is it my move now?
+const gMine = g => g.kind === "spades" ? g.st.seats[g.st.seat] === st.me : g.kind === "blackjack" ? bjMine(g) : TB[g.kind] ? g.st.seats[TB[g.kind].turn(g.st)] === st.me : gMySide(g) === g.turn;
+const gFfa = g => g.kind === "wildcard" || g.kind === "dominoes";      // everyone for themselves: the winner is st.winSeat   // is it my move now?
 const gMySide = g => gFeud(g) ? (gJudge(g) ? g.turn : -1) : gTable(g) ? ((g.a || []).includes(st.me) ? g.turn : -1) : (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
 const gNames = ids => (ids || []).map(id => first(F(id)?.name || "Someone")).join(" & ");
 const gSideName = (g, side) => gTable(g) ? (g.st.teams || GLOOK.trivia)[side] : gNames(side === 0 ? g.a : g.b);
@@ -3408,8 +3873,10 @@ const gWhyNot = c => ({not_your_turn:"It's not your turn yet.", stale:"The board
   survey_closed:"That survey is closed.", blank:"Answer every question.", few:"Wait until at least two people have answered.", not_starter:"Only the person who started the survey, or the host, can close it.",
   no_answers:"Nobody answered that survey.", four:"Spades needs two on each team.", not_judge:"Only the judge runs the board.", prompts:"Write at least one question.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
 function gStandings(){
-  const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g) && g.kind !== "blackjack" && ![...g.a, ...g.b].some(x => String(x).startsWith("bot:"))).forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
-    if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
+  const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g) && g.kind !== "blackjack" && !(gFfa(g) && g.why === "stopped") && ![...g.a, ...g.b].some(x => String(x).startsWith("bot:"))).forEach(g => {
+    const ppl = gFfa(g) ? [...new Set(g.a)] : [...g.a, ...g.b]; ppl.forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
+    if(gFfa(g)){ const wid = g.st.seats[g.st.winSeat]; if(w[wid]) w[wid].w++; }
+    else if(g.winner === 2) ppl.forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
   return Object.entries(w).sort((x, y) => y[1].w - x[1].w || y[1].d - x[1].d);
 }
 /* ===== Game art (his order, 2026-10-17): every game is drawn, never a box of words. Vectors, so sharp at any size. ===== */
@@ -3434,6 +3901,7 @@ function gDefs(){
     ${Object.entries(SUIT_PATH).map(([k, p]) => `<symbol id="su-${k}" viewBox="0 0 100 100"><path d="${p}"/></symbol>`).join("")}
     <linearGradient id="cf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1eee6"/></linearGradient>
     <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".5" stop-color="#f2c23a"/><stop offset="1" stop-color="#a87a10"/></linearGradient>
+    <linearGradient id="ivory" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf5"/><stop offset="1" stop-color="#ece3cc"/></linearGradient>
     <radialGradient id="skin" cx=".45" cy=".4" r=".65"><stop offset="0" stop-color="#ffe0bd"/><stop offset="1" stop-color="#d9a06a"/></radialGradient>
     <pattern id="bk" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="22" height="22" fill="#0e4a33"/><path d="M0 11H22M11 0V22" stroke="#d7b45a" stroke-width="1.6" opacity=".55"/><circle cx="11" cy="11" r="3" fill="#d7b45a" opacity=".7"/></pattern>
   </defs></svg>`;
@@ -3537,12 +4005,38 @@ function gArt(k){
     ${[0,1,2].map(i => `<rect x="18" y="${24 + i*24}" width="84" height="18" rx="5" fill="${i ? "#2b6dff" : "#ffffff"}"/><circle cx="29" cy="${33 + i*24}" r="6" fill="${i ? "#0d2c86" : "#e9b23a"}" stroke="#e9b23a" stroke-width="1.5"/>`).join("")}
     <text x="39" y="36.5" font-family="Arial,sans-serif" font-weight="900" font-size="7.6" fill="#0b1d55">SURVEY SAYS</text>
     <path d="M70 70L104 104M104 70L70 104" stroke="#ff2d4a" stroke-width="10" stroke-linecap="round"/>`);
+  if(k === "wildcard") return S(`<g transform="rotate(-18 40 70)"><rect x="14" y="24" width="48" height="70" rx="8" fill="#fff"/><rect x="18" y="28" width="40" height="62" rx="6" fill="#e3242b"/><ellipse cx="38" cy="59" rx="14" ry="24" fill="#fff" transform="rotate(-28 38 59)"/><text x="38" y="68" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="24" fill="#e3242b">7</text></g>
+    <g transform="rotate(14 82 70)"><rect x="58" y="24" width="48" height="70" rx="8" fill="#fff"/><rect x="62" y="28" width="40" height="62" rx="6" fill="#1f6fe0"/><ellipse cx="82" cy="59" rx="14" ry="24" fill="#fff" transform="rotate(-28 82 59)"/><text x="82" y="67" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="18" fill="#1f6fe0">+2</text></g>
+    <g><rect x="36" y="16" width="48" height="72" rx="8" fill="#fff"/><rect x="40" y="20" width="40" height="64" rx="6" fill="#141414"/><g transform="rotate(-28 60 52)"><clipPath id="ga-wc"><ellipse cx="60" cy="52" rx="15" ry="25"/></clipPath><g clip-path="url(#ga-wc)"><rect x="40" y="24" width="20" height="28" fill="#e3242b"/><rect x="60" y="24" width="20" height="28" fill="#1f6fe0"/><rect x="40" y="52" width="20" height="28" fill="#f7b500"/><rect x="60" y="52" width="20" height="28" fill="#14a44d"/></g></g><text x="60" y="108" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">WILD</text></g>`);
+  if(k === "bidwhist") return S(`<ellipse cx="60" cy="74" rx="54" ry="34" fill="#0d5a3a" stroke="#d7b45a" stroke-width="3"/>
+    <g transform="rotate(-24 36 60)"><rect x="16" y="26" width="42" height="62" rx="6" fill="#fff" stroke="#bbb"/><text x="24" y="42" font-family="Georgia,serif" font-weight="700" font-size="14" fill="#141414">A</text><use href="#su-C" x="24" y="48" width="26" height="26" fill="#141414"/></g>
+    <g transform="rotate(20 84 60)"><rect x="62" y="26" width="42" height="62" rx="6" fill="#fff" stroke="#bbb"/><text x="70" y="42" font-family="Georgia,serif" font-weight="700" font-size="14" fill="#d0142c">K</text><use href="#su-H" x="70" y="48" width="26" height="26" fill="#d0142c"/></g>
+    <g><rect x="39" y="14" width="42" height="64" rx="6" fill="#fff" stroke="#bbb"/><path d="M46 46Q45 32 40 29Q51 29 54 39Q56 27 60 23Q64 27 66 39Q69 29 80 29Q75 32 74 46Z" fill="#d0142c" stroke="#222" stroke-width="1"/><circle cx="60" cy="55" r="7" fill="#ffd9b0" stroke="#8a5a2b"/><text x="60" y="73" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="7" fill="#141414">JOKER</text></g>
+    <text x="60" y="112" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="13" fill="#ffd36b">BOOKS</text>`);
+  if(k === "dominoes"){ const pip = (x, y) => `<circle cx="${x}" cy="${y}" r="4.2" fill="#1b1b1b"/>`;
+    return S(`<defs><linearGradient id="ga-iv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf5"/><stop offset="1" stop-color="#e6dcc0"/></linearGradient></defs>
+    <g transform="rotate(-22 40 62)"><rect x="24" y="20" width="32" height="64" rx="7" fill="url(#ga-iv)" stroke="#a8946a" stroke-width="1.5"/><line x1="29" y1="52" x2="51" y2="52" stroke="#8c7c5c" stroke-width="2"/>${pip(33, 29)}${pip(47, 29)}${pip(40, 36)}${pip(33, 43)}${pip(47, 43)}${pip(33, 61)}${pip(47, 75)}${pip(40, 68)}</g>
+    <g transform="rotate(16 82 62)"><rect x="66" y="22" width="32" height="64" rx="7" fill="url(#ga-iv)" stroke="#a8946a" stroke-width="1.5"/><line x1="71" y1="54" x2="93" y2="54" stroke="#8c7c5c" stroke-width="2"/>${pip(75, 30)}${pip(89, 30)}${pip(75, 38)}${pip(89, 38)}${pip(75, 46)}${pip(89, 46)}${pip(75, 62)}${pip(89, 62)}${pip(75, 78)}${pip(89, 78)}</g>
+    <circle cx="60" cy="100" r="15" fill="#ffd36b"/><text x="60" y="106" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#3a2200">15</text>`); }
+  if(k === "memory") return S(`<g transform="rotate(-10 36 46)"><rect x="12" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="35" y="54" text-anchor="middle" font-size="30">🍕</text></g>
+    <g transform="rotate(8 86 46)"><rect x="62" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="85" y="54" text-anchor="middle" font-size="30">🍕</text></g>
+    <rect x="16" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="36" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T7</text>
+    <rect x="64" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="84" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T7</text>
+    <path d="M60 8L63 15L70 15L64 19L66 26L60 22L54 26L56 19L50 15L57 15Z" fill="#fff36b"/>`);
+  if(k === "wordguess") return S(`${[["#ff3b5c", 26, 30], ["#ffd36b", 60, 20], ["#2fa8ff", 94, 32]].map(([c, x, y]) => `<path d="M${x} ${y + 22}Q${x - 2} ${y + 40} ${x + 4} ${y + 52}" stroke="#fff" stroke-width="1.5" fill="none"/><ellipse cx="${x}" cy="${y}" rx="14" ry="18" fill="${c}"/><ellipse cx="${x - 5}" cy="${y - 7}" rx="3.5" ry="5" fill="#fff" opacity=".55"/><path d="M${x - 3} ${y + 18}L${x + 3} ${y + 18}L${x} ${y + 23}Z" fill="${c}"/>`).join("")}
+    ${["G", "O", "", "D"].map((ch, i) => `<rect x="${14 + i * 24}" y="86" width="20" height="26" rx="4" fill="#fff"/><text x="${24 + i * 24}" y="106" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="17" fill="#0b5f72">${ch}</text>`).join("")}`);
   return "";
 }
 const GTILES = [["ttt","Tic-Tac-Toe","Three in a row","gt-ttt"],["c4","Connect Four","Drop four in a row","gt-c4"],["checkers","Checkers","Slide, jump, get crowned","gt-ck"],
-  ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"],["blackjack","Blackjack","Beat the dealer to 21","gt-bj"]];
+  ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"],["blackjack","Blackjack","Beat the dealer to 21","gt-bj"],
+  ["wildcard","Wild Card","Match colours · Uno rules","gt-wc"],["bidwhist","Bid Whist","Jokers in · first to 7","gt-bw"],["dominoes","Dominoes","All Fives to 150","gt-dm"],
+  ["memory","Memory Match","Find the pairs","gt-mm"],["wordguess","Word Guess","Before the balloons pop","gt-wg"]];
 const GTILE_BG = Object.fromEntries(GTILES.map(t => [t[0], t[3]]));
 function gLiveRow(g){
+  if(TB[g.kind]){ const s = g.st, mine = gMine(g), turnId = s.seats[TB[g.kind].turn(s)], who = String(turnId).startsWith("bot:") ? "the computer" : esc(first(F(turnId).name));
+    const title = gFfa(g) ? `${GLABEL[g.kind]} · ${esc(s.seats.filter(x => !String(x).startsWith("bot:")).map(x => first(F(x).name)).join(", "))}${s.seats.some(x => String(x).startsWith("bot:")) ? " + computer" : ""}` : `Bid Whist · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}`;
+    const note = g.kind === "bidwhist" ? ` · hand ${s.hand} · ${s.score[0]}–${s.score[1]}` : ` · round ${s.round}${g.kind === "dominoes" || s.target ? ` · ${s.score.join("–")}` : ""}`;
+    return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic ${GTILE_BG[g.kind]}" style="width:48px;height:48px;border-radius:14px;padding:4px">${gArt(g.kind)}</span><span><b>${title}</b><small>${mine ? "Your move!" : s.seats.includes(st.me) ? `Waiting on ${who}` : "Watching"}${note}</small></span><span class="chev">${I.chev}</span></button>`; }
   const me = gMySide(g), mine = gMine(g), tv = g.kind === "trivia";
   const note = g.kind === "blackjack" ? ` · hand ${g.st.round}` : g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
   return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic ${GTILE_BG[g.kind]}" style="width:48px;height:48px;border-radius:14px;padding:4px">${gArt(g.kind === "trivia" ? "trivia" : g.kind)}</span><span><b>${g.kind === "blackjack" ? `Blackjack · ${esc(gNames(g.st.players))}` : g.st?.solo ? `Trivia Night · ${esc(gNames(g.a))} alone` : `${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}`}</b><small>${g.kind === "blackjack" ? (mine ? "Your move!" : "At the table") : gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : g.st?.solo ? "Playing alone" : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`;
@@ -3564,7 +4058,7 @@ function sheetGames(){
     ${(() => { const big = {}; (st.games || []).filter(g => g.kind === "blackjack" && g.status === "done").forEach(g => g.st.players.forEach((id, i) => { big[id] = Math.max(big[id] || 0, g.st.bank[i]); }));
       const list = Object.entries(big).sort((a, b) => b[1] - a[1]).slice(0, 5);
       return list.length ? `<div class="lbl">💰 BLACKJACK · BIGGEST STACKS</div><div style="display:grid;gap:8px">${list.map(([id, v]) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${esc(F(id)?.name || "Family")}</b><small>${v.toLocaleString()} points</small></span></div>`).join("")}</div>` : ""; })()}
-    ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
+    ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${gFfa(g) ? (g.why === "stopped" ? "stopped early" : esc(g.why)) : g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" || gFfa(g) ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
 }
 function sheetGamePick(k){
   const t = GTILES.find(x => x[0] === k); if(!t){ gPick = null; sheetGames(); return; }
@@ -3575,12 +4069,25 @@ function sheetGamePick(k){
     spades: "Two couples, partners across. Big Joker, Little Joker, 2♠, 2♦ are the top trumps.",
     trivia: "Ten questions on Music, TV & Movies and the Bible, against the clock. Time's up? The other team can steal.",
     feud: "The family is the survey: everyone answers privately, then one of us runs the board.",
-    blackjack: "Get closer to 21 than the dealer without going over. Blackjack pays 3 to 2. Chips are points for fun, never money."}[k];
+    blackjack: "Get closer to 21 than the dealer without going over. Blackjack pays 3 to 2. Chips are points for fun, never money.",
+    wildcard: "Match the colour, the number or the symbol. Skip, Reverse, Draw Two and Wilds shake it up. Down to one card? Call “Last card!”",
+    bidwhist: "Two couples, partners across. Bid Uptown, Downtown or No Trump, take the kitty, and make your books. Jokers in, first to 7, no trump counts double.",
+    dominoes: "Match the open ends. Whenever the ends add up to 5, 10, 15 or more by fives, you score it. First to 150 wins.",
+    memory: "Flip two cards. A match stays up; no match flips back. Find every pair in as few turns as you can, or take turns and see who finds the most.",
+    wordguess: "Guess the word one letter at a time before all six balloons pop."}[k];
   const rec = aiLine(k), best = k === "trivia" ? tvBest() : 0;
   const modes = ["ttt", "c4", "checkers"].includes(k) ? `<div class="lbl">🤖 PLAY THE COMPUTER</div><div class="ailv">${[1, 2, 3].map(lv => `<button class="btn ${lv === 1 ? "" : lv === 2 ? "primary" : "wine"}" data-act="g-ai" data-k="${k}" data-lv="${lv}">${AI_LV[lv]}</button>`).join("")}</div>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}
       <div class="lbl">OR PLAY EACH OTHER</div><button class="btn primary" data-act="g-local" data-k="${k}">📱 Pass &amp; play on this phone</button><button class="btn wine" data-act="g-new" data-k="${k}">👨‍👩‍👧 Play the family · own phones</button>`
     : k === "spades" ? `<button class="btn primary" data-act="sp-solo">🤖 Me and a computer partner</button>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}<button class="btn wine" data-act="sp-new">👨‍👩‍👧 Deal a family game · computers fill empty seats</button>`
     : k === "trivia" ? `<button class="btn primary" data-act="tv-new" data-k="solo">🧠 Just me, against the clock</button>${best ? `<p class="small muted" style="margin:0">Your best: ${best} of 10</p>` : ""}<button class="btn" data-act="tv-new" data-k="table">📱 At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">👨‍👩‍👧 Family teams · own phones</button>`
+    : k === "wildcard" || k === "dominoes" ? `<div class="lbl">🤖 PLAY THE COMPUTER</div><div class="ailv">${[1, 2, 3].map(n => `<button class="btn ${n === 1 ? "" : n === 2 ? "primary" : "wine"}" data-act="tb-ai" data-k="${k}" data-n="${n}">vs ${n} ${n === 1 ? "computer" : "computers"}</button>`).join("")}</div>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}<div class="lbl">OR PLAY EACH OTHER</div><button class="btn wine" data-act="tb-new" data-k="${k}">👨‍👩‍👧 Family game · own phones</button>`
+    : k === "bidwhist" ? `<button class="btn primary" data-act="tb-ai" data-k="bidwhist" data-n="3">🤖 Me and a computer partner</button>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}<button class="btn wine" data-act="tb-new" data-k="bidwhist">👨‍👩‍👧 Deal a family game · computers fill empty seats</button>`
+    : k === "memory" ? `<div class="field" style="width:min(100%,460px)"><label for="mm-pl">Who's playing</label><select class="input" id="mm-pl"><option value="1">Just me · beat my best</option><option value="2">2 players · pass the phone</option><option value="3">3 players</option><option value="4">4 players</option></select></div>
+      <div class="ailv">${[[6, "Easy · 12 cards"], [8, "Medium · 16 cards"], [10, "Hard · 20 cards"]].map(([n, l], i) => `<button class="btn ${i === 0 ? "" : i === 1 ? "primary" : "wine"}" data-act="mm-new" data-n="${n}">${l}</button>`).join("")}</div>
+      ${(() => { try { const b = [6, 8, 10].map(n => [n, +localStorage.getItem("t7.mmbest" + n) || 0]).filter(x => x[1]); return b.length ? `<p class="small muted" style="margin:0">Your best: ${b.map(([n, v]) => `${n * 2} cards in ${v} turns`).join(" · ")}</p>` : ""; } catch { return ""; } })()}`
+    : k === "wordguess" ? `<div class="ailv">${["bible", "music", "family"].map((c, i) => `<button class="btn ${i === 0 ? "primary" : i === 1 ? "" : "wine"}" data-act="wg-new" data-k="${c}">${{bible:"📖 Bible", music:"🎵 Music", family:"🍗 Family & Food"}[c]}</button>`).join("")}</div>
+      <button class="btn" data-act="wg-own">✍️ Write a word for someone to guess</button>
+      ${(() => { try { const n = +localStorage.getItem("t7.wgstreak") || 0; return n ? `<p class="small muted" style="margin:0">Your streak: ${n} in a row</p>` : ""; } catch { return ""; } })()}`
     : k === "blackjack" ? `<button class="btn primary" data-act="bj-solo">🤖 Just me vs the dealer</button><p class="small muted" style="margin:0">Your best: ${bjBest().toLocaleString()} points</p><button class="btn wine" data-act="bj-new">👨‍👩‍👧 Family table · own phones</button>`
     : `<div style="width:min(100%,460px);display:grid;gap:10px">${feudRoom()}</div>`;
   openSheet(`<div class="sheet-head" data-room>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>${t[1]}</h2></div>${gSizeBtn()}</div>
@@ -3594,8 +4101,8 @@ function gCheer(g){
   if(g.status !== "done" || g.why === "stopped") return;
   if(g.local){ if(gView.cheered) return; gView.cheered = true; }
   else { if(gCheered.has(g.id)) return; gCheered.add(g.id); }
-  const mine = g.local || g.table || (g.me >= 0 && g.winner === g.me) || (g.kind === "spades" && g.winner === g.st.seats.indexOf(st.me) % 2) || g.judge;
-  if(!mine || (g.winner === 2 && !(g.st?.solo && g.st.score[0] >= 7)) || (g.local && (g.ai || g.kind === "spades") && g.winner !== 0)) return;
+  const ffa = gFfa(g), mine = ffa ? (g.local ? g.winner === 0 : g.st.winSeat === g.st.seats.indexOf(st.me)) : g.local || g.table || (g.me >= 0 && g.winner === g.me) || (g.kind === "spades" && g.winner === g.st.seats.indexOf(st.me) % 2) || g.judge;
+  if(!mine || (!ffa && g.winner === 2 && !(g.st?.solo && g.st.score[0] >= 7)) || (g.local && (g.ai || g.kind === "spades" || TB[g.kind]) && g.winner !== 0)) return;
   gSnd("win"); if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const box = document.createElement("div"); box.className = "confetti"; const cols = ["#ff3b5c","#ffd36b","#2fa8ff","#2fe08a","#b45cff","#ff8a1f"];
   box.innerHTML = Array.from({length:110}, () => `<i style="left:${Math.random() * 100}%;background:${cols[Math.floor(Math.random() * cols.length)]};animation-duration:${2 + Math.random() * 2}s;animation-delay:${Math.random() * .6}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join("");
@@ -3617,6 +4124,9 @@ function drawGame(){
   if(g.kind === "trivia"){ drawTrivia(g); gCheer(g); return; }
   if(g.kind === "feud"){ drawFeud(g); gCheer(g); return; }
   if(g.kind === "spades"){ drawSpades(g); gCheer(g); return; }
+  if(g.kind === "wildcard"){ drawWildcard(g); gCheer(g); return; }
+  if(g.kind === "bidwhist"){ drawBidwhist(g); gCheer(g); return; }
+  if(g.kind === "dominoes"){ drawDominoes(g); gCheer(g); return; }
   const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
   const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
   const key = (g.id || "local") + ":" + g.kind, prev = gPrev[key], b = g.st.b; gPrev[key] = b.map(x => x ? JSON.stringify(x) : null);
@@ -3868,7 +4378,7 @@ const AI_LV = ["", "Easy", "Medium", "Hard"];
 function aiRec(){ try { return JSON.parse(localStorage.getItem("t7.airec") || "{}"); } catch { return {}; } }
 function aiNote(key, res){ const r = aiRec(); r[key] ||= {w:0, l:0, d:0}; r[key][res]++; try { localStorage.setItem("t7.airec", JSON.stringify(r)); } catch {} }
 function aiLine(kind){
-  const r = aiRec(), lv = kind === "spades" ? [""] : [1, 2, 3];
+  const r = aiRec(), lv = kind === "spades" || TB[kind] ? [""] : [1, 2, 3];
   const parts = lv.map(n => { const x = r[kind + ":" + n]; return x ? `${n ? AI_LV[n] + " " : ""}${x.w} won · ${x.l} lost${x.d ? ` · ${x.d} drawn` : ""}` : ""; }).filter(Boolean);
   return parts.length ? `Your record against the computer: ${parts.join(" · ")}` : "";
 }
@@ -3910,15 +4420,236 @@ function aiRun(){
       const r = spApply(s, v.hands, k, mv, () => spDeal()); v.st = r.st; v.hands = r.hands; if(r.over) v.over = r.over; gSnd(mv.card ? "card" : "chip"); drawGame(); aiRun(); },
       v.st.phase === "play" && !v.st.trick.length && v.st.last ? 1400 : 800);
     return; }
+  if(TB[v.kind]){ const T = TB[v.kind], k = T.turn(v.st); if(!String(v.st.seats[k]).startsWith("bot")) return;
+    aiTimer = setTimeout(() => { if(gView !== v || v.over) return; const mv = T.bot(v.st, v.sec.hands[k], k), r = T.apply(v.st, v.sec, k, mv);
+      v.st = r.st; v.sec = r.sec; if(r.over) v.over = tbOver(v.kind, r.over); gSnd(v.kind === "dominoes" ? "place" : mv.bid !== undefined || mv.catch ? "chip" : "card"); drawGame(); aiRun(); },
+      v.kind === "bidwhist" && v.st.phase === "play" && !v.st.trick.length && v.st.last ? 1500 : v.kind === "bidwhist" ? 800 : 1000);
+    return; }
   if(v.ai && v.turn === v.ai.side){
     aiTimer = setTimeout(() => { if(gView !== v || v.over) return; const m = aiMove(v.kind, v.st, v.turn, v.ai.lv), r = gameApply(v.kind, v.st, v.turn, m);
       v.st = r.st; v.turn = r.turn; v.over = r.over; gSnd("place"); drawGame(); aiRun(); }, v.kind === "checkers" && v.st.chain != null ? 550 : 700); }
 }
 // a computer game's result goes in this phone's record once
 function aiResult(){
-  const v = gView; if(!v || !v.local || !v.over || v.noted || !(v.ai || v.kind === "spades")) return; v.noted = true;
+  const v = gView; if(!v || !v.local || !v.over || v.noted || !(v.ai || v.kind === "spades" || TB[v.kind])) return; v.noted = true;
   const w = v.over.winner; aiNote(v.kind + ":" + (v.ai ? v.ai.lv : ""), w === 2 ? "d" : w === 0 ? "w" : "l");
 }
+/* ===== Round 3 (his order, 2026-10-17): Wild Card (Uno's rules), Bid Whist (his house rules), Dominoes (All Fives to
+   150), Memory Match and Word Guess. The three hidden-hand games share one engine with the server (TB below): on this
+   phone against the computer, or a family game where the server keeps every hand and plays any computer seats. ===== */
+const TB = {
+  wildcard: { apply: (st, sec, k, mv) => wcApply(st, sec, k, mv), bot: (st, h, k) => wcBot(st, h, k), turn: st => st.turn, teams: false },
+  bidwhist: { apply: (st, sec, k, mv) => bwApply(st, sec, k, mv), bot: (st, h, k) => bwBot(st, h, k), turn: st => st.seat, teams: true },
+  dominoes: { apply: (st, sec, k, mv) => dmApply(st, sec, k, mv), bot: (st, h, k) => dmBot(st, h, k), turn: st => st.turn, teams: false },
+};
+const tbHands = {}; let tbPick = null, tbSel = [], wcCall = false;
+// this phone's own hand: on a computer game it's right here; on a family game the server sends it
+function tbHand(g){
+  if(g.local) return gView.sec.hands[0];
+  const key = `${g.id}:${g.moves}`, seat = g.st.seats.indexOf(st.me); if(seat < 0) return null;
+  if(!tbHands[key]){ tbHands[key] = "…"; gamesCall({action:"hand", id:g.id}).then(d => { tbHands[key] = d.ok ? d.hand : null; if(!d.ok) setTimeout(() => { delete tbHands[key]; if(gView?.id === g.id) drawGame(); }, 1500); if(gView?.id === g.id) drawGame(); }); }
+  return Array.isArray(tbHands[key]) ? tbHands[key] : null;
+}
+const tbSeatName = (g, k) => { const id = g.st.seats[k]; if(id == null) return "Someone"; return id === st.me ? "You" : String(id).startsWith("bot:") ? `Computer ${id.slice(4)}` : esc(first(F(id).name)); };
+const tbAv = (g, k) => { const f = F(g.st.seats[k]); return `<i style="background:${f.color || "#555"}">${String(g.st.seats[k]).startsWith("bot:") ? "🤖" : esc((f.name || "?")[0])}</i>`; };
+/* ---- Wild Card ---- */
+const wcCardName = c => wcWild(c) ? (c === "W4" ? "Wild Draw Four" : "Wild") : `${WC_NAME[c[0]]} ${({S:"Skip", R:"Reverse", D:"Draw Two"})[wcFace(c)] || wcFace(c)}`;
+const WC_HEX = { R: "#e3242b", Y: "#f7b500", G: "#14a44d", B: "#1f6fe0" }, WC_NAME = { R: "Red", Y: "Yellow", G: "Green", B: "Blue" };
+function wcCardSvg(c, small){
+  const wild = wcWild(c), col = wild ? "#141414" : WC_HEX[c[0]], f = wcFace(c);
+  const sym = f === "S" ? "⊘" : f === "R" ? "⇄" : f === "D" ? "+2" : c === "W4" ? "+4" : c === "W" ? "" : f;
+  const big = sym.length > 1 ? 74 : 104;
+  const oval = wild ? `<g transform="rotate(-28 125 175)"><clipPath id="wo${c}"><ellipse cx="125" cy="175" rx="78" ry="122"/></clipPath><g clip-path="url(#wo${c})"><rect x="40" y="50" width="85" height="125" fill="${WC_HEX.R}"/><rect x="125" y="50" width="85" height="125" fill="${WC_HEX.B}"/><rect x="40" y="175" width="85" height="125" fill="${WC_HEX.Y}"/><rect x="125" y="175" width="85" height="125" fill="${WC_HEX.G}"/></g><ellipse cx="125" cy="175" rx="78" ry="122" fill="none" stroke="#fff" stroke-width="7"/></g>`
+    : `<ellipse cx="125" cy="175" rx="78" ry="122" fill="#fff" transform="rotate(-28 125 175)"/>`;
+  return `<svg class="card-svg" viewBox="0 0 250 350" role="img" aria-label="${wcCardName(c)}">
+    <rect x="2" y="2" width="246" height="346" rx="20" fill="#fff" stroke="#d8d8d8" stroke-width="2"/><rect x="14" y="14" width="222" height="322" rx="14" fill="${col}"/>${oval}
+    ${sym ? `<text x="125" y="${175 + big * 0.36}" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="${big}" fill="${wild ? "#fff" : col}" stroke="${wild ? "#141414" : "#fff"}" stroke-width="${wild ? 6 : 0}" paint-order="stroke">${sym}</text>` : `<text x="125" y="190" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="40" fill="#fff" stroke="#141414" stroke-width="6" paint-order="stroke">WILD</text>`}
+    ${small ? "" : `<text x="38" y="62" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="40" fill="#fff">${sym || "W"}</text><text x="212" y="318" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="40" fill="#fff" transform="rotate(180 212 304)">${sym || "W"}</text>`}</svg>`;
+}
+function drawWildcard(g){
+  const s = g.st, live = g.status === "live", me = s.seats.indexOf(st.me), hand = me >= 0 ? tbHand(g) : null, myTurn = live && s.turn === me;
+  const legal = myTurn && hand ? wcLegal(s, hand) : []; if(tbPick && !legal.includes(tbPick)) tbPick = null;
+  const opp = s.seats.map((_, k) => k).filter(k => k !== me);
+  const others = opp.map(k => `<div class="wcopp ${live && s.turn === k ? "turn" : ""}"><span class="who">${tbAv(g, k)}${tbSeatName(g, k)}</span><span class="backs">${Array.from({length:Math.min(s.counts[k], 8)}, cardBack).join("")}</span><b>${s.counts[k]} ${s.counts[k] === 1 ? "card" : "cards"}${s.unsafe === k ? " · 🚨" : ""}</b></div>`).join("");
+  const L = s.last || {}, lastLine = L.caught != null ? `🚨 ${tbSeatName(g, L.seat)} caught ${tbSeatName(g, L.caught)}: draw 2!` : L.card ? `${tbSeatName(g, L.seat)} played ${wcWild(L.card) ? (L.card === "W4" ? "Wild Draw Four" : "Wild") + ` → ${WC_NAME[L.color]}` : wcCardName(L.card)}${L.hit != null ? ` · ${tbSeatName(g, L.hit)} draws ${wcFace(L.card) === "D" ? 2 : 4}` : ""}${L.called ? " · 🔔 Last card!" : ""}` : L.drew ? `${tbSeatName(g, L.seat)} drew${L.passed ? " and passed" : ""}` : L.passed ? `${tbSeatName(g, L.seat)} passed` : "";
+  const status = !live ? (s.winSeat == null ? (g.why === "stopped" ? "Game stopped" : `Game over: ${esc(g.why)}`) : `🏆 ${s.winSeat === me ? "You win" : tbSeatName(g, s.winSeat) + " wins"}!`) : myTurn ? (s.drew ? "Play the card you drew, or pass" : legal.length ? "Your turn: match the colour, number or symbol" : "Nothing plays: draw a card") : `${tbSeatName(g, s.turn)}'s turn…`;
+  let rows = "";
+  if(hand){ const per = innerWidth < 640 && hand.length > 8 ? Math.ceil(hand.length / 2) : hand.length, chunks = []; for(let i = 0; i < hand.length; i += per) chunks.push(hand.slice(i, i + per));
+    rows = `<div class="hand">${chunks.map(row => `<div class="row" style="--cw:min(calc((min(100vw, 900px) - 44px) / ${(row.length - 1) * 0.66 + 1}), ${Math.round(112 * (gSzOn() ? 1.2 : 1))}px)">${row.map((c, i) => { const ok = legal.includes(c);
+      return `<button class="pcard ${ok ? "ok" : ""} ${tbPick === c ? "pick" : ""}" data-act="tb-card" data-c="${c}" ${ok ? "" : "disabled"}>${wcCardSvg(c)}</button>`; }).join("")}</div>`).join("")}</div>`; }
+  const pickWild = tbPick && wcWild(tbPick);
+  const controls = !live || me < 0 ? "" : `${s.unsafe !== null && s.unsafe !== me ? `<button class="btn wine block" data-act="g-move" data-m='{"catch":true}'>🚨 Catch ${tbSeatName(g, s.unsafe)}! They forgot “Last card!”</button>` : ""}
+    ${myTurn && hand && hand.length === 2 ? `<button class="btn ${wcCall ? "primary" : ""} block" data-act="wc-call">🔔 ${wcCall ? "Last card! is called" : "Call “Last card!” with your next card"}</button>` : ""}
+    ${pickWild ? `<div class="lbl" style="text-align:center">PICK THE NEW COLOUR</div><div class="wccolors">${Object.keys(WC_HEX).map(k => `<button style="--c:${WC_HEX[k]}" data-act="g-move" data-m='${JSON.stringify({card:tbPick, color:k, last:wcCall})}'>${WC_NAME[k]}</button>`).join("")}</div>`
+      : tbPick ? `<button class="btn primary block" data-act="g-move" data-m='${JSON.stringify({card:tbPick, last:wcCall})}'>Play it</button>` : ""}
+    ${myTurn ? `<div class="actions" style="justify-content:center">${!s.drew ? `<button class="btn" data-act="g-move" data-m='{"draw":true}'>🂠 Draw a card</button>` : `<button class="btn" data-act="g-move" data-m='{"pass":true}'>Pass</button>`}</div>` : ""}`;
+  openSheet(`${gHead(`Wild Card · ${s.target ? `to ${s.target}` : "one round"}${s.round > 1 ? ` · round ${s.round}` : ""}`, "🌈 Wild Card")}
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    <div class="wctable"><div class="wcopps">${others}</div>
+      <div class="wcmid"><div class="wcpile">${cardBack()}<small>${s.pile} left</small></div><div class="wctop" style="--glow:${WC_HEX[s.color]}">${wcCardSvg(s.top)}</div>
+        <div class="wcnow"><span class="wcdot" style="background:${WC_HEX[s.color]}"></span><b>${WC_NAME[s.color]}</b><small>${s.dir === 1 ? "↻ clockwise" : "↺ reversed"}</small></div></div>
+      ${lastLine ? `<div class="wclast">${lastLine}</div>` : ""}</div>
+    ${s.target ? `<div class="mvwho">${s.seats.map((_, k) => `<span class="chip">${tbSeatName(g, k)} ${s.score[k]}</span>`).join("")}</div>` : ""}
+    ${controls}${rows}
+    ${myTurn && legal.length ? `<p class="small muted" style="margin:0;text-align:center">Tap a glowing card, then tap it again (or Play it).</p>` : ""}
+    <div class="actions" style="justify-content:center">${live ? (me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">${g.local ? "Leave the game" : "Stop the game"}</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>`);
+}
+/* ---- Bid Whist ---- */
+const BW_MODE = { up: "Uptown ⬆", down: "Downtown ⬇", nt: "No Trump ∅" };
+function drawBidwhist(g){
+  const s = g.st, live = g.status === "live", me = s.seats.indexOf(st.me), hand = me >= 0 ? tbHand(g) : null, myTurn = live && s.seat === me;
+  const legal = myTurn && hand ? bwLegal(s, hand) : []; if(tbPick && !legal.includes(tbPick)) tbPick = null;
+  const base = me >= 0 ? me : 0, pos = k => (k - base + 4) % 4;
+  const seat = k => `<div class="seat s${pos(k)} ${live && s.seat === k ? "turn" : ""}"><span class="who">${tbAv(g, k)}${tbSeatName(g, k)}</span>
+    <span class="tk">${s.phase === "bid" ? (s.bids[k] === null ? (s.seat === k ? "bidding…" : "—") : s.bids[k] === "pass" ? "pass" : `${s.bids[k].n} ${BW_MODE[s.bids[k].mode]}`) : k === s.bidder ? `bid ${s.high.n} ${BW_MODE[s.high.mode]}` : ""}</span></div>`;
+  const shown = s.trick.length ? s.trick : (s.last && live ? s.last.trick : []), won = !s.trick.length && s.last ? s.last.winner : null;
+  const trick = `<div class="trick">${shown.map(t => `<div class="tc t${pos(t.seat)} ${won === t.seat ? "won" : ""}">${svgCard(t.card)}</div>`).join("")}</div>`;
+  const contract = s.high && s.phase !== "bid" ? `<div class="strip" style="justify-content:center"><span class="small" style="text-align:center">📜 ${tbSeatName(g, s.bidder)} bid <b>${s.high.n} ${BW_MODE[s.high.mode]}</b>${s.trump ? ` · trump <b>${SPS[s.trump]}</b>` : s.phase === "play" ? ` · ${s.dir === "down" ? "downtown" : "uptown"}` : ""} · books ${s.books[0]}–${s.books[1]}</span></div>` : "";
+  const LH = s.lastHand, lastLine = LH && (!live || (s.phase === "bid" && s.bids.every(b => b === null))) ? `<div class="strip"><span class="small">Hand ${LH.hand}: ${tbSeatName(g, LH.bidder)} bid ${LH.bid.n} ${BW_MODE[LH.bid.mode]} and ${LH.made ? "made it" : "was set"} (${LH.pts > 0 ? "+" : ""}${LH.pts})${LH.boston ? " · a Boston!" : ""}</span></div>` : "";
+  let pad = "";
+  if(myTurn && s.phase === "bid"){ const dealerMust = s.seat === s.dealer && !s.high;
+    pad = `<div class="bwbids">${[4, 5, 6, 7].map(n => ["up", "down", "nt"].map(m => `<button class="btn ${m === "nt" ? "wine" : "primary"}" data-act="g-move" data-m='${JSON.stringify({bid:{n, mode:m}})}' ${bwCanBid(s, {n, mode:m}) ? "" : "disabled"}><b>${n}</b> ${BW_MODE[m]}</button>`).join("")).join("")}</div>
+      ${dealerMust ? `<p class="small muted" style="margin:0;text-align:center">Everyone passed: as dealer you must bid.</p>` : `<button class="btn block" data-act="g-move" data-m='{"bid":null}'>Pass</button>`}`; }
+  if(myTurn && s.phase === "kitty") pad = `<div class="lbl" style="text-align:center">THE KITTY IS YOURS: PICK 6 CARDS TO PUT BACK (${tbSel.length} of 6)</div>
+    ${s.nt ? `<div class="wccolors" style="--n:2">${["up", "down"].map(d => `<button style="--c:${d === "up" ? "#1f6fe0" : "#7b3fe4"}" data-act="tb-kitty" data-v="${d}" ${tbSel.length === 6 ? "" : "disabled"}>${d === "up" ? "Uptown ⬆" : "Downtown ⬇"}</button>`).join("")}</div>`
+      : `<div class="wccolors">${["S", "H", "D", "C"].map(t => `<button style="--c:${t === "H" || t === "D" ? "#d0142c" : "#222"}" data-act="tb-kitty" data-v="${t}" ${tbSel.length === 6 ? "" : "disabled"}>Trump ${SPS[t]}</button>`).join("")}</div>`}`;
+  let rows = "";
+  if(hand && live){ const kitty = myTurn && s.phase === "kitty", per = innerWidth < 640 && hand.length > 7 ? Math.ceil(hand.length / (hand.length > 13 ? 3 : 2)) : hand.length, chunks = []; for(let i = 0; i < hand.length; i += per) chunks.push(hand.slice(i, i + per));
+    rows = `<div class="hand">${chunks.map(row => `<div class="row" style="--cw:min(calc((min(100vw, 900px) - 44px) / ${(row.length - 1) * 0.66 + 1}), ${Math.round(112 * (gSzOn() ? 1.2 : 1))}px)">${row.map(c => { const ok = kitty || legal.includes(c), sel = kitty ? tbSel.includes(c) : tbPick === c;
+      return `<button class="pcard ${ok && !kitty ? "ok" : ""} ${sel ? "pick" : ""}" data-act="${kitty ? "tb-sel" : "tb-card"}" data-c="${c}" ${ok ? "" : "disabled"}>${svgCard(c)}</button>`; }).join("")}</div>`).join("")}</div>
+      ${tbPick && s.phase === "play" ? `<button class="btn primary block" data-act="g-move" data-m='${JSON.stringify({card:tbPick})}' style="max-width:460px;margin-inline:auto">Play it</button>` : ""}`; }
+  const status = !live ? (g.why === "stopped" ? "Game stopped" : `🏆 ${esc(g.names[g.winner] || "")} won Bid Whist, ${esc(g.why)}`)
+    : s.phase === "bid" ? (myTurn ? "Your bid" : `${tbSeatName(g, s.seat)} is bidding…`) : s.phase === "kitty" ? (myTurn ? "Put back 6 and name trump" : `${tbSeatName(g, s.seat)} is picking up the kitty…`)
+    : myTurn ? (s.trick.length ? "Your turn: follow suit if you can" : "Your lead") : `${tbSeatName(g, s.seat)} to play…`;
+  openSheet(`${gHead(`Bid Whist · hand ${s.hand} · first to 7`, "♣ Bid Whist")}
+    ${gScore(esc(g.names[0]), esc(g.names[1]), s.score[0], s.score[1], live ? s.seat % 2 : -1)}
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    ${lastLine}${contract}
+    <div class="felt">${[0, 1, 2, 3].map(seat).join("")}${trick}</div>
+    ${rows}${pad}
+    <div class="actions" style="justify-content:center">${live ? (me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign for our team</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>
+    <p class="small muted" style="margin:0;text-align:center">House rules: jokers in, first to 7, no trump counts double, a Boston wins.</p>`);
+}
+/* ---- Dominoes ---- */
+const PIP = { 0: [], 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[26, 26], [50, 50], [74, 74]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]], 5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]], 6: [[28, 24], [72, 24], [28, 50], [72, 50], [28, 76], [72, 76]] };
+function dmTile(t, vertical, hot){
+  const half = (n, y) => PIP[n].map(([x, yy]) => `<circle cx="${x}" cy="${y + yy}" r="9" fill="#1b1b1b"/>`).join("");
+  const body = `<rect x="3" y="3" width="94" height="194" rx="16" fill="url(#ivory)" stroke="${hot ? "#ffd36b" : "#b9ab8c"}" stroke-width="${hot ? 8 : 3}"/><line x1="16" y1="100" x2="84" y2="100" stroke="#8c7c5c" stroke-width="4"/><circle cx="50" cy="100" r="5" fill="#c9a24a"/>${half(t[0], 0)}${half(t[1], 100)}`;
+  return vertical ? `<svg class="dmt v" viewBox="0 0 100 200" role="img" aria-label="${t[0]}-${t[1]}">${body}</svg>` : `<svg class="dmt h" viewBox="0 0 200 100" role="img" aria-label="${t[0]}-${t[1]}"><g transform="translate(0 100) rotate(-90)">${body}</g></svg>`;
+}
+let dmPickT = null;
+function drawDominoes(g){
+  const s = g.st, live = g.status === "live", me = s.seats.indexOf(st.me), hand = me >= 0 ? tbHand(g) : null, myTurn = live && s.turn === me;
+  const moves = myTurn && hand ? dmMoves(s, hand) : [];
+  if(dmPickT && !moves.some(m => m.tile.join() === dmPickT.join())) dmPickT = null;
+  const show = (t, dbl) => dmTile(t, dbl, false);
+  const W = [...s.arms.W].reverse().map(t => show([t[1], t[0]], t[0] === t[1])).join(""), E = s.arms.E.map(t => show(t, t[0] === t[1])).join("");
+  const center = s.center ? dmTile(s.center, s.center[0] === s.center[1], false) : "";
+  const arm = e => s.arms[e].length ? `<div class="dmarm">${e === "S" ? `<small>⬇ below the spinner</small>` : ""}${s.arms[e].map(t => show(t, t[0] === t[1])).join("")}${e === "N" ? `<small>⬆ above the spinner</small>` : ""}</div>` : "";
+  const count = dmCount(s), hits = count > 0 && count % 5 === 0;
+  const ends = dmPickT ? moves.filter(m => m.tile.join() === dmPickT.join()) : [];
+  const L = s.last || {}, LR = s.lastRound;
+  const lastLine = L.tile ? `${tbSeatName(g, L.seat)} played ${L.tile.join("-")}${L.pts ? ` and scored <b>${L.pts}</b>! 🎉` : ""}` : L.drew ? `${tbSeatName(g, L.seat)} drew from the boneyard` : L.passed ? `${tbSeatName(g, L.seat)} passed` : LR ? `Round ${LR.round}: ${tbSeatName(g, LR.winner)} ${LR.how === "domino" ? "went out" : "had the lowest hand"} (+${LR.bonus})` : "";
+  const status = !live ? (s.winSeat == null ? (g.why === "stopped" ? "Game stopped" : `Game over: ${esc(g.why)}`) : `🏆 ${s.winSeat === me ? "You win" : tbSeatName(g, s.winSeat) + " wins"}!`) : myTurn ? (moves.length ? (s.center ? "Your turn: tap a tile, then where it goes" : "Your turn: set down any tile") : s.yard ? "Nothing plays: draw from the boneyard" : "Nothing plays and the boneyard is empty: pass") : `${tbSeatName(g, s.turn)}'s turn…`;
+  openSheet(`${gHead(`Dominoes · All Fives to 150 · round ${s.round}`, "🁫 Dominoes")}
+    <div class="dmscores">${s.seats.map((_, k) => `<div class="${live && s.turn === k ? "on" : ""}"><span>${tbAv(g, k)}<b>${tbSeatName(g, k)}</b></span><b class="pts">${s.score[k]}</b><div class="meter"><i style="width:${Math.min(100, s.score[k] / 1.5)}%"></i></div><small>${s.counts[k]} tiles</small></div>`).join("")}</div>
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    <div class="dmboard">${arm("N")}<div class="dmline">${W}${center}${E}</div>${arm("S")}
+      ${s.center ? `<div class="dmcount ${hits ? "hit" : ""}">Open ends: <b>${count}</b>${hits ? " ✓ scores!" : ""}</div>` : `<div class="dmcount">The table is empty</div>`}
+      <small style="color:#cfe9d5">Boneyard: ${s.yard} tiles</small></div>
+    ${lastLine ? `<div class="wclast" style="text-align:center">${lastLine}</div>` : ""}
+    ${hand && live ? `<div class="dmhand">${hand.map(t => { const ok = moves.some(m => m.tile.join() === t.join());
+      return `<button class="dmh ${ok ? "ok" : ""} ${dmPickT && dmPickT.join() === t.join() ? "pick" : ""}" data-act="dm-tile" data-t="${t.join(",")}" ${ok ? "" : "disabled"}>${dmTile(t, true, ok)}</button>`; }).join("")}</div>` : ""}
+    ${ends.length > 1 ? `<div class="wccolors">${ends.map(m => `<button style="--c:#14532d" data-act="g-move" data-m='${JSON.stringify(m)}'>${{E:"Right ➡", W:"⬅ Left", N:"⬆ Top", S:"⬇ Bottom"}[m.end]}</button>`).join("")}</div>` : ""}
+    ${myTurn && !moves.length ? `<button class="btn primary block" data-act="g-move" data-m='${s.yard ? '{"draw":true}' : '{"pass":true}'}'>${s.yard ? "🁢 Draw from the boneyard" : "Pass"}</button>` : ""}
+    <div class="actions" style="justify-content:center">${live ? (me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">${g.local ? "Leave the game" : "Stop the game"}</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>`);
+}
+/* ---- starting them ---- */
+function sheetTbNew(kind){
+  const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended"), label = {wildcard:"Wild Card", bidwhist:"Bid Whist", dominoes:"Dominoes"}[kind];
+  const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
+  const ffa = kind !== "bidwhist";
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">${label}</div><h2>👨‍👩‍👧 A family game</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
+    ${ffa ? `<p class="small muted" style="margin:0">Two to four players, each on their own phone. Pick 🤖 Computer for any seat you can't fill.</p>
+      ${[1, 2, 3].map(i => `<div class="field"><label for="tb-p${i}">Player ${i + 1}</label><select class="input" id="tb-p${i}"><option value="">${i === 1 ? "Pick someone" : "Nobody"}</option>${others.map((f, j) => opt(f.id, i === 1 && j === 0)).join("")}<option value="bot:${i}">🤖 Computer</option></select></div>`).join("")}
+      ${kind === "wildcard" ? `<div class="field"><label for="tb-target">How long</label><select class="input" id="tb-target"><option value="0">One round</option><option value="200">First to 200 points</option></select></div>` : ""}`
+    : `<p class="small muted" style="margin:0">Two couples, partners across. Pick 🤖 Computer for any seat you can't fill.</p>
+      <div class="field"><label for="tb-a2">Your partner</label><select class="input" id="tb-a2">${others.map((f, i) => opt(f.id, i === 0)).join("")}<option value="bot:2">🤖 Computer</option></select></div>
+      <div class="field"><label for="tb-b1">Other couple</label><select class="input" id="tb-b1">${others.map((f, i) => opt(f.id, i === 1)).join("")}<option value="bot:1">🤖 Computer</option></select></div>
+      <div class="field"><label for="tb-b2">…and their partner</label><select class="input" id="tb-b2">${others.map((f, i) => opt(f.id, i === 2)).join("")}<option value="bot:3">🤖 Computer</option></select></div>`}
+    <button class="btn primary block" data-act="tb-start" data-k="${kind}">Deal ${label}</button>
+    <p class="small muted" style="margin:0">Everyone in the game gets a notification. Games with a computer don't count in the family standings.</p>`);
+}
+function tbLocal(kind, n){
+  const seats = kind === "bidwhist" ? [st.me, "bot:1", "bot:2", "bot:3"] : [st.me, ...["bot:1", "bot:2", "bot:3"].slice(0, n)];
+  const x = kind === "wildcard" ? wcInit(seats, 0) : kind === "bidwhist" ? bwInit(seats) : dmInit(seats);
+  tbPick = null; tbSel = []; wcCall = false; dmPickT = null;
+  gView = {local:true, kind, st:x.st, sec:x.sec, turn:0, over:null, nBots:n, names:kind === "bidwhist" ? ["You & Computer", "Computer & Computer"] : ["You", "Computer"]};
+  drawGame(); aiRun();
+}
+/* ===== Memory Match (local): find the pairs; alone (beat your best) or 2-4 players passing the phone ===== */
+const MM_PICS = ["🍔","🍕","🌮","🍰","🍩","🍦","🍎","🍇","🍉","🎂","🍪","🥞","🍗","🌽","🍓","🧁","🥧","🍋"];
+let mm = null;
+function mmStart(pairs, players){
+  const pics = shuf(MM_PICS).slice(0, pairs), deck = shuf([...pics, ...pics]).map((p, i) => ({id:i, p, up:false, done:false}));
+  mm = {deck, players, turn:0, score:Array(players).fill(0), open:[], moves:0, t0:Date.now(), pairs, busy:false, over:false};
+  drawMemory();
+}
+function drawMemory(anim){        // anim: {ids, up}: those cards turn over on screen instead of just appearing
+  const m = mm, cols = m.deck.length <= 12 ? 3 : m.deck.length <= 16 ? 4 : 4, best = (() => { try { return +localStorage.getItem("t7.mmbest" + m.pairs) || 0; } catch { return 0; } })();
+  const status = m.over ? (m.players === 1 ? `🏆 All pairs in ${m.moves} turns!${best === m.moves ? " Your best!" : ""}` : `🏆 ${(() => { const top = Math.max(...m.score), w = m.score.map((x, i) => x === top ? i + 1 : 0).filter(Boolean); return w.length > 1 ? "A tie!" : `Player ${w[0]} wins!`; })()}`)
+    : m.players === 1 ? `Find the pairs · ${m.moves} turns${best ? ` · best ${best}` : ""}` : `Player ${m.turn + 1}'s turn`;
+  openSheet(`<div class="sheet-head" data-gstage>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Memory Match</div><h2>🧠 Memory Match</h2></div>${gSizeBtn()}</div>
+    ${m.players > 1 ? `<div class="mvwho">${m.score.map((x, i) => `<span class="chip" aria-pressed="${!m.over && i === m.turn}">Player ${i + 1}: ${x}</span>`).join("")}</div>` : ""}
+    <div class="gstatus ${m.over ? "win" : "go"}">${status}</div>
+    <div class="mmgrid" style="--cols:${cols}">${m.deck.map(c => `<button class="mmc ${(c.up || c.done) !== !!(anim && anim.ids.includes(c.id)) ? "up" : ""} ${c.done ? "done" : ""}" data-act="mm-flip" data-i="${c.id}" ${c.up || c.done || m.over ? "disabled" : ""} aria-label="${c.up || c.done ? c.p : "Hidden card"}"><span class="in"><span class="back"></span><span class="face">${c.p}</span></span></button>`).join("")}</div>
+    <div class="actions" style="justify-content:center"><button class="btn ${m.over ? "primary" : "ghost"}" data-act="mm-again">${m.over ? "Play again" : "Start over"}</button></div>`);
+  if(anim) requestAnimationFrame(() => requestAnimationFrame(() => anim.ids.forEach(i => sheet.querySelector(`.mmc[data-i="${i}"]`)?.classList.toggle("up", anim.up))));
+}
+function mmFlip(i){
+  const m = mm; if(!m || m.busy || m.over) return; const c = m.deck.find(x => x.id === i); if(!c || c.up || c.done) return;
+  c.up = true; m.open.push(c); gSnd("card");
+  if(m.open.length === 2){ m.moves++; const [a, b] = m.open;
+    if(a.p === b.p){ a.done = b.done = true; m.open = []; m.score[m.turn]++; gSnd("right");
+      if(m.deck.every(x => x.done)){ m.over = true; if(m.players === 1){ try { const k = "t7.mmbest" + m.pairs, b0 = +localStorage.getItem(k) || 0; if(!b0 || m.moves < b0) localStorage.setItem(k, String(m.moves)); } catch {} } gSnd("win"); } }
+    else { m.busy = true; drawMemory({ids:[c.id], up:true}); gSnd("wrong"); setTimeout(() => { a.up = b.up = false; m.open = []; m.busy = false; if(m.players > 1) m.turn = (m.turn + 1) % m.players; if(mm === m) drawMemory({ids:[a.id, b.id], up:false}); }, 1200); return; } }
+  drawMemory({ids:[c.id], up:true});
+}
+/* ===== Word Guess (local): guess the word before the six balloons pop ===== */
+const WG_WORDS = {
+  bible: ["MOSES","DAVID","GOLIATH","JERUSALEM","BETHLEHEM","NOAH","MANNA","PSALMS","GENESIS","EXODUS","JOSEPH","ESTHER","RUTH","SAMSON","JONAH","PETER","PAUL","DISCIPLES","PARABLE","MIRACLE","GOSPEL","PROVERBS","SHEPHERD","COVENANT","NAZARETH","GALILEE","ABRAHAM","ISAIAH","REVELATION","BAPTISM"],
+  music: ["GOSPEL","MOTOWN","BLUES","JAZZ","SOUL MUSIC","CHOIR","PIANO","DRUMS","TRUMPET","SAXOPHONE","MELODY","HARMONY","RHYTHM","CONCERT","ORCHESTRA","GUITAR","BEALE STREET","HYMN","TAMBOURINE","ORGAN","SOLO","QUARTET","MICROPHONE","RECORD","CHORUS"],
+  family: ["GRANDMA","GRANDPA","COUSIN","REUNION","BARBECUE","CORNBREAD","COLLARD GREENS","PEACH COBBLER","SWEET POTATO PIE","MACARONI","THANKSGIVING","BIRTHDAY","PICNIC","CASSEROLE","BISCUITS","LEMONADE","FRIED CHICKEN","SUNDAY DINNER","BLESSING","LAUGHTER","FAMILY TREE","PHOTO ALBUM","GRACE","DESSERT","HOMECOMING"],
+};
+const WG_CAT = {bible:"Bible", music:"Music", family:"Family & Food", own:"A family member's word"};
+let wg = null;
+function wgStart(cat, word){
+  const w = (word || shuf(WG_WORDS[cat])[0]).toUpperCase().replace(/[^A-Z ]/g, "").replace(/\s+/g, " ").trim();
+  wg = {cat, word:w, guessed:[], misses:0, over:null}; drawWordGuess();
+}
+function drawWordGuess(){
+  const g = wg, left = 6 - g.misses, letters = g.word.split("");
+  const done = letters.every(ch => ch === " " || g.guessed.includes(ch));
+  if(!g.over && done){ g.over = "won"; gSnd("win"); try { const k = "t7.wgstreak", n = (+localStorage.getItem(k) || 0) + 1; localStorage.setItem(k, String(n)); } catch {} }
+  if(!g.over && left <= 0){ g.over = "lost"; gSnd("buzz"); try { localStorage.setItem("t7.wgstreak", "0"); } catch {} }
+  const streak = (() => { try { return +localStorage.getItem("t7.wgstreak") || 0; } catch { return 0; } })();
+  const balloons = Array.from({length:6}, (_, i) => `<span class="wgb ${i < g.misses ? "pop" : ""}" style="--h:${i * 55}">${i < g.misses ? "💥" : "🎈"}</span>`).join("");
+  openSheet(`<div class="sheet-head" data-gstage>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Word Guess · ${WG_CAT[g.cat]}</div><h2>🔤 Word Guess</h2></div>${gSizeBtn()}</div>
+    <div class="gstatus ${g.over === "won" ? "win" : g.over ? "" : "go"}">${g.over === "won" ? `🏆 You got it!${streak > 1 ? ` ${streak} in a row!` : ""}` : g.over ? `The word was ${esc(g.word)}` : `${left} ${left === 1 ? "balloon" : "balloons"} left`}</div>
+    <div class="wgballoons">${balloons}</div>
+    <div class="wgword">${letters.map(ch => ch === " " ? `<span class="gap"></span>` : `<span class="l ${g.guessed.includes(ch) || g.over ? "on" : ""}">${g.guessed.includes(ch) || g.over ? ch : ""}</span>`).join("")}</div>
+    <div class="wgkeys">${"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(ch => { const used = g.guessed.includes(ch), hit = used && g.word.includes(ch);
+      return `<button class="${used ? (hit ? "hit" : "miss") : ""}" data-act="wg-key" data-k="${ch}" ${used || g.over ? "disabled" : ""}>${ch}</button>`; }).join("")}</div>
+    <div class="actions" style="justify-content:center">${g.over ? `<button class="btn primary" data-act="wg-new" data-k="${g.cat === "own" ? "family" : g.cat}">Next word</button>` : ""}<button class="btn ghost" data-act="g-pick" data-k="wordguess">Change category</button></div>`);
+}
+function sheetWgOwn(){
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Word Guess</div><h2>✍️ Your word</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Type a word or a short phrase without letting anyone see, then hand the phone over. Letters and spaces only.</p>
+    <div class="field"><label for="wg-own">The secret word</label><input class="input" id="wg-own" type="password" maxlength="24" autocomplete="off" placeholder="e.g. PEACH COBBLER"></div>
+    <button class="btn primary block" data-act="wg-own-go">Hide it and start</button>`);
+}
+// a hidden-hand game's end, as the game screens read it: team games keep their team; everyone-for-themselves is me (0) or not (1)
+const tbOver = (kind, o) => TB[kind].teams ? {winner:o.winner, why:o.why} : {winner:o.winSeat === 0 ? 0 : 1, why:o.why};
 /* ===== Sounds (his order, 2026-10-17): optional, OFF until turned on with 🔇 / 🔊. Made on the phone, no files. ===== */
 let gAC = null;
 const gSndOn = () => { try { return localStorage.getItem("t7.gsound") === "on"; } catch { return false; } };
@@ -4170,9 +4901,11 @@ async function mvAct(body, okToast){
   const d = await moviesCall(body); if(!d.ok){ toast(mvWhy(d.code)); return false; }
   await refresh(true); if(okToast) toast(okToast); return d;
 }
+// redraw whatever game screen is open (Memory Match and Word Guess live outside gView)
+function gRedraw(){ if(document.querySelector("#sheet .mmgrid") && mm) drawMemory(); else if(document.querySelector("#sheet .wgkeys") && wg) drawWordGuess(); else gView ? drawGame() : sheetGames(); }
 function gCurrent(){
   if(!gView) return null;
-  if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.ai || gView.kind === "spades" || gView.kind === "blackjack" ? 0 : gView.turn, local:true, ai:gView.ai};
+  if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.ai || gView.kind === "spades" || gView.kind === "blackjack" || TB[gView.kind] ? 0 : gView.turn, local:true, ai:gView.ai};
   const g = (st.games || []).find(x => x.id === gView.id); if(!g) return null;
   return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gSideName(g, 0), gSideName(g, 1)], me:gMySide(g), moves:g.moves, id:g.id, table:gTable(g), judge:gJudge(g), by:g.by};
 }
@@ -4182,10 +4915,12 @@ async function gMove(mv){
     try {
       if(g.kind === "spades"){ const r = spApply(v.st, v.hands, 0, mv, () => spDeal()); v.st = r.st; v.hands = r.hands; v.over = r.over; gSnd(mv.card ? "card" : "chip"); }
       else if(g.kind === "blackjack"){ const r = bjApply(v.st, v.sec, 0, mv); v.st = r.st; v.sec = r.sec; bjNoteBest(v.st.bank[0]); if(r.over) v.over = {winner:2, why:"out of points"}; gSnd(mv.bet ? "chip" : "card"); if(mv.bet) bjPend = 0; }
+      else if(TB[g.kind]){ const r = TB[g.kind].apply(v.st, v.sec, 0, mv); v.st = r.st; v.sec = r.sec; if(r.over) v.over = tbOver(g.kind, r.over); gSnd(g.kind === "dominoes" ? "place" : mv.bid !== undefined || mv.catch ? "chip" : "card"); }
       else { const r = gameApply(g.kind, v.st, v.turn, mv); v.st = r.st; v.turn = r.turn; v.over = r.over; gSnd("place"); }
     } catch { toast("That move isn't allowed."); }
+    tbPick = null; tbSel = []; wcCall = false; dmPickT = null;
     gSel = null; drawGame(); aiRun(); return; }
-  const d = await gamesCall({action:"move", id:g.id, mv, at:g.moves}); gSel = null; if(d.ok && mv.bet) bjPend = 0;
+  const d = await gamesCall({action:"move", id:g.id, mv, at:g.moves}); gSel = null; if(d.ok && mv.bet) bjPend = 0; if(d.ok){ tbPick = null; tbSel = []; wcCall = false; dmPickT = null; }
   if(!d.ok) toast(gWhyNot(d.code));
   await refresh(true); drawGame();
 }
@@ -4507,6 +5242,33 @@ document.addEventListener("click", e => {
     case "sp-solo": gView = {local:true, kind:"spades", st:spInit([st.me, "bot:1", "bot:2", "bot:3"], 300), hands:spDeal(), turn:0, over:null, names:["You & Computer", "Computer & Computer"]}; spPick = null; drawGame(); aiRun(); break;
     case "bj-solo": bjPend = 0; gView = {local:true, kind:"blackjack", st:bjInit([st.me]), sec:bjSecret(), turn:0, over:null, names:["You"]}; drawGame(); break;
     case "bj-new": sheetBlackjackNew(); break;
+    case "tb-ai": tbLocal(b.dataset.k, +b.dataset.n); break;
+    case "tb-new": sheetTbNew(b.dataset.k); break;
+    case "tb-start": { const k = b.dataset.k, v = x => document.getElementById(x)?.value || "", body = {action:"new", kind:k};
+      if(k === "bidwhist"){ body.sideA = [st.me, v("tb-a2")]; body.sideB = [v("tb-b1"), v("tb-b2")];
+        if(new Set([...body.sideA, ...body.sideB]).size !== 4){ toast("Pick four different people (or a computer)."); return; } }
+      else { body.sideA = [st.me, v("tb-p1"), v("tb-p2"), v("tb-p3")].filter(Boolean); if(body.sideA.length < 2){ toast("Pick at least one other player, or a computer."); return; }
+        if(new Set(body.sideA).size !== body.sideA.length){ toast("Each person can play once."); return; } if(k === "wildcard") body.target = +v("tb-target"); }
+      b.disabled = true; b.textContent = "Dealing…";
+      gamesCall(body).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = `Deal ${GLABEL[k]}`; toast(gWhyNot(d.code)); return; }
+        await refresh(true); gView = {id:d.game.id}; tbPick = null; tbSel = []; wcCall = false; dmPickT = null; drawGame(); toast("Dealt! Everyone's been told."); }); break; }
+    case "tb-card": { const c = b.dataset.c, g = gCurrent(); if(!g) break;
+      if(tbPick === c && !(g.kind === "wildcard" && wcWild(c))){ gMove(g.kind === "wildcard" ? {card:c, last:wcCall} : {card:c}); break; }
+      tbPick = c; drawGame(); break; }
+    case "tb-sel": { const c = b.dataset.c, i = tbSel.indexOf(c); if(i >= 0) tbSel.splice(i, 1); else if(tbSel.length < 6) tbSel.push(c); else { toast("That's 6. Tap one to put it back in your hand."); break; } drawGame(); break; }
+    case "tb-kitty": { if(tbSel.length !== 6) break; const val = b.dataset.v; gMove(val === "up" || val === "down" ? {discard:[...tbSel], dir:val} : {discard:[...tbSel], trump:val}); break; }
+    case "wc-call": wcCall = !wcCall; drawGame(); break;
+    case "dm-tile": { const g = gCurrent(); if(!g) break; const t = b.dataset.t.split(",").map(Number), hand = tbHand(g); if(!hand) break;
+      const ms = dmMoves(g.st, hand).filter(m => m.tile.join() === t.join());
+      if(!ms.length) break; if(ms.length === 1){ gMove(ms[0]); break; } dmPickT = t; drawGame(); break; }
+    case "mm-new": mmStart(+b.dataset.n, +(document.getElementById("mm-pl")?.value || 1)); break;
+    case "mm-flip": mmFlip(+b.dataset.i); break;
+    case "mm-again": if(mm) mmStart(mm.pairs, mm.players); break;
+    case "wg-new": wgStart(b.dataset.k); break;
+    case "wg-key": if(wg && !wg.over && !wg.guessed.includes(b.dataset.k)){ wg.guessed.push(b.dataset.k); if(!wg.word.includes(b.dataset.k)){ wg.misses++; gSnd("wrong"); } else gSnd("right"); drawWordGuess(); } break;
+    case "wg-own": sheetWgOwn(); break;
+    case "wg-own-go": { const w = (document.getElementById("wg-own")?.value || "").toUpperCase().replace(/[^A-Z ]/g, "").replace(/\s+/g, " ").trim();
+      if(w.replace(/ /g, "").length < 2){ toast("Type a word of at least two letters."); break; } wgStart("own", w); break; }
     case "bj-start": { const players = [st.me, ...[...document.querySelectorAll("[data-bjp]")].filter(x => x.value === "y").map(x => x.dataset.bjp)];
       if(players.length > 4){ toast("Four players at most."); return; } b.disabled = true; b.textContent = "Opening…";
       gamesCall({action:"new", kind:"blackjack", sideA:players}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Open the table"; toast(gWhyNot(d.code)); return; }
@@ -4514,10 +5276,10 @@ document.addEventListener("click", e => {
     case "bj-chip": bjPend += +b.dataset.v; gSnd("chip"); drawGame(); break;
     case "bj-clear": bjPend = 0; drawGame(); break;
     case "bj-bet": if(bjPend >= BJ_MIN) gMove({bet:bjPend}); break;
-    case "g-snd": { const on = !gSndOn(); try { localStorage.setItem("t7.gsound", on ? "on" : "off"); } catch {} if(on) gSnd("right"); gView ? drawGame() : sheetGames(); toast(on ? "Game sounds on" : "Game sounds off"); break; }
+    case "g-snd": { const on = !gSndOn(); try { localStorage.setItem("t7.gsound", on ? "on" : "off"); } catch {} if(on) gSnd("right"); gRedraw(); toast(on ? "Game sounds on" : "Game sounds off"); break; }
     case "g-room": gPick = null; sheetGames(); break;
     case "g-back": sheetGames(); break;
-    case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gView ? drawGame() : sheetGames(); toast(xl ? "Extra large" : "Large"); break; }
+    case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gRedraw(); toast(xl ? "Extra large" : "Large"); break; }
     case "ttt-col": { const c = tttCols(); c[+b.dataset.s] = b.dataset.c; if(c[0] === c[1]){ toast("Pick a different colour from the other player"); break; } try { localStorage.setItem("t7.tttcol", JSON.stringify(c)); } catch {} drawGame(); break; }
     case "sp-card": { const c = b.dataset.c; if(spPick === c){ spPick = null; gMove({card:c}); } else { spPick = c; drawGame(); } break; }
     case "g-local": { const k = b.dataset.k; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["Player 1", "Player 2"]}; gSel = null; drawGame(); break; }
@@ -4565,16 +5327,18 @@ document.addEventListener("click", e => {
     case "g-ck": { const i = +b.dataset.i, g = gCurrent(); if(!g) break; const legal = gameLegal(g.kind, g.st, g.turn);
       if(gSel !== null && legal.some(m => m.f === gSel && m.t === i)){ gMove({f:gSel, t:i}); break; }
       gSel = legal.some(m => m.f === i) ? i : null; drawGame(); break; }
-    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "spades" ? "Resign this game of Spades for your team?" : g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
-      if(g.local){ clearTimeout(aiTimer); gView.over = g.kind === "blackjack" ? {winner:2, why:`you left with ${gView.st.bank[0].toLocaleString()} points`} : g.kind === "spades" || gView.ai ? {winner:1, why:"you resigned"} : {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
+    case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(gFfa(g) ? (g.local ? "Leave this game?" : `Stop this game of ${GLABEL[g.kind]} for everyone?`) : g.kind === "bidwhist" ? "Resign this game of Bid Whist for your team?" : g.kind === "spades" ? "Resign this game of Spades for your team?" : g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
+      if(g.local){ clearTimeout(aiTimer); gView.over = g.kind === "blackjack" ? {winner:2, why:`you left with ${gView.st.bank[0].toLocaleString()} points`} : gFfa(g) ? {winner:1, why:"you left the game"} : g.kind === "spades" || g.kind === "bidwhist" || gView.ai ? {winner:1, why:"you resigned"} : {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
       gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
-    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ clearTimeout(aiTimer); Object.assign(gView, {turn:0, over:null, cheered:false, noted:false});
+    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local && TB[g.kind]){ clearTimeout(aiTimer); tbLocal(g.kind, gView.nBots); break; }
+      if(g.local){ clearTimeout(aiTimer); Object.assign(gView, {turn:0, over:null, cheered:false, noted:false});
         if(g.kind === "spades") Object.assign(gView, {st:spInit([st.me, "bot:1", "bot:2", "bot:3"], 300), hands:spDeal()}); else if(g.kind === "blackjack"){ bjPend = 0; Object.assign(gView, {st:bjInit([st.me]), sec:bjSecret()}); } else gView.st = gameInit(g.kind);
         gSel = null; spPick = null; drawGame(); aiRun(); break; }
       const old = st.games.find(x => x.id === g.id), flip = !gTable(old) && gMySide(old) === 1, again = {action:"new", kind:g.kind, sideA:flip ? old.b : old.a, sideB:flip ? old.a : old.b};
       if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, secs:old.st.secs || 20, table:gTable(old), solo:!!old.st.solo, teams:old.st.solo ? undefined : old.st.teams || undefined});
       if(g.kind === "blackjack") Object.assign(again, {sideA:[st.me, ...old.st.players.filter(x => x !== st.me)], sideB:undefined});
-      if(g.kind === "spades") Object.assign(again, {sideA:[st.me, old.st.seats[(old.st.seats.indexOf(st.me) + 2) % 4]], sideB:[old.st.seats[(old.st.seats.indexOf(st.me) + 1) % 4], old.st.seats[(old.st.seats.indexOf(st.me) + 3) % 4]], target:old.st.target});
+      if(gFfa(g)) Object.assign(again, {sideA:[st.me, ...old.st.seats.filter(x => x !== st.me)], sideB:undefined, target:old.st.target});
+      if(g.kind === "spades" || g.kind === "bidwhist") Object.assign(again, {sideA:[st.me, old.st.seats[(old.st.seats.indexOf(st.me) + 2) % 4]], sideB:[old.st.seats[(old.st.seats.indexOf(st.me) + 1) % 4], old.st.seats[(old.st.seats.indexOf(st.me) + 3) % 4]], target:old.st.target});
       gamesCall(again).then(async d => {
         if(!d.ok){ toast(gWhyNot(d.code)); return; } await refresh(true); gView = {id:d.game.id}; drawGame(); }); break; }
     case "book-opts": { const e2 = ev(id); if(e2) bookingOptions(e2); break; }
