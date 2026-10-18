@@ -250,6 +250,24 @@ check("the table phone answers for each team in turn", s1 == 200 and s2 == 200, 
 s, b, _ = call("POST", G, {"action": "resign", "id": tt.get("id")}, tok_h); s2, b2, _ = rest("GET", "games?id=eq." + str(tt.get("id")) + "&select=status,winner,why", tok_h)
 check("ending a table game stops it without a winner", s == 200 and b2 == [{"status": "done", "winner": 2, "why": "stopped"}], (s, b2))
 s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Trivia Night*"), tok_m); check("only the family-teams game alerted the other team (table trivia alerts no one)", isinstance(b, list) and len(b) == 2, b)
+# The countdown (his order, 2026-10-17): the server keeps the clock. Time's up passes the SAME question to the other team
+import time as _time
+s, b, _ = call("POST", G, {"action": "new", "kind": "trivia", "cat": "bible", "table": True, "teams": ["A", "B"], "secs": 10}, tok_h); tc = (b or {}).get("game", {})
+check("trivia starts with a 10-second clock", s == 200 and tc.get("state", {}).get("secs") == 10 and tc["state"].get("steal") is False, (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"timeout": True}, "at": 0}, tok_m); check("a phone outside the game can't call time", s == 403, (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"timeout": True}, "at": 0}, tok_h); check("no phone can call time before the clock runs out", s == 409 and b.get("code") == "early", (s, b))
+_time.sleep(10.5)
+s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"timeout": True}, "at": 0}, tok_h); check("when the clock runs out, time's up is accepted", s == 200, (s, b))
+s, b, _ = rest("GET", "games?id=eq." + str(tc.get("id")) + "&select=state,turn,moves", tok_h); c1 = (b or [{}])[0]; L = (c1.get("state") or {}).get("last") or {}
+check("time's up passes the same question to the other team to steal, its answer still hidden", c1.get("turn") == 1 and c1["state"]["steal"] is True and c1["state"]["n"] == 1 and L.get("timeout") is True and "answer" not in L, c1)
+s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"pick": 2}, "at": 1}, tok_h)
+s, b, _ = rest("GET", "games?id=eq." + str(tc.get("id")) + "&select=state,turn", tok_h); c2 = (b or [{}])[0]; L = (c2.get("state") or {}).get("last") or {}
+check("after the steal the answer shows, question 2 comes up, and it goes to the team that didn't own question 1", c2["state"]["n"] == 2 and c2["state"]["steal"] is False and L.get("stole") is True and bool(L.get("answer")) and c2.get("turn") == 1, c2)
+_time.sleep(13.5)
+s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"pick": 0}, "at": 2}, tok_h)
+s, b, _ = rest("GET", "games?id=eq." + str(tc.get("id")) + "&select=state,turn", tok_h); c3 = (b or [{}])[0]; L = (c3.get("state") or {}).get("last") or {}
+check("an answer more than 3 seconds late counts as time's up (it scores nothing and passes for a steal)", L.get("timeout") is True and c3["state"]["steal"] is True and c3["state"]["score"] == c2["state"]["score"] and c3.get("turn") == 0, c3)
+call("POST", G, {"action": "resign", "id": tc.get("id")}, tok_h)
 # Family Feud: the family is the survey. Answers live in feud_answers, which no phone can read; only the judge moves
 s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"status": "active"}, "return=representation"); check("the host wakes the fourth test seat", s == 200 and b and b[0]["status"] == "active", (s, b))
 pin_4 = f"{random.randint(0, 9999):04d}"; s, b, _ = signin("Zed Testfour", pin_4, pin_4); tok_4 = (b.get("session") or {}).get("access_token"); check("a fourth test seat signs in", bool(tok_4), b)
