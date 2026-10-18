@@ -32,6 +32,9 @@ const EAT = new Set(["restaurant","bakery","cafe","coffee_shop","dessert_shop","
 const isEat = (p: any) => (p.types ?? []).some((t: string) => EAT.has(t) || t.endsWith("_restaurant"));
 // Movie night (his order, 2026-10-17): the same search finds cinemas when the app asks for kind "theater".
 const isTheater = (p: any) => (p.types ?? []).includes("movie_theater");
+// Topgolf outings (his order, 2026-10-18): kind "topgolf" keeps Topgolf venues only, by name (Google files Topgolf
+// Memphis as a restaurant, so its type alone can't single it out).
+const isTopgolf = (p: any) => /\btopgolf\b/i.test(p.displayName?.text ?? "");
 const BASIC_FIELDS = "id,displayName,formattedAddress,shortFormattedAddress,primaryTypeDisplayName,businessStatus,googleMapsUri";
 const FULL_FIELDS = BASIC_FIELDS + ",priceLevel,rating,userRatingCount,currentOpeningHours.openNow,nationalPhoneNumber,websiteUri";
 const PRICE: Record<string, number> = { PRICE_LEVEL_FREE: 1, PRICE_LEVEL_INEXPENSIVE: 1, PRICE_LEVEL_MODERATE: 2, PRICE_LEVEL_EXPENSIVE: 3, PRICE_LEVEL_VERY_EXPENSIVE: 4 };
@@ -83,7 +86,7 @@ Deno.serve(async (req) => {
       if (body.pageToken) payload.pageToken = String(body.pageToken);
       const g = await google("https://places.googleapis.com/v1/places:searchText", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }, SEARCH_FIELDS);
       if (g.error) return reply({ ok: false, code: g.error });
-      return reply({ ok: true, results: (g.data.places ?? []).filter(body.kind === "theater" ? isTheater : isEat).map(shape), next: g.data.nextPageToken ?? null, attribution: "Results from Google" });
+      return reply({ ok: true, results: (g.data.places ?? []).filter(body.kind === "theater" ? isTheater : body.kind === "topgolf" ? isTopgolf : isEat).map(shape), next: g.data.nextPageToken ?? null, attribution: "Results from Google" });
     }
 
     if (body.action === "details") {
