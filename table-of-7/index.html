@@ -256,7 +256,7 @@ textarea.input{min-height:76px;resize:vertical}
 #sheet-wrap.stage{background:#04070f}
 #sheet-wrap.stage .sheet{--gs:1;max-width:none;width:100%;height:100%;max-height:none;border-radius:0;border:0;color:#f6f2e8;
   background:radial-gradient(120% 70% at 50% -10%,#24406e 0%,#111f3a 42%,#070c18 100%) fixed;
-  padding-top:max(12px,env(safe-area-inset-top,0px));gap:14px;transform:none;grid-template-columns:minmax(0,1fr);overflow-x:hidden}
+  padding-top:max(12px,env(safe-area-inset-top,0px));gap:14px;transform:none;grid-template-columns:minmax(0,1fr);grid-auto-rows:max-content;overflow-x:hidden}
 body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 #sheet-wrap.stage .grab{display:none}
 #sheet-wrap.stage .sheet > *{width:100%;max-width:900px;margin-inline:auto}
@@ -464,6 +464,59 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .bjacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .bjacts .btn{min-height:calc(56px*var(--gs));padding-inline:4px}
 .gt-bj,.todo .ic.gt-bj{background:linear-gradient(150deg,#0f7a43,#063b20)}
+/* Movie Night: a cinema look (velvet red, gold, posters) */
+#sheet-wrap.stage.cinema .sheet{background:radial-gradient(120% 60% at 50% -10%,#7a1426 0%,#3a0812 45%,#14040a 100%) fixed}
+.mvlist{display:grid;gap:10px}
+.mvcard{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;text-align:left;border:0;border-radius:18px;padding:10px;background:rgba(255,255,255,.08);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,215,140,.18)}
+.mvcard img,.mvcard .noposter{width:calc(64px*var(--gs));aspect-ratio:2/3;border-radius:10px;object-fit:cover;box-shadow:0 6px 14px rgba(0,0,0,.5);display:grid;place-items:center;background:#2a0a12;font-size:28px}
+.mvcard b{display:block;font:900 calc(17px*var(--gs))/1.2 var(--f-display)}
+.mvcard small{display:block;color:#f3d9b0;font-size:calc(13px*var(--gs))}
+.mvtag{display:inline-block;margin-top:6px;background:#ffd36b;color:#3a2200;border-radius:999px;padding:2px 10px;font:800 calc(12px*var(--gs)) var(--f-display)}
+.mvgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (min-width:600px){.mvgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:860px){.mvgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.mvposter{border:0;background:none;padding:0;color:#fff;text-align:left;display:grid;gap:6px}
+.mvposter img,.mvposter .noposter{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:14px;box-shadow:0 10px 22px rgba(0,0,0,.6),0 0 0 1px rgba(255,215,140,.25);background:#2a0a12;display:grid;place-items:center;font-size:40px}
+.mvposter b{font:900 calc(15px*var(--gs))/1.2 var(--f-display)}
+.mvposter small{color:#f3d9b0;font-size:calc(12.5px*var(--gs))}
+.mvposter:active img{transform:scale(.97)}
+.mvhero{position:relative;display:grid;grid-template-columns:minmax(0,40%) 1fr;gap:14px;align-items:end;padding:14px;border-radius:22px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(20,4,10,.25),rgba(20,4,10,.92)),var(--bd,none) center/cover,#2a0a12;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.mvhero img{width:100%;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.6)}
+.mvtitle{font:900 calc(22px*var(--gs))/1.15 var(--f-display);color:#fff}
+.mvfacts{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.mvfacts span{background:rgba(255,255,255,.12);border-radius:999px;padding:2px 9px;font:700 calc(12.5px*var(--gs)) var(--f-body);color:#fff}
+.mvfacts .cert{background:#fff;color:#14040a;border-radius:6px;font-weight:900}
+.mvstars b{font:900 calc(22px*var(--gs)) var(--f-display);color:#ffd36b}.mvstars small{color:#f3d9b0}
+.mvrev p{font-size:calc(15px*var(--gs));line-height:1.5}
+.mvscore{background:#ffd36b;color:#3a2200;border-radius:999px;padding:1px 9px;font:900 13px var(--f-display);white-space:nowrap}
+.mvths{display:grid;gap:8px}
+.mvth{display:grid;text-align:left;border:2px solid rgba(255,215,140,.25);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.06);color:#fff}
+.mvth.on{border-color:#ffd36b;background:rgba(255,211,107,.18)}
+.mvth b{font:800 calc(15px*var(--gs)) var(--f-display)}.mvth small{color:#f3d9b0}
+.mvwho{display:flex;flex-wrap:wrap;gap:8px}
+.stage .chip{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25);font-size:calc(14px*var(--gs))}
+.stage .chip[aria-pressed="true"]{background:#ffd36b;color:#3a2200;border-color:transparent}
+.mvstub{display:grid;grid-template-columns:minmax(0,34%) 1fr;gap:14px;padding:14px;border-radius:20px;background:linear-gradient(135deg,#fff3dc,#f6deb0);color:#2a0a12;position:relative;
+  box-shadow:0 14px 30px rgba(0,0,0,.5);-webkit-mask:radial-gradient(circle at 0 50%,transparent 12px,#000 13px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 12px,#000 13px) right/51% 100% no-repeat}
+.mvstub img,.mvstub .noposter{width:100%;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.mvstub .mvtitle{color:#2a0a12}.mvstub .mvfacts span{background:rgba(42,10,18,.1);color:#2a0a12}.mvstub .mvfacts .cert{background:#2a0a12;color:#fff}
+.mvstub .small{font-size:calc(14px*var(--gs));color:#3a1a14}
+.mvstub .btn{background:#2a0a12;color:#fff;border-color:transparent}
+.mvwhen{font:900 calc(17px*var(--gs))/1.25 var(--f-display);color:#7a1426;margin:4px 0}
+.mvrsvp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mvrsvp .btn{min-height:calc(54px*var(--gs))}
+.mvticket,.mvreceipt{border-radius:18px;padding:14px 16px;display:grid;gap:6px;background:#fffdf7;color:#2a0a12;box-shadow:0 12px 26px rgba(0,0,0,.45);border:2px dashed #c9a24a}
+.mvticket .lbl{color:#7a1426}
+.mvr-top{display:flex;justify-content:space-between;align-items:center;font:900 calc(12.5px*var(--gs)) var(--f-display);letter-spacing:.1em;color:#7a1426}
+.mvr-amt{font:900 calc(30px*var(--gs)) var(--f-display);color:#ffd36b}
+.mvreceipt .mvr-amt{color:#2a0a12}
+.mvr-row{display:flex;justify-content:space-between;gap:12px;font-size:calc(14px*var(--gs));border-bottom:1px dotted rgba(42,10,18,.25);padding:4px 0}
+.mvr-row span{color:#7a5a4a}.mvr-row b{text-align:right}
+.mvr-sign{font-family:var(--f-script);font-size:calc(24px*var(--gs));text-align:right;color:#2a0a12}
+.mvpaid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mvowe{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:calc(14px*var(--gs))}
+.mvowe span:first-child{display:flex;gap:6px;align-items:center}
 @media (prefers-reduced-motion:reduce){.stage *{animation:none!important;transition:none!important}}
 .photos button{padding:0;border:0;background:none;border-radius:8px;overflow:hidden}
 .photos img{display:block;width:100%;aspect-ratio:1;object-fit:cover;max-width:100%}
@@ -1140,7 +1193,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -1179,6 +1232,8 @@ async function pull(){
   n.standing = D.standing_dinners.map(x => ({id:x.id, label:x.label, weekday:x.weekday, nth:x.nth, time:hhmm(x.time), lead:x.lead_days, voteMin:x.vote_minutes, dress:x.dress, active:x.active, by:x.created_by}));
   n.runs = D.standing_runs.map(x => ({sid:x.standing_id, date:x.dinner_date, eventId:x.event_id}));
   n.surveys = D.feud_surveys.map(x => ({id:x.id, prompts:x.prompts, status:x.status, answered:x.answered || [], by:x.created_by, t:iso2ms(x.updated_at)}));
+  const MP = {}; D.movie_people.forEach(x => (MP[x.night_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
+  n.movies = D.movie_nights.map(x => ({id:x.id, movie:x.movie, pid:x.theater_pid, city:x.city, date:x.date, time:x.time, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, tickets:x.tickets, by:x.created_by, people:MP[x.id] || {}, t:iso2ms(x.updated_at)}));
   n.games = D.games.map(x => ({id:x.id, kind:x.kind, a:x.side_a, b:x.side_b, st:x.state, turn:x.turn, status:x.status, winner:x.winner, why:x.why || "", moves:x.moves, by:x.created_by, t:iso2ms(x.updated_at)}));
   const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
   const urls = {};
@@ -1232,7 +1287,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1252,6 +1307,7 @@ function redraw(){
   if(inviteId && !ev(inviteId)) closeInvite();
   render();
   // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
+  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) mvRedraw();
   if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
@@ -1619,6 +1675,7 @@ function vHome(){
   ${isSuspended() ? `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)">Your seat is paused by ${esc(first(F(ADMIN).name))}. You can look around, but voting and posting are off for now.</div>` : ""}
   ${isAdmin() && queueCount() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>${queueCount()} waiting for your approval</b><small>Photos, cards and posts from the family</small></span><span class="chev">${I.chev}</span></button>` : ""}
 
+  ${mvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎬 Movie night</h2></div>${mvNeeds().slice(0, 3).map(([n, a, b2]) => `<button class="todo" data-act="mv-open" data-id="${n.id}"><span class="ic">🎬</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
   </section>` : ""}
@@ -2017,6 +2074,7 @@ function vTable(){
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
   <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Spades, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMine(g)) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="movies"><span class="ic">🎬</span><span><b>Movie Night</b><small>${(() => { const k = mvNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a movie, read reviews, buy tickets, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
@@ -2059,7 +2117,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage)[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -2100,6 +2158,7 @@ function sheetTips(){
     ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."],
     ["Play the computer","Tic-Tac-Toe, Connect Four and Checkers: tap Easy, Medium or Hard. Spades: “Me and a computer partner”, or pick 🤖 Computer for any empty seat in a family game. Trivia: “Just me, against the clock”. Blackjack: “Just me vs the dealer”. Your record against the computer stays on your phone and never counts in the family standings."],
     ["Blackjack","Game Room → 🃏 Blackjack. Alone against the dealer, or a family table of up to four on their own phones. Tap chips to make your bet (10 to 500), then Bet; then Hit, Stand, Double or Split. Blackjack pays 3 to 2; the dealer stands on 17. Everyone starts with 1,000 points. Chips are points for fun, never money."],
+    ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt."],
     ["Game sounds","Tap 🔇 at the top of any game to turn sounds on (🔊), and again to turn them off. They start off. Cards, chips, pieces, right and wrong answers, a buzzer for a strike, a fanfare for a win."],
     ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out. The cards you can play lift up and glow gold: tap one, then tap it again (or Play) to put it down."]
   ];
@@ -2144,6 +2203,7 @@ function guideBody(k){
     step(22, "Play the computer", `Every game can be played against the computer on your own phone. <b>Tic-Tac-Toe, Connect Four, Checkers:</b> open the game and tap ${pic("Easy")} ${pic("Medium","primary")} or ${pic("Hard","wine")}; you move first, and the computer answers in under a second (Tic-Tac-Toe on Hard never loses). <b>Spades:</b> ${pic("🤖 Me and a computer partner","primary")} deals you and a computer partner against two computers; or in a family game choose <b>🤖 Computer</b> for any seat you can't fill, and the computers bid and play by themselves. <b>Trivia:</b> ${pic("🧠 Just me, against the clock","primary")}: ten questions; when time runs out the answer shows and the next question comes up; your best score is kept. Your record against the computer shows under each game; computer games never count in the 🏆 family standings.`),
     step(23, "Blackjack", `Tap the <b>Blackjack</b> picture. ${pic("🤖 Just me vs the dealer","primary")} plays on your phone; ${pic("👨‍👩‍👧 Family table · own phones","wine")} opens a table for up to four (pick who's playing, then ${pic("Open the table","primary")}). Everyone starts with <b>1,000 points</b>. Tap the chips (10, 25, 50, 100, 500) to build your bet, then ${pic("Bet","primary")}. When everyone has bet, the cards are dealt: the dealer shows one card. On your turn tap ${pic("Hit","primary")} for another card, ${pic("Stand","wine")} to stay, ${pic("Double")} to double your bet for exactly one more card, or ${pic("Split")} to play a pair as two hands. Over 21 is a bust. The dealer then plays, standing on 17; closest to 21 wins. A blackjack (an ace and a ten-card) pays 3 to 2. ${pic("Deal the next hand","primary")} starts the next round; ${pic("Close the table for everyone","ghost")} ends it and lists everyone's final stack, and the biggest stacks show in the Game Room. <b>Chips are points for fun, never money.</b>`),
     step(24, "Game sounds", `At the top of every game, next to ${pic("A+")}, tap ${pic("🔇")} to turn sounds on; it becomes ${pic("🔊")}. Tap again to turn them off. Sounds start off, and your phone remembers your choice.`),
+    step(25, "Movie Night", `Tap ${pic("Our Table")} → <b>🎬 Movie Night</b> → ${pic("🍿 Plan a movie night","primary")}. <b>Pick a movie:</b> posters of what's in theaters now, or type any title and tap ${pic("Search","primary")}. Tap a poster for the story, the age rating, the length, the TMDB score, the cast, viewer reviews and ${pic("▶ Watch the trailer","wine")}. Tap ${pic("🍿 Plan a movie night for this","primary")}: choose the date and the showtime you want, tap ${pic("Find theaters","primary")} and pick one, choose who's invited (and, if you like, which dinner it follows), and tap ${pic("🎬 Send the invitation","primary")}. Everyone invited is told. <b>On the night's page:</b> tap ${pic("Going","primary")}, ${pic("Maybe")} or ${pic("Can't go")}. <b>Tickets:</b> one person going taps ${pic("🎟️ I'll buy the tickets","primary")} so nobody buys twice, then ${pic("Fandango","primary")} or ${pic("Theater website")} to buy them there (the app never buys tickets or moves money). Back in the app they fill in how many, the price, the fees, the seats, the auditorium and the confirmation number, and tap ${pic("✓ I bought the tickets","wine")}. <b>Settling up:</b> everyone going sees their share and the buyer's Zelle, Cash App or Apple Pay; pay them yourself, then tap ${pic("I paid by Zelle","primary")} (or how you paid). Or tap ${pic("I'm paying for my own ticket instead")}. The buyer taps ${pic("✓ Received","wine")} when the money arrives, and your <b>🧾 receipt</b> appears: the movie, date and showtime, theater and address, seats, auditorium, confirmation, your share and “Received by” the buyer.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2162,6 +2222,7 @@ function guideBody(k){
     step("N", "Family Feud at Sunday dinner", `On Tuesday Jasmine taps ${pic("Start a survey","primary")}, keeps “Name something the family always orders when we eat out”, and sends it. Everyone's phone buzzes; by Saturday six have answered, and Jasmine taps ${pic("Close the survey","wine")}. At dinner Richard taps ${pic("Play Family Feud")}, puts the kids on Team 1 and the grown-ups on Team 2, and judges. Team 1 shouts “Wings!” Richard taps ${pic("Reveal","primary")}: <b>Wings · 3</b>, because three of the six said it. Then “Salad?”: ${pic("✗ Strike","wine")}. After three strikes the grown-ups steal with “Catfish” and take the bank.`),
     step("O", "Couples at the card table", `Richard taps ${pic("Deal a game of Spades","wine")}, picks Jasmine as his partner and Mario and Rosa as the other couple, and taps ${pic("Deal Spades","primary")}. Everyone's phone shows their own 13 cards. Richard bids 4, Mario bids Nil, Jasmine 3, Rosa 5. Hearts are led; Jasmine has none and trumps with the 2♦, but Rosa drops the Big Joker and takes it. At the end of the hand the card reads <b>“Richard &amp; Jasmine bid 7, took 8 → +71”</b>. Mario's nil holds: +100 for his couple.`),
     step("P", "Blackjack after dessert", `Devonte taps the <b>Blackjack</b> picture, then ${pic("👨‍👩‍👧 Family table · own phones","wine")}, marks Mario and Candyce as <b>Playing</b> and taps ${pic("Open the table","primary")}. Each taps chips to bet (Mario goes 100, Candyce 25) and taps ${pic("Bet","primary")}. Devonte has 16 against the dealer's 10 and taps ${pic("Hit","primary")}: a 4, twenty. Candyce has a pair of 8s and taps ${pic("Split")}. The dealer stands on 18; Devonte wins 100. After a few hands Devonte taps ${pic("Close the table for everyone","ghost")}, and the Game Room shows the biggest stacks. Later, waiting for the check, Zoey plays ${pic("Hard","wine")} Connect Four against the computer.`),
+    step("Q", "Movie night after Sunday dinner", `Jasmine opens ${pic("🎬 Movie Night")} and taps ${pic("🍿 Plan a movie night","primary")}, finds a family movie in theaters now, reads two viewer reviews and watches the trailer. She picks Saturday at 7:30, taps ${pic("Find theaters","primary")}, chooses one in Memphis, marks it “after” the family dinner, and sends it. Mario taps ${pic("Going","primary")} and ${pic("🎟️ I'll buy the tickets","primary")}, buys five seats on Fandango, and fills in F7–F11, the fees and the confirmation number. Nikki pays Mario $14 by Cash App and taps ${pic("I paid by Cash App","primary")}; Mario taps ${pic("✓ Received","wine")} and Nikki's receipt appears. Devonte already has a gift card, so he taps ${pic("I'm paying for my own ticket instead")}.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2203,6 +2264,10 @@ function guideBody(k){
     ["The computer didn't move", "Give it a second: it moves on its own after yours. If the screen was closed mid-game, the game on your phone ended; start it again from the game's picture."],
     ["My Blackjack bet button is grey", "Tap chips until your bet is at least 10. The chips that would take you over 500, or over your points, are greyed out."],
     ["Nobody can bet at Blackjack", "A player with fewer than 10 points sits out. When nobody can bet, the table closes by itself."],
+    ["“Movies aren't switched on yet”", "The free TMDB key isn't in place. Richard pastes it into Supabase once; after that, movies, reviews and trailers appear."],
+    ["Find theaters shows nothing", "Pick another area in the list next to it. Google only lists cinemas inside the area you choose."],
+    ["I can't tap I'll buy the tickets", "Tap Going first. And only one person can be buying: if someone already is, their name shows instead."],
+    ["My movie receipt isn't there", "It appears when the buyer taps Received. If you paid for your own ticket, tap Paying for myself and it shows at once."],
     ["I don't hear any sounds", "Tap 🔇 at the top of the game so it shows 🔊, and check your phone isn't on silent."],
     ["The Trivia clock ran out", "Time's up passes the same question to the other team for one steal. Nobody can stop the clock: it's kept on our server, not on any phone."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
@@ -2221,10 +2286,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Play seven family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud and Blackjack</li><li>Play against the computer (Easy, Medium, Hard), with computers filling empty Spades seats</li><li>Play sounds, if you turn them on</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Play seven family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud and Blackjack</li><li>Play against the computer (Easy, Medium, Hard), with computers filling empty Spades seats</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Count computer games in the family standings</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -3933,6 +3998,178 @@ function sheetTriviaSolo(){
     <button class="btn primary block" data-act="tv-start" data-k="solo">Start</button>`);
 }
 const tvBest = () => Math.max(0, ...(st.games || []).filter(g => g.kind === "trivia" && g.st?.solo && g.status === "done" && (g.a || []).includes(st.me) && g.why !== "stopped").map(g => g.st.score[0]));
+/* ===== Movie Night (his order, 2026-10-17): choose a movie, read its reviews, buy tickets on Fandango or the theater's
+   own site, everyone pays the buyer back (or pays for themselves), and each gets a receipt with the movie, time, place
+   and ticket details. The app never buys a ticket and never moves money. Writes go through functions/movies.
+   Movie data: TMDB ("This product uses the TMDB API but is not endorsed or certified by TMDB."). ===== */
+const TMDB_IMG = (p, w = 342) => p ? `https://image.tmdb.org/t/p/w${w}${p}` : "";
+const TMDB_NOTE = `<p class="small muted" style="margin:0;text-align:center">Movie details and reviews from <a href="https://www.themoviedb.org" target="_blank" rel="noopener" style="color:#ffd36b">TMDB</a>. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>`;
+let mvOpen = null, mvDraft = null, mvList = {now:null, q:"", results:null, busy:false, err:""};
+const mvMovie = {}, mvTheater = {}, mvTheaterBusy = new Set();
+async function moviesCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/movies", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const mvWhy = c => ({no_key:"Movies aren't switched on yet: the TMDB key isn't in place.", bad_key:"The TMDB key was refused. Check it in Supabase.", resting:"The movie service is busy. Try again in a minute.",
+  tmdb:"The movie service didn't answer. Try again.", short:"Type at least two letters.", claimed:"Someone else is already buying the tickets.", going:"Tap Going first, then you can buy the tickets.",
+  numbers:"Check the number of tickets and the prices.", paid:"You've already paid; ask the buyer to change it.", cancelled:"That movie night was cancelled.", not_buyer:"Only the person buying the tickets can do that.",
+  not_planner:"Only the planner or the host can cancel.", seats:"Everyone invited has to be an active family seat.", when:"Pick a date and a showtime.", offline:"Can't reach the table right now.", no_night:"That movie night isn't open to you."})[c] || "Couldn't do that. Try again.";
+const mvDate = n => new Date(n.date + "T12:00:00");
+const mvTime = t => { const [h, m] = String(t || "19:00").split(":").map(Number); return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"}); };
+const mvWhen = n => `${mvDate(n).toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"})} · ${mvTime(n.time)}`;
+const mvPast = n => mvDate(n) < new Date(today0.getTime() - DAY);
+const mvMe = n => n.people[st.me] || {};
+function mvTheaterInfo(pid){
+  if(!pid || mvTheater[pid] || mvTheaterBusy.has(pid)) return mvTheater[pid] || null;
+  mvTheaterBusy.add(pid);
+  placesCall({action:"details", ids:[pid], level:"full"}).then(d => { mvTheaterBusy.delete(pid); if(d.ok && d.places[0]){ const p = d.places[0]; mvTheater[pid] = {name:p.name, address:p.address, website:p.website, phone:p.phone, mapsUri:p.mapsUri}; mvRedraw(); } });
+  return null;
+}
+function mvRedraw(){ const box = sheet.querySelector("[data-mvnight],[data-mvroom],[data-mvpick],[data-mvmovie],[data-mvnew]"); if(!box || !wrap.classList.contains("open")) return;
+  if(box.hasAttribute("data-mvnight")) drawMovieNight(mvOpen); else if(box.hasAttribute("data-mvroom")) sheetMovies(); else if(box.hasAttribute("data-mvpick")) sheetMoviePick(); else if(box.hasAttribute("data-mvmovie")) sheetMovie(+box.dataset.mvmovie); else if(box.hasAttribute("data-mvnew") && mvDraft) sheetMovieNew(); }
+function mvNeeds(){
+  return (st.movies || []).filter(n => n.status === "open" && !mvPast(n)).map(n => { const me = mvMe(n);
+    if(me.rsvp == null) return [n, "Movie night: are you going?", `${n.movie.title} · ${mvWhen(n)}`];
+    if(me.pay === "owe") return [n, `Pay ${first(F(n.buyer).name)} back ${money(+me.amount)}`, `${n.movie.title} tickets`];
+    if(n.buyer === st.me && !n.tickets) return [n, "Buy the movie tickets", `${n.movie.title} · ${mvWhen(n)}`];
+    if(n.buyer === st.me && Object.values(n.people).some(p => p.pay === "sent")) return [n, "Confirm movie money received", n.movie.title];
+    return null; }).filter(Boolean);
+}
+function mvCard(n){
+  const me = mvMe(n), going = Object.values(n.people).filter(p => p.rsvp === "yes").length;
+  const tag = n.status === "cancelled" ? "Cancelled" : me.pay === "owe" ? `You owe ${money(+me.amount)}` : me.pay === "received" ? "🧾 Receipt ready" : me.pay === "self" ? "Paying for yourself" : n.tickets ? "🎟️ Tickets bought" : n.buyer ? `${esc(first(F(n.buyer).name))} is buying` : me.rsvp ? {yes:"You're going", maybe:"Maybe", no:"Can't make it"}[me.rsvp] : "Answer the invitation";
+  return `<button class="mvcard" data-act="mv-open" data-id="${n.id}">${n.movie.poster ? `<img src="${TMDB_IMG(n.movie.poster, 185)}" alt="" loading="lazy">` : `<span class="noposter">🎬</span>`}
+    <span><b>${esc(n.movie.title)}</b><small>${esc(mvWhen(n))}</small><small>${going} going${mvTheater[n.pid] ? ` · ${esc(mvTheater[n.pid].name)}` : ""}</small><span class="mvtag">${tag}</span></span></button>`;
+}
+function sheetMovies(){
+  mvOpen = null; (st.movies || []).forEach(n => mvTheaterInfo(n.pid));
+  const all = (st.movies || []).slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const up = all.filter(n => n.status === "open" && !mvPast(n)), past = all.filter(n => n.status !== "open" || mvPast(n)).reverse().slice(0, 6);
+  openSheet(`<div class="sheet-head" data-cinema data-mvroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Movie Night</div><h2>🎬 Let's go to the movies</h2></div>${gSizeBtn()}</div>
+    <button class="btn primary block" data-act="mv-pick" style="min-height:calc(58px*var(--gs))">🍿 Plan a movie night</button>
+    <div class="lbl">COMING UP</div>
+    ${up.length ? `<div class="mvlist">${up.map(mvCard).join("")}</div>` : `<div class="empty">No movie night planned yet. Tap Plan a movie night.</div>`}
+    ${past.length ? `<div class="lbl">PAST NIGHTS &amp; RECEIPTS</div><div class="mvlist">${past.map(mvCard).join("")}</div>` : ""}
+    ${TMDB_NOTE}`);
+}
+async function mvLoadNow(){ if(mvList.now || mvList.busy) return; mvList.busy = true; const d = await moviesCall({action:"now"}); mvList.busy = false; if(d.ok) mvList.now = d.movies; else mvList.err = mvWhy(d.code); mvRedraw(); }
+function sheetMoviePick(){
+  const shown = mvList.q ? mvList.results : mvList.now; if(!mvList.q && !mvList.err) mvLoadNow();   // after an error, only Try again asks again
+  openSheet(`<div class="sheet-head" data-cinema data-mvpick>${gBack("movies", "Back to Movie Night")}<div style="flex:1;min-width:0"><div class="eyebrow">Movie Night</div><h2>Pick a movie</h2></div>${gSizeBtn()}</div>
+    <div class="grid2" style="grid-template-columns:1fr auto"><input class="input" id="mv-q" placeholder="Search any movie" value="${esc(mvList.q)}" aria-label="Search movies"><button class="btn primary" data-act="mv-search">Search</button></div>
+    <div class="lbl">${mvList.q ? `RESULTS FOR “${esc(mvList.q.toUpperCase())}” · <button class="link-btn" data-act="mv-now" style="color:#ffd36b">Back to now playing</button>` : "NOW PLAYING IN THEATERS"}</div>
+    ${mvList.err ? `<div class="warnbox">${esc(mvList.err)}</div><button class="btn" data-act="mv-now">Try again</button>` : ""}
+    ${!shown ? (mvList.err ? "" : `<div class="empty">Loading movies…</div>`) : !shown.length ? `<div class="empty">No movies found. Try another title.</div>`
+      : `<div class="mvgrid">${shown.map(m => `<button class="mvposter" data-act="mv-movie" data-id="${m.id}">${m.poster ? `<img src="${TMDB_IMG(m.poster)}" alt="" loading="lazy">` : `<span class="noposter">🎬</span>`}<b>${esc(m.title)}</b><small>${m.year || ""}${m.votes ? ` · ★ ${m.rating}/10` : ""}</small></button>`).join("")}</div>`}
+    ${TMDB_NOTE}`);
+}
+async function mvLoadMovie(id){ if(mvMovie[id]) return; mvMovie[id] = "…"; const d = await moviesCall({action:"movie", id}); mvMovie[id] = d.ok ? d.movie : {err:mvWhy(d.code)}; mvRedraw(); }
+function sheetMovie(id){
+  const m = mvMovie[id]; if(!m) mvLoadMovie(id);
+  const ok = m && m !== "…" && !m.err;
+  openSheet(`<div class="sheet-head" data-cinema data-mvmovie="${id}">${gBack("mv-pick", "Back to the movies")}<div style="flex:1;min-width:0"><div class="eyebrow">Movie Night</div><h2>${ok ? esc(m.title) : "Movie"}</h2></div>${gSizeBtn()}</div>
+    ${!ok ? `<div class="empty">${m?.err ? esc(m.err) : "Loading the movie…"}</div>` : `
+    <div class="mvhero" style="${m.backdrop ? `--bd:url('${TMDB_IMG(m.backdrop, 780)}')` : ""}">${m.poster ? `<img src="${TMDB_IMG(m.poster, 500)}" alt="${esc(m.title)} poster">` : ""}
+      <div><div class="mvtitle">${esc(m.title)} <span class="muted">${m.year || ""}</span></div>
+        <div class="mvfacts">${m.cert ? `<span class="cert">${esc(m.cert)}</span>` : ""}${m.runtime ? `<span>${Math.floor(m.runtime / 60)}h ${m.runtime % 60}m</span>` : ""}${m.genres.map(gn => `<span>${esc(gn)}</span>`).join("")}</div>
+        ${m.votes ? `<div class="mvstars"><b>★ ${m.rating}</b><small>/10 · ${m.votes.toLocaleString()} ratings on TMDB</small></div>` : ""}
+        ${m.tagline ? `<div class="small" style="font-style:italic;color:#ffd9a8">${esc(m.tagline)}</div>` : ""}</div></div>
+    ${m.trailer ? `<a class="btn wine block" href="https://www.youtube.com/watch?v=${encodeURIComponent(m.trailer)}" target="_blank" rel="noopener">▶ Watch the trailer</a>` : ""}
+    <button class="btn primary block" data-act="mv-new" data-id="${m.id}" style="min-height:calc(56px*var(--gs))">🍿 Plan a movie night for this</button>
+    <div class="card"><div class="lbl">THE STORY</div><p style="margin:0;font-size:calc(16px*var(--gs));line-height:1.5">${esc(m.overview || "No summary yet.")}</p>${m.cast.length ? `<div class="small muted">Starring ${esc(m.cast.join(", "))}</div>` : ""}</div>
+    <div class="lbl">WHAT VIEWERS SAY</div>
+    ${m.reviews.length ? m.reviews.map(r => `<div class="card mvrev"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(r.author)}</b>${r.rating != null ? `<span class="mvscore">★ ${r.rating}/10</span>` : ""}</div><p style="margin:0">${esc(r.text)}${r.text.length >= 600 ? "…" : ""}</p>${r.url ? `<a class="small" href="${esc(r.url)}" target="_blank" rel="noopener" style="color:#ffd36b">Read the whole review</a>` : ""}</div>`).join("") : `<div class="empty">No viewer reviews yet.</div>`}`}
+    ${TMDB_NOTE}`);
+}
+function sheetMovieNew(){
+  if(!mvDraft){ sheetMovies(); return; }
+  const d = mvDraft, m = mvMovie[d.movieId], people = st.fam.filter(f => f.status !== "suspended");
+  const dinners = st.events.filter(e => e.status !== "done" && e.date >= iso(today0)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
+  openSheet(`<div class="sheet-head" data-cinema data-mvnew><button class="icon-btn" data-act="mv-movie" data-id="${d.movieId}" aria-label="Back to the movie">←</button><div style="flex:1;min-width:0"><div class="eyebrow">Plan a movie night</div><h2>${esc(m?.title || "Movie")}</h2></div>${gSizeBtn()}</div>
+    <div class="grid2"><div class="field"><label for="mv-date">Date</label><input class="input" type="date" id="mv-date" value="${d.date}" min="${iso(today0)}"></div>
+      <div class="field"><label for="mv-time">Showtime</label><input class="input" type="time" id="mv-time" value="${d.time}"></div></div>
+    <p class="small muted" style="margin:0">Pick the showtime you want from Fandango or the theater's site; the buyer confirms it when they buy.</p>
+    <div class="lbl">THE THEATER</div>
+    <div class="grid2" style="grid-template-columns:1fr auto"><select class="input" id="mv-city" aria-label="Area">${GCITIES.map(c => `<option ${c === d.city ? "selected" : ""}>${c}</option>`).join("")}</select><button class="btn primary" data-act="mv-th-find">Find theaters</button></div>
+    ${d.thBusy ? `<div class="empty">Finding theaters…</div>` : d.thErr ? `<div class="warnbox">${esc(d.thErr)}</div>` : d.theaters ? (d.theaters.length ? `<div class="mvths">${d.theaters.map(t => `<button class="mvth ${d.pid === t.placeId ? "on" : ""}" data-act="mv-th" data-pid="${t.placeId}"><b>${esc(t.name)}</b><small>${esc(t.short || t.address)}</small></button>`).join("")}</div><p class="small muted" style="margin:0">Results from Google</p>` : `<div class="empty">Google found no theaters in ${esc(d.city)}.</div>`) : d.pid ? `<div class="strip">🎦 <b>${esc(d.pname)}</b></div>` : ""}
+    <div class="lbl">WHO'S INVITED</div>
+    <div class="mvwho">${people.map(f => `<button class="chip" data-act="mv-inv" data-id="${f.id}" aria-pressed="${f.id === st.me || d.invited.includes(f.id)}" ${f.id === st.me ? "disabled" : ""}>${esc(first(f.name))}</button>`).join("")}</div>
+    ${dinners.length ? `<div class="field"><label for="mv-dinner">After a dinner? (optional)</label><select class="input" id="mv-dinner"><option value="">No, just the movie</option>${dinners.map(e => `<option value="${e.id}" ${d.dinner === e.id ? "selected" : ""}>${esc(e.title)} · ${fmtDate(e.date)}</option>`).join("")}</select></div>` : ""}
+    <div class="field"><label for="mv-note">A note (optional)</label><input class="input" id="mv-note" maxlength="300" value="${esc(d.note || "")}" placeholder="e.g. Meet in the lobby at 7:15"></div>
+    <button class="btn primary block" data-act="mv-send" style="min-height:calc(56px*var(--gs))">🎬 Send the invitation</button>`);
+}
+function mvReceipt(n, id){
+  const p = n.people[id], t = n.tickets || {}, th = mvTheater[n.pid], self = p.pay === "self";
+  return `<section class="mvreceipt"><div class="mvr-top"><span>🧾 RECEIPT · MOVIE NIGHT</span><span class="pill good">${self ? "OWN TICKET" : "PAID"}</span></div>
+    ${self ? "" : `<div class="mvr-amt">${money(+p.amount)}</div><div class="small">Paid ${esc(whenPaid(Date.parse(p.received_at || p.sent_at || Date.now())))}${p.via ? ` · by ${esc(p.via)}` : ""}</div>`}
+    <div class="mvr-row"><span>Moviegoer</span><b>${esc(F(id).name)}</b></div>
+    <div class="mvr-row"><span>Movie</span><b>${esc(n.movie.title)}${n.movie.cert ? ` (${esc(n.movie.cert)})` : ""}</b></div>
+    <div class="mvr-row"><span>When</span><b>${esc(mvWhen(n))}</b></div>
+    <div class="mvr-row"><span>Where</span><b>${th ? `${esc(th.name)}<br><small>${esc(th.address)}</small>` : "The theater"}</b></div>
+    ${self ? `${p.own?.seats ? `<div class="mvr-row"><span>Seats</span><b>${esc(p.own.seats)}</b></div>` : ""}${p.own?.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(p.own.conf)}</b></div>` : ""}<div class="mvr-row"><span>Paid</span><b>For their own ticket</b></div>`
+      : `${t.seats ? `<div class="mvr-row"><span>Seats</span><b>${esc(t.seats)}</b></div>` : ""}${t.room ? `<div class="mvr-row"><span>Auditorium</span><b>${esc(t.room)}</b></div>` : ""}${t.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(t.conf)}</b></div>` : ""}
+      <div class="mvr-row"><span>Tickets</span><b>${t.count} × ${money(+t.each)}${+t.fees ? ` + ${money(+t.fees)} fees` : ""} = ${money(+t.total)}</b></div><div class="mvr-row"><span>Your share</span><b>${money(+p.amount)}</b></div><div class="mvr-row"><span>Balance</span><b>$0.00</b></div>
+      <div class="mvr-sign">Received by ${esc(lastFirst(F(n.buyer).name))}</div>`}
+  </section>`;
+}
+function drawMovieNight(id){
+  const n = (st.movies || []).find(x => x.id === id); if(!n){ sheetMovies(); return; }
+  mvOpen = id; const th = mvTheaterInfo(n.pid), me = mvMe(n), t = n.tickets, open = n.status === "open", buyer = n.buyer, isBuyer = buyer === st.me;
+  const ppl = Object.entries(n.people), going = ppl.filter(([, p]) => p.rsvp === "yes");
+  const fandango = `https://www.fandango.com/search?q=${encodeURIComponent(n.movie.title)}&mode=all`;
+  const dinner = n.dinner && ev(n.dinner);
+  let tk = "";
+  if(!open) tk = `<div class="warnbox">This movie night was cancelled.</div>`;
+  else if(!buyer) tk = me.rsvp === "yes" ? `<button class="btn primary block" data-act="mv-claim">🎟️ I'll buy the tickets</button><p class="small muted" style="margin:0;text-align:center">Tap this before you buy, so nobody buys twice.</p>` : `<p class="small muted" style="margin:0;text-align:center">Tap Going, then anyone going can offer to buy the tickets.</p>`;
+  else if(isBuyer && !t) tk = `<div class="card"><div class="lbl">🎟️ BUY THE TICKETS</div><p class="small" style="margin:0">Buy them on Fandango or the theater's own site, then fill in what you bought.</p>
+      <div class="actions"><a class="btn primary" href="${fandango}" target="_blank" rel="noopener">Fandango</a>${th?.website ? `<a class="btn" href="${esc(th.website)}" target="_blank" rel="noopener">Theater website</a>` : ""}${th?.phone ? `<a class="btn" href="tel:${th.phone.replace(/[^\d+]/g, "")}">📞 Call the theater</a>` : ""}</div>
+      <div class="grid2"><div class="field"><label for="mv-count">Tickets</label><input class="input num" id="mv-count" inputmode="numeric" value="${going.length || 1}"></div><div class="field"><label for="mv-each">Price each</label><input class="input num" id="mv-each" inputmode="decimal" placeholder="$0.00"></div></div>
+      <div class="grid2"><div class="field"><label for="mv-fees">Fees (total)</label><input class="input num" id="mv-fees" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label for="mv-room">Auditorium</label><input class="input" id="mv-room" maxlength="20" placeholder="e.g. 7"></div></div>
+      <div class="field"><label for="mv-seats">Seats</label><input class="input" id="mv-seats" maxlength="80" placeholder="e.g. F7–F12"></div>
+      <div class="field"><label for="mv-conf">Confirmation number</label><input class="input" id="mv-conf" maxlength="40" placeholder="From your email or the app"></div>
+      <button class="btn wine block" data-act="mv-tickets">✓ I bought the tickets</button><button class="btn sm ghost" data-act="mv-unclaim">Let someone else buy them</button></div>`;
+  else if(!t) tk = `<div class="strip">🎟️ <b>${esc(first(F(buyer).name))}</b>&nbsp;is buying the tickets. Please don't buy twice.</div>`;
+  else tk = `<div class="mvticket"><div class="lbl">🎟️ TICKETS BOUGHT BY ${esc(first(F(buyer).name)).toUpperCase()}</div>
+      <div class="mvr-row"><span>Tickets</span><b>${t.count} × ${money(+t.each)}${+t.fees ? ` + ${money(+t.fees)} fees` : ""}</b></div><div class="mvr-row"><span>Total</span><b>${money(+t.total)}</b></div><div class="mvr-row"><span>Each</span><b>${money(+t.share)}</b></div>
+      ${t.seats ? `<div class="mvr-row"><span>Seats</span><b>${esc(t.seats)}</b></div>` : ""}${t.room ? `<div class="mvr-row"><span>Auditorium</span><b>${esc(t.room)}</b></div>` : ""}${t.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(t.conf)}</b></div>` : ""}</div>`;
+  let pay = "";
+  if(open && !isBuyer && me.rsvp === "yes"){
+    if(me.pay === "owe"){ const opts = payOptions(buyer, +me.amount);
+      pay = `<div class="card"><div class="lbl">YOUR SHARE</div><div class="mvr-amt">${money(+me.amount)}</div><p class="small" style="margin:0">Pay ${esc(first(F(buyer).name))} back yourself, then tap the way you paid.</p>
+        <div class="actions">${opts.map(([lbl, url, handle]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener">${lbl} ${esc(handle)}</a>` : handle ? `<span class="strip">${lbl}: <b>${esc(handle)}</b></span>` : "").join("")}</div>
+        <div class="mvpaid">${opts.map(([lbl]) => `<button class="btn primary" data-act="mv-paid" data-v="${lbl}">I paid by ${lbl}</button>`).join("")}</div>
+        <button class="btn sm ghost" data-act="mv-self">I'm paying for my own ticket instead</button></div>`; }
+    else if(me.pay === "sent") pay = `<div class="strip">💸 You paid ${esc(first(F(buyer).name))} ${money(+me.amount)} by ${esc(me.via)}. Waiting for them to tap Received.</div>`;
+    else if(me.pay === "received" || me.pay === "self") pay = mvReceipt(n, st.me);
+    else if(t) pay = `<div class="card"><p class="small" style="margin:0">The tickets were bought before you said yes. Buy your own, then tap below so ${esc(first(F(buyer).name))} knows.</p><button class="btn primary" data-act="mv-self">Paying for myself</button></div>`;
+    else pay = `<button class="btn sm ghost" data-act="mv-self">I'm paying for my own ticket</button>`;
+  }
+  const owes = isBuyer && t ? `<div class="card"><div class="lbl">WHO'S PAYING YOU BACK</div>${ppl.filter(([pid, p]) => pid !== st.me && (p.pay || p.rsvp === "yes")).map(([pid, p]) => `<div class="mvowe"><span>${av(pid, "sm")} <b>${esc(first(F(pid).name))}</b></span><span>${p.pay === "self" ? "Own ticket" : p.pay === "received" ? `✓ ${money(+p.amount)} received` : p.pay === "sent" ? `Sent ${money(+p.amount)} by ${esc(p.via)}` : p.pay === "owe" ? `Owes ${money(+p.amount)}` : "Not paying yet"}</span>${p.pay === "owe" || p.pay === "sent" ? `<button class="btn sm wine" data-act="mv-recv" data-m="${pid}">✓ Received</button>` : p.pay === "received" ? `<button class="btn sm" data-act="mv-rcpt" data-m="${pid}">Receipt</button>` : ""}</div>`).join("")}</div>` : "";
+  const shown = mvShowRcpt && n.people[mvShowRcpt] ? mvReceipt(n, mvShowRcpt) : "";
+  openSheet(`<div class="sheet-head" data-cinema data-mvnight>${gBack("movies", "Back to Movie Night")}<div style="flex:1;min-width:0"><div class="eyebrow">Movie Night${n.status === "cancelled" ? " · cancelled" : mvPast(n) ? " · past" : ""}</div><h2>${esc(n.movie.title)}</h2></div>${gSizeBtn()}</div>
+    <div class="mvstub">${n.movie.poster ? `<img src="${TMDB_IMG(n.movie.poster)}" alt="">` : `<span class="noposter">🎬</span>`}
+      <div><div class="mvtitle">${esc(n.movie.title)}</div><div class="mvfacts">${n.movie.cert ? `<span class="cert">${esc(n.movie.cert)}</span>` : ""}${n.movie.runtime ? `<span>${Math.floor(n.movie.runtime / 60)}h ${n.movie.runtime % 60}m</span>` : ""}${n.movie.rating ? `<span>★ ${n.movie.rating}/10</span>` : ""}</div>
+        <div class="mvwhen">${esc(mvWhen(n))}</div>
+        <div class="small">${th ? `🎦 <b>${esc(th.name)}</b><br>${esc(th.address)}` : n.pid ? "Finding the theater…" : "Theater to be decided"}</div>
+        ${dinner ? `<div class="small" style="color:#ffd9a8">🍽️ After ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
+        ${n.note ? `<div class="small" style="font-style:italic">“${esc(n.note)}”</div>` : ""}
+        <div class="actions">${th?.mapsUri ? `<a class="btn sm" href="${esc(th.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}<button class="btn sm" data-act="mv-movie" data-id="${n.movie.id}">Reviews &amp; trailer</button></div></div></div>
+    ${open && !mvPast(n) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k, l]) => `<button class="btn ${me.rsvp === k ? (k === "yes" ? "primary" : "wine") : ""}" data-act="mv-rsvp" data-v="${k}" aria-pressed="${me.rsvp === k}">${l}</button>`).join("")}</div>` : ""}
+    <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
+    ${tk}${pay}${owes}${shown}
+    ${open && (n.by === st.me || isAdmin()) && !mvPast(n) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="mv-cancel">Cancel this movie night</button></div>` : ""}
+    ${TMDB_NOTE}`);
+}
+let mvShowRcpt = null;
+// keep what's been typed in the planner before the screen is drawn again
+function mvKeep(){ const d = mvDraft; if(!d) return; const v = x => document.getElementById(x)?.value;
+  if(v("mv-date") != null) d.date = v("mv-date"); if(v("mv-time") != null) d.time = v("mv-time"); if(v("mv-city") != null) d.city = v("mv-city");
+  if(v("mv-dinner") != null) d.dinner = v("mv-dinner"); if(v("mv-note") != null) d.note = v("mv-note"); }
+async function mvAct(body, okToast){
+  const d = await moviesCall(body); if(!d.ok){ toast(mvWhy(d.code)); return false; }
+  await refresh(true); if(okToast) toast(okToast); return d;
+}
 function gCurrent(){
   if(!gView) return null;
   if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.ai || gView.kind === "spades" || gView.kind === "blackjack" ? 0 : gView.turn, local:true, ai:gView.ai};
@@ -4234,6 +4471,37 @@ document.addEventListener("click", e => {
     case "want": toggleWant(b.dataset.rid); break;
     case "year": sheetYear(+b.dataset.y); break;
     case "games": gPick = null; sheetGames(); break;
+    case "movies": sheetMovies(); break;
+    case "mv-pick": sheetMoviePick(); break;
+    case "mv-now": mvList.q = ""; mvList.results = null; mvList.err = ""; sheetMoviePick(); break;
+    case "mv-search": { const q = (document.getElementById("mv-q")?.value || "").trim(); if(q.length < 2){ toast(mvWhy("short")); break; }
+      mvList.q = q; mvList.results = null; mvList.err = ""; sheetMoviePick();
+      moviesCall({action:"search", q}).then(d => { if(mvList.q !== q) return; if(d.ok) mvList.results = d.movies; else { mvList.results = []; mvList.err = mvWhy(d.code); } sheetMoviePick(); }); break; }
+    case "mv-movie": mvShowRcpt = null; sheetMovie(+b.dataset.id); break;
+    case "mv-new": { const nx = new Date(today0); nx.setDate(nx.getDate() + ((5 - nx.getDay() + 7) % 7 || 7));
+      mvDraft = {movieId:+b.dataset.id, date:iso(nx), time:"19:00", city:"Memphis", pid:null, pname:"", theaters:null, invited:st.fam.filter(f => f.id !== st.me && f.status !== "suspended").map(f => f.id), dinner:"", note:""}; sheetMovieNew(); break; }
+    case "mv-th-find": { mvKeep(); const d = mvDraft; d.thBusy = true; d.thErr = ""; sheetMovieNew();
+      placesCall({action:"search", q:"movie theater", city:d.city, kind:"theater"}).then(r => { d.thBusy = false; if(r.ok) d.theaters = r.results.filter(x => x.status !== "CLOSED_PERMANENTLY"); else d.thErr = gWhy(r.code); if(mvDraft === d) sheetMovieNew(); }); break; }
+    case "mv-th": { mvKeep(); const t = (mvDraft.theaters || []).find(x => x.placeId === b.dataset.pid); mvDraft.pid = b.dataset.pid; mvDraft.pname = t?.name || ""; if(t) mvTheater[t.placeId] ||= null; sheetMovieNew(); break; }
+    case "mv-inv": { mvKeep(); const i = mvDraft.invited.indexOf(id); if(i >= 0) mvDraft.invited.splice(i, 1); else mvDraft.invited.push(id); sheetMovieNew(); break; }
+    case "mv-send": { mvKeep(); const d = mvDraft; if(!d.date || !d.time){ toast(mvWhy("when")); break; } if(!d.pid){ toast("Pick a theater first: tap Find theaters."); break; }
+      b.disabled = true; b.textContent = "Sending…";
+      moviesCall({action:"new", movie_id:d.movieId, date:d.date, time:d.time, theater_pid:d.pid, city:d.city, invited:d.invited, note:d.note, dinner_event:d.dinner || undefined}).then(async r => {
+        if(!r.ok){ b.disabled = false; b.textContent = "🎬 Send the invitation"; toast(mvWhy(r.code)); return; }
+        mvDraft = null; mvOpen = r.night.id; await refresh(true); drawMovieNight(r.night.id); toast("Invitation sent! Everyone's been told."); }); break; }
+    case "mv-open": mvShowRcpt = null; drawMovieNight(id); break;
+    case "mv-rsvp": mvAct({action:"rsvp", id:mvOpen, ans:b.dataset.v}).then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-claim": mvAct({action:"claim", id:mvOpen}, "You're buying the tickets. Everyone's been told.").then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-unclaim": mvAct({action:"unclaim", id:mvOpen}).then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-tickets": { const v = x => document.getElementById(x)?.value || "", num = x => parseFloat(String(v(x)).replace(/[^\d.]/g, "")) || 0;
+      const body = {action:"tickets", id:mvOpen, count:parseInt(v("mv-count"), 10), each:num("mv-each"), fees:num("mv-fees"), seats:v("mv-seats"), conf:v("mv-conf"), room:v("mv-room")};
+      if(!(body.count >= 1) || !(body.each > 0)){ toast(mvWhy("numbers")); break; }
+      b.disabled = true; mvAct(body, "Tickets recorded. Everyone's been told their share.").then(ok => { b.disabled = false; ok && drawMovieNight(mvOpen); }); break; }
+    case "mv-paid": mvAct({action:"pay", id:mvOpen, mode:"sent", via:b.dataset.v}, "Sent! The buyer has been told.").then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-self": mvAct({action:"pay", id:mvOpen, mode:"self"}, "Got it: you're paying for your own ticket.").then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-recv": mvAct({action:"received", id:mvOpen, member:b.dataset.m}, "Marked received. Their receipt is ready.").then(ok => ok && drawMovieNight(mvOpen)); break;
+    case "mv-rcpt": mvShowRcpt = mvShowRcpt === b.dataset.m ? null : b.dataset.m; drawMovieNight(mvOpen); break;
+    case "mv-cancel": if(!confirm("Cancel this movie night for everyone?")) break; mvAct({action:"cancel", id:mvOpen}, "Movie night cancelled. Everyone's been told.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "g-pick": gPick = b.dataset.k; sheetGamePick(gPick); break;
     case "g-ai": { const k = b.dataset.k, lv = +b.dataset.lv; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["You", `Computer · ${AI_LV[lv]}`], ai:{side:1, lv}}; gSel = null; drawGame(); break; }
     case "sp-solo": gView = {local:true, kind:"spades", st:spInit([st.me, "bot:1", "bot:2", "bot:3"], 300), hands:spDeal(), turn:0, over:null, names:["You & Computer", "Computer & Computer"]}; spPick = null; drawGame(); aiRun(); break;
