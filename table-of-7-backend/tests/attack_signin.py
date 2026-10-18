@@ -466,5 +466,48 @@ check("you cannot register a phone for someone else's notifications", s >= 400, 
 s, b, _ = rest("POST", "rpc/push_config_get", tok_m, {})
 check("phones cannot read the notification keys", s in (401, 403, 404), (s, b))
 
+# Movie Night (his order, 2026-10-17): phones only read; the server checks who may plan, buy, pay and confirm
+MV = URL + "/functions/v1/movies"
+s, b, _ = rest("POST", "movie_nights", tok_h, {"family_id": "zztest", "movie": {"title": "x"}, "date": "2030-01-01", "time": "19:00", "invited": ["z1"]}); check("no phone can write a movie night directly", s >= 400, (s, b))
+s, b, _ = rest("POST", "movie_people", tok_h, {"night_id": "x", "member_id": "z1", "pay": "received"}); check("no phone can mark a payment received directly", s >= 400, (s, b))
+s, b, _ = call("POST", MV, {"action": "now"}, tok_h); now = (b or {}).get("movies") or []
+check("Movie Night lists movies now in theaters (TMDB)", s == 200 and len(now) > 0 and bool(now[0].get("title")), (s, str(b)[:200]))
+s, b, _ = call("POST", MV, {"action": "search", "q": "Black Panther"}, tok_h); check("a movie search finds the movie", s == 200 and any("Black Panther" in m.get("title", "") for m in (b or {}).get("movies", [])), (s, str(b)[:200]))
+mid = now[0]["id"] if now else 284054
+s, b, _ = call("POST", MV, {"action": "movie", "id": mid}, tok_h); mv = (b or {}).get("movie") or {}
+check("a movie's page has its story, rating and reviews list", s == 200 and bool(mv.get("title")) and "reviews" in mv and "overview" in mv, (s, str(b)[:200]))
+s, b, _ = call("POST", MV, {"action": "new", "movie_id": mid, "date": "2030-01-05", "time": "7pm", "invited": []}, tok_h); check("a movie night needs a real date and showtime", s == 400 and b.get("code") == "when", (s, b))
+s, b, _ = call("POST", MV, {"action": "new", "movie_id": mid, "date": "2030-01-05", "time": "19:30", "theater_pid": "ChIJxxxxxxxxxxxxxx", "invited": []}, tok_h); solo_n = ((b or {}).get("night") or {}).get("id")
+s2, b2, _ = rest("GET", "movie_nights?id=eq." + str(solo_n) + "&select=id", tok_m); check("a movie night is hidden from anyone not invited", b2 == [], b2)
+s, b, _ = call("POST", MV, {"action": "rsvp", "id": solo_n, "ans": "yes"}, tok_m); check("someone not invited can't answer it", s == 404, (s, b))
+s, b, _ = call("POST", MV, {"action": "new", "movie_id": mid, "date": "2030-01-06", "time": "19:30", "theater_pid": "ChIJxxxxxxxxxxxxxx", "invited": ["z2"], "note": "Lobby at 7:15"}, tok_h); nid = ((b or {}).get("night") or {}).get("id")
+check("the planner invites the family; the movie's title comes from TMDB, not the phone", s == 200 and bool(nid) and ((b or {}).get("night") or {}).get("movie", {}).get("title") == mv.get("title"), (s, str(b)[:200]))
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*invited you to see*"), tok_m); check("the invited family member is told", isinstance(b, list) and len(b) >= 1, b)
+s, b, _ = call("POST", MV, {"action": "claim", "id": nid}, tok_m); check("you have to say Going before you can buy the tickets", s == 409 and b.get("code") == "going", (s, b))
+call("POST", MV, {"action": "rsvp", "id": nid, "ans": "yes"}, tok_m)
+s, b, _ = call("POST", MV, {"action": "claim", "id": nid}, tok_m); check("a family member offers to buy the tickets", s == 200, (s, b))
+s, b, _ = call("POST", MV, {"action": "claim", "id": nid}, tok_h); check("only one person can be buying (nobody buys twice)", s == 409 and b.get("code") == "claimed", (s, b))
+s, b, _ = call("POST", MV, {"action": "tickets", "id": nid, "count": 2, "each": 12.5, "fees": 3}, tok_h); check("only the buyer can enter the tickets", s == 403, (s, b))
+s, b, _ = call("POST", MV, {"action": "tickets", "id": nid, "count": 0, "each": 12.5}, tok_m); check("the ticket numbers are checked", s == 400 and b.get("code") == "numbers", (s, b))
+s, b, _ = call("POST", MV, {"action": "tickets", "id": nid, "count": 2, "each": 12.5, "fees": 3, "seats": "F7, F8", "conf": "ABC123", "room": "7"}, tok_m); check("the buyer enters the tickets", s == 200, (s, b))
+s, b, _ = rest("GET", "movie_people?night_id=eq." + str(nid) + "&member_id=eq.z1&select=pay,amount", tok_h); check("each person going owes their share: (2 × 12.50 + 3) ÷ 2 = 14.00", b == [{"pay": "owe", "amount": 14.0}] or b == [{"pay": "owe", "amount": 14}], b)
+s, b, _ = call("POST", MV, {"action": "received", "id": nid, "member": "z1"}, tok_h); check("only the buyer can confirm money received", s == 403, (s, b))
+s, b, _ = call("POST", MV, {"action": "pay", "id": nid, "mode": "sent", "via": "Zelle"}, tok_h); check("you tell the buyer you paid them back", s == 200, (s, b))
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*says they paid you*"), tok_m); check("the buyer is told you paid", isinstance(b, list) and len(b) >= 1, b)
+s, b, _ = call("POST", MV, {"action": "received", "id": nid, "member": "z1"}, tok_m); check("the buyer confirms it arrived", s == 200, (s, b))
+s, b, _ = rest("GET", "movie_people?night_id=eq." + str(nid) + "&member_id=eq.z1&select=pay,via,received_at", tok_h); r1 = (b or [{}])[0]
+check("the payment is received, with how and when: the receipt is ready", r1.get("pay") == "received" and r1.get("via") == "Zelle" and bool(r1.get("received_at")), b)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Your receipt is in Movie Night*"), tok_h); check("you are told your receipt is ready", isinstance(b, list) and len(b) >= 1, b)
+s, b, _ = call("POST", MV, {"action": "pay", "id": nid, "mode": "self"}, tok_h); check("a receipt can't be undone by switching to paying for yourself", s == 400, (s, b))
+s, b, _ = call("POST", MV, {"action": "cancel", "id": nid}, tok_m); check("only the planner (or the host) can cancel", s == 403, (s, b))
+s, b, _ = call("POST", MV, {"action": "cancel", "id": nid}, tok_h); s2, b2, _ = call("POST", MV, {"action": "rsvp", "id": nid, "ans": "no"}, tok_m)
+check("a cancelled movie night takes no more answers", s == 200 and s2 == 409 and b2.get("code") == "cancelled", (s, s2, b2))
+call("POST", MV, {"action": "cancel", "id": solo_n}, tok_h)
+s, b, _ = call("POST", MV, {"action": "new", "movie_id": mid, "date": "2030-01-07", "time": "19:00", "theater_pid": "ChIJxxxxxxxxxxxxxx", "invited": ["z2"]}, tok_h); n2 = ((b or {}).get("night") or {}).get("id")
+call("POST", MV, {"action": "claim", "id": n2}, tok_h); call("POST", MV, {"action": "tickets", "id": n2, "count": 2, "each": 10, "fees": 0}, tok_h)
+call("POST", MV, {"action": "rsvp", "id": n2, "ans": "yes"}, tok_m)
+s, b, _ = rest("GET", "movie_people?night_id=eq." + str(n2) + "&member_id=eq.z2&select=pay,amount", tok_m); check("someone who says yes after the tickets are bought takes a spare ticket and owes its share", b in ([{"pay": "owe", "amount": 10.0}], [{"pay": "owe", "amount": 10}]), b)
+call("POST", MV, {"action": "cancel", "id": n2}, tok_h)
+
 print(f"\n{fails} FAILED" if fails else "\nALL PROOFS HOLD")
 sys.exit(1 if fails else 0)
