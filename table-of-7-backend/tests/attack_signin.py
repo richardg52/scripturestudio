@@ -268,6 +268,44 @@ s, b, _ = call("POST", G, {"action": "move", "id": tc.get("id"), "mv": {"pick": 
 s, b, _ = rest("GET", "games?id=eq." + str(tc.get("id")) + "&select=state,turn", tok_h); c3 = (b or [{}])[0]; L = (c3.get("state") or {}).get("last") or {}
 check("an answer more than 3 seconds late counts as time's up (it scores nothing and passes for a steal)", L.get("timeout") is True and c3["state"]["steal"] is True and c3["state"]["score"] == c2["state"]["score"] and c3.get("turn") == 0, c3)
 call("POST", G, {"action": "resign", "id": tc.get("id")}, tok_h)
+# Round 2 (his order, 2026-10-17): Trivia alone, computer seats in Spades, Blackjack
+s, b, _ = call("POST", G, {"action": "new", "kind": "trivia", "cat": "bible", "solo": True, "secs": 10}, tok_h); ts = (b or {}).get("game", {})
+check("Trivia alone starts for one player with a clock", s == 200 and ts.get("state", {}).get("solo") is True and ts["state"]["secs"] == 10 and ts.get("side_a") == ["z1"], (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": ts.get("id"), "mv": {"pick": 1}, "at": 0}, tok_m); check("nobody else can answer someone's Trivia alone", s == 403, (s, b))
+_time.sleep(10.5)
+s, b, _ = call("POST", G, {"action": "move", "id": ts.get("id"), "mv": {"timeout": True}, "at": 0}, tok_h)
+s2, b2, _ = rest("GET", "games?id=eq." + str(ts.get("id")) + "&select=state,turn", tok_h); so = (b2 or [{}])[0]; L = (so.get("state") or {}).get("last") or {}
+check("alone, time's up shows the answer and moves on (no steal, still your turn)", s == 200 and so.get("turn") == 0 and so["state"]["n"] == 2 and so["state"]["steal"] is False and bool(L.get("answer")), so)
+call("POST", G, {"action": "resign", "id": ts.get("id")}, tok_h)
+s, b, _ = call("POST", G, {"action": "new", "kind": "ttt", "sideA": ["z1"], "sideB": ["bot:1"]}, tok_h); check("a computer seat is refused outside Spades", s == 400 and b.get("code") == "sides", (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "spades", "sideA": ["z1", "bot:2"], "sideB": ["bot:1", "bot:1"]}, tok_h); check("the same computer seat can't be used twice", s == 400, (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "spades", "sideA": ["z1", "bot:2"], "sideB": ["z2", "bot:3"], "target": 300}, tok_h); sb = (b or {}).get("game", {})
+check("Spades starts with computers in the empty seats", s == 200 and sb.get("state", {}).get("seats") == ["z1", "z2", "bot:2", "bot:3"], (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": sb.get("id"), "mv": {"bid": 3}, "at": 0}, tok_h)
+s, b, _ = call("POST", G, {"action": "move", "id": sb.get("id"), "mv": {"bid": 2}, "at": 1}, tok_m)
+s2, b2, _ = rest("GET", "games?id=eq." + str(sb.get("id")) + "&select=state", tok_h); bs = ((b2 or [{}])[0].get("state") or {})
+check("the server bids for the computers, and the turn comes back to a person", bs.get("phase") == "play" and all(x is not None for x in bs.get("bids", [None])) and bs["seats"][bs["seat"]] in ("z1", "z2"), bs)
+check("a computer's cards never reach a phone", "hands" not in json.dumps(bs), bs)
+s, b, _ = rest("GET", "alerts?select=to_member&to_member=like.bot*", tok_h); check("no alert is ever addressed to a computer", b == [] or s >= 400, (s, b))
+call("POST", G, {"action": "resign", "id": sb.get("id")}, tok_h)
+s, b, _ = call("POST", G, {"action": "new", "kind": "blackjack", "sideA": ["z2", "z1"]}, tok_h); check("a Blackjack table must be opened by its first player", s == 403, (s, b))
+s, b, _ = call("POST", G, {"action": "new", "kind": "blackjack", "sideA": ["z1", "z2"]}, tok_h); bj = (b or {}).get("game", {})
+check("a family Blackjack table opens, everyone with 1,000 points", s == 200 and bj.get("state", {}).get("bank") == [1000, 1000], (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": bj.get("id"), "mv": {"bet": 5}, "at": 0}, tok_h); check("a bet under 10 is refused", s == 400, (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": bj.get("id"), "mv": {"bet": 100}, "at": 0}, tok_h); check("a player bets", s == 200, (s, b))
+s, b, _ = call("POST", G, {"action": "move", "id": bj.get("id"), "mv": {"bet": 50}, "at": 1}, tok_m); check("the second player bets and the cards are dealt", s == 200, (s, b))
+s2, b2, _ = rest("GET", "games?id=eq." + str(bj.get("id")) + "&select=state,moves", tok_m); bst = (b2 or [{}])[0].get("state") or {}
+check("the dealer shows one card; the face-down card and the shoe are not on any phone", len(bst.get("dealer", [])) in (1, 2) and '"shoe"' not in json.dumps(bst) and '"hole"' not in json.dumps(bst), bst)
+n = (b2 or [{}])[0].get("moves", 2); guard = 0
+while bst.get("phase") == "play" and guard < 12:
+    guard += 1; who = tok_h if bst["players"][bst["seat"]] == "z1" else tok_m; other = tok_m if who == tok_h else tok_h
+    if guard == 1: s, b, _ = call("POST", G, {"action": "move", "id": bj.get("id"), "mv": {"act": "stand"}, "at": n}, other); check("only the player whose turn it is may act", s == 409, (s, b))
+    call("POST", G, {"action": "move", "id": bj.get("id"), "mv": {"act": "stand"}, "at": n}, who); n += 1
+    s2, b2, _ = rest("GET", "games?id=eq." + str(bj.get("id")) + "&select=state", tok_h); bst = (b2 or [{}])[0].get("state") or {}
+check("when everyone stands the dealer plays and every hand is settled", bst.get("phase") == "over" and len(bst.get("dealer", [])) >= 2 and all(len(r) == 1 for r in bst.get("results", [])), bst)
+check("the points add up: 2,000 on the table, plus wins, minus losses", sum(bst.get("bank", [0])) == 2000 + sum(x["net"] for r in bst.get("results", []) for x in r), bst)
+s, b, _ = call("POST", G, {"action": "resign", "id": bj.get("id")}, tok_m); s2, b2, _ = rest("GET", "games?id=eq." + str(bj.get("id")) + "&select=status,why", tok_h)
+check("closing the table ends it and lists the final stacks", s == 200 and (b2 or [{}])[0].get("status") == "done" and "Zed" in ((b2 or [{}])[0].get("why") or ""), b2)
 # Family Feud: the family is the survey. Answers live in feud_answers, which no phone can read; only the judge moves
 s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"status": "active"}, "return=representation"); check("the host wakes the fourth test seat", s == 200 and b and b[0]["status"] == "active", (s, b))
 pin_4 = f"{random.randint(0, 9999):04d}"; s, b, _ = signin("Zed Testfour", pin_4, pin_4); tok_4 = (b.get("session") or {}).get("access_token"); check("a fourth test seat signs in", bool(tok_4), b)

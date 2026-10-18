@@ -1,6 +1,6 @@
 // Table of 7 Spades (Jokers & deuces) rules, proven (node table-of-7-backend/tests/spades_rules_test.mjs).
 import { readFileSync } from "node:fs";
-import { spDeck, spSuit, spPower, spDeal, spInit, spLegal, spApply, spScoreHand, spSort } from "../supabase/functions/games/spades.js";
+import { spDeck, spSuit, spPower, spDeal, spInit, spLegal, spApply, spScoreHand, spSort, spBotBid, spBotPlay } from "../supabase/functions/games/spades.js";
 let fails = 0;
 const check = (name, ok, detail = "") => { if(!ok) fails++; console.log((ok ? "PASS " : "FAIL ") + name + (ok ? "" : `  -> ${JSON.stringify(detail)}`)); };
 const throws = f => { try { f(); return false; } catch { return true; } };
@@ -69,6 +69,16 @@ check("a made-up move is refused", throws(() => spApply(spInit(["a", "b", "c", "
 check("cards sort spades first, highest first", JSON.stringify(spSort(["H3", "S5", "BJ", "D2", "C9"])) === '["BJ","D2","S5","H3","C9"]');
 
 // the app carries the identical rules
+// the computer player: legal cards only, from its own hand, and every game it plays finishes
+{ let s2 = 99; const r2 = () => (s2 = (s2 * 16807) % 2147483647) / 2147483647; let bad = 0, done = 0, made = 0, hands = 0;
+  for(let g = 0; g < 150; g++){ let st = spInit(["a", "b", "c", "d"], 300), hs = spDeal(r2), over = null, n = 0;
+    while(!over && n++ < 5000){ const k = st.seat, mv = st.phase === "bid" ? { bid: spBotBid(hs[k]) } : { card: spBotPlay(st, hs[k], k) };
+      if(mv.card !== undefined && !spLegal(st, hs[k]).includes(mv.card)) bad++;
+      const r = spApply(st, hs, k, mv, () => spDeal(r2)); if(r.st.lastHand && r.st.lastHand !== st.lastHand){ for(const x of r.st.lastHand.res){ hands++; if(x.won >= x.bid) made++; } } st = r.st; hs = r.hands; over = r.over; }
+    if(over) done++; }
+  check("the computer plays only legal cards (150 whole games)", bad === 0, bad);
+  check("every computer game reaches a winner", done === 150, done);
+  check("the computer bids sensibly: it makes most of its team bids", made / hands > 0.7, made / hands); }
 const html = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
 const m = html.match(/\/\* SPADES RULES START \*\/\n([\s\S]*?)\n\/\* SPADES RULES END \*\//);
 const src = readFileSync(new URL("../supabase/functions/games/spades.js", import.meta.url), "utf8").replace(/^export /gm, "").trim();
