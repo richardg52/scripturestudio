@@ -5,6 +5,10 @@
 //   resign  {id}          a player gives the game to the other side
 // Trivia Night (kind 'trivia'): new also takes {cat: 'mix'|'music'|'tv'|'bible', table?: true}. Teams of 1–4; table
 // mode = the caller runs both teams on one phone. The right answer stays in game_secrets until the move is checked.
+// The countdown (his order, 2026-10-17): new takes {secs: 10|15|20|30}. A question's clock starts at the row's
+// updated_at. When it runs out, any player in the game sends move {timeout:true}; the server checks the time itself.
+// Time's up → the SAME question passes to the other team for a steal (its answer still hidden); if the steal runs out
+// too, the answer shows and the game moves on. An answer that arrives more than 3 s late counts as time's up.
 // Family Feud (kind 'feud'): THE FAMILY IS THE SURVEY.
 //   survey_new {prompts:[1–5]}   survey_answer {id, answers}   survey_mine {id}   survey_close {id} (its starter or the host)
 //   new {kind:'feud', survey, sideA, sideB}: the caller is the JUDGE (on neither team); the board is built from the
@@ -113,7 +117,8 @@ Deno.serve(async (req) => {
       if (kind === "trivia") {
         const cat = String(body.cat ?? "mix"); if (cat !== "mix" && !(cat in TRIVIA)) return reply({ ok: false, code: "cat" }, 400);
         const deck = triviaDeck(cat), ask = triviaAsk(deck[0]);
-        state = { cat, n: 1, total: TOTAL, q: ask.q, score: [0, 0], last: null, table, teams: table ? (body.teams ?? ["Team 1", "Team 2"]).slice(0, 2).map((t: unknown) => String(t).slice(0, 24)) : null };
+        const secs = [10, 15, 20, 30].includes(Number(body.secs)) ? Number(body.secs) : 0;
+        state = { cat, n: 1, total: TOTAL, q: ask.q, score: [0, 0], last: null, secs, steal: false, table, teams: table ? (body.teams ?? ["Team 1", "Team 2"]).slice(0, 2).map((t: unknown) => String(t).slice(0, 24)) : null };
         secret = { deck, correct: ask.correct, answer: ask.answer, at: 0 };
       } else if (kind === "feud") {
         const { data: sv } = await admin.from("feud_surveys").select("*").eq("id", String(body.survey ?? "")).maybeSingle();
@@ -161,28 +166,42 @@ Deno.serve(async (req) => {
       await alert([...new Set([...g.side_a, ...g.side_b, ...(isFeud && g.created_by ? [g.created_by] : [])])], text);
     };
 
+    // Trivia time's up may come from any player's phone (the answering phone may be closed); the server checks the clock
+    const tvTimeout = body.action === "move" && g.kind === "trivia" && body.mv?.timeout === true;
+    if (tvTimeout && !(g.side_a.includes(me.id) || g.side_b.includes(me.id))) return reply({ ok: false, code: "not_player" }, 403);
     if (body.action === "move") {
-      if (g.kind === "spades" ? g.state.seat !== spSeat : g.turn !== mySide) return reply({ ok: false, code: "not_your_turn" }, 409);
+      if (!tvTimeout && (g.kind === "spades" ? g.state.seat !== spSeat : g.turn !== mySide)) return reply({ ok: false, code: "not_your_turn" }, 409);
       if (Number(body.at) !== g.moves) return reply({ ok: false, code: "stale" }, 409);
       let r, nextSecret: unknown = null;
       if (g.kind === "trivia") {
+        const secs = Number(g.state.secs) || 0, due = Date.parse(g.updated_at) + secs * 1000, now = Date.now();
         const pick = Number(body.mv?.pick);
-        if (!Number.isInteger(pick) || pick < 0 || pick > 3) return reply({ ok: false, code: "illegal" }, 400);
+        if (tvTimeout) { if (!secs) return reply({ ok: false, code: "illegal" }, 400); if (now < due - 1500) return reply({ ok: false, code: "early" }, 409); }
+        else if (!Number.isInteger(pick) || pick < 0 || pick > 3) return reply({ ok: false, code: "illegal" }, 400);
+        const late = tvTimeout || (secs > 0 && now > due + 3000);
         const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
         if (!sec) return reply({ ok: false, code: "server" }, 500);
         if (sec.data.at !== undefined && sec.data.at !== g.moves) return reply({ ok: false, code: "stale" }, 409);
-        const st = structuredClone(g.state), right = pick === sec.data.correct;
-        if (right) st.score[mySide] += 1;
-        st.last = { side: mySide, pick, right, answer: sec.data.answer, q: st.q.text };
-        let over = null, data = sec.data;
-        if (st.n >= st.total) {
-          over = { winner: st.score[0] === st.score[1] ? 2 : st.score[0] > st.score[1] ? 0 : 1, why: `${st.score[0]}–${st.score[1]}` };
-          data = { ...data, correct: -1, answer: "" };
+        const st = structuredClone(g.state), side = g.turn, stealing = st.steal === true, owner = stealing ? 1 - side : side;
+        if (late && !stealing) {                               // time's up: the same question passes over for a steal
+          st.steal = true; st.last = { side, timeout: true, q: st.q.text };
+          nextSecret = { ...sec.data, at: g.moves + 1 };
+          r = { st, turn: 1 - side, over: null };
         } else {
-          const ask = triviaAsk(data.deck[st.n]); st.n += 1; st.q = ask.q; data = { ...data, correct: ask.correct, answer: ask.answer };
+          const right = !late && pick === sec.data.correct;
+          if (right) st.score[side] += 1;
+          st.last = late ? { side, timeout: true, stole: true, answer: sec.data.answer, q: st.q.text } : { side, pick, right, answer: sec.data.answer, q: st.q.text, ...(stealing ? { stole: true } : {}) };
+          st.steal = false;
+          let over = null, data = sec.data;
+          if (st.n >= st.total) {
+            over = { winner: st.score[0] === st.score[1] ? 2 : st.score[0] > st.score[1] ? 0 : 1, why: `${st.score[0]}–${st.score[1]}` };
+            data = { ...data, correct: -1, answer: "" };
+          } else {
+            const ask = triviaAsk(data.deck[st.n]); st.n += 1; st.q = ask.q; data = { ...data, correct: ask.correct, answer: ask.answer };
+          }
+          nextSecret = { ...data, at: g.moves + 1 };          // written only after the move itself is recorded
+          r = { st, turn: 1 - owner, over };                  // the next question goes to the team that didn't own this one
         }
-        nextSecret = { ...data, at: g.moves + 1 };          // written only after the move itself is recorded
-        r = { st, turn: isTable ? 1 - g.turn : 1 - mySide, over };
       } else if (g.kind === "spades") {
         const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
         if (!sec || sec.data.at !== g.moves) return reply({ ok: false, code: "stale" }, 409);
