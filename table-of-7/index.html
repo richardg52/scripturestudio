@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Table of 7">
-<!-- the site sits behind the family password; without use-credentials the browser fetches the app description WITHOUT the password pass, gets 401, and the phone never treats Table of 7 as a Home Screen app (no notifications) -->
+<!-- use-credentials: while the site sat behind a Netlify password (until 2026-10-18, his choice to remove it) the app description answered 401 without it and the phone never became a Home Screen app. Kept: harmless now, and right again if a password ever returns -->
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -2245,7 +2245,7 @@ const step = (n, title, html) => `<div class="tip"><span class="n">${n}</span><d
 function guideBody(k){
   const host = esc(first(F(ADMIN).name));
   if(k === "manual") return [
-    step(1, "Getting in", `Open the family link, type the site password, then your <b>full name</b> and your 4-digit PIN and tap ${pic("Sign in","primary")}. The first time, type your new PIN twice and tap ${pic("Save my PIN","primary")}.`),
+    step(1, "Getting in", `Open the family link, tap <b>Tap to enter</b>, then type your <b>full name</b> and your 4-digit PIN and tap ${pic("Sign in","primary")}. The first time, type your new PIN twice and tap ${pic("Save my PIN","primary")}.`),
     step(2, "Home", `Today's date and time are at the top, then anything that <b>needs you</b>. Start from ${pic("Start a family vote")} or ${pic("Send an invitation")}. The bell ${pic("🔔")} holds your alerts; the ${pic("?")} opens this guide; your initial opens your seat menu.`),
     step(3, "Plan a dinner", `Pick the occasion, then ${pic("Family votes")} or ${pic("I decide · just invite")}. Choose the date, time and <b>Vote length</b> (5–60 minutes), the dress code, and up to 3 restaurants. Not in our list? ${pic("Search Google","primary")} below the choices, then ${pic("Add to choices","wine")}. A chain like Olive Garden asks <b>Which location?</b>: tap ${pic("Choose this one","wine")} so everyone goes to the same branch. Tap send.`),
     step(4, "The live vote", `On the plan, tap ${pic("Start 10-minute vote","wine")} (it shows the length you chose). Everyone picks one place. It closes when everyone has voted or time runs out; the plan's host can ${pic("Lock in winner","primary")} early. A tie goes to the host's vote. The winner opens on every phone.`),
@@ -2315,7 +2315,7 @@ function guideBody(k){
     ["“Google search is resting until tomorrow / until the 1st.”", "The family used the free Google searches for now. Our own list still works; Google comes back then."],
     ["“Google found nothing like that in …”", "Try another word (a dish, a chain, a cuisine) or a nearby city."],
     ["Notifications don't arrive", "Tap your initial and look at Notifications. On iPhone open Table of 7 from the Home Screen icon, not Safari. If it says blocked, turn notifications on for Table of 7 in the phone's Settings."],
-    ["The site asks for a password", `That's the family password, not your PIN. Ask ${host}.`],
+    ["I see an old screen", "Close Table of 7 fully (swipe it away), then open it again from the Home Screen icon. The app never keeps an old copy once it is reopened."],
     ["A bakery isn't in the dinner vote or the Concierge's picks", "That's on purpose: our bakeries and dessert shops are a stop after dinner, not the dinner. Add one with “+ Dessert after” on the plan instead."],
     ["I don't see “+ Dessert after” or “Change” on a plan", `Only that plan's host, or ${host}, can set the dessert stop. Ask them.`],
     ["“… saved it. Only they or … can take it off.”", `A Want to Try star belongs to the person who saved it. Ask them, or ${host}.`],
