@@ -1,0 +1,45 @@
+// Table of 7 Wild Card (Uno's rules, our own name and art) proven (node tests/wildcard_rules_test.mjs).
+import { readFileSync } from "node:fs";
+import { wcDeck, wcInit, wcApply, wcLegal, wcBot, wcPoints } from "../supabase/functions/games/wildcard.js";
+let fails = 0; const check = (n, ok, d = "") => { if(!ok) fails++; console.log((ok ? "PASS " : "FAIL ") + n + (ok ? "" : "  -> " + JSON.stringify(d))); };
+const throws = f => { try { f(); return false; } catch { return true; } };
+let seed = 4; const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const d = wcDeck();
+check("108 cards: 4 colours × (one 0, two each 1-9, two Skip, two Reverse, two Draw Two) + 4 Wild + 4 Wild Draw Four", d.length === 108 && d.filter(c => c === "W").length === 4 && d.filter(c => c === "W4").length === 4 && d.filter(c => c === "R0").length === 1 && d.filter(c => c === "R7").length === 2 && d.filter(c => c === "GS").length === 2);
+let { st, sec } = wcInit(["a", "b", "c"], 0, rand);
+check("7 cards each, and the first card turned up is a number", sec.hands.every(h => h.length === 7) && /^\d$/.test(st.top.slice(1)) && st.color === st.top[0]);
+check("nothing hidden is in the public state", !("hands" in st) && JSON.stringify(st).length < 600);
+const S = (top, color, hands, turn = 0, extra = {}) => ({ st: { seats: hands.map((_, i) => "p" + i), n: hands.length, target: 0, score: hands.map(() => 0), round: 1, top, color, turn, start: 0, dir: 1, drew: false, unsafe: null, last: null, counts: hands.map(h => h.length), pile: 20, ...extra }, sec: { hands, pile: Array(20).fill("B5"), discard: [top] } });
+let g = S("R5", "R", [["R9", "G5", "B2", "W"], ["Y1", "Y2"], ["G1", "G2"]]);
+check("you may match the colour, the number, or play a wild", JSON.stringify(wcLegal(g.st, g.sec.hands[0])) === '["R9","G5","W"]');
+check("a card that doesn't match is refused", throws(() => wcApply(g.st, g.sec, 0, { card: "B2" })));
+check("only the player whose turn it is may play", throws(() => wcApply(g.st, g.sec, 1, { card: "Y1" })));
+check("a wild needs a colour", throws(() => wcApply(g.st, g.sec, 0, { card: "W" })));
+let r = wcApply(g.st, g.sec, 0, { card: "W", color: "Y" }); check("a wild sets the colour you name", r.st.color === "Y" && r.st.turn === 1);
+g = S("R5", "R", [["RS", "B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); r = wcApply(g.st, g.sec, 0, { card: "RS" }); check("Skip: the next player misses a turn", r.st.turn === 2);
+g = S("R5", "R", [["RR", "B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); r = wcApply(g.st, g.sec, 0, { card: "RR" }); check("Reverse: play turns the other way", r.st.turn === 2 && r.st.dir === -1);
+g = S("R5", "R", [["RR", "B1", "B2"], ["Y1", "Y2"]]); r = wcApply(g.st, g.sec, 0, { card: "RR" }); check("with two players, Reverse works as a Skip", r.st.turn === 0);
+g = S("R5", "R", [["RD", "B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); r = wcApply(g.st, g.sec, 0, { card: "RD" }); check("Draw Two: the next player draws 2 and misses a turn", r.sec.hands[1].length === 4 && r.st.turn === 2);
+g = S("R5", "R", [["W4", "B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); r = wcApply(g.st, g.sec, 0, { card: "W4", color: "B" }); check("Wild Draw Four: the next player draws 4 and misses a turn", r.sec.hands[1].length === 6 && r.st.turn === 2 && r.st.color === "B");
+g = S("R5", "R", [["B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); g.sec.pile = ["R3"]; r = wcApply(g.st, g.sec, 0, { draw: true });
+check("can't play: draw one; if it plays you may play it now", r.st.turn === 0 && r.st.drew === true && JSON.stringify(wcLegal(r.st, r.sec.hands[0])) === '["R3"]');
+check("…or pass", wcApply(r.st, r.sec, 0, { pass: true }).st.turn === 1);
+g = S("R5", "R", [["B1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); g.sec.pile = ["G9"]; r = wcApply(g.st, g.sec, 0, { draw: true }); check("a drawn card that doesn't play ends your turn", r.st.turn === 1 && r.sec.hands[0].length === 3);
+g = S("R5", "R", [["R1", "B2"], ["Y1", "Y2"], ["G1", "G2"]]); r = wcApply(g.st, g.sec, 0, { card: "R1" });
+check("down to one card without calling Last card! leaves you open to a catch", r.st.unsafe === 0);
+const c = wcApply(r.st, r.sec, 2, { catch: true }); check("any other player can catch you: you draw 2", c.sec.hands[0].length === 3 && c.st.unsafe === null);
+check("you can't catch yourself", throws(() => wcApply(r.st, r.sec, 0, { catch: true })));
+r = wcApply(g.st, g.sec, 0, { card: "R1", last: true }); check("calling Last card! as you play keeps you safe", r.st.unsafe === null);
+const r2 = wcApply(r.st, r.sec, 1, { draw: true }); check("once the next player moves, the chance to catch is gone", r2.st.unsafe === null && throws(() => wcApply(r2.st, r2.sec, 2, { catch: true })));
+g = S("R5", "R", [["R1"], ["Y1", "W", "RS"], ["G9"]]); r = wcApply(g.st, g.sec, 0, { card: "R1" });
+check("your last card wins the round and scores what the others hold (1 + 50 + 20 + 9 = 80)", r.over && r.over.winSeat === 0 && r.st.score[0] === 80, r.st.score);
+check("card points: numbers face value, action cards 20, wilds 50", wcPoints("G7") === 7 && wcPoints("BD") === 20 && wcPoints("W4") === 50);
+let ok = true, finished = 0; for(let k = 0; k < 200; k++){ let x = wcInit(["a", "b", "c", "d"].slice(0, 2 + k % 3), k % 2 ? 200 : 0, rand), over = null, n = 0;
+  while(!over && n++ < 20000){ const s = x.st.turn, mv = wcBot(x.st, x.sec.hands[s], s, () => 0.99); if(mv.card && !wcLegal(x.st, x.sec.hands[s]).includes(mv.card)){ ok = false; break; } const y = wcApply(x.st, x.sec, s, mv, rand); x = { st: y.st, sec: y.sec }; over = y.over; }
+  if(over) finished++; }
+check("the computer plays only legal cards, and all 200 computer games finish", ok && finished === 200, finished);
+const html = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
+const m = html.match(/\/\* WILDCARD RULES START \*\/\n([\s\S]*?)\n\/\* WILDCARD RULES END \*\//);
+const src = readFileSync(new URL("../supabase/functions/games/wildcard.js", import.meta.url), "utf8").replace(/^export /gm, "").trim();
+check("the app's copy of the Wild Card rules matches the server's", !!m && m[1].trim() === src);
+console.log(fails ? `${fails} FAILED` : "ALL PROOFS HOLD"); process.exit(fails ? 1 : 0);

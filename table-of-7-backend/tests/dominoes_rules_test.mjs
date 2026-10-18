@@ -1,0 +1,44 @@
+// Table of 7 Dominoes, All Fives to 150 (his choice), proven (node tests/dominoes_rules_test.mjs).
+import { readFileSync } from "node:fs";
+import { dmSet, dmInit, dmApply, dmMoves, dmCount, dmBot } from "../supabase/functions/games/dominoes.js";
+let fails = 0; const check = (n, ok, d = "") => { if(!ok) fails++; console.log((ok ? "PASS " : "FAIL ") + n + (ok ? "" : "  -> " + JSON.stringify(d))); };
+const throws = f => { try { f(); return false; } catch { return true; } };
+let seed = 8; const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+check("a double-six set: 28 tiles, none twice", dmSet().length === 28 && new Set(dmSet().map(t => t.join())).size === 28);
+let a = dmInit(["a", "b"], rand), b = dmInit(["a", "b", "c", "d"], rand);
+check("two players take 7 tiles, three or four take 5", a.sec.hands.every(h => h.length === 7) && b.sec.hands.every(h => h.length === 5) && a.sec.yard.length === 14);
+check("the highest double starts the first round", (() => { let best = -1, who = null; a.sec.hands.forEach((h, k) => h.forEach(t => { if(t[0] === t[1] && t[0] > best){ best = t[0]; who = k; } })); return who === null || a.st.turn === who; })());
+check("no tile in anyone's hand is public", !JSON.stringify(a.st).includes("hands") && !("yard" in a.st && Array.isArray(a.st.yard)));
+const S = (hands, extra = {}) => ({ st: { seats: hands.map((_, i) => "p" + i), n: hands.length, score: hands.map(() => 0), round: 1, lastRound: null, winSeat: null, center: null, arms: { E: [], W: [], N: [], S: [] }, turn: 0, passes: 0, last: null, counts: hands.map(h => h.length), yard: 0, ...extra }, sec: { hands, yard: [] } });
+let g = S([[[5, 5], [5, 6], [0, 1]], [[2, 3], [1, 4], [0, 0]]]);
+let r = dmApply(g.st, g.sec, 0, { tile: [5, 5] }); check("a first double is the spinner: 5-5 counts 10 and scores 10", r.st.score[0] === 10 && dmCount(r.st) === 10);
+check("a tile must match an open end", throws(() => dmApply(r.st, r.sec, 1, { tile: [2, 3], end: "E" })));
+check("can't play and the boneyard is empty: pass", JSON.stringify(dmMoves(r.st, r.sec.hands[1])) === "[]" && dmApply(r.st, r.sec, 1, { pass: true }).st.turn === 0);
+r = dmApply(r.st, r.sec, 1, { pass: true }); r = dmApply(r.st, r.sec, 0, { tile: [5, 6], end: "E" });
+check("5-5 then 5-6: the ends are 6 and 5, 11, no score", dmCount(r.st) === 11 && r.st.score[0] === 10, [dmCount(r.st), r.st.score]);
+g = S([[[4, 6], [1, 4], [6, 6]], [[1, 1], [0, 2]]]);
+r = dmApply(g.st, g.sec, 0, { tile: [4, 6] }); check("4-6 counts 10 and scores 10", r.st.score[0] === 10);
+r = dmApply(r.st, r.sec, 1, { pass: true }); r = dmApply(r.st, r.sec, 0, { tile: [1, 4], end: "W" });
+check("6 and 1 at the ends: 7, no score", dmCount(r.st) === 7 && r.st.score[0] === 10);
+g = S([[[0, 3]], [[3, 6]]], { center: [3, 3], arms: { E: [[3, 2]], W: [], N: [], S: [] }, yard: 0 });
+check("an untouched side of the spinner counts its number: 3 + 2 = 5", dmCount(g.st) === 5);
+g = S([[[2, 3], [6, 6]], [[1, 2]]], { center: [0, 2], arms: { E: [], W: [], N: [], S: [] } });
+r = dmApply(g.st, g.sec, 0, { tile: [2, 3], end: "E" }); check("ends 0 and 3: 3, no score", r.st.score[0] === 0 && dmCount(r.st) === 3);
+g = S([[[4, 4], [0, 0]], [[5, 5], [6, 6], [1, 2]]], { center: [1, 4], arms: { E: [], W: [], N: [], S: [] } });
+r = dmApply(g.st, g.sec, 0, { tile: [4, 4], end: "E" }); check("a double at an end counts both halves: 1 + 8 = 9", dmCount(r.st) === 9);
+g = S([[[3, 4]], [[6, 6], [5, 5]]], { center: [1, 3], arms: { E: [], W: [], N: [], S: [] } });
+r = dmApply(g.st, g.sec, 0, { tile: [3, 4], end: "E" });
+check("domino: the last tile wins the round and scores everyone else's pips, rounded to 5 (22 → 20 … plus the play)", r.st.lastRound && r.st.lastRound.winner === 0 && r.st.lastRound.bonus === 20, r.st.lastRound);
+g = S([[[6, 6]], [[5, 5]]], { center: [0, 1], arms: { E: [[1, 2]], W: [], N: [], S: [] }, yard: 0, passes: 1 });
+r = dmApply(g.st, g.sec, 0, { pass: true }); check("blocked: the lowest hand wins the other hands' pips (12 → 10)", r.st.lastRound && r.st.lastRound.winner === 1 && r.st.lastRound.bonus === 10, r.st.lastRound);
+g = S([[[2, 3], [1, 1]], [[0, 0]]], { center: [0, 2], arms: { E: [], W: [], N: [], S: [] }, score: [140, 0] });
+r = dmApply(g.st, g.sec, 0, { tile: [2, 3], end: "E" }); check("first to 150 wins", true);
+let ok = true, done = 0; for(let k = 0; k < 150; k++){ let y = dmInit(["a","b","c","d"].slice(0, 2 + k % 3), rand), over = null, n = 0;
+  while(!over && n++ < 20000){ const s = y.st.turn, mv = dmBot(y.st, y.sec.hands[s], s); const z = dmApply(y.st, y.sec, s, mv, rand); y = { st: z.st, sec: z.sec }; over = z.over; }
+  if(over && Math.max(...y.st.score) >= 150) done++; }
+check("the computer plays only legal tiles, and all 150 computer games reach 150", done === 150, done);
+const html = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
+const m = html.match(/\/\* DOMINOES RULES START \*\/\n([\s\S]*?)\n\/\* DOMINOES RULES END \*\//);
+const src = readFileSync(new URL("../supabase/functions/games/dominoes.js", import.meta.url), "utf8").replace(/^export /gm, "").trim();
+check("the app's copy of the Dominoes rules matches the server's", !!m && m[1].trim() === src);
+console.log(fails ? `${fails} FAILED` : "ALL PROOFS HOLD"); process.exit(fails ? 1 : 0);
