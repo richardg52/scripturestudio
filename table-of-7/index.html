@@ -388,6 +388,19 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 /* Round 3: Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess */
 .gt-wc,.todo .ic.gt-wc{background:linear-gradient(150deg,#ff3b5c,#7b1fe0)}.gt-bw,.todo .ic.gt-bw{background:linear-gradient(150deg,#1b4f9e,#0b1f48)}
 .gt-dm,.todo .ic.gt-dm{background:linear-gradient(150deg,#0f7a43,#08311c)}.gt-mm,.todo .ic.gt-mm{background:linear-gradient(150deg,#ff8a1f,#e3264f)}.gt-wg,.todo .ic.gt-wg{background:linear-gradient(150deg,#14b8a6,#0b5f72)}
+.gt-sl,.todo .ic.gt-sl{background:linear-gradient(150deg,#1f9d55,#0b3d20)}
+/* Solitaire: a felt board, seven columns that fit a phone, cards drawn like the real deck */
+.slboard{max-width:620px;margin:0 auto;width:100%;display:grid;gap:12px;padding:10px 8px 18px;border-radius:22px;background:radial-gradient(ellipse at 50% 30%,#1f8a49,#0b3d20 75%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.1),0 16px 36px rgba(0,0,0,.5)}
+.slrow,.sltab{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;align-items:start}
+.slcol{display:flex;flex-direction:column;min-width:0}
+.slc{display:block;border:0;padding:0;margin:0;background:none;width:100%;position:relative;border-radius:8px}
+.slc.afdn{margin-top:-118%}.slc.afup{margin-top:-96%}
+.slc .card-svg{filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+.slc.hint .card-svg{outline:4px solid #ffd36b;outline-offset:-1px;border-radius:9px}
+.slslot{display:grid;place-items:center;aspect-ratio:250/350;width:100%;border:0;padding:0;border-radius:9px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3);color:rgba(255,255,255,.75);font:900 calc(18px*var(--gs))/1 var(--f-display)}
+.slwaste{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-column:span 2;gap:0}
+.slwaste .slc:not(:first-child){margin-left:-62%}
+.slwaste .slc{grid-row:1}
 .wctable{border-radius:28px;padding:14px;display:grid;gap:12px;background:radial-gradient(ellipse at 50% 40%,#3b2a7a,#1a1040 70%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.12),0 18px 40px rgba(0,0,0,.55)}
 .wcopps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .wcopp{display:grid;justify-items:center;gap:4px;padding:6px 10px;border-radius:16px;background:rgba(0,0,0,.3);border:2px solid transparent;color:#fff;font-size:calc(13px*var(--gs))}
@@ -525,6 +538,10 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .bjacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .bjacts .btn{min-height:calc(56px*var(--gs));padding-inline:4px}
 .gt-bj,.todo .ic.gt-bj{background:linear-gradient(150deg,#0f7a43,#063b20)}
+/* Topgolf Outing: a night-range look (turf green, target colours) */
+#sheet-wrap.stage.golf .sheet{background:radial-gradient(120% 60% at 50% -10%,#1f7a3a 0%,#0d3d1f 48%,#061a0e 100%) fixed}
+.tgbadge{display:grid;place-items:center;width:calc(64px*var(--gs));aspect-ratio:1;border-radius:50%;font-size:calc(30px*var(--gs));
+  background:radial-gradient(circle,#fff 0 18%,#e8443a 19% 34%,#ffd23f 35% 50%,#3aa0ff 51% 66%,#2fbf71 67% 82%,#0d3d1f 83%);box-shadow:0 6px 16px rgba(0,0,0,.5)}
 /* Movie Night: a cinema look (velvet red, gold, posters) */
 #sheet-wrap.stage.cinema .sheet{background:radial-gradient(120% 60% at 50% -10%,#7a1426 0%,#3a0812 45%,#14040a 100%) fixed}
 .mvlist{display:grid;gap:10px}
@@ -1254,7 +1271,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -1294,6 +1311,8 @@ async function pull(){
   n.runs = D.standing_runs.map(x => ({sid:x.standing_id, date:x.dinner_date, eventId:x.event_id}));
   n.surveys = D.feud_surveys.map(x => ({id:x.id, prompts:x.prompts, status:x.status, answered:x.answered || [], by:x.created_by, t:iso2ms(x.updated_at)}));
   const MP = {}; D.movie_people.forEach(x => (MP[x.night_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
+  const GP = {}; D.golf_people.forEach(x => (GP[x.outing_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
+  n.golf = D.golf_outings.map(x => ({id:x.id, pid:x.venue_pid, city:x.city, date:x.date, time:x.time, hours:+x.hours, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, booking:x.booking, by:x.created_by, people:GP[x.id] || {}, t:iso2ms(x.updated_at)}));
   n.movies = D.movie_nights.map(x => ({id:x.id, movie:x.movie, pid:x.theater_pid, city:x.city, date:x.date, time:x.time, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, tickets:x.tickets, by:x.created_by, people:MP[x.id] || {}, t:iso2ms(x.updated_at)}));
   n.games = D.games.map(x => ({id:x.id, kind:x.kind, a:x.side_a, b:x.side_b, st:x.state, turn:x.turn, status:x.status, winner:x.winner, why:x.why || "", moves:x.moves, by:x.created_by, t:iso2ms(x.updated_at)}));
   const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
@@ -1348,7 +1367,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1368,7 +1387,7 @@ function redraw(){
   if(inviteId && !ev(inviteId)) closeInvite();
   render();
   // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
-  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) mvRedraw();
+  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); }
   if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
@@ -1736,6 +1755,7 @@ function vHome(){
   ${isSuspended() ? `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)">Your seat is paused by ${esc(first(F(ADMIN).name))}. You can look around, but voting and posting are off for now.</div>` : ""}
   ${isAdmin() && queueCount() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>${queueCount()} waiting for your approval</b><small>Photos, cards and posts from the family</small></span><span class="chev">${I.chev}</span></button>` : ""}
 
+  ${tgNeeds().length ? `<section class="sec"><div class="sec-head"><h2>⛳ Topgolf</h2></div>${tgNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="tg-open" data-id="${o.id}"><span class="ic">⛳</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${mvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎬 Movie night</h2></div>${mvNeeds().slice(0, 3).map(([n, a, b2]) => `<button class="todo" data-act="mv-open" data-id="${n.id}"><span class="ic">🎬</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
@@ -2136,6 +2156,7 @@ function vTable(){
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
   <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Spades, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMine(g)) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="movies"><span class="ic">🎬</span><span><b>Movie Night</b><small>${(() => { const k = mvNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a movie, read reviews, buy tickets, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="golf"><span class="ic">⛳</span><span><b>Topgolf Outing</b><small>${(() => { const k = tgNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a day, book a bay, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
     <div class="sec-head"><h2 style="font-size:20px">Our favorites</h2><span class="small muted">by times chosen</span></div>
@@ -2178,7 +2199,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -2220,6 +2241,8 @@ function sheetTips(){
     ["Play the computer","Tic-Tac-Toe, Connect Four and Checkers: tap Easy, Medium or Hard. Spades: “Me and a computer partner”, or pick 🤖 Computer for any empty seat in a family game. Trivia: “Just me, against the clock”. Blackjack: “Just me vs the dealer”. Your record against the computer stays on your phone and never counts in the family standings."],
     ["Blackjack","Game Room → 🃏 Blackjack. Alone against the dealer, or a family table of up to four on their own phones. Tap chips to make your bet (10 to 500), then Bet; then Hit, Stand, Double or Split. Blackjack pays 3 to 2; the dealer stands on 17. Everyone starts with 1,000 points. Chips are points for fun, never money."],
     ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt."],
+    ["Topgolf Outing","Our Table → ⛳ Topgolf Outing → Plan a Topgolf outing. Pick a day, time and how long, tap Find Topgolf, invite the family. One person books the bay on Topgolf's own site; everyone else pays them back or pays their own way, and gets a receipt."],
+    ["Solitaire","Game Room → Solitaire. Draw 1 is easier, Draw 3 is classic. Tap a card and it moves by itself; tap the deck to draw. Undo, Hint and Finish are under the board."],
     ["Wild Card","Game Room → 🌈 Wild Card: Uno's rules. Match the colour, the number or the symbol; a Wild lets you name the colour. Down to two cards? Tap 🔔 before you play, or anyone can tap 🚨 Catch and you draw 2. Play 1, 2 or 3 computers, or a family game of up to four, one round or first to 200."],
     ["Bid Whist","Game Room → ♣ Bid Whist: couples, partners across, jokers in. Bid 4 to 7 Uptown, Downtown or No Trump; the top bidder takes the kitty, puts back 6 and names trump. First to 7 wins, no trump counts double, and taking all 13 books (a Boston) wins outright."],
     ["Dominoes","Game Room → 🁫 Dominoes, All Fives. Tap a glowing tile; if it fits two ends, pick Left, Right, Top or Bottom. When the open ends add up to 5, 10, 15 or more by fives, you score it. Can't play? Draw from the boneyard. First to 150."],
@@ -2275,6 +2298,8 @@ function guideBody(k){
     step(28, "Dominoes", `Tap the <b>Dominoes</b> picture: ${pic("vs 1 computer")} to ${pic("vs 3 computers","wine")}, or ${pic("👨‍👩‍👧 Family game · own phones","wine")}. Your tiles that fit glow and rise: tap one. If it fits more than one end, tap ${pic("⬅ Left")} ${pic("Right ➡")} ${pic("⬆ Top")} or ${pic("⬇ Bottom")}. The gold bubble shows the open ends' total; a multiple of 5 scores it. Nothing fits? ${pic("🁢 Draw from the boneyard","primary")}. Going out scores everyone else's leftover dots.`),
     step(29, "Memory Match", `Tap the <b>Memory Match</b> picture, choose who's playing (just you, or 2 to 4 passing the phone), then ${pic("Easy · 12 cards")} ${pic("Medium · 16 cards","primary")} or ${pic("Hard · 20 cards","wine")}. Tap two cards. A pair glows green and stays up; a miss flips back and, with players, passes the turn. ${pic("Start over")} deals again.`),
     step(30, "Word Guess", `Tap the <b>Word Guess</b> picture and a category: ${pic("📖 Bible","primary")} ${pic("🎵 Music")} ${pic("🍗 Family & Food","wine")}. Tap letters: right ones turn green and fill in; wrong ones pop a balloon. Six balloons, then the word is shown. ${pic("✍️ Write a word for someone to guess")} hides your word behind dots while you type; tap ${pic("Hide it and start","primary")} and hand the phone over.`),
+    step(31, "Topgolf Outing", `Tap ${pic("Our Table")} → <b>⛳ Topgolf Outing</b> → ${pic("⛳ Plan a Topgolf outing","primary")}. Pick the date, the start time and how long (1 to 4 hours), choose the area and tap ${pic("Find Topgolf","primary")}: Google lists the Topgolf venues there. Tap one, tap the family you're inviting, add a note if you like, and tap ${pic("⛳ Send the invitation","primary")}. Everyone answers ${pic("Going","primary")}, Maybe or Can't go. <b>Booking:</b> one person who is going taps ${pic("⛳ I'll book the bay","primary")} so nobody books twice, books on ${pic("Book on Topgolf's site","primary")} (or calls), then types the players, bays, the bay cost and any food, drinks and fees from the confirmation and taps ${pic("✓ I booked the bay","wine")}. Topgolf prices each bay by the hour and up to 6 play in a bay, so the app never guesses a price: it splits the real total by the players. <b>Paying back:</b> everyone else sees their share, pays the booker their own way (Cash App, Zelle, cash…) and taps <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and that person's receipt appears with the time, the Topgolf, the booking and their share. Paying your own way? Tap <b>I'm paying my own way</b>.`),
+    step(32, "Solitaire", `Tap the <b>Solitaire</b> picture in the Game Room and choose ${pic("Draw 1 · easier","primary")} or ${pic("Draw 3 · classic","wine")}. Build each column down in alternating red and black; only a king goes in an empty column. Send every card home to the four piles at the top, from Ace up to King, by suit. <b>Tap a card</b> and it goes to the best place by itself: home if it can, otherwise a column (tap it again to try the next column). A face-up card with cards on it moves them all together. <b>Tap the deck</b> to turn over cards; when it's empty, tap ↻ to turn the pile back over. ${pic("↩ Undo")} takes back a move, ${pic("💡 Hint")} outlines a good move in gold, and when every card is face up ${pic("✨ Finish","primary")} plays the rest home for you. Your wins and best times stay on your phone.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2299,6 +2324,8 @@ function guideBody(k){
     step("T", "Dominoes on the porch", `Mario plays Dominoes against two computers. The 6-6 goes down first, then the 6-4: the ends show <b>16</b>. He sets the 4-3 on the right: <b>15 ✓ scores!</b> The bubble turns gold and he gets 15. Later he goes out first and takes everyone's leftover dots, rounded to 5.`),
     step("U", "Memory Match with Grandma", `Jasmine picks <b>2 players</b> and ${pic("Easy · 12 cards")}. She finds the 🍕 pair and goes again; then misses, and the phone goes to Rosa, who remembers where both 🍰 were. Final: Rosa 4, Jasmine 2. “🏆 Player 2 wins!”`),
     step("V", "A word for Dad", `Zoey taps ${pic("✍️ Write a word for someone to guess")}, types PEACH COBBLER behind the dots and hands the phone to Richard. He tries E, A, then R, and has it with four balloons still floating.`),
+    step("W", "Saturday at Topgolf", `Mario taps ${pic("⛳ Plan a Topgolf outing","primary")}, picks Saturday at 5:00 PM for 2 hours, taps ${pic("Find Topgolf","primary")}, chooses Topgolf Memphis and invites everyone. Five tap Going. Jasmine taps ${pic("⛳ I'll book the bay","primary")}, books one bay on Topgolf's site, and types the bay cost and the food from her confirmation. Everyone's phone shows their share. Richard pays Jasmine by Cash App and taps <b>I paid by Cash App</b>; Jasmine taps ${pic("✓ Received","wine")} and Richard's receipt appears: Topgolf Memphis, Saturday 5:00 PM, his share, balance $0.00.`),
+    step("X", "Solitaire after church", `Richard opens ${pic("Solitaire")} and taps ${pic("Draw 1 · easier","primary")}. He taps the A♥ and it flies home; a hidden card turns over. Stuck, he taps ${pic("💡 Hint")} and the 4♣ lights up gold, ready to go on a red 5. Twenty minutes later every card is face up, he taps ${pic("✨ Finish","primary")} and the cards play themselves home: <b>“You won!”</b>`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2344,6 +2371,11 @@ function guideBody(k){
     ["Find theaters shows nothing", "Pick another area in the list next to it. Google only lists cinemas inside the area you choose."],
     ["I can't tap I'll buy the tickets", "Tap Going first. And only one person can be buying: if someone already is, their name shows instead."],
     ["My movie receipt isn't there", "It appears when the buyer taps Received. If you paid for your own ticket, tap Paying for myself and it shows at once."],
+    ["Find Topgolf shows nothing", "Google only lists Topgolf venues inside the area you choose. Pick another area in the list next to it (Memphis has Topgolf Memphis on S Germantown Rd)."],
+    ["“A bay holds up to 6 players.”", "Topgolf lets up to 6 play in one bay. For more people, put 2 bays (or more) in the booking."],
+    ["My Topgolf share looks wrong", "The share is the booking total (bay cost plus food, drinks and fees) divided by the number of players the booker typed. Ask the booker to check their confirmation."],
+    ["A Solitaire card won't move", "It has nowhere to go yet: a column needs a card one higher in the other colour, an empty column needs a king, and home needs the card just below it. Try Hint, or draw from the deck."],
+    ["Solitaire says “No moves left”", "Nothing can move and the deck is used up. Tap New deal for another game; not every deal can be won."],
     ["Wild Card won't let me play my card", "Only glowing cards play: same colour, same number or symbol, or a Wild. After you draw, only the card you drew can play; otherwise tap Pass."],
     ["Someone caught me at Wild Card", "You went down to one card without calling “Last card!”. Tap 🔔 before you play your second-to-last card next time."],
     ["I can't pass in Bid Whist", "Everyone else passed and you're the dealer: the dealer must bid."],
@@ -2368,10 +2400,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Play twelve games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match and Word Guess</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match or Word Guess across phones: they're one-phone games</li><li>Undo a card or tile once it's played</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Undo a card or tile once it's played</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -3324,6 +3356,84 @@ function spBotPlay(st, hand, seat){
   const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
 }
 /* SPADES RULES END */
+/* SOLITAIRE RULES START */
+// Table of 7 Solitaire (Klondike; his order, 2026-10-18). Played on one phone, never on the server: this file is kept
+// beside the other games' rules so tests/sync_rules_copy.py copies it into index.html (between the SOLITAIRE RULES
+// markers) and tests/solitaire_rules_test.mjs proves it. Every helper carries the "sl" prefix (all rules share one script).
+// Cards: suit + rank 1..13 (1 ace, 11 jack, 12 queen, 13 king). Seven columns, 1 to 7 cards, the last one face up.
+// Build down in alternating colours; only a king starts an empty column; foundations go up by suit from the ace.
+// Draw 1 or 3 from the stock; when it's empty, the waste turns back over (as often as you like).
+const SL_SUITS = ["S", "H", "D", "C"];
+const slRed = c => c[0] === "H" || c[0] === "D";
+const slRank = c => +c.slice(1);
+const slTop = a => a[a.length - 1];
+function slDeal(draw, rand = Math.random){
+  const d = []; for(const s of SL_SUITS) for(let r = 1; r <= 13; r++) d.push(s + r);
+  for(let i = d.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
+  const tab = []; let k = 0;
+  for(let i = 0; i < 7; i++){ const col = d.slice(k, k + i + 1); k += i + 1; tab.push({ down: col.slice(0, -1), up: col.slice(-1) }); }
+  return { draw: draw === 3 ? 3 : 1, stock: d.slice(k), waste: [], found: { S: [], H: [], D: [], C: [] }, tab, moves: 0, passes: 0 };
+}
+const slCanFound = (st, c) => slRank(c) === st.found[c[0]].length + 1;
+function slCanTab(st, c, j){
+  const col = st.tab[j], top = slTop(col.up);
+  if(!top) return !col.down.length && slRank(c) === 13;
+  return slRed(top) !== slRed(c) && slRank(top) === slRank(c) + 1;
+}
+// a source: {from:"waste"} | {from:"tab", i, k} (k = where the run starts among that column's face-up cards) | {from:"found", s}
+function slCards(st, src){
+  if(src.from === "waste") return st.waste.length ? [slTop(st.waste)] : [];
+  if(src.from === "found") return st.found[src.s] && st.found[src.s].length ? [slTop(st.found[src.s])] : [];
+  if(src.from === "tab"){ const up = (st.tab[src.i] && st.tab[src.i].up) || []; return Number.isInteger(src.k) && src.k >= 0 && src.k < up.length ? up.slice(src.k) : []; }
+  return [];
+}
+// every place a source may go: [{to:"found"} | {to:"tab", j}]
+function slTargets(st, src){
+  const cards = slCards(st, src); if(!cards.length) return [];
+  const out = [];
+  if(cards.length === 1 && src.from !== "found" && slCanFound(st, cards[0])) out.push({ to: "found" });
+  for(let j = 0; j < 7; j++) if(!(src.from === "tab" && src.i === j) && slCanTab(st, cards[0], j)) out.push({ to: "tab", j });
+  return out;
+}
+// mv: {draw:true} | {src, dst}; returns the new state, or throws when the move isn't allowed
+function slApply(st0, mv){
+  const st = JSON.parse(JSON.stringify(st0));
+  if(mv && mv.draw){
+    if(st.stock.length){ const n = Math.min(st.draw, st.stock.length); for(let i = 0; i < n; i++) st.waste.push(st.stock.pop()); }
+    else if(st.waste.length){ st.stock = st.waste.reverse(); st.waste = []; st.passes += 1; }
+    else throw new Error("empty");
+    st.moves += 1; return st;
+  }
+  const src = mv && mv.src, dst = mv && mv.dst;
+  if(!src || !dst || !slTargets(st0, src).some(t => t.to === dst.to && (t.to === "found" || t.j === dst.j))) throw new Error("illegal");
+  let cards;
+  if(src.from === "waste") cards = [st.waste.pop()];
+  else if(src.from === "found") cards = [st.found[src.s].pop()];
+  else { const col = st.tab[src.i]; cards = col.up.splice(src.k); if(!col.up.length && col.down.length) col.up.push(col.down.pop()); }
+  if(dst.to === "found") st.found[cards[0][0]].push(cards[0]); else st.tab[dst.j].up.push(...cards);
+  st.moves += 1; return st;
+}
+const slWon = st => SL_SUITS.every(s => st.found[s].length === 13);
+// everything is face up and the stock and waste are empty: the rest can go home by itself
+const slCanFinish = st => !st.stock.length && !st.waste.length && st.tab.every(c => !c.down.length) && !slWon(st);
+function slFinishStep(st){
+  for(let i = 0; i < 7; i++){ const k = st.tab[i].up.length - 1;
+    if(k >= 0 && slTargets(st, { from: "tab", i, k }).some(t => t.to === "found")) return slApply(st, { src: { from: "tab", i, k }, dst: { to: "found" } }); }
+  return null;
+}
+// a helpful move for the Hint button: a card home, then a run that turns over a hidden card or clears a column,
+// then the waste card onto a column, then draw. null = no move left at all.
+function slHint(st){
+  if(st.waste.length && slTargets(st, { from: "waste" }).some(t => t.to === "found")) return { src: { from: "waste" }, dst: { to: "found" } };
+  for(let i = 0; i < 7; i++){ const k = st.tab[i].up.length - 1;
+    if(k >= 0 && slTargets(st, { from: "tab", i, k }).some(t => t.to === "found")) return { src: { from: "tab", i, k }, dst: { to: "found" } }; }
+  for(let i = 0; i < 7; i++){ const col = st.tab[i]; if(!col.up.length) continue;
+    const t = slTargets(st, { from: "tab", i, k: 0 }).find(x => x.to === "tab");
+    if(t && (col.down.length || (slRank(col.up[0]) !== 13 && st.tab[t.j].up.length))) return { src: { from: "tab", i, k: 0 }, dst: t }; }
+  if(st.waste.length){ const t = slTargets(st, { from: "waste" }).find(x => x.to === "tab"); if(t) return { src: { from: "waste" }, dst: t }; }
+  return st.stock.length || st.waste.length ? { draw: true } : null;
+}
+/* SOLITAIRE RULES END */
 /* DOMINOES RULES START */
 // Table of 7 Dominoes, ALL FIVES TO 150 (his choice, 2026-10-17). ONE copy of the rules: the server (functions/games)
 // runs family games with it, the app carries the identical text (index.html, between the DOMINOES RULES markers) for
@@ -3818,7 +3928,7 @@ function bjCan(st, p){
    server: every move goes through functions/games, which checks the player, the turn and the move with the very same
    rules above, so the board on every phone agrees and no one can move for someone else. */
 const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"], trivia: ["Team 1", "Team 2"] };
-const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack", wildcard: "Wild Card", bidwhist: "Bid Whist", dominoes: "Dominoes", memory: "Memory Match", wordguess: "Word Guess" };
+const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack", wildcard: "Wild Card", bidwhist: "Bid Whist", dominoes: "Dominoes", memory: "Memory Match", wordguess: "Word Guess", solitaire: "Solitaire" };
 /* FEUD PROMPTS START (a copy of functions/games/feud.js FEUD_PROMPTS; tests/feud_rules_test.mjs proves they match) */
 const FEUD_PROMPTS = [
   "Name something the family always orders when we eat out.",
@@ -4018,6 +4128,10 @@ function gArt(k){
     <g transform="rotate(-22 40 62)"><rect x="24" y="20" width="32" height="64" rx="7" fill="url(#ga-iv)" stroke="#a8946a" stroke-width="1.5"/><line x1="29" y1="52" x2="51" y2="52" stroke="#8c7c5c" stroke-width="2"/>${pip(33, 29)}${pip(47, 29)}${pip(40, 36)}${pip(33, 43)}${pip(47, 43)}${pip(33, 61)}${pip(47, 75)}${pip(40, 68)}</g>
     <g transform="rotate(16 82 62)"><rect x="66" y="22" width="32" height="64" rx="7" fill="url(#ga-iv)" stroke="#a8946a" stroke-width="1.5"/><line x1="71" y1="54" x2="93" y2="54" stroke="#8c7c5c" stroke-width="2"/>${pip(75, 30)}${pip(89, 30)}${pip(75, 38)}${pip(89, 38)}${pip(75, 46)}${pip(89, 46)}${pip(75, 62)}${pip(89, 62)}${pip(75, 78)}${pip(89, 78)}</g>
     <circle cx="60" cy="100" r="15" fill="#ffd36b"/><text x="60" y="106" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#3a2200">15</text>`); }
+  if(k === "solitaire") return S(`<g transform="rotate(-14 40 70)"><rect x="18" y="30" width="44" height="62" rx="7" fill="#fffdf7" stroke="#cfc8b6"/><text x="26" y="50" font-family="Georgia,serif" font-weight="700" font-size="17" fill="#d0142c">K</text><text x="40" y="80" text-anchor="middle" font-size="26" fill="#d0142c">♥</text></g>
+    <g transform="rotate(4 62 64)"><rect x="40" y="26" width="44" height="62" rx="7" fill="#fffdf7" stroke="#cfc8b6"/><text x="48" y="46" font-family="Georgia,serif" font-weight="700" font-size="17" fill="#141414">Q</text><text x="62" y="76" text-anchor="middle" font-size="26" fill="#141414">♠</text></g>
+    <g transform="rotate(18 84 70)"><rect x="62" y="32" width="44" height="62" rx="7" fill="#fffdf7" stroke="#cfc8b6"/><text x="70" y="52" font-family="Georgia,serif" font-weight="700" font-size="17" fill="#d0142c">J</text><text x="84" y="82" text-anchor="middle" font-size="26" fill="#d0142c">♦</text></g>
+    <rect x="34" y="98" width="52" height="14" rx="7" fill="#ffd36b"/><text x="60" y="109" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="10" fill="#3a2200">A ♠ ♥ ♦ ♣</text>`);
   if(k === "memory") return S(`<g transform="rotate(-10 36 46)"><rect x="12" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="35" y="54" text-anchor="middle" font-size="30">🍕</text></g>
     <g transform="rotate(8 86 46)"><rect x="62" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="85" y="54" text-anchor="middle" font-size="30">🍕</text></g>
     <rect x="16" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="36" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T7</text>
@@ -4030,7 +4144,7 @@ function gArt(k){
 const GTILES = [["ttt","Tic-Tac-Toe","Three in a row","gt-ttt"],["c4","Connect Four","Drop four in a row","gt-c4"],["checkers","Checkers","Slide, jump, get crowned","gt-ck"],
   ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"],["blackjack","Blackjack","Beat the dealer to 21","gt-bj"],
   ["wildcard","Wild Card","Match colours · Uno rules","gt-wc"],["bidwhist","Bid Whist","Jokers in · first to 7","gt-bw"],["dominoes","Dominoes","All Fives to 150","gt-dm"],
-  ["memory","Memory Match","Find the pairs","gt-mm"],["wordguess","Word Guess","Before the balloons pop","gt-wg"]];
+  ["memory","Memory Match","Find the pairs","gt-mm"],["wordguess","Word Guess","Before the balloons pop","gt-wg"],["solitaire","Solitaire","Klondike · tap to move","gt-sl"]];
 const GTILE_BG = Object.fromEntries(GTILES.map(t => [t[0], t[3]]));
 function gLiveRow(g){
   if(TB[g.kind]){ const s = g.st, mine = gMine(g), turnId = s.seats[TB[g.kind].turn(s)], who = String(turnId).startsWith("bot:") ? "the computer" : esc(first(F(turnId).name));
@@ -4074,7 +4188,8 @@ function sheetGamePick(k){
     bidwhist: "Two couples, partners across. Bid Uptown, Downtown or No Trump, take the kitty, and make your books. Jokers in, first to 7, no trump counts double.",
     dominoes: "Match the open ends. Whenever the ends add up to 5, 10, 15 or more by fives, you score it. First to 150 wins.",
     memory: "Flip two cards. A match stays up; no match flips back. Find every pair in as few turns as you can, or take turns and see who finds the most.",
-    wordguess: "Guess the word one letter at a time before all six balloons pop."}[k];
+    wordguess: "Guess the word one letter at a time before all six balloons pop.",
+    solitaire: "Classic Klondike. Build down in red and black, send every card home from Ace to King. Tap a card and it moves by itself."}[k];
   const rec = aiLine(k), best = k === "trivia" ? tvBest() : 0;
   const modes = ["ttt", "c4", "checkers"].includes(k) ? `<div class="lbl">🤖 PLAY THE COMPUTER</div><div class="ailv">${[1, 2, 3].map(lv => `<button class="btn ${lv === 1 ? "" : lv === 2 ? "primary" : "wine"}" data-act="g-ai" data-k="${k}" data-lv="${lv}">${AI_LV[lv]}</button>`).join("")}</div>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}
       <div class="lbl">OR PLAY EACH OTHER</div><button class="btn primary" data-act="g-local" data-k="${k}">📱 Pass &amp; play on this phone</button><button class="btn wine" data-act="g-new" data-k="${k}">👨‍👩‍👧 Play the family · own phones</button>`
@@ -4088,6 +4203,8 @@ function sheetGamePick(k){
     : k === "wordguess" ? `<div class="ailv">${["bible", "music", "family"].map((c, i) => `<button class="btn ${i === 0 ? "primary" : i === 1 ? "" : "wine"}" data-act="wg-new" data-k="${c}">${{bible:"📖 Bible", music:"🎵 Music", family:"🍗 Family & Food"}[c]}</button>`).join("")}</div>
       <button class="btn" data-act="wg-own">✍️ Write a word for someone to guess</button>
       ${(() => { try { const n = +localStorage.getItem("t7.wgstreak") || 0; return n ? `<p class="small muted" style="margin:0">Your streak: ${n} in a row</p>` : ""; } catch { return ""; } })()}`
+    : k === "solitaire" ? `<div class="ailv"><button class="btn primary" data-act="sl-new" data-n="1">Draw 1 · easier</button><button class="btn wine" data-act="sl-new" data-n="3">Draw 3 · classic</button></div>
+      ${(() => { const x = solStats(), b1 = x.best?.d1, b3 = x.best?.d3; return x.played ? `<p class="small muted" style="margin:0">Won ${x.won || 0} of ${x.played}${b1 ? ` · best Draw 1: ${solClock(b1.ms)}` : ""}${b3 ? ` · best Draw 3: ${solClock(b3.ms)}` : ""}</p>` : ""; })()}`
     : k === "blackjack" ? `<button class="btn primary" data-act="bj-solo">🤖 Just me vs the dealer</button><p class="small muted" style="margin:0">Your best: ${bjBest().toLocaleString()} points</p><button class="btn wine" data-act="bj-new">👨‍👩‍👧 Family table · own phones</button>`
     : `<div style="width:min(100%,460px);display:grid;gap:10px">${feudRoom()}</div>`;
   openSheet(`<div class="sheet-head" data-room>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>${t[1]}</h2></div>${gSizeBtn()}</div>
@@ -4587,6 +4704,69 @@ function tbLocal(kind, n){
   gView = {local:true, kind, st:x.st, sec:x.sec, turn:0, over:null, nBots:n, names:kind === "bidwhist" ? ["You & Computer", "Computer & Computer"] : ["You", "Computer"]};
   drawGame(); aiRun();
 }
+/* ===== Solitaire (Klondike; his order, 2026-10-18): one phone, no server. Tap a card and it goes to the best place
+   it can (home first, else a column; tap it again to try the next column). Tap the deck to draw. Undo, Hint, Finish.
+   Rules: SOLITAIRE RULES above (functions/games/solitaire.js). Wins and best times stay on this phone (t7.solstats). ===== */
+let sol = null, solTick = null;
+const SOL_KEY = "t7.solstats";
+function solStats(){ try { return JSON.parse(localStorage.getItem(SOL_KEY) || "{}"); } catch { return {}; } }
+function solSave(f){ try { const x = solStats(); f(x); localStorage.setItem(SOL_KEY, JSON.stringify(x)); } catch {} }
+const solId = c => c[0] + (slRank(c) === 1 ? 14 : slRank(c));       // the shared card art numbers the ace 14
+const solClock = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+function solStart(draw){
+  clearInterval(solTick); sol = {st:slDeal(draw), hist:[], t0:null, t1:null, won:false, hint:null, counted:false};
+  drawSolitaire();
+  solTick = setInterval(() => { const el = document.getElementById("sl-clock"); if(!el || !sol){ return; } if(sol.t0 && !sol.won) el.textContent = solClock(Date.now() - sol.t0); }, 1000);
+}
+function solDo(mv){
+  const s = sol; if(!s || s.won) return;
+  let next; try { next = slApply(s.st, mv); } catch { toast("That card can't move there."); return; }
+  if(!s.t0) s.t0 = Date.now();
+  if(!s.counted){ s.counted = true; solSave(x => { x.played = (x.played || 0) + 1; }); }
+  s.hist.push(s.st); if(s.hist.length > 300) s.hist.shift(); s.st = next; s.hint = null;
+  gSnd(mv.draw ? "card" : mv.dst?.to === "found" ? "right" : "place");
+  if(slWon(s.st)) solWin();
+  drawSolitaire();
+}
+function solWin(){
+  const s = sol; s.won = true; s.t1 = Date.now(); const ms = s.t1 - (s.t0 || s.t1), d = s.st.draw;
+  solSave(x => { x.won = (x.won || 0) + 1; const b = (x.best ||= {}); const k = "d" + d;
+    if(!b[k] || ms < b[k].ms) b[k] = {ms, moves:s.st.moves}; });
+  gSnd("win");
+}
+function solTap(src){
+  const s = sol; if(!s || s.won) return;
+  const t = slTargets(s.st, src); if(!t.length){ toast("That card can't move yet."); return; }
+  solDo({src, dst:t.find(x => x.to === "found") || t[0]});
+}
+function solFinish(){
+  const s = sol; if(!s || !slCanFinish(s.st)) return;
+  s.hist.push(s.st); let st2 = s.st; const step = () => { const n = slFinishStep(st2); if(!n){ s.st = st2; if(slWon(st2)) solWin(); drawSolitaire(); return; }
+    st2 = n; s.st = st2; drawSolitaire(); gSnd("right"); setTimeout(step, 110); };
+  step();
+}
+function drawSolitaire(){
+  const s = sol; if(!s) return; const st2 = s.st, H = s.hint;
+  const isHint = src => H && H.src && JSON.stringify(H.src) === JSON.stringify(src);
+  const card = (c, attrs, cls = "") => `<button class="slc ${cls}" ${attrs}>${svgCard(solId(c))}</button>`;
+  const back = cls => `<span class="slc ${cls}">${cardBack()}</span>`;
+  const stock = st2.stock.length ? `<button class="slc" data-act="sl-draw" aria-label="Draw from the deck, ${st2.stock.length} left">${cardBack()}</button>`
+    : `<button class="slslot" data-act="sl-draw" aria-label="${st2.waste.length ? "Turn the cards back over" : "The deck is empty"}" ${st2.waste.length ? "" : "disabled"}>${st2.waste.length ? "↻" : ""}</button>`;
+  const shown = st2.waste.slice(st2.draw === 3 ? -3 : -1);
+  const waste = `<div class="slwaste">${shown.length ? shown.map((c, i) => i === shown.length - 1 ? card(c, `data-act="sl-tap" data-src='{"from":"waste"}' aria-label="${esc(cardName(c))}"`, isHint({from:"waste"}) ? "hint" : "") : `<span class="slc" aria-hidden="true">${svgCard(solId(c))}</span>`).join("") : `<span class="slslot" aria-hidden="true"></span>`}</div>`;
+  const found = ["S", "H", "D", "C"].map(x => { const f = st2.found[x];
+    return f.length ? card(f[f.length - 1], `data-act="sl-tap" data-src='{"from":"found","s":"${x}"}' aria-label="${esc(cardName(f[f.length - 1]))} on its pile"`) : `<span class="slslot" aria-label="Empty ${SUIT_NAME[x]} pile" style="${x === "H" || x === "D" ? "color:#ffb3b3" : ""}">${SPS[x]}</span>`; }).join("");
+  const cols = st2.tab.map((col, i) => `<div class="slcol">${!col.down.length && !col.up.length ? `<span class="slslot" aria-label="Empty column" style="font-size:calc(13px*var(--gs))">K</span>` : ""}${col.down.map((c, k) => back(k ? "afdn" : "")).join("")}${col.up.map((c, k) => card(c, `data-act="sl-tap" data-src='${JSON.stringify({from:"tab", i, k})}' aria-label="${esc(cardName(c))}"`, `${k || col.down.length ? (k ? "afup" : "afdn") : ""} ${isHint({from:"tab", i, k}) ? "hint" : ""}`)).join("")}</div>`).join("");
+  const stats = solStats(), best = stats.best?.["d" + st2.draw];
+  const status = s.won ? `🏆 You won in ${solClock((s.t1 || Date.now()) - (s.t0 || Date.now()))} and ${st2.moves} moves!${best && best.ms === (s.t1 - s.t0) ? " Your best!" : ""}`
+    : `Moves ${st2.moves} · <span id="sl-clock">${s.t0 ? solClock(Date.now() - s.t0) : "0:00"}</span>${best ? ` · best ${solClock(best.ms)}` : ""}`;
+  openSheet(`<div class="sheet-head" data-gstage data-sol>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Solitaire · Draw ${st2.draw}</div><h2>🃏 Solitaire</h2></div>${gSizeBtn()}</div>
+    <div class="gstatus ${s.won ? "win" : "go"}">${status}</div>
+    <div class="slboard"><div class="slrow">${stock}${waste}${found}</div><div class="sltab">${cols}</div></div>
+    <div class="actions" style="justify-content:center">${slCanFinish(st2) ? `<button class="btn primary" data-act="sl-finish">✨ Finish</button>` : ""}<button class="btn" data-act="sl-undo" ${s.hist.length && !s.won ? "" : "disabled"}>↩ Undo</button><button class="btn" data-act="sl-hint" ${s.won ? "disabled" : ""}>💡 Hint</button><button class="btn ${s.won ? "primary" : "ghost"}" data-act="sl-again">${s.won ? "Deal again" : "New deal"}</button></div>
+    <p class="small muted" style="margin:0;text-align:center">Tap a card to move it. Tap the deck to draw. Only a king goes in an empty column.</p>`);
+}
+const cardName = c => `${({1:"Ace", 11:"Jack", 12:"Queen", 13:"King"})[slRank(c)] || slRank(c)} of ${SUIT_NAME[c[0]]}`;
 /* ===== Memory Match (local): find the pairs; alone (beat your best) or 2-4 players passing the phone ===== */
 const MM_PICS = ["🍔","🍕","🌮","🍰","🍩","🍦","🍎","🍇","🍉","🎂","🍪","🥞","🍗","🌽","🍓","🧁","🥧","🍋"];
 let mm = null;
@@ -4901,8 +5081,146 @@ async function mvAct(body, okToast){
   const d = await moviesCall(body); if(!d.ok){ toast(mvWhy(d.code)); return false; }
   await refresh(true); if(okToast) toast(okToast); return d;
 }
+/* ===== Topgolf Outing (his order, 2026-10-18: "top golf outing like we do for the movies"). Built on Movie Night:
+   plan a day and time at a Topgolf, everyone answers, one person books the bay on Topgolf's own site, everyone pays
+   that person back (or pays their own way), and each gets a receipt with the time, place and booking details.
+   Topgolf prices each bay by the hour (by venue, day and time; up to 6 play in a bay), so the app never states a price:
+   the booker types the real total from their confirmation. The app never books and never moves money.
+   Writes go through functions/golf; the venue comes live from Google. ===== */
+let tgOpen = null, tgDraft = null, tgShowRcpt = null;
+const tgVenue = {}, tgVenueBusy = new Set();
+const TG_HOURS = [1, 1.5, 2, 2.5, 3, 4];
+async function golfCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/golf", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const tgWhy = c => ({claimed:"Someone else is already booking the bay.", going:"Tap Going first, then you can book the bay.", numbers:"Check the players, bays and prices. A bay holds up to 6 players.",
+  paid:"You've already paid; ask the booker to change it.", cancelled:"That outing was cancelled.", not_buyer:"Only the person booking the bay can do that.", not_planner:"Only the planner or the host can cancel.",
+  seats:"Everyone invited has to be an active family seat.", when:"Pick a date and a time.", hours:"Pick how many hours.", venue:"Pick a Topgolf first: tap Find Topgolf.", offline:"Can't reach the table right now.",
+  no_outing:"That outing isn't open to you."})[c] || "Couldn't do that. Try again.";
+const tgHrs = h => `${h} ${h === 1 ? "hour" : "hours"}`;
+const tgWhen = o => `${mvDate(o).toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"})} · ${mvTime(o.time)}`;
+const tgMe = o => o.people[st.me] || {};
+function tgVenueInfo(pid){
+  if(!pid || tgVenue[pid] || tgVenueBusy.has(pid)) return tgVenue[pid] || null;
+  tgVenueBusy.add(pid);
+  placesCall({action:"details", ids:[pid], level:"full"}).then(d => { tgVenueBusy.delete(pid); if(d.ok && d.places[0]){ const p = d.places[0]; tgVenue[pid] = {name:p.name, address:p.address, website:p.website, phone:p.phone, mapsUri:p.mapsUri}; tgRedraw(); } });
+  return null;
+}
+function tgRedraw(){ const box = sheet.querySelector("[data-tgout],[data-tgroom],[data-tgnew]"); if(!box || !wrap.classList.contains("open")) return;
+  if(box.hasAttribute("data-tgout")) drawGolf(tgOpen); else if(box.hasAttribute("data-tgroom")) sheetGolf(); else if(tgDraft) sheetGolfNew(); }
+function tgNeeds(){
+  return (st.golf || []).filter(o => o.status === "open" && !mvPast(o)).map(o => { const me = tgMe(o);
+    if(me.rsvp == null) return [o, "Topgolf: are you coming?", tgWhen(o)];
+    if(me.pay === "owe") return [o, `Pay ${first(F(o.buyer).name)} back ${money(+me.amount)}`, "Topgolf bay"];
+    if(o.buyer === st.me && !o.booking) return [o, "Book the Topgolf bay", tgWhen(o)];
+    if(o.buyer === st.me && Object.values(o.people).some(p => p.pay === "sent")) return [o, "Confirm Topgolf money received", tgWhen(o)];
+    return null; }).filter(Boolean);
+}
+function tgCard(o){
+  const me = tgMe(o), going = Object.values(o.people).filter(p => p.rsvp === "yes").length, v = tgVenue[o.pid];
+  const tag = o.status === "cancelled" ? "Cancelled" : me.pay === "owe" ? `You owe ${money(+me.amount)}` : me.pay === "received" ? "🧾 Receipt ready" : me.pay === "self" ? "Paying your own way" : o.booking ? "⛳ Bay booked" : o.buyer ? `${esc(first(F(o.buyer).name))} is booking` : me.rsvp ? {yes:"You're coming", maybe:"Maybe", no:"Can't make it"}[me.rsvp] : "Answer the invitation";
+  return `<button class="mvcard" data-act="tg-open" data-id="${o.id}"><span class="tgbadge" aria-hidden="true"></span>
+    <span><b>${v ? esc(v.name) : "Topgolf"}</b><small>${esc(tgWhen(o))} · ${tgHrs(o.hours)}</small><small>${going} coming</small><span class="mvtag">${tag}</span></span></button>`;
+}
+function sheetGolf(){
+  tgOpen = null; (st.golf || []).forEach(o => tgVenueInfo(o.pid));
+  const all = (st.golf || []).slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const up = all.filter(o => o.status === "open" && !mvPast(o)), past = all.filter(o => o.status !== "open" || mvPast(o)).reverse().slice(0, 6);
+  openSheet(`<div class="sheet-head" data-golf data-tgroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Topgolf Outing</div><h2>⛳ Let's hit some balls</h2></div>${gSizeBtn()}</div>
+    <button class="btn primary block" data-act="tg-new" style="min-height:calc(58px*var(--gs))">⛳ Plan a Topgolf outing</button>
+    <p class="small" style="margin:0;color:#d6f5df">Topgolf prices each bay by the hour, and up to 6 people play in a bay. One person books it on Topgolf's own site; everyone else pays them back, or pays their own way.</p>
+    <div class="lbl">COMING UP</div>
+    ${up.length ? `<div class="mvlist">${up.map(tgCard).join("")}</div>` : `<div class="empty">No Topgolf outing planned yet. Tap Plan a Topgolf outing.</div>`}
+    ${past.length ? `<div class="lbl">PAST OUTINGS &amp; RECEIPTS</div><div class="mvlist">${past.map(tgCard).join("")}</div>` : ""}`);
+}
+function sheetGolfNew(){
+  if(!tgDraft){ sheetGolf(); return; }
+  const d = tgDraft, people = st.fam.filter(f => f.status !== "suspended");
+  const dinners = st.events.filter(e => e.status !== "done" && e.date >= iso(today0)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
+  openSheet(`<div class="sheet-head" data-golf data-tgnew>${gBack("golf", "Back to Topgolf")}<div style="flex:1;min-width:0"><div class="eyebrow">Plan a Topgolf outing</div><h2>⛳ When and where</h2></div>${gSizeBtn()}</div>
+    <div class="grid2"><div class="field"><label for="tg-date">Date</label><input class="input" type="date" id="tg-date" value="${d.date}" min="${iso(today0)}"></div>
+      <div class="field"><label for="tg-time">Start time</label><input class="input" type="time" id="tg-time" value="${d.time}"></div></div>
+    <div class="field"><label for="tg-hours">How long</label><select class="input" id="tg-hours">${TG_HOURS.map(h => `<option value="${h}" ${+d.hours === h ? "selected" : ""}>${tgHrs(h)}</option>`).join("")}</select></div>
+    <p class="small" style="margin:0;color:#d6f5df">The booker picks the bay time on Topgolf's site and confirms it when they book.</p>
+    <div class="lbl">THE TOPGOLF</div>
+    <div class="grid2" style="grid-template-columns:1fr auto"><select class="input" id="tg-city" aria-label="Area">${GCITIES.map(c => `<option ${c === d.city ? "selected" : ""}>${c}</option>`).join("")}</select><button class="btn primary" data-act="tg-find">Find Topgolf</button></div>
+    ${d.busy ? `<div class="empty">Finding Topgolf…</div>` : d.err ? `<div class="warnbox">${esc(d.err)}</div>` : d.venues ? (d.venues.length ? `<div class="mvths">${d.venues.map(t => `<button class="mvth ${d.pid === t.placeId ? "on" : ""}" data-act="tg-venue" data-pid="${t.placeId}"><b>${esc(t.name)}</b><small>${esc(t.short || t.address)}</small></button>`).join("")}</div><p class="small muted" style="margin:0">Results from Google</p>` : `<div class="empty">Google found no Topgolf in ${esc(d.city)}. Try another area.</div>`) : d.pid ? `<div class="strip">⛳ <b>${esc(d.pname)}</b></div>` : ""}
+    <div class="lbl">WHO'S INVITED</div>
+    <div class="mvwho">${people.map(f => `<button class="chip" data-act="tg-inv" data-id="${f.id}" aria-pressed="${f.id === st.me || d.invited.includes(f.id)}" ${f.id === st.me ? "disabled" : ""}>${esc(first(f.name))}</button>`).join("")}</div>
+    ${dinners.length ? `<div class="field"><label for="tg-dinner">With a dinner? (optional)</label><select class="input" id="tg-dinner"><option value="">No, just Topgolf</option>${dinners.map(e => `<option value="${e.id}" ${d.dinner === e.id ? "selected" : ""}>${esc(e.title)} · ${fmtDate(e.date)}</option>`).join("")}</select></div>` : ""}
+    <div class="field"><label for="tg-note">A note (optional)</label><input class="input" id="tg-note" maxlength="300" value="${esc(d.note || "")}" placeholder="e.g. Meet at the front desk at 5:45"></div>
+    <button class="btn primary block" data-act="tg-send" style="min-height:calc(56px*var(--gs))">⛳ Send the invitation</button>`);
+}
+function tgReceipt(o, id){
+  const p = o.people[id], b = o.booking || {}, v = tgVenue[o.pid], self = p.pay === "self";
+  return `<section class="mvreceipt"><div class="mvr-top"><span>🧾 RECEIPT · TOPGOLF OUTING</span><span class="pill good">${self ? "OWN WAY" : "PAID"}</span></div>
+    ${self ? "" : `<div class="mvr-amt">${money(+p.amount)}</div><div class="small">Paid ${esc(whenPaid(Date.parse(p.received_at || p.sent_at || Date.now())))}${p.via ? ` · by ${esc(p.via)}` : ""}</div>`}
+    <div class="mvr-row"><span>Player</span><b>${esc(F(id).name)}</b></div>
+    <div class="mvr-row"><span>When</span><b>${esc(tgWhen(o))} · ${tgHrs(o.hours)}</b></div>
+    <div class="mvr-row"><span>Where</span><b>${v ? `${esc(v.name)}<br><small>${esc(v.address)}</small>` : "Topgolf"}</b></div>
+    ${self ? `${p.own?.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(p.own.conf)}</b></div>` : ""}<div class="mvr-row"><span>Paid</span><b>Their own way</b></div>`
+      : `${b.bay_no ? `<div class="mvr-row"><span>Bay</span><b>${esc(b.bay_no)}</b></div>` : ""}${b.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(b.conf)}</b></div>` : ""}
+      <div class="mvr-row"><span>Booking</span><b>${b.bays} ${b.bays === 1 ? "bay" : "bays"} · ${money(+b.bay_cost)}${+b.extras ? ` + ${money(+b.extras)} food, drinks &amp; fees` : ""} = ${money(+b.total)}</b></div>
+      <div class="mvr-row"><span>Split</span><b>${b.players} players · ${money(+b.share)} each</b></div><div class="mvr-row"><span>Your share</span><b>${money(+p.amount)}</b></div><div class="mvr-row"><span>Balance</span><b>$0.00</b></div>
+      <div class="mvr-sign">Received by ${esc(lastFirst(F(o.buyer).name))}</div>`}
+  </section>`;
+}
+function drawGolf(id){
+  const o = (st.golf || []).find(x => x.id === id); if(!o){ sheetGolf(); return; }
+  tgOpen = id; const v = tgVenueInfo(o.pid), me = tgMe(o), b = o.booking, open = o.status === "open", buyer = o.buyer, isBuyer = buyer === st.me;
+  const ppl = Object.entries(o.people), going = ppl.filter(([, p]) => p.rsvp === "yes");
+  const dinner = o.dinner && ev(o.dinner);
+  let tk = "";
+  if(!open) tk = `<div class="warnbox">This Topgolf outing was cancelled.</div>`;
+  else if(!buyer) tk = me.rsvp === "yes" ? `<button class="btn primary block" data-act="tg-claim">⛳ I'll book the bay</button><p class="small" style="margin:0;text-align:center;color:#d6f5df">Tap this before you book, so nobody books twice.</p>` : `<p class="small" style="margin:0;text-align:center;color:#d6f5df">Tap Going, then anyone coming can offer to book the bay.</p>`;
+  else if(isBuyer && !b) tk = `<div class="card"><div class="lbl">⛳ BOOK THE BAY</div><p class="small" style="margin:0">Book it on Topgolf's own site (or call them), then fill in what you booked from your confirmation. Up to 6 play in a bay.</p>
+      <div class="actions">${v?.website ? `<a class="btn primary" href="${esc(v.website)}" target="_blank" rel="noopener">Book on Topgolf's site</a>` : ""}${v?.phone ? `<a class="btn" href="tel:${v.phone.replace(/[^\d+]/g, "")}">📞 Call ${esc(v.phone)}</a>` : ""}${!v ? `<span class="small muted">Getting Topgolf's website from Google…</span>` : ""}</div>
+      <div class="grid2"><div class="field"><label for="tg-players">Players</label><input class="input num" id="tg-players" inputmode="numeric" value="${going.length || 1}"></div><div class="field"><label for="tg-bays">Bays</label><input class="input num" id="tg-bays" inputmode="numeric" value="${Math.max(1, Math.ceil((going.length || 1) / 6))}"></div></div>
+      <div class="grid2"><div class="field"><label for="tg-cost">Bay cost (total)</label><input class="input num" id="tg-cost" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label for="tg-extras">Food, drinks &amp; fees</label><input class="input num" id="tg-extras" inputmode="decimal" placeholder="$0.00"></div></div>
+      <div class="grid2"><div class="field"><label for="tg-bay">Bay number</label><input class="input" id="tg-bay" maxlength="20" placeholder="If you know it"></div><div class="field"><label for="tg-conf">Confirmation</label><input class="input" id="tg-conf" maxlength="40" placeholder="From your email"></div></div>
+      <button class="btn wine block" data-act="tg-booked">✓ I booked the bay</button><button class="btn sm ghost" data-act="tg-unclaim">Let someone else book it</button></div>`;
+  else if(!b) tk = `<div class="strip">⛳ <b>${esc(first(F(buyer).name))}</b>&nbsp;is booking the bay. Please don't book twice.</div>`;
+  else tk = `<div class="mvticket"><div class="lbl">⛳ BAY BOOKED BY ${esc(first(F(buyer).name)).toUpperCase()}</div>
+      <div class="mvr-row"><span>Bays</span><b>${b.bays} · ${money(+b.bay_cost)}</b></div>${+b.extras ? `<div class="mvr-row"><span>Food, drinks &amp; fees</span><b>${money(+b.extras)}</b></div>` : ""}<div class="mvr-row"><span>Total</span><b>${money(+b.total)}</b></div><div class="mvr-row"><span>Each (${b.players} players)</span><b>${money(+b.share)}</b></div>
+      ${b.bay_no ? `<div class="mvr-row"><span>Bay</span><b>${esc(b.bay_no)}</b></div>` : ""}${b.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(b.conf)}</b></div>` : ""}</div>`;
+  let pay = "";
+  if(open && !isBuyer && me.rsvp === "yes"){
+    if(me.pay === "owe"){ const opts = payOptions(buyer, +me.amount);
+      pay = `<div class="card"><div class="lbl">YOUR SHARE</div><div class="mvr-amt">${money(+me.amount)}</div><p class="small" style="margin:0">Pay ${esc(first(F(buyer).name))} back yourself, then tap the way you paid.</p>
+        <div class="actions">${opts.map(([lbl, url, handle]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener">${lbl} ${esc(handle)}</a>` : handle ? `<span class="strip">${lbl}: <b>${esc(handle)}</b></span>` : "").join("")}</div>
+        <div class="mvpaid">${opts.map(([lbl]) => `<button class="btn primary" data-act="tg-paid" data-v="${lbl}">I paid by ${lbl}</button>`).join("")}</div>
+        <button class="btn sm ghost" data-act="tg-self">I'm paying my own way instead</button></div>`; }
+    else if(me.pay === "sent") pay = `<div class="strip">💸 You paid ${esc(first(F(buyer).name))} ${money(+me.amount)} by ${esc(me.via)}. Waiting for them to tap Received.</div>`;
+    else if(me.pay === "received" || me.pay === "self") pay = tgReceipt(o, st.me);
+    else if(b) pay = `<div class="card"><p class="small" style="margin:0">The bay was booked for ${b.players} before you said yes, and every place is taken. Pay your own way, then tap below so ${esc(first(F(buyer).name))} knows.</p><button class="btn primary" data-act="tg-self">Paying my own way</button></div>`;
+    else pay = `<button class="btn sm ghost" data-act="tg-self">I'm paying my own way</button>`;
+  }
+  const owes = isBuyer && b ? `<div class="card"><div class="lbl">WHO'S PAYING YOU BACK</div>${ppl.filter(([pid, p]) => pid !== st.me && (p.pay || p.rsvp === "yes")).map(([pid, p]) => `<div class="mvowe"><span>${av(pid, "sm")} <b>${esc(first(F(pid).name))}</b></span><span>${p.pay === "self" ? "Own way" : p.pay === "received" ? `✓ ${money(+p.amount)} received` : p.pay === "sent" ? `Sent ${money(+p.amount)} by ${esc(p.via)}` : p.pay === "owe" ? `Owes ${money(+p.amount)}` : "Not paying yet"}</span>${p.pay === "owe" || p.pay === "sent" ? `<button class="btn sm wine" data-act="tg-recv" data-m="${pid}">✓ Received</button>` : p.pay === "received" ? `<button class="btn sm" data-act="tg-rcpt" data-m="${pid}">Receipt</button>` : ""}</div>`).join("")}</div>` : "";
+  const shown = tgShowRcpt && o.people[tgShowRcpt] ? tgReceipt(o, tgShowRcpt) : "";
+  openSheet(`<div class="sheet-head" data-golf data-tgout>${gBack("golf", "Back to Topgolf")}<div style="flex:1;min-width:0"><div class="eyebrow">Topgolf Outing${o.status === "cancelled" ? " · cancelled" : mvPast(o) ? " · past" : ""}</div><h2>${v ? esc(v.name) : "Topgolf"}</h2></div>${gSizeBtn()}</div>
+    <div class="mvstub"><span class="tgbadge" aria-hidden="true"></span>
+      <div><div class="mvwhen">${esc(tgWhen(o))}</div><div class="small">${tgHrs(o.hours)} · ${going.length} coming</div>
+        <div class="small">${v ? `⛳ <b>${esc(v.name)}</b><br>${esc(v.address)}` : "Finding the Topgolf…"}</div>
+        ${dinner ? `<div class="small" style="color:#d6f5df">🍽️ With ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
+        ${o.note ? `<div class="small" style="font-style:italic">“${esc(o.note)}”</div>` : ""}
+        <div class="actions">${v?.mapsUri ? `<a class="btn sm" href="${esc(v.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}${v?.website ? `<a class="btn sm" href="${esc(v.website)}" target="_blank" rel="noopener">Topgolf's page</a>` : ""}</div></div></div>
+    ${open && !mvPast(o) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k, l]) => `<button class="btn ${me.rsvp === k ? (k === "yes" ? "primary" : "wine") : ""}" data-act="tg-rsvp" data-v="${k}" aria-pressed="${me.rsvp === k}">${l}</button>`).join("")}</div>` : ""}
+    <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
+    ${tk}${pay}${owes}${shown}
+    ${open && (o.by === st.me || isAdmin()) && !mvPast(o) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="tg-cancel">Cancel this outing</button></div>` : ""}
+    <p class="small muted" style="margin:0;text-align:center">Venue details from Google. The app doesn't book or take payment; Topgolf does the booking.</p>`);
+}
+function tgKeep(){ const d = tgDraft; if(!d) return; const v = x => document.getElementById(x)?.value;
+  if(v("tg-date") != null) d.date = v("tg-date"); if(v("tg-time") != null) d.time = v("tg-time"); if(v("tg-hours") != null) d.hours = +v("tg-hours"); if(v("tg-city") != null) d.city = v("tg-city");
+  if(v("tg-dinner") != null) d.dinner = v("tg-dinner"); if(v("tg-note") != null) d.note = v("tg-note"); }
+async function tgAct(body, okToast){
+  const d = await golfCall(body); if(!d.ok){ toast(tgWhy(d.code)); return false; }
+  await refresh(true); if(okToast) toast(okToast); return d;
+}
 // redraw whatever game screen is open (Memory Match and Word Guess live outside gView)
-function gRedraw(){ if(document.querySelector("#sheet .mmgrid") && mm) drawMemory(); else if(document.querySelector("#sheet .wgkeys") && wg) drawWordGuess(); else gView ? drawGame() : sheetGames(); }
+function gRedraw(){ if(document.querySelector("#sheet .slboard") && sol) drawSolitaire(); else if(document.querySelector("#sheet .mmgrid") && mm) drawMemory(); else if(document.querySelector("#sheet .wgkeys") && wg) drawWordGuess(); else gView ? drawGame() : sheetGames(); }
 function gCurrent(){
   if(!gView) return null;
   if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.ai || gView.kind === "spades" || gView.kind === "blackjack" || TB[gView.kind] ? 0 : gView.turn, local:true, ai:gView.ai};
@@ -5236,6 +5554,28 @@ document.addEventListener("click", e => {
     case "mv-self": mvAct({action:"pay", id:mvOpen, mode:"self"}, "Got it: you're paying for your own ticket.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-recv": mvAct({action:"received", id:mvOpen, member:b.dataset.m}, "Marked received. Their receipt is ready.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-rcpt": mvShowRcpt = mvShowRcpt === b.dataset.m ? null : b.dataset.m; drawMovieNight(mvOpen); break;
+    case "golf": sheetGolf(); break;
+    case "tg-new": { const nx = new Date(today0); nx.setDate(nx.getDate() + ((6 - nx.getDay() + 7) % 7 || 7));
+      tgDraft = {date:iso(nx), time:"17:00", hours:2, city:"Memphis", pid:"", pname:"", invited:[], note:"", dinner:"", venues:null}; sheetGolfNew(); break; }
+    case "tg-find": { tgKeep(); const d = tgDraft; d.busy = true; d.err = ""; sheetGolfNew();
+      placesCall({action:"search", q:"Topgolf", city:d.city, kind:"topgolf"}).then(r => { d.busy = false; if(r.ok) d.venues = r.results.filter(x => x.status !== "CLOSED_PERMANENTLY"); else d.err = gWhy(r.code); if(tgDraft === d) sheetGolfNew(); }); break; }
+    case "tg-venue": { tgKeep(); const t = (tgDraft.venues || []).find(x => x.placeId === b.dataset.pid); tgDraft.pid = b.dataset.pid; tgDraft.pname = t?.name || ""; sheetGolfNew(); break; }
+    case "tg-inv": { tgKeep(); const i = tgDraft.invited.indexOf(id); if(i >= 0) tgDraft.invited.splice(i, 1); else tgDraft.invited.push(id); sheetGolfNew(); break; }
+    case "tg-send": { tgKeep(); const d = tgDraft; if(!d.date || !d.time){ toast(tgWhy("when")); break; } if(!d.pid){ toast(tgWhy("venue")); break; }
+      b.disabled = true; b.textContent = "Sending…";
+      tgAct({action:"new", date:d.date, time:d.time, hours:d.hours, venue_pid:d.pid, city:d.city, invited:d.invited, note:d.note, dinner_event:d.dinner || null}, "Invitation sent! Everyone's been told.")
+        .then(r => { if(r){ tgDraft = null; drawGolf(r.outing.id); } else { b.disabled = false; b.textContent = "⛳ Send the invitation"; } }); break; }
+    case "tg-open": tgShowRcpt = null; drawGolf(id); break;
+    case "tg-rsvp": tgAct({action:"rsvp", id:tgOpen, ans:b.dataset.v}).then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-claim": tgAct({action:"claim", id:tgOpen}, "You're booking the bay. Everyone's been told.").then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-unclaim": tgAct({action:"unclaim", id:tgOpen}).then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-booked": { const v = x => document.getElementById(x)?.value || "", num = x => parseFloat(String(v(x)).replace(/[^\d.]/g, "")) || 0;
+      tgAct({action:"booking", id:tgOpen, players:Math.round(num("tg-players")), bays:Math.round(num("tg-bays")), bay_cost:num("tg-cost"), extras:num("tg-extras"), bay_no:v("tg-bay"), conf:v("tg-conf")}, "Booked! Everyone coming has been told their share.").then(ok => ok && drawGolf(tgOpen)); break; }
+    case "tg-paid": tgAct({action:"pay", id:tgOpen, mode:"sent", via:b.dataset.v}, "Sent! The booker has been told.").then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-self": tgAct({action:"pay", id:tgOpen, mode:"self"}, "Got it: you're paying your own way.").then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-recv": tgAct({action:"received", id:tgOpen, member:b.dataset.m}, "Marked received. Their receipt is ready.").then(ok => ok && drawGolf(tgOpen)); break;
+    case "tg-rcpt": tgShowRcpt = tgShowRcpt === b.dataset.m ? null : b.dataset.m; drawGolf(tgOpen); break;
+    case "tg-cancel": if(!confirm("Cancel this Topgolf outing for everyone?")) break; tgAct({action:"cancel", id:tgOpen}, "Outing cancelled. Everyone's been told.").then(ok => ok && drawGolf(tgOpen)); break;
     case "mv-cancel": if(!confirm("Cancel this movie night for everyone?")) break; mvAct({action:"cancel", id:mvOpen}, "Movie night cancelled. Everyone's been told.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "g-pick": gPick = b.dataset.k; sheetGamePick(gPick); break;
     case "g-ai": { const k = b.dataset.k, lv = +b.dataset.lv; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["You", `Computer · ${AI_LV[lv]}`], ai:{side:1, lv}}; gSel = null; drawGame(); break; }
@@ -5261,6 +5601,14 @@ document.addEventListener("click", e => {
     case "dm-tile": { const g = gCurrent(); if(!g) break; const t = b.dataset.t.split(",").map(Number), hand = tbHand(g); if(!hand) break;
       const ms = dmMoves(g.st, hand).filter(m => m.tile.join() === t.join());
       if(!ms.length) break; if(ms.length === 1){ gMove(ms[0]); break; } dmPickT = t; drawGame(); break; }
+    case "sl-new": solStart(+b.dataset.n); break;
+    case "sl-draw": solDo({draw:true}); break;
+    case "sl-tap": solTap(JSON.parse(b.dataset.src)); break;
+    case "sl-undo": if(sol && sol.hist.length && !sol.won){ sol.st = sol.hist.pop(); sol.hint = null; drawSolitaire(); } break;
+    case "sl-hint": { if(!sol) break; const h = slHint(sol.st); if(!h){ toast("No moves left. Tap New deal to try another."); break; }
+      if(h.draw){ toast(sol.st.stock.length ? "Tap the deck to draw." : "Tap ↻ to turn the cards back over."); break; } sol.hint = h; drawSolitaire(); setTimeout(() => { if(sol && sol.hint === h){ sol.hint = null; drawSolitaire(); } }, 1800); break; }
+    case "sl-finish": solFinish(); break;
+    case "sl-again": if(sol) solStart(sol.st.draw); break;
     case "mm-new": mmStart(+b.dataset.n, +(document.getElementById("mm-pl")?.value || 1)); break;
     case "mm-flip": mmFlip(+b.dataset.i); break;
     case "mm-again": if(mm) mmStart(mm.pairs, mm.players); break;
