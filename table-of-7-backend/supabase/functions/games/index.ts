@@ -17,6 +17,12 @@
 // Spades for couples (kind 'spades', HIS RULES: JOKERS & DEUCES, spades.js): new {sideA:[me, partner], sideB:[two],
 //   target: 300|500}; seats go team 1, team 2, team 1, team 2. The four hands live in game_secrets; hand {id} gives each
 //   player their own cards only. A move is {bid} or {card}, from the seat whose turn it is.
+// Computer seats (his order, 2026-10-17): in Spades a seat may be "bot:1".."bot:3"; the server plays those seats itself
+//   (spades.js spBotBid / spBotPlay) right after each human move, so the turn always comes back to a person.
+// Trivia alone: new {kind:'trivia', solo:true, secs}: one player, ten questions, no steal (time's up just shows the answer).
+// Blackjack (kind 'blackjack', blackjack.js): new {sideA:[1–4 players, the caller first]}; chips are points, never money.
+//   move {bet:n} | {act} | {next:true}; the dealer's face-down card and the shoe stay in game_secrets.
+//   resign by any player ends the table: the biggest stack is listed first.
 // Hidden state is stamped with the move count it belongs to (`at`), so a move can never be checked against an older
 // hand or question than the board it was made on.
 // Alerts (they reach phones by push): a challenge, a new survey, and the result.
@@ -24,9 +30,11 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { GAMES, gameInit, gameApply } from "./rules.js";
 import { TRIVIA, TRIVIA_CATS } from "./trivia.js";
 import { feudSecret, feudInit, feudApply } from "./feud.js";
-import { spDeal, spInit, spApply } from "./spades.js";
+import { spDeal, spInit, spApply, spBotBid, spBotPlay } from "./spades.js";
+import { bjInit, bjSecret, bjApply } from "./blackjack.js";
 
-const LABEL: Record<string, string> = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades" };
+const LABEL: Record<string, string> = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack" };
+const isBot = (x: unknown) => /^bot:[1-3]$/.test(String(x));
 const rand = () => crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
 const TOTAL = 10;
 const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
@@ -41,6 +49,15 @@ function triviaAsk(card: [string, number]) {      // -> what phones see, and the
   return { q: { text: row[0], options: order.map(k => row[1 + k]), cat: (TRIVIA_CATS as Record<string, string>)[c] }, correct: order.indexOf(0), answer: row[1] };
 }
 
+// plays every computer seat whose turn it is, until a person's turn comes round or the game ends
+function spBots(st0: any, hands0: string[][]) {
+  let st = st0, hands = hands0, over = null, n = 0;
+  while (!over && isBot(st.seats[st.seat]) && n++ < 400) {
+    const k = st.seat, mv = st.phase === "bid" ? { bid: spBotBid(hands[k]) } : { card: spBotPlay(st, hands[k], k) };
+    const x = spApply(st, hands, k, mv, () => spDeal(rand)); st = x.st; hands = x.hands; over = x.over;
+  }
+  return { st, hands, over };
+}
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ALLOWED = [/^https:\/\/table-of-7\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-7\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
@@ -106,19 +123,25 @@ Deno.serve(async (req) => {
     if (body.action === "new") {
       const kind = String(body.kind ?? "");
       if (!(kind in LABEL)) return reply({ ok: false, code: "kind" }, 400);
-      const table = kind === "trivia" && body.table === true, most = kind === "trivia" || kind === "feud" ? 4 : 2;
-      const A = table ? [me.id] : [...new Set((body.sideA ?? []).map(String))], B = table ? [me.id] : [...new Set((body.sideB ?? []).map(String))];
+      const solo = kind === "trivia" && body.solo === true, table = kind === "trivia" && (body.table === true || solo), most = kind === "trivia" || kind === "feud" || kind === "blackjack" ? 4 : 2;
+      const A = table ? [me.id] : [...new Set((body.sideA ?? []).map(String))];
+      const B = table ? [me.id] : kind === "blackjack" ? A : (body.sideB ?? []).map(String).filter((x: string, i: number, a: string[]) => isBot(x) || a.indexOf(x) === i);
+      if ([...A, ...B].some(isBot) && kind !== "spades") return reply({ ok: false, code: "sides" }, 400);
+      if (kind === "blackjack" && A[0] !== me.id) return reply({ ok: false, code: "not_on_side" }, 403);
       if (kind === "feud" ? A.includes(me.id) || B.includes(me.id) : !A.includes(me.id)) return reply({ ok: false, code: kind === "feud" ? "judge_plays" : "not_on_side" }, 403);
       if (kind === "spades" && (A.length !== 2 || B.length !== 2)) return reply({ ok: false, code: "four" }, 400);
-      if (!table && (A.length < 1 || A.length > most || B.length < 1 || B.length > most || A.some(x => B.includes(x)))) return reply({ ok: false, code: "sides" }, 400);
-      const { data: seats } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", [...A, ...B]);
-      if ((seats ?? []).length !== new Set([...A, ...B]).size || (seats ?? []).some(s => s.status !== "active")) return reply({ ok: false, code: "seats" }, 403);
+      if (!table && (A.length < 1 || A.length > most || B.length < 1 || B.length > most || (kind !== "blackjack" && A.some(x => !isBot(x) && B.includes(x))))) return reply({ ok: false, code: "sides" }, 400);
+      if (kind === "spades" && new Set([...A, ...B].filter(isBot)).size !== [...A, ...B].filter(isBot).length) return reply({ ok: false, code: "sides" }, 400);
+      const people = [...new Set([...A, ...B].filter(x => !isBot(x)))];
+      const { data: seats } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", people);
+      if ((seats ?? []).length !== people.length || (seats ?? []).some(s => s.status !== "active")) return reply({ ok: false, code: "seats" }, 403);
       let state: unknown, secret: unknown = null;
       if (kind === "trivia") {
         const cat = String(body.cat ?? "mix"); if (cat !== "mix" && !(cat in TRIVIA)) return reply({ ok: false, code: "cat" }, 400);
         const deck = triviaDeck(cat), ask = triviaAsk(deck[0]);
         const secs = [10, 15, 20, 30].includes(Number(body.secs)) ? Number(body.secs) : 0;
-        state = { cat, n: 1, total: TOTAL, q: ask.q, score: [0, 0], last: null, secs, steal: false, table, teams: table ? (body.teams ?? ["Team 1", "Team 2"]).slice(0, 2).map((t: unknown) => String(t).slice(0, 24)) : null };
+        state = { cat, n: 1, total: TOTAL, q: ask.q, score: [0, 0], last: null, secs: solo ? (secs || 20) : secs, steal: false, table, solo,
+          teams: solo ? [first, first] : table ? (body.teams ?? ["Team 1", "Team 2"]).slice(0, 2).map((t: unknown) => String(t).slice(0, 24)) : null };
         secret = { deck, correct: ask.correct, answer: ask.answer, at: 0 };
       } else if (kind === "feud") {
         const { data: sv } = await admin.from("feud_surveys").select("*").eq("id", String(body.survey ?? "")).maybeSingle();
@@ -130,11 +153,14 @@ Deno.serve(async (req) => {
         state = feudInit(sec, sv.id, (rows ?? []).length); secret = sec;
       } else if (kind === "spades") {
         state = spInit([A[0], B[0], A[1], B[1]], Number(body.target)); secret = { hands: spDeal(rand), at: 0 };
+        const x = spBots(state, (secret as { hands: string[][] }).hands); state = x.st; secret = { hands: x.hands, at: 0 };
+      } else if (kind === "blackjack") {
+        state = bjInit(A); secret = { ...bjSecret(rand), at: 0 };
       } else state = gameInit(kind);
       const { data: g, error } = await admin.from("games").insert({ family_id: me.family_id, kind, side_a: A, side_b: B, state, created_by: me.id }).select().single();
       if (error) return reply({ ok: false, code: "server" }, 500);
       if (secret) await admin.from("game_secrets").insert({ game_id: g.id, data: secret });
-      if (!table) await alert([...new Set([...A, ...B])].filter(x => x !== me.id), kind === "feud" ? `${first} is judging Family Feud, built from the family's own survey. Open the Game Room to watch the board.` : `${first} started ${LABEL[kind]} with you. Open the Game Room to play.`);
+      if (!table) await alert(people.filter(x => x !== me.id), kind === "feud" ? `${first} is judging Family Feud, built from the family's own survey. Open the Game Room to watch the board.` : `${first} started ${LABEL[kind]} with you. Open the Game Room to play.`);
       return reply({ ok: true, game: g });
     }
 
@@ -154,23 +180,26 @@ Deno.serve(async (req) => {
       const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
       return reply({ ok: true, board: sec?.data.boards[sec.data.order[g.state.round - 1]] ?? [] });
     }
-    const spSeat = g.kind === "spades" ? g.state.seats.indexOf(me.id) : -1;
+    const spSeat = g.kind === "spades" ? g.state.seats.indexOf(me.id) : -1, bjSeat = g.kind === "blackjack" ? g.state.players.indexOf(me.id) : -1;
     const mySide = g.kind === "spades" ? (spSeat < 0 ? -1 : spSeat % 2) : isFeud ? (judge ? g.turn : -1) : isTable ? (g.side_a.includes(me.id) ? g.turn : -1) : g.side_a.includes(me.id) ? 0 : g.side_b.includes(me.id) ? 1 : -1;
     if (mySide < 0) return reply({ ok: false, code: isFeud ? "not_judge" : "not_player" }, 403);
+    const bjStacks = async (s: { players: string[]; bank: number[] }) => {
+      const { data } = await admin.from("members").select("id,name").in("id", s.players); const nm = (id: string) => String((data ?? []).find(m => m.id === id)?.name ?? "").split(" ")[0];
+      return s.players.map((id, i) => [nm(id), s.bank[i]] as [string, number]).sort((a, b) => b[1] - a[1]).map(([n, b]) => `${n} ${b.toLocaleString("en-US")}`).join(" · "); };
     const sideNames = async (side: number) => { const ids = side === 0 ? g.side_a : g.side_b;
       const { data } = await admin.from("members").select("id,name").in("id", ids); return (data ?? []).map(m => String(m.name).split(" ")[0]).join(" & "); };
     const finish = async (winner: number, why: string) => {
       if (isTable) return;
       const label = LABEL[g.kind];
-      const text = winner === 2 ? `${label} ended in a draw (${why}).` : `${await sideNames(winner)} won ${label} (${why}).`;
-      await alert([...new Set([...g.side_a, ...g.side_b, ...(isFeud && g.created_by ? [g.created_by] : [])])], text);
+      const text = g.kind === "blackjack" ? `The Blackjack table closed. Final stacks: ${why}.` : winner === 2 ? `${label} ended in a draw (${why}).` : `${await sideNames(winner)} won ${label} (${why}).`;
+      await alert([...new Set([...g.side_a, ...g.side_b, ...(isFeud && g.created_by ? [g.created_by] : [])])].filter(x => !isBot(x)), text);
     };
 
     // Trivia time's up may come from any player's phone (the answering phone may be closed); the server checks the clock
     const tvTimeout = body.action === "move" && g.kind === "trivia" && body.mv?.timeout === true;
     if (tvTimeout && !(g.side_a.includes(me.id) || g.side_b.includes(me.id))) return reply({ ok: false, code: "not_player" }, 403);
     if (body.action === "move") {
-      if (!tvTimeout && (g.kind === "spades" ? g.state.seat !== spSeat : g.turn !== mySide)) return reply({ ok: false, code: "not_your_turn" }, 409);
+      if (!tvTimeout && g.kind !== "blackjack" && (g.kind === "spades" ? g.state.seat !== spSeat : g.turn !== mySide)) return reply({ ok: false, code: "not_your_turn" }, 409);
       if (Number(body.at) !== g.moves) return reply({ ok: false, code: "stale" }, 409);
       let r, nextSecret: unknown = null;
       if (g.kind === "trivia") {
@@ -183,7 +212,7 @@ Deno.serve(async (req) => {
         if (!sec) return reply({ ok: false, code: "server" }, 500);
         if (sec.data.at !== undefined && sec.data.at !== g.moves) return reply({ ok: false, code: "stale" }, 409);
         const st = structuredClone(g.state), side = g.turn, stealing = st.steal === true, owner = stealing ? 1 - side : side;
-        if (late && !stealing) {                               // time's up: the same question passes over for a steal
+        if (late && !stealing && !st.solo) {                               // time's up: the same question passes over for a steal
           st.steal = true; st.last = { side, timeout: true, q: st.q.text };
           nextSecret = { ...sec.data, at: g.moves + 1 };
           r = { st, turn: 1 - side, over: null };
@@ -200,14 +229,22 @@ Deno.serve(async (req) => {
             const ask = triviaAsk(data.deck[st.n]); st.n += 1; st.q = ask.q; data = { ...data, correct: ask.correct, answer: ask.answer };
           }
           nextSecret = { ...data, at: g.moves + 1 };          // written only after the move itself is recorded
-          r = { st, turn: 1 - owner, over };                  // the next question goes to the team that didn't own this one
+          if (over && st.solo) over = { winner: 2, why: `${st.score[0]} of ${st.total}` };
+          r = { st, turn: st.solo ? 0 : 1 - owner, over };   // the next question goes to the team that didn't own this one
         }
       } else if (g.kind === "spades") {
         const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
         if (!sec || sec.data.at !== g.moves) return reply({ ok: false, code: "stale" }, 409);
         let x; try { x = spApply(g.state, sec.data.hands, spSeat, body.mv ?? {}, () => spDeal(rand)); } catch { return reply({ ok: false, code: "illegal" }, 400); }
+        if (!x.over) { const b = spBots(x.st, x.hands); x = { ...x, st: b.st, hands: b.hands, over: b.over }; }
         nextSecret = { hands: x.hands, at: g.moves + 1 };
         r = { st: x.st, turn: x.st.seat % 2, over: x.over };
+      } else if (g.kind === "blackjack") {
+        const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
+        if (!sec || sec.data.at !== g.moves) return reply({ ok: false, code: "stale" }, 409);
+        let x; try { x = bjApply(g.state, sec.data, bjSeat, body.mv ?? {}, rand); } catch (e) { return reply({ ok: false, code: (e as Error).message === "turn" ? "not_your_turn" : "illegal" }, (e as Error).message === "turn" ? 409 : 400); }
+        nextSecret = { ...x.sec, at: g.moves + 1 };
+        r = { st: x.st, turn: 0, over: x.over ? { winner: 2, why: await bjStacks(x.st) } : null };
       } else if (isFeud) {
         const { data: sec } = await admin.from("game_secrets").select("data").eq("game_id", g.id).maybeSingle();
         if (!sec) return reply({ ok: false, code: "server" }, 500);
@@ -226,6 +263,8 @@ Deno.serve(async (req) => {
       return reply({ ok: true });
     }
     if (body.action === "resign") {
+      if (g.kind === "blackjack") { await admin.from("games").update({ status: "done", winner: 2, why: await bjStacks(g.state), updated_at: new Date().toISOString() }).eq("id", g.id).eq("status", "live");
+        await finish(2, await bjStacks(g.state)); return reply({ ok: true }); }
       if (isTable || isFeud) { await admin.from("games").update({ status: "done", winner: 2, why: "stopped", updated_at: new Date().toISOString() }).eq("id", g.id); return reply({ ok: true }); }
       const { data: done } = await admin.from("games").update({ status: "done", winner: 1 - mySide, why: `${first} resigned`, updated_at: new Date().toISOString() })
         .eq("id", g.id).eq("status", "live").select("id");

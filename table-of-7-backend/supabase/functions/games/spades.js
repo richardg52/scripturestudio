@@ -88,3 +88,34 @@ export function spApply(st0, hands0, seat, mv, deal = spDeal){
   st.hand += 1; spFresh(st, (st.dealer + 1) % 4);
   return { st, hands: deal(), over: null };
 }
+// ---- The computer player (his order, 2026-10-17: play against the computer). Used for computer seats in a family
+// game (the server plays them) and for Spades alone on one phone. It plays only legal cards, from its own hand.
+const spRank = c => c === "BJ" || c === "LJ" ? 15 : Number(c.slice(1));
+export function spBotBid(hand){
+  const sp = hand.filter(c => spSuit(c) === "S"), n = sp.length; let t = 0;
+  for(const c of sp){ const p = spPower(c); if(p >= 101) t += 1; else if(c === "S14") t += 1; else if(c === "S13" && n >= 2) t += 0.8; else if(c === "S12" && n >= 3) t += 0.5; }
+  if(n > 3) t += (n - 3) * 0.7;
+  for(const s of ["H", "C", "D"]){ const x = hand.filter(c => spSuit(c) === s), len = x.length;
+    if(x.includes(s + "14")) t += len <= 5 ? 1 : 0.6;
+    if(x.includes(s + "13") && len >= 2 && len <= 5) t += 0.6;
+    if(len <= 1 && n >= 3) t += len === 0 ? 0.8 : 0.4; }
+  return Math.max(1, Math.min(13, Math.round(t * 0.8)));   // tuned: bots make ~83% of their bids (400 test hands)
+}
+export function spBotPlay(st, hand, seat){
+  const legal = spLegal(st, hand); if(legal.length === 1) return legal[0];
+  const low = cs => [...cs].sort((a, b) => spPower(a) - spPower(b))[0], high = cs => [...cs].sort((a, b) => spPower(b) - spPower(a))[0];
+  const partner = (seat + 2) % 4, myTeamBid = (st.bids[seat] || 0) + (st.bids[partner] || 0), myTeamWon = st.tricks[seat] + st.tricks[partner];
+  const need = myTeamWon < myTeamBid;
+  if(!st.trick.length){                                     // leading: cash a sure side ace, else lead low from a long side suit
+    const aces = legal.filter(c => spSuit(c) !== "S" && spRank(c) === 14); if(aces.length && need) return aces[0];
+    const side = legal.filter(c => spSuit(c) !== "S");
+    if(side.length){ const by = {}; side.forEach(c => (by[spSuit(c)] ||= []).push(c)); const longest = Object.values(by).sort((a, b) => b.length - a.length)[0]; return low(longest); }
+    return need ? high(legal) : low(legal);
+  }
+  const winsWith = c => spWinner([...st.trick, { seat, card: c }]) === seat;
+  const now = spWinner(st.trick), partnerWinning = now === partner, last = st.trick.length === 3;
+  const winners = legal.filter(winsWith);
+  if(partnerWinning && (last || spPower(st.trick.find(t => t.seat === partner).card) >= 90 || !need)) return low(legal.filter(c => !winsWith(c)).length ? legal.filter(c => !winsWith(c)) : legal);
+  if(winners.length && (need || last)) return low(winners);
+  const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
+}
