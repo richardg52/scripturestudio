@@ -249,22 +249,194 @@ textarea.input{min-height:76px;resize:vertical}
 .alert-row.unread b{color:var(--brass)}
 .alert-row small{color:var(--muted)}
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.cards{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
-.pc{min-width:40px;height:56px;padding:0 4px;border:1px solid var(--line,#ccc);border-radius:7px;background:#fff;color:#1b1b1b;font:800 15px/1 var(--f-body);display:grid;place-items:center}
-.pc.red{color:#b3261e}.pc:disabled{opacity:.35}.pc.big{min-width:54px;height:72px;font-size:18px}
-.gboard{display:grid;gap:4px;margin:0 auto;width:100%;max-width:360px;touch-action:manipulation}
-.gboard button{aspect-ratio:1;border:0;border-radius:8px;background:var(--surface-2);color:var(--ink);font:800 28px/1 var(--f-display);padding:0;display:grid;place-items:center}
-.gboard.ttt{grid-template-columns:repeat(3,1fr)}
-.gboard.c4{grid-template-columns:repeat(7,1fr);background:#1f4f8a;padding:6px;border-radius:12px;gap:5px}
-.gboard.c4 button{border-radius:50%;background:#0f2b4d}
-.gboard.ck{grid-template-columns:repeat(8,1fr);gap:0;border:3px solid #5a3b22;border-radius:6px;overflow:hidden}
-.gboard.ck button{border-radius:0;background:#e9d8b4}
-.gboard.ck button.dk{background:#6b4a2b}
-.gboard.ck button.sel{outline:3px solid var(--brass);outline-offset:-3px}
-.gboard button.to::after{content:"";width:28%;height:28%;border-radius:50%;background:var(--brass);opacity:.85}
 .disc{width:78%;height:78%;border-radius:50%;display:grid;place-items:center;font:800 15px/1 var(--f-display)}
-.disc.p0{background:#c0392b;color:#fff}.disc.p1{background:#f1c40f;color:#5a4500}
-.ck .disc.p0{background:#c0392b;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}.ck .disc.p1{background:#1c1c1c;color:#f1c40f;box-shadow:inset 0 -3px 0 rgba(255,255,255,.15)}
+/* ================= Game Room: the stage (his order, 2026-10-17: vivid, full screen, sharp, big for every age) =================
+   Every game screen opens full screen on its own rich backdrop. Boards, pieces and cards are drawn as vectors
+   (SVG and gradients), so they are sharp at any size, on any screen. --gs scales every game for Large / Extra large. */
+#sheet-wrap.stage{background:#04070f}
+#sheet-wrap.stage .sheet{--gs:1;max-width:none;width:100%;height:100%;max-height:none;border-radius:0;border:0;color:#f6f2e8;
+  background:radial-gradient(120% 70% at 50% -10%,#24406e 0%,#111f3a 42%,#070c18 100%) fixed;
+  padding-top:max(12px,env(safe-area-inset-top,0px));gap:14px;transform:none;grid-template-columns:minmax(0,1fr);overflow-x:hidden}
+body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
+#sheet-wrap.stage .grab{display:none}
+#sheet-wrap.stage .sheet > *{width:100%;max-width:900px;margin-inline:auto}
+.stage .sheet-head{align-items:center}
+.stage .sheet-head > [data-act="g-back"]{order:-1}
+.stage .sheet-head h2{color:#fff;font-size:calc(22px*var(--gs));line-height:1.15}
+.stage .eyebrow{color:#ffd36b;font-size:calc(11.5px*var(--gs));font-weight:800}
+.stage .muted,.stage .small.muted{color:#b8c4dc}
+.stage .small{font-size:calc(14px*var(--gs))}
+.stage .lbl,.stage .field label{color:#ffd36b;font-size:calc(12.5px*var(--gs));font-weight:800;letter-spacing:.08em}
+.stage .icon-btn{width:calc(46px*var(--gs));height:calc(46px*var(--gs));background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff;font-size:calc(19px*var(--gs));font-weight:800}
+.stage .icon-btn.gsz{font:900 calc(15px*var(--gs))/1 var(--f-display);letter-spacing:-.02em}
+.stage .card{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#f6f2e8;font-size:calc(15px*var(--gs))}
+.stage .strip{background:rgba(255,255,255,.08);color:#f6f2e8;font-size:calc(14px*var(--gs))}
+.stage .empty{color:#b8c4dc;border-color:rgba(255,255,255,.2)}
+.stage .input,.stage select.input{background:#0c1830;border-color:rgba(255,255,255,.25);color:#fff;font-size:calc(16px*var(--gs));padding:calc(12px*var(--gs)) 14px}
+.stage .btn{font-size:calc(15px*var(--gs));padding:calc(12px*var(--gs)) calc(20px*var(--gs));font-weight:800;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+.stage .btn.sm{font-size:calc(14px*var(--gs));padding:calc(9px*var(--gs)) calc(15px*var(--gs))}
+.stage .btn.primary{background:linear-gradient(180deg,#ffe08a,#ffb627 55%,#e8930c);color:#3a2200;border-color:#ffefb3;box-shadow:0 4px 0 #a5620a,0 8px 18px rgba(255,170,30,.35)}
+.stage .btn.wine{background:linear-gradient(180deg,#ff6b8a,#e3264f 55%,#b4123a);color:#fff;border-color:#ff9db1;box-shadow:0 4px 0 #7d0a27,0 8px 18px rgba(227,38,79,.35)}
+.stage .btn.ghost{background:transparent}
+.stage .btn:active{transform:translateY(2px)}
+.stage .todo{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff;font-size:calc(15px*var(--gs))}
+.stage .todo small,.stage .person small{color:#b8c4dc}
+.stage .person{color:#fff}
+.gstatus{text-align:center;font:900 calc(19px*var(--gs))/1.25 var(--f-display);padding:calc(12px*var(--gs)) 14px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);color:#fff}
+.gstatus.go{background:linear-gradient(180deg,#ffe08a,#ffb627);color:#3a2200;border-color:#fff1bd;box-shadow:0 0 0 3px rgba(255,200,60,.25),0 10px 24px rgba(255,170,30,.3);animation:gpulse 1.6s ease-in-out infinite}
+.gstatus.win{background:linear-gradient(180deg,#7dffb0,#19c36a);color:#04331a;border-color:#c9ffe0}
+@keyframes gpulse{50%{box-shadow:0 0 0 7px rgba(255,200,60,.12),0 10px 24px rgba(255,170,30,.3)}}
+.gscore{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+.gscore .team{border-radius:16px;padding:calc(10px*var(--gs)) 12px;text-align:center;background:rgba(255,255,255,.07);border:2px solid transparent;min-width:0}
+.gscore .team b{display:block;font:900 calc(15px*var(--gs))/1.2 var(--f-display);overflow-wrap:anywhere}
+.gscore .team .pts{font:900 calc(30px*var(--gs))/1.05 var(--f-display);color:#ffd36b}
+.gscore .team.on{border-color:#ffd36b;box-shadow:0 0 20px rgba(255,211,107,.35);background:rgba(255,211,107,.12)}
+.gscore .vs{align-self:center;font:900 calc(15px*var(--gs)) var(--f-display);color:#8fa0c2}
+/* Game Room: a picture menu */
+.gtiles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (min-width:640px){.gtiles{grid-template-columns:repeat(3,1fr)}}
+.gtile{position:relative;display:grid;grid-template-rows:1fr auto;border:0;border-radius:24px;padding:12px 12px 14px;color:#fff;text-align:left;overflow:hidden;min-height:calc(190px*var(--gs));
+  box-shadow:0 10px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s}
+.gtile:active{transform:scale(.97)}
+.gtile svg{width:100%;height:100%;max-height:calc(132px*var(--gs));filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.gtile b{font:900 calc(18px*var(--gs))/1.1 var(--f-display);text-shadow:0 2px 4px rgba(0,0,0,.4)}
+.gtile small{display:block;font-size:calc(12.5px*var(--gs));opacity:.92;margin-top:2px;font-weight:600}
+.gtile .badge{position:absolute;top:10px;right:10px;background:#ff3b5c;color:#fff;border-radius:999px;padding:3px 9px;font:900 12px var(--f-display);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.gt-ttt,.todo .ic.gt-ttt{background:linear-gradient(150deg,#3b2b8f,#1b1450)}.gt-c4,.todo .ic.gt-c4{background:linear-gradient(150deg,#1f7bff,#0b3c9e)}
+.gt-ck,.todo .ic.gt-ck{background:linear-gradient(150deg,#b5651d,#5b2c0c)}.gt-sp,.todo .ic.gt-sp{background:linear-gradient(150deg,#14a35a,#06512a)}
+.gt-tv,.todo .ic.gt-tv{background:linear-gradient(150deg,#c42dff,#4b0f9e)}.gt-fd,.todo .ic.gt-fd{background:linear-gradient(150deg,#ff8a1f,#c4300e)}
+.gpick{display:grid;gap:14px;justify-items:center;text-align:center}
+.gpick .art{width:min(70vw,calc(230px*var(--gs)));aspect-ratio:1;border-radius:32px;display:grid;place-items:center;padding:18px;box-shadow:0 14px 34px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.35)}
+.gpick .art svg{width:100%;height:100%}
+.gpick .btn{width:min(100%,460px);min-height:calc(56px*var(--gs))}
+/* boards: as big as the screen allows */
+.gboard{display:grid;margin:0 auto;width:min(100%,calc(100dvh - 300px),720px);min-width:min(100%,300px);touch-action:manipulation;position:relative}
+.gboard button{aspect-ratio:1;border:0;padding:0;display:grid;place-items:center;background:none;position:relative}
+.gboard button:disabled{cursor:default}
+/* Tic-Tac-Toe: glowing grid, big colored X and O drawn in */
+.gboard.ttt{grid-template-columns:repeat(3,1fr);gap:12px;padding:14px;border-radius:28px;background:linear-gradient(160deg,#1d2c5c,#0b1430);box-shadow:inset 0 0 0 2px rgba(120,160,255,.35),0 18px 40px rgba(0,0,0,.5)}
+.gboard.ttt button{border-radius:20px;background:radial-gradient(circle at 50% 35%,#24386e,#132350);box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset 0 -6px 12px rgba(0,0,0,.35)}
+.gboard.ttt button:not(:disabled):active{background:#2e468a}
+.gboard.ttt svg{width:94%;height:94%;overflow:visible}
+.gboard.ttt .xo{fill:none;stroke-width:17;stroke-linecap:round}
+.gboard.ttt .new .xo{stroke-dasharray:1;stroke-dashoffset:1;animation:gdraw .45s ease-out forwards}
+.gboard.ttt .new .xo + .xo{animation-delay:.2s}
+@keyframes gdraw{to{stroke-dashoffset:0}}
+.gboard.ttt button.win{background:radial-gradient(circle,#4a5fb0,#1d2f6b);animation:gwin 1s ease-in-out infinite alternate}
+@keyframes gwin{to{box-shadow:0 0 0 4px #ffd36b,0 0 30px #ffd36b}}
+.tcol{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-weight:800;font-size:calc(14px*var(--gs))}
+.tcol button{width:calc(34px*var(--gs));height:calc(34px*var(--gs));border-radius:50%;border:3px solid rgba(255,255,255,.25)}
+.tcol button[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+/* Connect Four: a glossy blue frame, discs that drop */
+.gboard.c4{grid-template-columns:repeat(7,1fr);gap:0;padding:2.2%;border-radius:22px;background:linear-gradient(180deg,#3f8cff,#1553d6 40%,#0e3fa8);box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -6px 0 rgba(0,0,0,.25),0 18px 40px rgba(0,0,0,.55)}
+.gboard.c4 button{overflow:hidden}
+.gboard.c4 button::before{content:"";position:absolute;inset:9%;border-radius:50%;background:radial-gradient(circle at 50% 30%,#030a1c,#0b1a3c);box-shadow:inset 0 5px 8px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.35)}
+.gboard.c4 button.col-hot::before{background:radial-gradient(circle at 50% 30%,#13265a,#1d3a7a)}
+.gp{position:relative;border-radius:50%;width:82%;height:82%;z-index:1}
+.c4 .gp.p0{background:radial-gradient(circle at 36% 30%,#ffb3b3 0,#ff4040 22%,#d8101f 62%,#8f0712 100%);box-shadow:inset 0 0 0 4px rgba(0,0,0,.14),inset 0 -5px 9px rgba(0,0,0,.35)}
+.c4 .gp.p1{background:radial-gradient(circle at 36% 30%,#fffbd0 0,#ffe23a 22%,#f2b400 62%,#a77400 100%);box-shadow:inset 0 0 0 4px rgba(0,0,0,.12),inset 0 -5px 9px rgba(0,0,0,.3)}
+.c4 .gp::after{content:"";position:absolute;inset:22%;border-radius:50%;border:3px solid rgba(255,255,255,.25)}
+.c4 .new .gp{animation:gdrop .5s cubic-bezier(.4,0,.6,1) both}
+@keyframes gdrop{0%{transform:translateY(calc(var(--r,1) * -112%))}80%{transform:translateY(0)}90%{transform:translateY(-7%)}100%{transform:translateY(0)}}
+.c4 .win .gp{animation:gwin2 .8s ease-in-out infinite alternate}
+@keyframes gwin2{to{box-shadow:0 0 0 4px #fff,0 0 22px #fff}}
+/* Checkers: wood board, glossy ridged pieces, slide with a finger */
+.ckwrap{padding:3.2%;border-radius:18px;margin:0 auto;width:min(100%,calc(100dvh - 300px),720px);min-width:min(100%,300px);
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.05) 0 3px,rgba(0,0,0,.06) 3px 9px),linear-gradient(135deg,#8a5428,#5a3214 50%,#7a4620);box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 18px 40px rgba(0,0,0,.6)}
+.gboard.ck{width:100%;min-width:0;grid-template-columns:repeat(8,1fr);touch-action:none;box-shadow:0 0 0 2px #3b1e08}
+.gboard.ck button{background:repeating-linear-gradient(80deg,rgba(150,100,40,.10) 0 2px,transparent 2px 7px),linear-gradient(135deg,#f6e2b5,#e7c98f)}
+.gboard.ck button.dk{background:repeating-linear-gradient(80deg,rgba(0,0,0,.12) 0 2px,transparent 2px 6px),linear-gradient(135deg,#7a4a22,#5a3416)}
+.gboard.ck button.sel{box-shadow:inset 0 0 0 4px #ffd36b}
+.gboard.ck button.to::after{content:"";position:absolute;width:34%;height:34%;border-radius:50%;background:radial-gradient(circle,#fff6c8,#ffd36b 60%,rgba(255,211,107,0) 72%);animation:gbeat 1s ease-in-out infinite}
+.gboard.ck button.hot{box-shadow:inset 0 0 0 5px #7dffb0}
+@keyframes gbeat{50%{transform:scale(1.25)}}
+.ck .gp{width:80%;height:80%;display:grid;place-items:center}
+.ck .gp.p0{background:radial-gradient(circle at 38% 32%,#ff9a8a 0,#ff3d2e 30%,#c41a0e 70%,#7a0c05);box-shadow:0 4px 0 #5a0904,0 8px 12px rgba(0,0,0,.5),inset 0 0 0 3px rgba(255,255,255,.15)}
+.ck .gp.p1{background:radial-gradient(circle at 38% 32%,#8a8a8a 0,#3c3c3c 30%,#1a1a1a 70%,#000);box-shadow:0 4px 0 #000,0 8px 12px rgba(0,0,0,.6),inset 0 0 0 3px rgba(255,255,255,.12)}
+.ck .gp::before{content:"";position:absolute;inset:14%;border-radius:50%;border:2px dashed rgba(0,0,0,.35);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.ck .gp svg{width:58%;height:58%;position:relative;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.ck .gp.can{cursor:grab;animation:gready 1.6s ease-in-out infinite}
+@keyframes gready{50%{filter:brightness(1.18)}}
+.ck .new .gp{animation:ghop .35s ease-out}
+@keyframes ghop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.ckghost{position:fixed;z-index:200;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%) scale(1.18);filter:drop-shadow(0 14px 14px rgba(0,0,0,.55))}
+.ckghost .gp{width:100%;height:100%}
+/* Spades: a green felt table, real cards */
+.felt{position:relative;border-radius:34px;height:clamp(280px,calc(min(100vw,900px) * .9),600px);margin-inline:auto;width:100%;
+  background:radial-gradient(ellipse at 50% 40%,#2fb164 0%,#178a45 45%,#0a5a2a 100%);box-shadow:inset 0 0 0 12px #6b3a17,inset 0 0 0 15px #a8692d,inset 0 0 50px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.6)}
+.felt::after{content:"T7";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 calc(54px*var(--gs)) var(--f-display);color:rgba(255,255,255,.07);letter-spacing:.1em;pointer-events:none}
+.seat{position:absolute;display:grid;justify-items:center;gap:3px;text-align:center;z-index:2}
+.seat .who{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);border-radius:999px;padding:4px 12px 4px 4px;font:800 calc(14px*var(--gs)) var(--f-display);color:#fff;border:2px solid transparent;white-space:nowrap}
+.seat .who i{width:calc(26px*var(--gs));height:calc(26px*var(--gs));border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff}
+.seat .tk{font:800 calc(12.5px*var(--gs)) var(--f-body);color:#e9ffef;background:rgba(0,0,0,.35);border-radius:8px;padding:2px 8px}
+.seat.turn .who{border-color:#ffd36b;box-shadow:0 0 18px rgba(255,211,107,.8);animation:gpulse 1.4s infinite}
+.seat.s0{bottom:4%;left:50%;transform:translateX(-50%)}.seat.s2{top:4%;left:50%;transform:translateX(-50%)}
+.seat.s1{left:4%;top:21%}.seat.s3{right:4%;top:21%}
+@media (max-width:639px){.felt .backs{display:none}}
+.trick{position:absolute;inset:0;pointer-events:none;z-index:3}
+.trick .tc{position:absolute;left:50%;top:50%;width:calc(19% * var(--gs));min-width:62px;max-width:130px;transition:transform .3s}
+.trick .t0{transform:translate(-50%,-6%) rotate(-3deg)}.trick .t2{transform:translate(-50%,-94%) rotate(4deg)}
+.trick .t1{transform:translate(-122%,-30%) rotate(-8deg)}.trick .t3{transform:translate(22%,-30%) rotate(7deg)}
+.trick .tc.won{box-shadow:0 0 0 3px #ffd36b,0 0 22px #ffd36b;border-radius:8%}
+.card-svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
+.hand{display:grid;gap:4px;justify-items:center;padding-top:22px}
+.hand .row{display:flex;justify-content:center}
+.hand .pcard{width:var(--cw);flex:none;border:0;padding:0;background:none;margin-left:calc(var(--cw) * -0.34);transition:transform .15s;position:relative}
+.hand .pcard:first-child{margin-left:0}
+.hand .pcard:disabled{opacity:1;cursor:default}
+.hand .pcard.ok{transform:translateY(-12px)}
+.hand .pcard.ok .card-svg{filter:drop-shadow(0 0 7px rgba(255,211,107,.95)) drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.hand .pcard.pick{transform:translateY(-30px) scale(1.1);z-index:5}
+.hand .pcard.pick .card-svg{filter:drop-shadow(0 0 12px #ffd36b) drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+.bidpad{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;max-width:560px;width:100%}
+.chip{aspect-ratio:1;border-radius:50%;border:0;padding:0;min-width:0;font:900 calc(18px*var(--gs)) var(--f-display);color:#fff;
+  background:radial-gradient(circle,#2a62d8 0 46%,#fff 47% 52%,#2a62d8 53% 64%,#fff 65% 70%,#1d47a6 71%);box-shadow:0 4px 0 #0f2a66,0 6px 10px rgba(0,0,0,.4)}
+.chip.nil{background:radial-gradient(circle,#e3264f 0 46%,#fff 47% 52%,#e3264f 53% 64%,#fff 65% 70%,#a8143a 71%);box-shadow:0 4px 0 #6d0a22,0 6px 10px rgba(0,0,0,.4);font-size:calc(13px*var(--gs))}
+.chip:active{transform:translateY(3px);box-shadow:0 1px 0 #0f2a66}
+.backs{display:flex}.backs svg{width:calc(20px*var(--gs));margin-left:calc(-14px*var(--gs))}.backs svg:first-child{margin-left:0}
+/* Trivia Night: a game-show stage with a countdown ring */
+.tvstage{border-radius:28px;padding:16px;display:grid;gap:14px;background:radial-gradient(ellipse at 50% 0%,rgba(255,120,255,.35),transparent 60%),linear-gradient(180deg,#3a0d7a,#1a0745);box-shadow:inset 0 0 0 2px rgba(255,160,255,.3),0 18px 40px rgba(0,0,0,.55);position:relative;overflow:hidden}
+.tvstage::before{content:"";position:absolute;inset:-40% -10% auto;height:120%;background:conic-gradient(from 200deg at 50% 0%,transparent 0 10deg,rgba(255,255,255,.07) 12deg 20deg,transparent 22deg 40deg,rgba(255,255,255,.06) 42deg 50deg,transparent 52deg);pointer-events:none}
+.tvq{font:900 calc(23px*var(--gs))/1.3 var(--f-display);color:#fff;text-align:center;text-wrap:balance;position:relative}
+.tvmeta{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative}
+.ring{width:calc(84px*var(--gs));height:calc(84px*var(--gs));position:relative;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:grid;place-items:center;font:900 calc(28px*var(--gs)) var(--f-display);color:#fff}
+.ring.low .num{color:#ff5c7a;animation:gbeat .5s infinite}
+.tvans{display:grid;gap:10px;position:relative}
+@media (min-width:600px){.tvans{grid-template-columns:1fr 1fr}}
+.tva{display:flex;align-items:center;gap:12px;border:0;border-radius:18px;padding:calc(14px*var(--gs)) 14px;text-align:left;color:#fff;font:800 calc(18px*var(--gs))/1.25 var(--f-body);min-height:calc(64px*var(--gs));box-shadow:0 5px 0 rgba(0,0,0,.35),0 10px 18px rgba(0,0,0,.3)}
+.tva .k{flex:none;width:calc(40px*var(--gs));height:calc(40px*var(--gs));border-radius:12px;background:rgba(255,255,255,.95);display:grid;place-items:center;font:900 calc(18px*var(--gs)) var(--f-display)}
+.tva.a0{background:linear-gradient(180deg,#ff5577,#d81b47)}.tva.a0 .k{color:#d81b47}
+.tva.a1{background:linear-gradient(180deg,#3d9bff,#1462d6)}.tva.a1 .k{color:#1462d6}
+.tva.a2{background:linear-gradient(180deg,#2fe08a,#10a35c)}.tva.a2 .k{color:#10a35c}
+.tva.a3{background:linear-gradient(180deg,#ffd84d,#f0a800);color:#3a2600}.tva.a3 .k{color:#b37a00}
+.tva:disabled{filter:saturate(.75) brightness(.85)}
+.tva:not(:disabled):active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.tvlast{border-radius:16px;padding:12px 14px;font-weight:700;font-size:calc(15px*var(--gs))}
+.tvlast.ok{background:rgba(47,224,138,.18);border:2px solid #2fe08a}.tvlast.no{background:rgba(255,85,119,.16);border:2px solid #ff5577}.tvlast.time{background:rgba(255,216,77,.16);border:2px solid #ffd84d}
+.steal{display:inline-block;background:#ffd84d;color:#3a2600;border-radius:999px;padding:3px 12px;font:900 calc(13px*var(--gs)) var(--f-display);letter-spacing:.08em}
+/* Family Feud: the TV board */
+.fboard{border-radius:24px;padding:12px;background:linear-gradient(180deg,#0b2a7a,#06143d);box-shadow:inset 0 0 0 4px #e9b23a,inset 0 0 0 7px #7a5410,0 18px 40px rgba(0,0,0,.55);display:grid;gap:8px}
+@media (min-width:560px){.fboard.two{grid-template-columns:1fr 1fr}}
+.fslot{perspective:600px;display:grid;gap:6px}
+.fslot .in{min-height:calc(52px*var(--gs));display:flex;align-items:center;gap:10px;border-radius:12px;padding:8px 10px;background:linear-gradient(180deg,#2b6dff,#1340b8);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.3);color:#fff;font:900 calc(17px*var(--gs))/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.fslot .n{width:calc(34px*var(--gs));height:calc(34px*var(--gs));flex:none;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5d8dff,#0d2c86);display:grid;place-items:center;border:2px solid #e9b23a}
+.fslot .pts{margin-left:auto;background:#0a1d55;border-radius:8px;padding:4px 10px;min-width:calc(40px*var(--gs));text-align:center;color:#ffd36b}
+.fslot.open .in{background:linear-gradient(180deg,#ffffff,#d9e4ff);color:#0b1d55}
+.fslot.new .in{animation:gflip .6s ease-out}
+@keyframes gflip{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.strikes{display:flex;justify-content:center;gap:10px;min-height:calc(56px*var(--gs))}
+.strikes svg{width:calc(56px*var(--gs));height:calc(56px*var(--gs));filter:drop-shadow(0 0 10px rgba(255,45,74,.9)) drop-shadow(0 4px 0 #6d0a1a)}
+.strikes .new{animation:gx .5s ease-out}
+@keyframes gx{0%{transform:scale(2.4);opacity:0}100%{transform:scale(1);opacity:1}}
+#sheet-wrap.stage .sheet > .bank{width:auto}
+.bank{justify-self:center;background:linear-gradient(180deg,#ffe08a,#e8930c);color:#3a2200;border-radius:14px;padding:6px 18px;font:900 calc(18px*var(--gs)) var(--f-display);box-shadow:0 4px 0 #a5620a}
+/* a win: confetti */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:300;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:gfall linear forwards}
+@keyframes gfall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.stage *{animation:none!important;transition:none!important}}
 .photos button{padding:0;border:0;background:none;border-radius:8px;overflow:hidden}
 .photos img{display:block;width:100%;aspect-ratio:1;object-fit:cover;max-width:100%}
 .eta{display:flex;gap:6px;flex-wrap:wrap}
@@ -1859,7 +2031,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage)[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -1895,10 +2067,10 @@ function sheetTips(){
     ["Question of the night","Every dinner card has a conversation starter: family memories, gratitude, faith. Go around the table. The next dinner gets a different one, and none repeats until all 60 have been asked. Tap “Another question” to change it on your phone."],
     ["Standing dinners","Richard can set a dinner that repeats, like the first Sunday of every month. At 9 AM, a few days before (he chooses how many), the family vote opens by itself with three choices from the Concierge, and every phone is told. Then it works like any vote: tap Start, vote, lock in."],
     ["Year at the Table","From December 1 to January 15, Home shows “Your Year at the Table is ready”. Open it any time from Our Table. It counts the dinners we shared, our top-scored and most-visited places, the new places we tried, the dishes we remembered, and the best photos of the year."],
-    ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Tic-Tac-Toe, Connect Four and Checkers. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."],
-    ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. The right answer shows only after a team answers."],
+    ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Every game opens full screen; tap a game's picture to start. Tap A+ (top right) to make the whole game bigger, A− to go back. Tic-Tac-Toe, Connect Four and Checkers: slide a checker with your finger. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."],
+    ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. Pick a clock (10, 15, 20 or 30 seconds): when it runs out, the other team gets one chance to steal. The right answer shows only after a team answers."],
     ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."],
-    ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out."]
+    ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out. The cards you can play lift up and glow gold: tap one, then tap it again (or Play) to put it down."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
@@ -1934,10 +2106,10 @@ function guideBody(k){
     step(15, "Question of the night", `${pic("Open dinner card","primary")} and look for <b>💬 Question of the night</b>. Everyone at the dinner sees the same question. The family's next dinner gets the next one in the list, so two dinners in a row never share a question, and none repeats until all 60 have been used. ${pic("Another question","ghost")} swaps it on your phone only.`),
     step(16, "Standing dinners (host)", `${host} opens Host controls, finds <b>🔁 Standing dinners</b>, sets the name, <b>Which</b> (Every, First, Second, Third, Fourth or Last), the <b>Day</b>, the <b>Time</b>, when the <b>Vote opens</b> (2 to 14 days before) and the <b>Vote length</b>, and taps ${pic("Add standing dinner","primary")}. Each one shows when the next dinner is and when its vote opens. At 9 AM that day the vote opens by itself: three choices picked like the Concierge does (Want to Try first; nothing from the last 90 days, the Never Again list, closed places or bakeries), and everyone's bell rings. It can never open twice for the same date. ${pic("Pause")} stops it for now; ${pic("Delete","ghost")} removes it (votes already opened stay).`),
     step(17, "Year at the Table", `From December 1 to January 15, Home shows <b>🎄 Your Year at the Table is ready</b>; any time, tap ${pic("Our Table")} → <b>Year at the Table</b>. It reads only what the family already saved: <b>dinners shared</b> (each wrap-up), the <b>top-scored place</b> (everyone's 1 to 10 that year, averaged), the <b>most visited</b>, the <b>new places tried</b> (first visit ever that year), <b>dishes remembered</b>, and up to six <b>best photos</b> (approved photos from the highest-scored dinners). Tap a year chip to look back at an earlier year.`),
-    step(18, "Game Room", `Tap ${pic("Our Table")} → <b>🎲 Game Room</b>, or ${pic("🎲 Play while you wait")} on the dinner card. <b>Pass &amp; play on this phone:</b> tap ${pic("Tic-Tac-Toe")} ${pic("Connect Four")} or ${pic("Checkers")} and hand the phone back and forth (it isn't saved and doesn't count). <b>Play the family:</b> tap a ${pic("Checkers","wine")} button, choose your opponent (and partners, for couple against couple), and tap ${pic("Start Checkers","primary")}. Everyone is notified and plays from their own phone; your side moves first. In Checkers tap a piece, then a gold dot: a jump must be taken, you keep jumping while you can, and reaching the far row crowns a king ♛. The game is a draw after 40 moves each with no capture. ${pic("Resign","ghost")} gives the game away; ${pic("Play again","primary")} starts a rematch. Finished family games fill the <b>🏆 Family standings</b>.`),
-    step(19, "Trivia Night", `In the Game Room, under <b>🎤 Trivia Night</b>: ${pic("At the table · one phone","primary")} runs the whole game on one phone (name the two teams, then pass the phone or read each question aloud), or ${pic("Family teams · own phones","wine")} lets you put each person on <b>My team</b> or <b>Other team</b>, up to four a team, each answering on their own phone. Pick a category (Music, TV &amp; Movies, Bible, or a mix) and tap ${pic("Start Trivia Night","primary")}. The teams take turns: ten questions, one each in turn, four answers to choose from. Tap an answer and the screen shows ✓ or ✗ and the right answer, then the next team's question. The score sits at the top. Family-teams games count toward the 🏆 standings; at-the-table games don't, because one phone can't say who answered. ${pic("End the game","ghost")} stops an at-the-table game; ${pic("Play again","primary")} plays ten new questions.`),
+    step(18, "Game Room", `Tap ${pic("Our Table")} → <b>🎲 Game Room</b>, or ${pic("🎲 Play while you wait")} on the dinner card. Each game has its own picture; tap one to see how it's played and how to start. Every game fills the screen; tap ${pic("A+")} at the top right to make it bigger (good for older eyes and little hands) and ${pic("A−")} to go back. <b>Pass &amp; play on this phone:</b> tap ${pic("📱 Pass &amp; play on this phone","primary")} and hand the phone back and forth (it isn't saved and doesn't count). <b>Play the family:</b> tap ${pic("👨‍👩‍👧 Play the family · own phones","wine")}, choose your opponent (and partners, for couple against couple), and tap ${pic("Start Checkers","primary")}. Everyone is notified and plays from their own phone; your side moves first. In Tic-Tac-Toe, tap the colour dots under the board to give X and O your own colours. In Checkers, <b>slide</b> a glowing piece with your finger onto a gold dot (or tap the piece, then the dot): a jump must be taken, you keep jumping while you can, and reaching the far row crowns a king ♛. The game is a draw after 40 moves each with no capture. ${pic("Resign","ghost")} gives the game away; ${pic("Play again","primary")} starts a rematch. Finished family games fill the <b>🏆 Family standings</b>.`),
+    step(19, "Trivia Night", `In the Game Room, under <b>🎤 Trivia Night</b>: ${pic("At the table · one phone","primary")} runs the whole game on one phone (name the two teams, then pass the phone or read each question aloud), or ${pic("Family teams · own phones","wine")} lets you put each person on <b>My team</b> or <b>Other team</b>, up to four a team, each answering on their own phone. Pick a category (Music, TV &amp; Movies, Bible, or a mix) and an <b>answer clock</b> (10, 15, 20 or 30 seconds), and tap ${pic("Start Trivia Night","primary")}. The ring counts down and turns red in the last five seconds. If the clock runs out, the same question passes to the other team with a <b>STEAL</b> badge: one chance, their own clock; if that runs out too, the answer shows and the game moves on. The teams take turns: ten questions, one each in turn, four answers to choose from. Tap an answer and the screen shows ✓ or ✗ and the right answer, then the next team's question. The score sits at the top. Family-teams games count toward the 🏆 standings; at-the-table games don't, because one phone can't say who answered. ${pic("End the game","ghost")} stops an at-the-table game; ${pic("Play again","primary")} plays ten new questions.`),
     step(20, "Family Feud", `In the Game Room, under <b>📋 Family Feud</b>, tap ${pic("Start a survey","primary")}. Five questions are filled in for you; change any, tap ${pic("🔀 Different questions")} for new ones, then ${pic("Send the survey to the family","primary")}. Everyone is notified and taps ${pic("Answer the survey","primary")} to answer privately, a few words each; no one, not even the host, sees anyone's answers. When enough people have answered (at least two), the person who started it or the host taps ${pic("Close the survey","wine")}. At the table, one person taps ${pic("Play Family Feud")} and becomes the <b>judge</b>: they put each person on Team 1 or Team 2 and tap ${pic("Start Family Feud","primary")}. The judge's phone shows the family's answers; everyone else sees the hidden board. The team on turn calls out answers: the judge taps ${pic("Reveal","primary")} on a match (its points, one for each person who said it, go into the bank) or ${pic("✗ Strike","wine")}. Three strikes and the other team gets one guess to steal the bank. When the board is cleared or the steal is decided, the round's points go to the winner; the judge taps ${pic("Next round","primary")}. Most points after the last question wins. Similar answers count together when only the spelling differs (“Pizza” and “pizzas”); different words stay separate, and the judge decides at the table whether a guess matches.`),
-    step(21, "Spades for couples", `In the Game Room tap ${pic("Deal a game of Spades","wine")}, pick your partner and the other couple, choose 300 or 500 points, and tap ${pic("Deal Spades","primary")}. All four get a notification and play on their own phones; each phone shows only its own cards. <b>Our house rules, Jokers &amp; deuces:</b> 2♣ and 2♥ are out and both jokers are in; the trumps, highest first, are Big Joker, Little Joker, 2♠, 2♦, then A♠ down to 3♠; the 2♦ and the jokers count as spades. <b>Bidding:</b> when it's your turn, tap how many tricks you'll take, or ${pic("Nil","wine")} for none. <b>Play:</b> tap a card. Cards you may not play are greyed out: follow the suit led if you can, and spades can't be led until one has been played. The highest spade wins a trick, or else the highest card of the suit led. <b>Scoring:</b> make your team's bid and score 10 a trick bid plus 1 for each extra trick (a bag); miss it and lose 10 a trick bid. Nil made is +100, nil broken is −100. Every 10 bags cost 100. First couple to the target wins; a couple at −200 loses. ${pic("Resign for our team","ghost")} gives the game to the other couple.`),
+    step(21, "Spades for couples", `In the Game Room tap ${pic("Deal a game of Spades","wine")}, pick your partner and the other couple, choose 300 or 500 points, and tap ${pic("Deal Spades","primary")}. All four get a notification and play on their own phones; each phone shows only its own cards. <b>Our house rules, Jokers &amp; deuces:</b> 2♣ and 2♥ are out and both jokers are in; the trumps, highest first, are Big Joker, Little Joker, 2♠, 2♦, then A♠ down to 3♠; the 2♦ and the jokers count as spades. <b>Bidding:</b> when it's your turn, tap how many tricks you'll take, or ${pic("Nil","wine")} for none. <b>Play:</b> the cards you may play lift up and glow gold; tap one and it rises with a ${pic("Play","primary")} button, then tap the card again or ${pic("Play","primary")}. Every card stays bright: the ones that don't lift just can't be played right now (follow the suit led if you can, and spades can't be led until one has been played). The trick is laid on the felt in front of each player, and the winning card is outlined in gold. The highest spade wins a trick, or else the highest card of the suit led. <b>Scoring:</b> make your team's bid and score 10 a trick bid plus 1 for each extra trick (a bag); miss it and lose 10 a trick bid. Nil made is +100, nil broken is −100. Every 10 bags cost 100. First couple to the target wins; a couple at −200 loses. ${pic("Resign for our team","ghost")} gives the game to the other couple.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -1991,8 +2163,11 @@ function guideBody(k){
     ["“It's not your turn yet.”", "Wait for the other side's move; the board updates by itself."],
     ["“The board just changed. Look again.”", "Your partner or opponent moved at the same moment. Look at the new board and move again."],
     ["A checker won't move where I tap", "When any jump is possible you must jump, so only pieces that can jump are tappable. Mid-jump, the same piece must keep jumping."],
+    ["A checker slides back when I let go", "You let go off a gold dot. Only the glowing pieces can move, and only onto a gold dot; the square turns green when you're over a good one."],
+    ["The game is too small (or too big)", "Tap A+ at the top right of any game to make everything bigger; A− makes it smaller. Your phone remembers it."],
+    ["The Trivia clock ran out", "Time's up passes the same question to the other team for one steal. Nobody can stop the clock: it's kept on our server, not on any phone."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
-    ["My cards are grey in Spades", "It isn't your turn, or that card isn't allowed: follow the suit led if you can, and don't lead a spade until spades are broken (unless you hold only spades)."],
+    ["My cards don't lift in Spades", "It isn't your turn, or that card isn't allowed: follow the suit led if you can, and don't lead a spade until spades are broken (unless you hold only spades). The cards you can play lift up and glow gold."],
     ["Spades says “Picking up your cards…”", "Your phone is getting your hand from the server after the last move. It takes a second; if it stays, close the game and open it again."],
     ["“Spades needs two on each team.”", "Pick your partner and both players of the other couple: four different people."],
     ["“Wait until at least two people have answered.”", "A survey closes only after two or more people have answered. Ask the family to tap Answer the survey."],
@@ -2007,10 +2182,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Play six family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock) and Family Feud</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -2994,33 +3169,362 @@ function gStandings(){
     if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
   return Object.entries(w).sort((x, y) => y[1].w - x[1].w || y[1].d - x[1].d);
 }
+/* ===== Game art (his order, 2026-10-17): every game is drawn, never a box of words. Vectors, so sharp at any size. ===== */
+let gPick = null;                                    // the game picked in the Game Room (its own screen), or null
+const gPrev = {};                                    // the last board each game was drawn with: what's new animates
+const gCheered = new Set();                          // finished games already celebrated on this phone
+const gSzOn = () => { try { return localStorage.getItem("t7.gsize") === "xl"; } catch { return false; } };
+document.body.dataset.gsize = gSzOn() ? "xl" : "l";
+const gSizeBtn = () => `<button class="icon-btn gsz" data-act="g-size" aria-label="${gSzOn() ? "Make the game smaller" : "Make the game bigger"}">${gSzOn() ? "A−" : "A+"}</button>`;
+const gBack = (act = "games", label = "Back to the Game Room") => `<button class="icon-btn" data-act="${act}" aria-label="${label}">←</button>`;
+const SUIT_PATH = {
+  S: "M50 3C62 22 97 38 97 61C97 76 86 85 73 85C63 85 56 80 53 73C54 85 59 93 68 97H32C41 93 46 85 47 73C44 80 37 85 27 85C14 85 3 76 3 61C3 38 38 22 50 3Z",
+  H: "M50 92C20 68 3 50 3 30C3 15 15 4 29 4C39 4 46 10 50 19C54 10 61 4 71 4C85 4 97 15 97 30C97 50 80 68 50 92Z",
+  D: "M50 2L90 50L50 98L10 50Z",
+  C: "M50 6A21 21 0 1 1 49.9 6ZM27 37A21 21 0 1 1 26.9 37ZM73 37A21 21 0 1 1 72.9 37ZM46 58C46 77 40 88 31 97H69C60 88 54 77 54 58Z"
+};
+function gDefs(){
+  if(document.getElementById("t7-defs")) return;
+  const d = document.createElement("div");
+  d.innerHTML = `<svg id="t7-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    ${Object.entries(SUIT_PATH).map(([k, p]) => `<symbol id="su-${k}" viewBox="0 0 100 100"><path d="${p}"/></symbol>`).join("")}
+    <linearGradient id="cf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1eee6"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".5" stop-color="#f2c23a"/><stop offset="1" stop-color="#a87a10"/></linearGradient>
+    <radialGradient id="skin" cx=".45" cy=".4" r=".65"><stop offset="0" stop-color="#ffe0bd"/><stop offset="1" stop-color="#d9a06a"/></radialGradient>
+    <pattern id="bk" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="22" height="22" fill="#0e4a33"/><path d="M0 11H22M11 0V22" stroke="#d7b45a" stroke-width="1.6" opacity=".55"/><circle cx="11" cy="11" r="3" fill="#d7b45a" opacity=".7"/></pattern>
+  </defs></svg>`;
+  document.body.appendChild(d.firstChild);
+}
+const SUIT_NAME = { S: "spades", H: "hearts", D: "diamonds", C: "clubs" };
+const PIPS = {
+  2: [[125,82],[125,268,1]], 3: [[125,82],[125,175],[125,268,1]],
+  4: [[80,82],[170,82],[80,268,1],[170,268,1]], 5: [[80,82],[170,82],[125,175],[80,268,1],[170,268,1]],
+  6: [[80,82],[170,82],[80,175],[170,175],[80,268,1],[170,268,1]],
+  7: [[80,82],[170,82],[125,128],[80,175],[170,175],[80,268,1],[170,268,1]],
+  8: [[80,82],[170,82],[125,128],[80,175],[170,175],[125,222,1],[80,268,1],[170,268,1]],
+  9: [[80,82],[170,82],[80,144],[170,144],[125,175],[80,206,1],[170,206,1],[80,268,1],[170,268,1]],
+  10: [[80,82],[170,82],[125,113],[80,144],[170,144],[80,206,1],[170,206,1],[125,237,1],[80,268,1],[170,268,1]]
+};
+function cardBack(){
+  return `<svg class="card-svg" viewBox="0 0 250 350" aria-hidden="true"><rect x="2" y="2" width="246" height="346" rx="18" fill="#fdfbf5" stroke="#cfc8b6" stroke-width="2"/>
+    <rect x="14" y="14" width="222" height="322" rx="12" fill="url(#bk)" stroke="#d7b45a" stroke-width="4"/>
+    <circle cx="125" cy="175" r="50" fill="#0e4a33" stroke="#d7b45a" stroke-width="5"/><text x="125" y="193" text-anchor="middle" font-family="Georgia,serif" font-size="50" font-weight="700" fill="#f2d27a">T7</text></svg>`;
+}
+/* a playing card, drawn like a real deck: corner index, pips, original court art, two jokers */
+function svgCard(c){
+  if(c === "BJ" || c === "LJ") return jokerCard(c === "BJ");
+  const s = c[0], r = +c.slice(1), red = s === "H" || s === "D", col = red ? "#d0142c" : "#141414", R = SPR[r] || String(r);
+  const pip = (x, y, z, flip) => `<use href="#su-${s}" x="${x - z/2}" y="${y - z/2}" width="${z}" height="${z}" fill="${col}"${flip ? ` transform="rotate(180 ${x} ${y})"` : ""}/>`;
+  const idx = `<text x="32" y="64" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="${R === "10" ? 46 : 58}" ${R === "10" ? 'letter-spacing="-4"' : ""} fill="${col}">${R}</text>${pip(32, 96, 36)}`;
+  let mid = "";
+  if(r <= 10) mid = PIPS[r].map(([x, y, f]) => pip(x, y, 54, f)).join("");
+  else if(r === 14) mid = (s === "S" ? `<circle cx="125" cy="175" r="88" fill="none" stroke="url(#gold)" stroke-width="5"/><circle cx="125" cy="175" r="78" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="4 5"/>` : "") + pip(125, 172, s === "S" ? 120 : 108);
+  else mid = courtArt(r, s, col);
+  return `<svg class="card-svg" viewBox="0 0 250 350" role="img" aria-label="${R === "J" ? "Jack" : R === "Q" ? "Queen" : R === "K" ? "King" : R === "A" ? "Ace" : R} of ${SUIT_NAME[s]}">
+    <rect x="2" y="2" width="246" height="346" rx="18" fill="url(#cf)" stroke="#cfc8b6" stroke-width="2"/>${idx}<g transform="rotate(180 125 175)">${idx}</g>${mid}</svg>`;
+}
+function courtArt(r, s, col){
+  const robe = s === "H" || s === "D" ? "#c8102e" : "#1d3f8f", trim = "#e2b13c";
+  const half = `<path d="M66 178Q70 128 125 120Q180 128 184 178Z" fill="${robe}" stroke="${trim}" stroke-width="5"/>
+    <path d="M98 126L125 152L152 126" fill="none" stroke="${trim}" stroke-width="6" stroke-linejoin="round"/>
+    <use href="#su-${s}" x="140" y="146" width="26" height="26" fill="url(#gold)"/>
+    ${r === 12 ? `<path d="M96 104Q92 136 104 150M154 104Q158 136 146 150" fill="none" stroke="#5a2e12" stroke-width="9" stroke-linecap="round"/>` : ""}
+    <circle cx="125" cy="98" r="23" fill="url(#skin)" stroke="#8a5a2b" stroke-width="2"/>
+    <circle cx="117" cy="96" r="2.6" fill="#2b1a0e"/><circle cx="133" cy="96" r="2.6" fill="#2b1a0e"/>
+    <path d="M118 108Q125 113 132 108" fill="none" stroke="#8a3b2b" stroke-width="2.4" stroke-linecap="round"/>
+    ${r === 13 ? `<path d="M104 104Q106 132 125 136Q144 132 146 104Q136 116 125 116Q114 116 104 104Z" fill="#e8e2d6" stroke="#9a9488" stroke-width="1.5"/>` : ""}
+    ${r === 11 ? `<path d="M112 110Q118 106 125 109Q132 106 138 110" fill="none" stroke="#5a2e12" stroke-width="3" stroke-linecap="round"/>` : ""}
+    ${r === 13 ? `<path d="M100 80L104 54L115 70L125 46L135 70L146 54L150 80Z" fill="url(#gold)" stroke="#8a6a1c" stroke-width="2"/><circle cx="125" cy="47" r="4" fill="#d0142c"/><circle cx="104" cy="55" r="3.4" fill="#1d6fd8"/><circle cx="146" cy="55" r="3.4" fill="#1d6fd8"/>`
+      : r === 12 ? `<path d="M102 82Q125 50 148 82Z" fill="url(#gold)" stroke="#8a6a1c" stroke-width="2"/><circle cx="125" cy="66" r="5" fill="#1d6fd8"/><circle cx="112" cy="74" r="3" fill="#d0142c"/><circle cx="138" cy="74" r="3" fill="#d0142c"/>`
+      : `<path d="M100 84Q102 60 128 61Q152 64 150 84Z" fill="${robe}" stroke="${trim}" stroke-width="3"/><path d="M146 66Q166 44 158 30Q150 52 140 62Z" fill="#1f9d55" stroke="#0f5a2e" stroke-width="1.5"/>`}`;
+  return `<rect x="54" y="50" width="142" height="250" rx="10" fill="#fff8ea" stroke="${col}" stroke-width="3"/>
+    <clipPath id="cl${r}${s}"><rect x="56" y="52" width="138" height="246" rx="8"/></clipPath>
+    <g clip-path="url(#cl${r}${s})"><g>${half}</g><g transform="rotate(180 125 175)">${half}</g></g>
+    <path d="M56 175H194" stroke="${col}" stroke-width="2"/>`;
+}
+function jokerCard(big){
+  const a = big ? "#d0142c" : "#141414", b = big ? "#6b2bd6" : "#6a6a6a", c = big ? "#f2b400" : "#c9c9c9", word = big ? "BIG" : "LITTLE";
+  const stack = `<text x="30" y="40" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="25" fill="${a}">${"JOKER".split("").map((l, i) => `<tspan x="30" dy="${i ? 25 : 0}">${l}</tspan>`).join("")}</text>`;
+  return `<svg class="card-svg" viewBox="0 0 250 350" role="img" aria-label="${big ? "Big" : "Little"} Joker">
+    <rect x="2" y="2" width="246" height="346" rx="18" fill="url(#cf)" stroke="#cfc8b6" stroke-width="2"/>${stack}<g transform="rotate(180 125 175)">${stack}</g>
+    <path d="M78 150Q70 96 46 82Q86 82 104 120Q112 70 125 54Q138 70 146 120Q164 82 204 82Q180 96 172 150Z" fill="${b}" stroke="#2a2a2a" stroke-width="2.5"/>
+    <path d="M104 120Q112 70 125 54Q138 70 146 120Z" fill="${a}"/>
+    <circle cx="46" cy="82" r="9" fill="${c}" stroke="#2a2a2a" stroke-width="2"/><circle cx="125" cy="52" r="9" fill="${c}" stroke="#2a2a2a" stroke-width="2"/><circle cx="204" cy="82" r="9" fill="${c}" stroke="#2a2a2a" stroke-width="2"/>
+    <rect x="76" y="146" width="98" height="14" rx="6" fill="${c}" stroke="#2a2a2a" stroke-width="2"/>
+    <circle cx="125" cy="190" r="32" fill="url(#skin)" stroke="#8a5a2b" stroke-width="2"/>
+    <circle cx="113" cy="184" r="3.5" fill="#2b1a0e"/><circle cx="137" cy="184" r="3.5" fill="#2b1a0e"/><circle cx="125" cy="194" r="4" fill="${big ? "#d0142c" : "#555"}"/>
+    <path d="M110 203Q125 216 140 203" fill="none" stroke="#8a3b2b" stroke-width="3" stroke-linecap="round"/>
+    <path d="M86 228L98 218L110 230L125 218L140 230L152 218L164 228L150 244H100Z" fill="${a}" stroke="#2a2a2a" stroke-width="2"/>
+    <text x="125" y="290" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="30" fill="${a}">${word}</text></svg>`;
+}
+/* the Game Room's pictures */
+function gArt(k){
+  const S = (body, bg) => `<svg viewBox="0 0 120 120" aria-hidden="true">${bg || ""}${body}</svg>`;
+  if(k === "ttt") return S(`<rect x="6" y="6" width="108" height="108" rx="20" fill="#16204a"/>
+    <path d="M44 16V104M76 16V104M16 44H104M16 76H104" stroke="#ffd36b" stroke-width="5" stroke-linecap="round"/>
+    <path d="M20 20L36 36M36 20L20 36" stroke="#ff3b5c" stroke-width="7" stroke-linecap="round"/><circle cx="60" cy="60" r="10" fill="none" stroke="#2fa8ff" stroke-width="7"/>
+    <path d="M84 84L100 100M100 84L84 100" stroke="#ff3b5c" stroke-width="7" stroke-linecap="round"/><circle cx="92" cy="28" r="10" fill="none" stroke="#2fa8ff" stroke-width="7"/>`);
+  if(k === "c4"){ const d = [[0,3,"r"],[1,3,"y"],[2,3,"r"],[1,2,"r"],[2,2,"y"],[3,3,"y"],[2,1,"r"],[4,3,"r"]];
+    return S(`<defs><radialGradient id="ga-r" cx=".35" cy=".3"><stop offset="0" stop-color="#ffb3b3"/><stop offset=".3" stop-color="#ff4040"/><stop offset="1" stop-color="#9a0812"/></radialGradient>
+      <radialGradient id="ga-y" cx=".35" cy=".3"><stop offset="0" stop-color="#fffbd0"/><stop offset=".3" stop-color="#ffe23a"/><stop offset="1" stop-color="#b07c00"/></radialGradient></defs>
+      <rect x="8" y="30" width="104" height="84" rx="12" fill="#1f63e0" stroke="#7fb0ff" stroke-width="2"/>
+      ${[0,1,2,3,4].map(c => [0,1,2,3].map(r => { const x = d.find(([cc, rr]) => cc === c && rr === r); return `<circle cx="${22 + c*19}" cy="${44 + r*19}" r="7.6" fill="${x ? `url(#ga-${x[2]})` : "#071634"}"/>`; }).join("")).join("")}
+      <circle cx="98" cy="16" r="8" fill="url(#ga-y)"/><path d="M98 26V32" stroke="#ffe23a" stroke-width="2" stroke-dasharray="2 2"/>`); }
+  if(k === "checkers") return S(`<defs><radialGradient id="ga-k" cx=".38" cy=".32"><stop offset="0" stop-color="#ff9a8a"/><stop offset=".35" stop-color="#ff3d2e"/><stop offset="1" stop-color="#7a0c05"/></radialGradient>
+      <radialGradient id="ga-b" cx=".38" cy=".32"><stop offset="0" stop-color="#999"/><stop offset=".35" stop-color="#3c3c3c"/><stop offset="1" stop-color="#000"/></radialGradient></defs>
+    <rect x="6" y="6" width="108" height="108" rx="12" fill="#6b3a17"/>
+    ${[0,1,2,3].map(r => [0,1,2,3].map(c => `<rect x="${16 + c*22}" y="${16 + r*22}" width="22" height="22" fill="${(r + c) % 2 ? "#6a3f1c" : "#f1d7a4"}"/>`).join("")).join("")}
+    <circle cx="49" cy="27" r="9" fill="url(#ga-b)"/><circle cx="93" cy="27" r="9" fill="url(#ga-b)"/><circle cx="27" cy="93" r="9" fill="url(#ga-k)"/>
+    <circle cx="71" cy="71" r="10" fill="url(#ga-k)"/><path d="M64 74L65 66L68 70L71 63L74 70L77 66L78 74Z" fill="#ffd84d"/>`);
+  if(k === "spades") return S(`<g transform="rotate(-20 40 100)"><rect x="18" y="26" width="48" height="70" rx="7" fill="#fff" stroke="#bbb"/><text x="27" y="44" font-family="Georgia,serif" font-weight="700" font-size="15" fill="#141414">A</text><use href="#su-S" x="27" y="50" width="30" height="30" fill="#141414"/></g>
+    <g transform="rotate(16 80 100)"><rect x="56" y="26" width="48" height="70" rx="7" fill="#fff" stroke="#bbb"/><text x="65" y="44" font-family="Georgia,serif" font-weight="700" font-size="15" fill="#d0142c">2</text><use href="#su-D" x="65" y="50" width="30" height="30" fill="#d0142c"/></g>
+    <g><rect x="36" y="18" width="48" height="70" rx="7" fill="#fff" stroke="#bbb"/><path d="M46 56Q44 38 38 34Q52 34 56 46Q58 30 60 26Q62 30 64 46Q68 34 82 34Q76 38 74 56Z" fill="#6b2bd6" stroke="#222" stroke-width="1"/><circle cx="60" cy="66" r="8" fill="#ffd9b0" stroke="#8a5a2b"/><text x="60" y="84" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="8" fill="#d0142c">BIG JOKER</text></g>`);
+  if(k === "trivia") return S(`<defs><radialGradient id="ga-m" cx=".4" cy=".35"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#b9b9c9"/><stop offset="1" stop-color="#5d5d73"/></radialGradient></defs>
+    <path d="M60 4L64 14L75 14L66 21L69 32L60 25L51 32L54 21L45 14L56 14Z" fill="#ffd84d"/><path d="M18 30L20 36L26 36L21 40L23 46L18 42L13 46L15 40L10 36L16 36Z" fill="#ff5cc8"/><path d="M102 34L104 40L110 40L105 44L107 50L102 46L97 50L99 44L94 40L100 40Z" fill="#5ce1ff"/>
+    <circle cx="60" cy="52" r="20" fill="url(#ga-m)" stroke="#333" stroke-width="1.5"/><path d="M44 46H76M42 54H78M46 62H74" stroke="#55556a" stroke-width="1.6"/>
+    <rect x="52" y="70" width="16" height="10" rx="2" fill="#ffd84d"/><rect x="56" y="80" width="8" height="24" rx="3" fill="#2a2a3a"/><rect x="42" y="102" width="36" height="8" rx="4" fill="#2a2a3a"/>
+    <circle cx="96" cy="86" r="14" fill="#fff"/><text x="96" y="93" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="20" fill="#c42dff">?</text>`);
+  if(k === "feud") return S(`<rect x="8" y="12" width="104" height="96" rx="12" fill="#0b2a7a" stroke="#e9b23a" stroke-width="4"/>
+    ${[0,1,2].map(i => `<rect x="18" y="${24 + i*24}" width="84" height="18" rx="5" fill="${i ? "#2b6dff" : "#ffffff"}"/><circle cx="29" cy="${33 + i*24}" r="6" fill="${i ? "#0d2c86" : "#e9b23a"}" stroke="#e9b23a" stroke-width="1.5"/>`).join("")}
+    <text x="39" y="36.5" font-family="Arial,sans-serif" font-weight="900" font-size="7.6" fill="#0b1d55">SURVEY SAYS</text>
+    <path d="M70 70L104 104M104 70L70 104" stroke="#ff2d4a" stroke-width="10" stroke-linecap="round"/>`);
+  return "";
+}
+const GTILES = [["ttt","Tic-Tac-Toe","Three in a row","gt-ttt"],["c4","Connect Four","Drop four in a row","gt-c4"],["checkers","Checkers","Slide, jump, get crowned","gt-ck"],
+  ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"]];
+const GTILE_BG = Object.fromEntries(GTILES.map(t => [t[0], t[3]]));
+function gLiveRow(g){
+  const me = gMySide(g), mine = gMine(g), tv = g.kind === "trivia";
+  const note = g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
+  return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic ${GTILE_BG[g.kind]}" style="width:48px;height:48px;border-radius:14px;padding:4px">${gArt(g.kind === "trivia" ? "trivia" : g.kind)}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`;
+}
 function sheetGames(){
-  gView = null; gSel = null;
+  gView = null; gSel = null; gDefs();
+  if(gPick){ sheetGamePick(gPick); return; }
   const live = (st.games || []).filter(g => g.status === "live").sort((a, b) => gMine(b) - gMine(a) || b.t - a.t);
   const done = (st.games || []).filter(g => g.status === "done").sort((a, b) => b.t - a.t).slice(0, 5);
-  const table = gStandings();
-  openSheet(`<div class="sheet-head" data-room><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Play at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <div class="lbl">PASS &amp; PLAY ON THIS PHONE</div>
-    <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn" data-act="g-local" data-k="${k}">${l}</button>`).join("")}</div>
-    <div class="lbl">PLAY THE FAMILY · EACH ON THEIR OWN PHONE</div>
-    <div class="actions">${Object.entries(GAMES).map(([k, l]) => `<button class="btn wine" data-act="g-new" data-k="${k}">${l}</button>`).join("")}</div>
-    <div class="lbl">♠️ SPADES FOR COUPLES · JOKERS &amp; DEUCES</div>
-    <div class="actions"><button class="btn wine" data-act="sp-new">Deal a game of Spades</button></div>
-    <div class="lbl">🎤 TRIVIA NIGHT · MUSIC, TV &amp; MOVIES, BIBLE</div>
-    <div class="actions"><button class="btn primary" data-act="tv-new" data-k="table">At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">Family teams · own phones</button></div>
-    <div class="lbl">📋 FAMILY FEUD · THE FAMILY IS THE SURVEY</div>
-    ${feudRoom()}
-    ${live.length ? `<div class="lbl">GAMES IN PLAY</div>${live.map(g => { const me = gMySide(g), mine = gMine(g);
-      const tv = g.kind === "trivia", note = g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
-      return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic">${g.kind === "spades" ? "♠️" : gFeud(g) ? "📋" : tv ? "🎤" : "🎲"}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
+  const table = gStandings(), myMoves = live.filter(gMine).length;
+  const waiting = k => live.filter(g => g.kind === k && gMine(g)).length + (k === "feud" ? (st.surveys || []).filter(x => x.status === "open" && !x.answered.includes(st.me)).length : 0);
+  openSheet(`<div class="sheet-head" data-room><button class="icon-btn" data-act="close" aria-label="Close the Game Room">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Let's play!</h2></div>${gSizeBtn()}</div>
+    ${myMoves ? `<div class="gstatus go">It's your move in ${myMoves} ${myMoves === 1 ? "game" : "games"}</div>` : ""}
+    <div class="gtiles">${GTILES.map(([k, l, sub, bg]) => { const n = waiting(k);
+      return `<button class="gtile ${bg}" data-act="g-pick" data-k="${k}" aria-label="${l}">${n ? `<span class="badge">${n}</span>` : ""}${gArt(k)}<span><b>${l}</b><small>${sub}</small></span></button>`; }).join("")}</div>
+    ${live.length ? `<div class="lbl">GAMES IN PLAY</div><div style="display:grid;gap:8px">${live.map(gLiveRow).join("")}</div>` : ""}
     <div class="lbl">🏆 FAMILY STANDINGS</div>
-    ${table.length ? table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${i + 1}. ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("") : `<div class="empty">No family games finished yet. Pass &amp; play and at-the-table trivia don't count.</div>`}
+    ${table.length ? `<div style="display:grid;gap:8px">${table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${["🥇","🥈","🥉"][i] || (i + 1) + "."} ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("")}</div>` : `<div class="empty">No family games finished yet. Pass &amp; play and at-the-table trivia don't count.</div>`}
     ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
+}
+function sheetGamePick(k){
+  const t = GTILES.find(x => x[0] === k); if(!t){ gPick = null; sheetGames(); return; }
+  const live = (st.games || []).filter(g => g.status === "live" && g.kind === k);
+  const how = {
+    ttt: "Get three in a row: across, down or corner to corner.", c4: "Drop your discs. Four in a row wins, any direction.",
+    checkers: "Slide your piece with your finger. Jumps must be taken; reach the far side to be crowned.",
+    spades: "Two couples, partners across. Big Joker, Little Joker, 2♠, 2♦ are the top trumps.",
+    trivia: "Ten questions on Music, TV & Movies and the Bible, against the clock. Time's up? The other team can steal.",
+    feud: "The family is the survey: everyone answers privately, then one of us runs the board."}[k];
+  const modes = ["ttt", "c4", "checkers"].includes(k) ? `<button class="btn primary" data-act="g-local" data-k="${k}">📱 Pass &amp; play on this phone</button><button class="btn wine" data-act="g-new" data-k="${k}">👨‍👩‍👧 Play the family · own phones</button>`
+    : k === "spades" ? `<button class="btn primary" data-act="sp-new">🃏 Deal a game of Spades</button>`
+    : k === "trivia" ? `<button class="btn primary" data-act="tv-new" data-k="table">📱 At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">👨‍👩‍👧 Family teams · own phones</button>`
+    : `<div style="width:min(100%,460px);display:grid;gap:10px">${feudRoom()}</div>`;
+  openSheet(`<div class="sheet-head" data-room>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>${t[1]}</h2></div>${gSizeBtn()}</div>
+    <div class="gpick"><div class="art ${t[3]}">${gArt(k)}</div><p class="small" style="margin:0;max-width:44ch">${how}</p>${modes}</div>
+    ${live.length ? `<div class="lbl">${t[1].toUpperCase()} IN PLAY</div><div style="display:grid;gap:8px">${live.map(gLiveRow).join("")}</div>` : ""}`);
+}
+/* the head of every game screen: back, title, the size button */
+const gHead = (eyebrow, title) => `<div class="sheet-head" data-game>${gBack()}<div style="flex:1;min-width:0"><div class="eyebrow">${eyebrow}</div><h2>${title}</h2></div>${gSizeBtn()}</div>`;
+const gScore = (n0, n1, s0, s1, on) => `<div class="gscore"><div class="team ${on === 0 ? "on" : ""}"><b>${n0}</b>${s0 === "" ? "" : `<div class="pts">${s0}</div>`}</div><span class="vs">VS</span><div class="team ${on === 1 ? "on" : ""}"><b>${n1}</b>${s1 === "" ? "" : `<div class="pts">${s1}</div>`}</div></div>`;
+function gCheer(g){
+  if(g.status !== "done" || g.why === "stopped") return;
+  if(g.local){ if(gView.cheered) return; gView.cheered = true; }
+  else { if(gCheered.has(g.id)) return; gCheered.add(g.id); }
+  const mine = g.local || g.table || (g.me >= 0 && g.winner === g.me) || (g.kind === "spades" && g.winner === g.st.seats.indexOf(st.me) % 2) || g.judge;
+  if(!mine || g.winner === 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box = document.createElement("div"); box.className = "confetti"; const cols = ["#ff3b5c","#ffd36b","#2fa8ff","#2fe08a","#b45cff","#ff8a1f"];
+  box.innerHTML = Array.from({length:110}, () => `<i style="left:${Math.random() * 100}%;background:${cols[Math.floor(Math.random() * cols.length)]};animation-duration:${2 + Math.random() * 2}s;animation-delay:${Math.random() * .6}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join("");
+  document.body.appendChild(box); setTimeout(() => box.remove(), 4800);
+}
+/* Tic-Tac-Toe colours: each player picks theirs (kept on this phone) */
+const TCOLS = ["#ff3b5c","#ff8a1f","#ffc928","#2fd47a","#2fa8ff","#b45cff","#ff5cc8"];
+function tttCols(){ try { const c = JSON.parse(localStorage.getItem("t7.tttcol") || "null"); if(Array.isArray(c) && c.length === 2) return c; } catch {} return ["#ff3b5c", "#2fa8ff"]; }
+const TTT_WIN = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function c4Line(b){ for(let r = 0; r < 6; r++) for(let c = 0; c < 7; c++) for(const [dr, dc] of [[0,1],[1,0],[1,1],[1,-1]]){
+  const cells = [0,1,2,3].map(k => [r + k*dr, c + k*dc]); if(cells.every(([y, x]) => y >= 0 && y < 6 && x >= 0 && x < 7) && b[r*7+c] !== null && cells.every(([y, x]) => b[y*7+x] === b[r*7+c])) return cells.map(([y, x]) => y*7+x); } return []; }
+const CROWN = `<svg viewBox="0 0 40 30" aria-hidden="true"><path d="M3 27L5 8L13 17L20 3L27 17L35 8L37 27Z" fill="url(#gold)" stroke="#7a5410" stroke-width="2" stroke-linejoin="round"/></svg>`;
+function drawGame(){
+  gDefs();
+  const g = gCurrent(); if(!g){ sheetGames(); return; }
+  if(g.kind === "trivia"){ drawTrivia(g); gCheer(g); return; }
+  if(g.kind === "feud"){ drawFeud(g); gCheer(g); return; }
+  if(g.kind === "spades"){ drawSpades(g); gCheer(g); return; }
+  const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
+  const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
+  const key = (g.id || "local") + ":" + g.kind, prev = gPrev[key], b = g.st.b; gPrev[key] = b.map(x => x ? JSON.stringify(x) : null);
+  const isNew = i => prev && b[i] !== null && JSON.stringify(b[i]) !== prev[i];
+  const tc = tttCols(), mark = s => s === 0 ? `<svg viewBox="0 0 100 100"><path class="xo" pathLength="1" d="M17 17L83 83" stroke="${tc[0]}" style="filter:drop-shadow(0 0 6px ${tc[0]})"/><path class="xo" pathLength="1" d="M83 17L17 83" stroke="${tc[0]}" style="filter:drop-shadow(0 0 6px ${tc[0]})"/></svg>`
+    : `<svg viewBox="0 0 100 100"><circle class="xo" pathLength="1" cx="50" cy="50" r="33" stroke="${tc[1]}" transform="rotate(-90 50 50)" style="filter:drop-shadow(0 0 6px ${tc[1]})"/></svg>`;
+  const pieceName = s => g.kind === "ttt" ? `<span style="color:${tc[s]}">${look[s]}</span>` : look[s];
+  let board = "", extra = "";
+  if(g.kind === "ttt"){
+    const win = g.status === "done" && g.winner < 2 ? (TTT_WIN.find(l => l.every(i => b[i] === g.winner)) || []) : [];
+    board = `<div class="gboard ttt">${b.map((v, i) => `<button class="${isNew(i) ? "new" : ""} ${win.includes(i) ? "win" : ""}" data-act="g-move" data-m='${JSON.stringify({i})}' ${myTurn && v === null ? "" : "disabled"} aria-label="Square ${i + 1}${v === null ? "" : ", " + look[v]}">${v === null ? "" : mark(v)}</button>`).join("")}</div>`;
+    extra = `<div class="tcol">${[0, 1].map(s => `<span>${look[s]}</span>${TCOLS.map(c => `<button style="background:${c}" data-act="ttt-col" data-s="${s}" data-c="${c}" aria-pressed="${tc[s] === c}" aria-label="${look[s]} colour"></button>`).join("")}`).join(`<span style="width:12px"></span>`)}</div>`;
+  }
+  if(g.kind === "c4"){
+    const win = g.status === "done" && g.winner < 2 ? c4Line(b) : [];
+    board = `<div class="gboard c4">${b.map((v, i) => `<button class="${isNew(i) ? "new" : ""} ${win.includes(i) ? "win" : ""}" style="--r:${Math.floor(i / 7) + 1}" data-act="g-move" data-m='${JSON.stringify({c:i % 7})}' ${myTurn && b[i % 7] === null ? "" : "disabled"} aria-label="Column ${i % 7 + 1}">${v === null ? "" : `<span class="gp p${v}"></span>`}</button>`).join("")}</div>`;
+  }
+  if(g.kind === "checkers"){
+    const froms = new Set(legal.map(m => m.f)), tos = new Set(legal.filter(m => m.f === gSel).map(m => m.t));
+    const flip = !g.local && g.me === 1, order = [...Array(64).keys()]; if(flip) order.reverse();
+    board = `<div class="ckwrap"><div class="gboard ck">${order.map(i => { const p = b[i], dk = (Math.floor(i / 8) + i % 8) % 2 === 1;
+      return `<button class="${dk ? "dk" : ""} ${gSel === i ? "sel" : ""} ${tos.has(i) ? "to" : ""} ${isNew(i) ? "new" : ""}" data-act="g-ck" data-i="${i}" ${dk && (froms.has(i) || tos.has(i)) ? "" : "disabled"} aria-label="Square ${i}${p ? (p.s ? ", black" : ", red") + (p.k ? " king" : "") : ""}">${p ? `<span class="gp p${p.s} ${froms.has(i) ? "can" : ""}" data-from="${froms.has(i) ? i : ""}">${p.k ? CROWN : ""}</span>` : ""}</button>`; }).join("")}</div></div>`;
+  }
+  const status = g.status === "done" ? (g.winner === 2 ? `🤝 A draw (${esc(g.why)})` : `🏆 ${esc(g.names[g.winner])} won! (${esc(g.why)})`)
+    : myTurn ? `Your move${g.local ? `, ${esc(g.names[g.turn])}` : ""}: ${pieceName(g.turn)}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping!" : ""}` : `Waiting on ${esc(g.names[g.turn])} (${pieceName(g.turn)})`;
+  openSheet(`${gHead(`${GAMES[g.kind]}${g.local ? " · pass & play" : ""}`, GAMES[g.kind])}
+    ${gScore(`${esc(g.names[0])} · ${pieceName(0)}`, `${esc(g.names[1])} · ${pieceName(1)}`, "", "", g.status === "live" ? g.turn : -1)}
+    <div class="gstatus ${g.status === "done" ? "win" : myTurn ? "go" : ""}">${status}</div>
+    ${board}
+    ${extra}
+    <div class="actions" style="justify-content:center">${g.status === "live" ? (g.local || g.me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>
+    ${g.kind === "checkers" ? `<p class="small muted" style="margin:0;text-align:center">Slide a glowing piece with your finger to a gold dot (or tap the piece, then the dot). A jump must be taken; keep jumping when you can. Reach the far row to be crowned.</p>` : ""}`);
+  gCheer(g);
+}
+/* Checkers: slide a piece with a finger. The piece follows the finger; the squares it may land on glow. */
+let ckDrag = null, ckNoClick = 0;
+document.addEventListener("pointerdown", e => {
+  const p = e.target.closest(".gboard.ck .gp.can"); if(!p) return;
+  const from = +p.dataset.from, g = gCurrent(); if(!g || g.kind !== "checkers") return;
+  const tos = gameLegal(g.kind, g.st, g.turn).filter(m => m.f === from).map(m => m.t); if(!tos.length) return;
+  e.preventDefault();
+  const r = p.getBoundingClientRect(), ghost = document.createElement("div"); ghost.className = "ckghost ck";
+  ghost.style.cssText = `width:${r.width}px;height:${r.height}px;left:${e.clientX}px;top:${e.clientY}px`; ghost.innerHTML = p.outerHTML;
+  ckDrag = {from, tos, x0:e.clientX, y0:e.clientY, ghost, piece:p, moved:false};
+  document.querySelectorAll(".gboard.ck button").forEach(b2 => { b2.classList.toggle("to", tos.includes(+b2.dataset.i)); b2.classList.toggle("sel", +b2.dataset.i === from); });
+});
+document.addEventListener("pointermove", e => {
+  if(!ckDrag) return;
+  if(!ckDrag.moved && Math.hypot(e.clientX - ckDrag.x0, e.clientY - ckDrag.y0) > 6){ ckDrag.moved = true; document.body.appendChild(ckDrag.ghost); ckDrag.piece.style.opacity = ".25"; }
+  if(!ckDrag.moved) return;
+  ckDrag.ghost.style.left = e.clientX + "px"; ckDrag.ghost.style.top = e.clientY + "px";
+  const over = document.elementFromPoint(e.clientX, e.clientY)?.closest(".gboard.ck button");
+  document.querySelectorAll(".gboard.ck button.hot").forEach(x => x.classList.remove("hot"));
+  if(over && ckDrag.tos.includes(+over.dataset.i)) over.classList.add("hot");
+});
+const ckEnd = e => {
+  if(!ckDrag) return; const d = ckDrag; ckDrag = null; d.ghost.remove(); d.piece.style.opacity = "";
+  if(!d.moved){ gSel = d.from; return; }                      // a tap: the click that follows shows the dots
+  ckNoClick = Date.now() + 400;
+  const over = e.type === "pointerup" ? document.elementFromPoint(e.clientX, e.clientY)?.closest(".gboard.ck button") : null;
+  if(over && d.tos.includes(+over.dataset.i)){ gSel = null; gMove({f:d.from, t:+over.dataset.i}); }
+  else { gSel = null; drawGame(); }
+};
+document.addEventListener("pointerup", ckEnd); document.addEventListener("pointercancel", ckEnd);
+document.addEventListener("click", e => { if(Date.now() < ckNoClick && e.target.closest(".gboard.ck")){ e.stopPropagation(); e.preventDefault(); } }, true);
+/* Spades on a felt table */
+let spPick = null;
+function drawSpades(g){
+  const s = g.st, live = g.status === "live", mySeat = s.seats.indexOf(st.me), key = `${g.id}:${g.moves}`;
+  if(live && mySeat >= 0 && !spHands[key]){ spHands[key] = "…"; gamesCall({action:"hand", id:g.id}).then(d => { spHands[key] = d.ok ? d.hand : null; if(!d.ok) setTimeout(() => { delete spHands[key]; if(gView?.id === g.id) drawGame(); }, 1500); if(gView?.id === g.id) drawGame(); }); }
+  const hand = Array.isArray(spHands[key]) ? spHands[key] : null, myTurn = live && s.seat === mySeat;
+  const legal = myTurn && hand ? spLegal(s, hand) : [];
+  if(spPick && !legal.includes(spPick)) spPick = null;
+  const base = mySeat >= 0 ? mySeat : 0, pos = k => (k - base + 4) % 4;          // 0 = me (bottom), 1 = left, 2 = across, 3 = right
+  const who = k => F(s.seats[k]), nm = k => esc(first(who(k)?.name || "Seat " + (k + 1)));
+  const seat = k => `<div class="seat s${pos(k)} ${live && s.seat === k ? "turn" : ""}"><span class="who"><i style="background:${who(k)?.color || "#555"}">${esc((who(k)?.name || "?")[0])}</i>${k === mySeat ? "You" : nm(k)}</span>
+      <span class="tk">${s.bids[k] === null ? (s.phase === "bid" && s.seat === k ? "bidding…" : "no bid yet") : `Bid ${s.bids[k] === 0 ? "Nil" : s.bids[k]} · Won ${s.tricks[k]}`}</span>${k !== mySeat && live ? `<span class="backs">${Array.from({length:Math.min(s.counts?.[k] ?? 0, 7)}, cardBack).join("")}</span>` : ""}</div>`;
+  const shown = s.trick.length ? s.trick : (s.last && live ? s.last.trick : []), won = !s.trick.length && s.last ? s.last.winner : null;
+  const trick = `<div class="trick">${shown.map(t => `<div class="tc t${pos(t.seat)} ${won === t.seat ? "won" : ""}">${svgCard(t.card)}</div>`).join("")}</div>`;
+  const L = s.lastHand, lastLine = L && s.phase === "bid" && s.bids.every(b => b === null) ? `<div class="strip"><span class="small">Hand ${L.hand}: ${L.res.map((r, t) => `${esc(g.names[t])} bid ${r.bid}, took ${r.won}${r.notes.map(n => n.nil ? " · nil made" : " · nil broken").join("")} → ${r.pts > 0 ? "+" : ""}${r.pts}`).join(" · ")}</span></div>` : "";
+  const status = !live ? (g.why === "stopped" ? "Game stopped" : `🏆 ${esc(g.names[g.winner])} won Spades, ${esc(g.why)}`)
+    : s.phase === "bid" ? (myTurn ? "Your bid: how many tricks will you take?" : `${nm(s.seat)} is bidding…`)
+    : myTurn ? (s.trick.length ? "Your turn: follow suit if you can" : "Your lead") : `${nm(s.seat)} to play…`;
+  const bidPad = myTurn && s.phase === "bid" ? `<div class="bidpad" style="margin-inline:auto">${Array.from({length:14}, (_, b) => `<button class="chip ${b === 0 ? "nil" : ""}" data-act="g-move" data-m='${JSON.stringify({bid:b})}' aria-label="Bid ${b === 0 ? "nil" : b}">${b === 0 ? "NIL" : b}</button>`).join("")}</div>` : "";
+  let handRow = "";
+  if(mySeat >= 0 && live){
+    if(!hand) handRow = `<p class="small muted" style="text-align:center;margin:0">Picking up your cards…</p>`;
+    else { const rows = innerWidth < 640 && hand.length > 7 ? [hand.slice(0, Math.ceil(hand.length / 2)), hand.slice(Math.ceil(hand.length / 2))] : [hand];
+      handRow = `<div class="hand">${rows.map(row => { const k = row.length, cw = `min(calc((min(100vw, 900px) - 44px) / ${(k - 1) * 0.66 + 1}), ${Math.round(118 * (gSzOn() ? 1.2 : 1))}px)`;
+        return `<div class="row" style="--cw:${cw}">${row.map(c => { const ok = s.phase === "play" && legal.includes(c);
+          return `<button class="pcard ${ok ? "ok" : ""} ${spPick === c ? "pick" : ""}" data-act="sp-card" data-c="${c}" ${ok ? "" : "disabled"} aria-label="${esc(svgCard(c).match(/aria-label="([^"]+)"/)?.[1] || c)}${ok ? ", you can play it" : ""}">${svgCard(c)}</button>`; }).join("")}</div>`; }).join("")}</div>
+      ${spPick ? `<button class="btn primary block" data-act="g-move" data-m='${JSON.stringify({card:spPick})}' style="max-width:460px;margin-inline:auto">Play ${esc(svgCard(spPick).match(/aria-label="([^"]+)"/)?.[1] || "")}</button>` : myTurn && s.phase === "play" ? `<p class="small muted" style="text-align:center;margin:0">Tap a glowing card, then tap it again (or Play) to put it down.</p>` : ""}`; }
+  }
+  openSheet(`${gHead(`Spades · hand ${s.hand} · to ${s.target}${s.broken ? " · spades broken" : ""}`, "♠ Spades")}
+    ${gScore(esc(g.names[0]), esc(g.names[1]), `${s.score[0]}<small style="font-size:.4em;color:#b8c4dc;display:block">bags ${s.bags?.[0] ?? 0}</small>`, `${s.score[1]}<small style="font-size:.4em;color:#b8c4dc;display:block">bags ${s.bags?.[1] ?? 0}</small>`, live ? s.seat % 2 : -1)}
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    ${lastLine}
+    <div class="felt">${[0, 1, 2, 3].map(seat).join("")}${trick}</div>
+    ${handRow}
+    ${bidPad}
+    <div class="actions" style="justify-content:center">${live ? (mySeat >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign for our team</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>`);
+}
+/* Trivia Night: a game-show stage and a countdown ring. The server keeps the time (functions/games). */
+const tvClock = {};                          // game:move -> when this phone first saw that question (and whether time's-up was sent)
+let tvTick = null;
+function tvLeft(g){ const k = `${g.id}:${g.moves}`, c = tvClock[k] ||= {t0:Date.now(), sent:false}; return {k, c, left:Math.max(0, g.st.secs - (Date.now() - c.t0) / 1000)}; }
+function tvTickStart(){
+  clearInterval(tvTick);
+  tvTick = setInterval(() => {
+    const ring = document.getElementById("tv-ring"), g = gCurrent();
+    if(!ring || !g || g.kind !== "trivia" || g.status !== "live" || !g.st.secs){ clearInterval(tvTick); tvTick = null; return; }
+    const {c, left} = tvLeft(g), arc = ring.querySelector(".arc"), num = ring.querySelector(".num");
+    arc.style.strokeDashoffset = String(1 - left / g.st.secs); num.textContent = Math.ceil(left);
+    ring.classList.toggle("low", left <= 5); arc.style.stroke = left <= 5 ? "#ff5c7a" : left <= 10 ? "#ffd84d" : "#2fe08a";
+    const player = g.table || g.me >= 0 || (st.games.find(x => x.id === g.id)?.a || []).concat(st.games.find(x => x.id === g.id)?.b || []).includes(st.me);
+    if(left <= 0 && !c.sent && player){ c.sent = true;
+      gamesCall({action:"move", id:g.id, mv:{timeout:true}, at:g.moves}).then(async d => { if(!d.ok && d.code === "early"){ setTimeout(() => { c.sent = false; }, 900); return; } await refresh(true); if(gView?.id === g.id) drawGame(); }); }
+  }, 200);
+}
+function drawTrivia(g){
+  const s = g.st, live = g.status === "live", myTurn = live && g.me === g.turn, L = s.last;
+  const last = !L ? "" : L.timeout && !L.answer ? `<div class="tvlast time">⏱ Time's up for <b>${esc(g.names[L.side])}</b>! <b>${esc(g.names[1 - L.side])}</b> can steal it.</div>`
+    : L.timeout ? `<div class="tvlast time">⏱ Time's up! It was <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`
+    : L.right ? `<div class="tvlast ok">✓ <b>${esc(g.names[L.side])}</b> ${L.stole ? "stole it" : "got it"}: <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`
+    : `<div class="tvlast no">✗ <b>${esc(g.names[L.side])}</b> missed it. It was <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`;
+  const status = !live ? (g.why === "stopped" ? "Game stopped early" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won, ${esc(g.why)}`)
+    : myTurn ? (g.table ? `${esc(g.names[g.turn])}, this one's yours!` : s.steal ? "Steal it! Your team's chance" : "Your team's question!") : `${esc(g.names[g.turn])} ${s.steal ? "is trying to steal" : "is answering"}…`;
+  const left = live && s.secs ? tvLeft(g).left : 0, shapes = ["▲", "◆", "●", "■"];
+  openSheet(`${gHead(`Trivia Night · ${esc(TCATS[s.cat] || "")}`, "🎤 Trivia Night")}
+    ${gScore(esc(g.names[0]), esc(g.names[1]), s.score[0], s.score[1], live ? g.turn : -1)}
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    ${last}
+    ${live ? `<div class="tvstage"><div class="tvmeta"><span class="eyebrow" style="color:#ffd9ff">Question ${s.n} of ${s.total} · ${esc(s.q.cat)} ${s.steal ? `<span class="steal">STEAL</span>` : ""}</span>
+        ${s.secs ? `<div class="ring" id="tv-ring" role="timer" aria-label="Seconds left"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10"/><circle class="arc" pathLength="1" cx="50" cy="50" r="44" fill="none" stroke="#2fe08a" stroke-width="10" stroke-linecap="round" stroke-dasharray="1" style="stroke-dashoffset:${1 - left / s.secs};transition:stroke-dashoffset .2s linear"/></svg><span class="num">${Math.ceil(left)}</span></div>` : ""}</div>
+      <div class="tvq">${esc(s.q.text)}</div>
+      <div class="tvans">${s.q.options.map((o, i) => `<button class="tva a${i}" data-act="g-move" data-m='${JSON.stringify({pick:i})}' ${myTurn ? "" : "disabled"}><span class="k" aria-hidden="true">${shapes[i]}</span><span><b>${"ABCD"[i]}.</b> ${esc(o)}</span></button>`).join("")}</div></div>` : ""}
+    <div class="actions" style="justify-content:center">${live ? (g.me >= 0 || g.table ? `<button class="btn sm ghost" data-act="g-resign">${g.table ? "End the game" : "Resign"}</button>` : "") : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>`);
+  if(live && s.secs) tvTickStart();
+}
+/* Family Feud: the TV board */
+const feudPeek = {};      // the judge's own copy of this round's board, fetched from the server
+function drawFeud(g){
+  const s = g.st, live = g.status === "live", key = `${g.id}:${s.round}`, L = s.last || {};
+  if(g.judge && live && !feudPeek[key]){ feudPeek[key] = "…"; gamesCall({action:"peek", id:g.id}).then(d => { feudPeek[key] = d.ok ? d.board : null; if(gView?.id === g.id) drawGame(); }); }
+  const board = g.judge && Array.isArray(feudPeek[key]) ? feudPeek[key] : null;
+  const pk = "feud:" + key, prev = gPrev[pk] || []; gPrev[pk] = s.shown.map(x => !!x);
+  const prevStrikes = gPrev[pk + ":x"] ?? s.strikes; gPrev[pk + ":x"] = s.strikes;
+  const say = s.phase === "between" ? (L.round ? `🏆 ${esc(g.names[L.round.win])} ${L.kind === "stole" ? "stole the round" : "won the round"}: +${L.round.bank}` : "")
+    : s.phase === "steal" ? `${esc(g.names[s.turn])} can steal with one guess!` : `${esc(g.names[s.turn])} is guessing`;
+  const lastLine = L.kind === "hit" ? `✓ ${esc(L.t)} · ${L.n}` : L.kind === "nosteal" ? `✗ No steal: the bank goes to ${esc(g.names[1 - L.side])}` : L.kind === "stole" ? `✓ Stolen with ${esc(L.t)}` : "";
+  const status = !live ? (g.why === "stopped" ? "Game stopped" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won Family Feud, ${esc(g.why)}`) : say;
+  const slots = Array.from({length:s.slots}, (_, i) => { const x = s.shown[i];
+    return `<div class="fslot ${x ? "open" : ""} ${x && prev.length && !prev[i] ? "new" : ""}"><div class="in"><span class="n">${i + 1}</span><span style="min-width:0;overflow-wrap:anywhere">${x ? esc(x.t) : ""}</span>${x ? `<span class="pts">${x.n}</span>` : ""}</div>
+      ${g.judge && live && s.phase !== "between" && !x && board ? `<button class="btn sm primary" style="margin-top:6px;width:100%" data-act="g-move" data-m='${JSON.stringify({reveal:i})}'>Reveal: ${esc(board[i]?.t || "")} (${board[i]?.n ?? ""})</button>` : ""}</div>`; }).join("");
+  openSheet(`${gHead(`Family Feud · round ${s.round} of ${s.rounds} · judge ${esc(first(F(g.by)?.name || "family"))}`, "📋 Family Feud")}
+    ${gScore(esc(g.names[0]), esc(g.names[1]), s.score[0], s.score[1], live && s.phase !== "between" ? s.turn : -1)}
+    <div class="gstatus ${!live ? "win" : ""}">${status}</div>
+    <div class="card" style="text-align:center"><div class="eyebrow">We asked ${s.people} of the family</div><div class="tvq" style="font-size:calc(21px*var(--gs))">${esc(s.prompt)}</div>${lastLine ? `<div class="small">${lastLine}</div>` : ""}</div>
+    ${s.phase !== "between" ? `<div class="bank">BANK ${s.bank}</div>` : ""}
+    <div class="fboard ${s.slots > 4 ? "two" : ""}">${slots}</div>
+    ${live && s.phase !== "between" ? `<div class="strikes" aria-label="${s.strikes} strikes">${Array.from({length:s.strikes}, (_, i) => `<svg class="${i >= prevStrikes ? "new" : ""}" viewBox="0 0 100 100" aria-hidden="true"><path d="M20 20L80 80M80 20L20 80" stroke="#ff2d4a" stroke-width="20" stroke-linecap="round"/><path d="M20 20L80 80M80 20L20 80" stroke="#ff8a9b" stroke-width="6" stroke-linecap="round" opacity=".6"/></svg>`).join("")}</div>` : ""}
+    ${g.judge && live ? `<div class="actions" style="justify-content:center">${s.phase === "between" ? `<button class="btn primary" data-act="g-move" data-m='{"next":true}'>Next round</button>` : `<button class="btn wine" data-act="g-move" data-m='{"strike":true}'>${s.phase === "steal" ? "✕ No steal" : "✕ Strike"}</button>`}<button class="btn sm ghost" data-act="g-resign">Stop the game</button></div>
+      ${board ? "" : `<p class="small muted" style="margin:0;text-align:center">Loading your answer key…</p>`}` : live ? `<p class="small muted" style="margin:0;text-align:center">The judge runs the board. Call out your answers!</p>` : `<div class="actions" style="justify-content:center"><button class="btn primary" data-act="games">Back to the Game Room</button></div>`}`);
 }
 function sheetGameNew(kind){
   const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
   const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">New family game</div><h2>${GAMES[kind]}</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">New family game</div><h2>${GAMES[kind]}</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Each player plays on their own phone. Your side moves first (${GLOOK[kind][0]}). Couples take turns for their side.</p>
     <div class="field"><label for="gn-a2">Your partner (optional)</label><select class="input" id="gn-a2"><option value="">Just me</option>${others.map(f => opt(f.id)).join("")}</select></div>
     <div class="field"><label for="gn-b1">Opponent</label><select class="input" id="gn-b1">${others.map((f, i) => opt(f.id, i === 0)).join("")}</select></div>
@@ -3030,9 +3534,10 @@ function sheetGameNew(kind){
 }
 function sheetTriviaNew(table){
   const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night</div><h2>🎤 ${table ? "At the table" : "Family teams"}</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night</div><h2>🎤 ${table ? "At the table" : "Family teams"}</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Ten questions. The teams take turns: one question each, four answers to pick from. A right answer scores a point. ${table ? "One phone runs the game: pass it to the team whose turn it is, or read the question out loud." : "Each team answers on their own phones; anyone on the team can tap the answer."}</p>
     <div class="field"><label for="tv-cat">Category</label><select class="input" id="tv-cat">${Object.entries(TCATS).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></div>
+    <div class="field"><label for="tv-secs">Answer clock</label><select class="input" id="tv-secs"><option value="10">10 seconds · fast!</option><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds · relaxed</option></select><span class="small muted">When the clock runs out, the other team gets one chance to steal the question.</span></div>
     ${table ? `<div class="field"><label for="tv-t1">First team's name</label><input class="input" id="tv-t1" maxlength="24" value="Team 1"></div>
     <div class="field"><label for="tv-t2">Second team's name</label><input class="input" id="tv-t2" maxlength="24" value="Team 2"></div>`
     : `<div class="lbl">WHO'S PLAYING · UP TO 4 A TEAM · YOU'RE ON THE FIRST TEAM</div>
@@ -3054,7 +3559,7 @@ function feudRoom(){
 }
 function feudPick(n){ const a = [...FEUD_PROMPTS]; for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); }
 function sheetSurveyNew(){
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 New survey</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 New survey</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Everyone gets these questions and answers them privately on their own phone. The game board is built from their real answers: an answer is worth one point for each person who gave it. Change any question, or leave one blank to skip it.</p>
     ${feudPick(5).map((q, i) => `<div class="field"><label for="fs-q${i}">Question ${i + 1}</label><input class="input" id="fs-q${i}" maxlength="120" value="${esc(q)}"></div>`).join("")}
     <div class="actions"><button class="btn" data-act="fs-new">🔀 Different questions</button></div>
@@ -3063,43 +3568,24 @@ function sheetSurveyNew(){
 async function sheetSurveyAnswer(id){
   const sv = (st.surveys || []).find(x => x.id === id); if(!sv) return;
   const d = await gamesCall({action:"survey_mine", id}), mine = d.answers || [];
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud survey</div><h2>📋 Your answers</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud survey</div><h2>📋 Your answers</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Say the first thing that comes to mind, in a few words. Only you can see what you wrote; it shows up only on the game board, without your name.</p>
     ${sv.prompts.map((q, i) => `<div class="field"><label for="fa-${i}">${esc(q)}</label><input class="input" id="fa-${i}" maxlength="40" value="${esc(mine[i] || "")}"></div>`).join("")}
     <button class="btn primary block" data-act="fs-save" data-id="${id}">Save my answers</button>`);
 }
 function sheetFeudNew(survey){
   const people = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 You're the judge</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 You're the judge</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">You run the board on your phone: you see the family's answers, the teams call out guesses, and you tap Reveal when a guess matches or ✗ Strike when it doesn't. Three strikes and the other team gets one guess to steal. Everyone else watches the board on their own phone.</p>
     <div class="lbl">THE TEAMS · UP TO 4 EACH</div>
     ${people.map(f => `<div class="field" style="display:flex;align-items:center;gap:10px"><label for="fd-p-${f.id}" style="flex:1;margin:0">${esc(f.name)}</label><select class="input" style="width:auto" id="fd-p-${f.id}" data-fpid="${f.id}"><option value="">Not playing</option><option value="a">Team 1</option><option value="b">Team 2</option></select></div>`).join("")}
     <button class="btn primary block" data-act="fd-start" data-id="${survey}">Start Family Feud</button>
     <p class="small muted" style="margin:0">Everyone on a team gets a notification.</p>`);
 }
-const feudPeek = {};      // the judge's own copy of this round's board, fetched from the server
-function drawFeud(g){
-  const s = g.st, live = g.status === "live", key = `${g.id}:${s.round}`, L = s.last || {};
-  if(g.judge && live && !feudPeek[key]){ feudPeek[key] = "…"; gamesCall({action:"peek", id:g.id}).then(d => { feudPeek[key] = d.ok ? d.board : null; if(gView?.id === g.id) drawGame(); }); }
-  const board = g.judge && Array.isArray(feudPeek[key]) ? feudPeek[key] : null, other = 1 - s.turn;
-  const say = s.phase === "between" ? (L.round ? `🏆 ${esc(g.names[L.round.win])} ${L.kind === "stole" ? "stole the round" : "won the round"}: +${L.round.bank}` : "")
-    : s.phase === "steal" ? `${esc(g.names[s.turn])} can steal ${s.bank} with one guess` : `${esc(g.names[s.turn])} is guessing · ${"✗".repeat(s.strikes) || "no strikes"}`;
-  const lastLine = L.kind === "hit" ? `✓ ${esc(L.t)} · ${L.n}` : L.kind === "strike" ? `✗ Strike ${L.strikes}` : L.kind === "nosteal" ? `✗ No steal: the bank goes to ${esc(g.names[1 - L.side])}` : L.kind === "stole" ? `✓ Stolen with ${esc(L.t)}` : "";
-  const status = !live ? (g.why === "stopped" ? "Game stopped" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won Family Feud, ${esc(g.why)}`) : say;
-  const slots = Array.from({length:s.slots}, (_, i) => { const x = s.shown[i];
-    return `<div class="strip" style="justify-content:space-between;${x ? "" : "opacity:.75"}"><b>${i + 1}. ${x ? esc(x.t) : "· · · · ·"}</b><span>${x ? x.n : ""}</span>${g.judge && live && s.phase !== "between" && !x && board ? `<button class="btn sm primary" data-act="g-move" data-m='${JSON.stringify({reveal:i})}'>Reveal: ${esc(board[i]?.t || "")} (${board[i]?.n ?? ""})</button>` : ""}</div>`; }).join("");
-  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud · round ${s.round} of ${s.rounds} · judge ${esc(first(F(g.by)?.name || "family"))}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
-    <div class="card" style="text-align:center;font-weight:700">${status}</div>
-    <div class="card"><div class="eyebrow">We asked ${s.people} of the family</div><p style="font:700 19px/1.35 var(--f-display);margin:6px 0 4px">${esc(s.prompt)}</p>
-      ${s.phase !== "between" ? `<div class="small muted">In the bank: <b>${s.bank}</b>${lastLine ? ` · ${lastLine}` : ""}</div>` : ""}</div>
-    <div style="display:grid;gap:6px">${slots}</div>
-    ${g.judge && live ? `<div class="actions" style="justify-content:center">${s.phase === "between" ? `<button class="btn primary" data-act="g-move" data-m='{"next":true}'>Next round</button>` : `<button class="btn wine" data-act="g-move" data-m='{"strike":true}'>${s.phase === "steal" ? "✗ No steal" : "✗ Strike"}</button>`}<button class="btn sm ghost" data-act="g-resign">Stop the game</button></div>
-      ${board ? "" : `<p class="small muted" style="margin:0;text-align:center">Loading your answer key…</p>`}` : live ? `<p class="small muted" style="margin:0;text-align:center">The judge runs the board. Call out your answers!</p>` : ""}`);
-}
 function sheetSpadesNew(){
   const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
   const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
-  openSheet(`<div class="sheet-head"><div style="flex:1;min-width:0"><div class="eyebrow">Spades for couples</div><h2>♠️ Jokers &amp; deuces</h2></div><button class="icon-btn" data-act="games" aria-label="Back">←</button></div>
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Spades for couples</div><h2>♠️ Jokers &amp; deuces</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Four players, two couples, partners sit across. Each plays on their own phone and sees only their own cards. Trumps, highest first: Big Joker, Little Joker, 2♠, 2♦, then A♠ down. 2♣ and 2♥ are out of the deck.</p>
     <div class="field"><label for="sp-a2">Your partner</label><select class="input" id="sp-a2">${others.map((f, i) => opt(f.id, i === 0)).join("")}</select></div>
     <div class="field"><label for="sp-b1">Other couple</label><select class="input" id="sp-b1">${others.map((f, i) => opt(f.id, i === 1)).join("")}</select></div>
@@ -3113,73 +3599,11 @@ function spFace(c){ if(c === "BJ") return {t:"Big 🃏", red:true}; if(c === "LJ
   const r = +c.slice(1); return {t:(SPR[r] || r) + SPS[c[0]], red:c[0] === "H" || c[0] === "D"}; }
 const spCard = (c, attrs = "", big = false) => { const f = spFace(c); return `<button class="pc ${f.red ? "red" : ""} ${big ? "big" : ""}" ${attrs}>${f.t}</button>`; };
 const spHands = {};       // this phone's own cards, per game and move, fetched from the server
-function drawSpades(g){
-  const s = g.st, live = g.status === "live", mySeat = s.seats.indexOf(st.me), key = `${g.id}:${g.moves}`;
-  if(live && mySeat >= 0 && !spHands[key]){ spHands[key] = "…"; gamesCall({action:"hand", id:g.id}).then(d => { spHands[key] = d.ok ? d.hand : null; if(!d.ok) setTimeout(() => { delete spHands[key]; if(gView?.id === g.id) drawGame(); }, 1500); if(gView?.id === g.id) drawGame(); }); }
-  const hand = Array.isArray(spHands[key]) ? spHands[key] : null, myTurn = live && s.seat === mySeat;
-  const who = k => esc(first(F(s.seats[k])?.name || "Seat " + (k + 1))), team = k => k % 2;
-  const legal = myTurn && hand ? spLegal(s, hand) : [];
-  const seatRow = k => { const played = s.trick.find(t => t.seat === k);
-    return `<div class="strip" style="justify-content:space-between;${s.seat === k && live ? "outline:2px solid var(--brass)" : ""}"><span><b>${who(k)}</b> <span class="small muted">· team ${team(k) + 1}${k === mySeat ? " · you" : ""}</span><br><span class="small">${s.bids[k] === null ? "no bid yet" : s.bids[k] === 0 ? "bid Nil" : "bid " + s.bids[k]} · ${s.tricks[k]} ${s.tricks[k] === 1 ? "trick" : "tricks"}</span></span>${played ? spCard(played.card, "disabled style='opacity:1'") : ""}</div>`; };
-  const order = mySeat >= 0 ? [0, 1, 2, 3].map(i => (mySeat + i) % 4) : [0, 1, 2, 3];
-  const L = s.lastHand, lastLine = L && s.phase === "bid" && s.bids.every(b => b === null) ? `<div class="strip"><span class="small">Hand ${L.hand}: ${L.res.map((r, t) => `${esc(g.names[t])} bid ${r.bid}, took ${r.won}${r.notes.map(n => n.nil ? " · nil made" : " · nil broken").join("")} → ${r.pts > 0 ? "+" : ""}${r.pts}${r.bagPenalty ? " (−100 for 10 bags)" : ""}`).join("<br>")}</span></div>` : "";
-  const lastTrick = s.last && !s.trick.length ? `<div class="small muted" style="text-align:center">Last trick to ${who(s.last.winner)}: ${s.last.trick.map(t => spFace(t.card).t).join(" · ")}</div>` : "";
-  const status = !live ? (g.why === "stopped" ? "Game stopped" : `🏆 ${esc(g.names[g.winner])} won Spades, ${esc(g.why)}`)
-    : s.phase === "bid" ? (myTurn ? "Your bid: how many tricks will you take?" : `${who(s.seat)} is bidding…`)
-    : myTurn ? (s.trick.length ? "Your turn: follow suit if you can" : "Your lead") : `${who(s.seat)} to play…`;
-  const bidPad = myTurn && s.phase === "bid" ? `<div class="cards">${Array.from({length:14}, (_, b) => `<button class="btn sm ${b === 0 ? "wine" : ""}" data-act="g-move" data-m='${JSON.stringify({bid:b})}'>${b === 0 ? "Nil" : b}</button>`).join("")}</div>` : "";
-  const handRow = mySeat < 0 ? "" : !live ? "" : !hand ? `<p class="small muted" style="text-align:center;margin:0">Picking up your cards…</p>`
-    : `<div class="lbl" style="text-align:center">YOUR CARDS · ${hand.length}</div><div class="cards">${hand.map(c => spCard(c, `data-act="g-move" data-m='${JSON.stringify({card:c})}' ${s.phase === "play" && legal.includes(c) ? "" : "disabled"} aria-label="${esc(spFace(c).t)}"`, true)).join("")}</div>`;
-  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Spades · hand ${s.hand} · to ${s.target}${s.broken ? " · spades broken" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2><div class="small muted">Bags: ${s.bags[0]} · ${s.bags[1]}</div></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
-    <div class="card" style="text-align:center;font-weight:700">${status}</div>
-    ${lastLine}
-    <div style="display:grid;gap:6px">${order.map(seatRow).join("")}</div>
-    ${lastTrick}
-    ${bidPad}
-    ${handRow}
-    <div class="actions" style="justify-content:center">${live ? (mySeat >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign for our team</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>`);
-}
 function gCurrent(){
   if(!gView) return null;
   if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.turn, local:true};
   const g = (st.games || []).find(x => x.id === gView.id); if(!g) return null;
   return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gSideName(g, 0), gSideName(g, 1)], me:gMySide(g), moves:g.moves, id:g.id, table:gTable(g), judge:gJudge(g), by:g.by};
-}
-function drawTrivia(g){
-  const s = g.st, myTurn = g.status === "live" && g.me === g.turn, L = s.last;
-  const last = L ? `<div class="strip"><span class="grow small">${L.right ? `✓ <b>${esc(g.names[L.side])}</b> got it: <b>${esc(L.answer)}</b>` : `✗ <b>${esc(g.names[L.side])}</b> missed it. It was <b>${esc(L.answer)}</b>`}<br><span class="muted">${esc(L.q)}</span></span></div>` : "";
-  const status = g.status === "done" ? (g.why === "stopped" ? "Game stopped early" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won, ${esc(g.why)}`)
-    : myTurn ? (g.table ? `${esc(g.names[g.turn])}, this one's yours` : "Your team's question!") : `${esc(g.names[g.turn])} is answering…`;
-  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night · ${esc(TCATS[s.cat] || "")}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">${s.score[0]}</span> · ${esc(g.names[1])} <span class="muted">${s.score[1]}</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
-    <div class="card" style="text-align:center;font-weight:700">${status}</div>
-    ${last}
-    ${g.status === "live" ? `<div class="card"><div class="eyebrow">Question ${s.n} of ${s.total} · ${esc(s.q.cat)}</div><p style="font:700 19px/1.35 var(--f-display);margin:6px 0 12px">${esc(s.q.text)}</p>
-      <div style="display:grid;gap:8px">${s.q.options.map((o, i) => `<button class="btn block ${myTurn ? "" : "ghost"}" data-act="g-move" data-m='${JSON.stringify({pick:i})}' ${myTurn ? "" : "disabled"} style="justify-content:flex-start;text-align:left">${"ABCD"[i]}. ${esc(o)}</button>`).join("")}</div></div>` : ""}
-    <div class="actions" style="justify-content:center">${g.status === "live" ? (g.me >= 0 || g.table ? `<button class="btn sm ghost" data-act="g-resign">${g.table ? "End the game" : "Resign"}</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>`);
-}
-function drawGame(){
-  const g = gCurrent(); if(!g){ sheetGames(); return; }
-  if(g.kind === "trivia"){ drawTrivia(g); return; }
-  if(g.kind === "feud"){ drawFeud(g); return; }
-  if(g.kind === "spades"){ drawSpades(g); return; }
-  const look = GLOOK[g.kind], myTurn = g.status === "live" && g.me === g.turn;
-  const legal = myTurn ? gameLegal(g.kind, g.st, g.turn) : [];
-  const disc = s => s === null || s === undefined ? "" : g.kind === "ttt" ? look[s] : `<span class="disc p${s}"></span>`;
-  let board = "";
-  if(g.kind === "ttt") board = `<div class="gboard ttt">${g.st.b.map((v, i) => `<button data-act="g-move" data-m='${JSON.stringify({i})}' ${myTurn && v === null ? "" : "disabled"} aria-label="Square ${i + 1}">${disc(v)}</button>`).join("")}</div>`;
-  if(g.kind === "c4") board = `<div class="gboard c4">${g.st.b.map((v, i) => `<button data-act="g-move" data-m='${JSON.stringify({c:i % 7})}' ${myTurn && g.st.b[i % 7] === null ? "" : "disabled"} aria-label="Column ${i % 7 + 1}">${disc(v)}</button>`).join("")}</div>`;
-  if(g.kind === "checkers"){
-    const froms = new Set(legal.map(m => m.f)), tos = new Set(legal.filter(m => m.f === gSel).map(m => m.t));
-    board = `<div class="gboard ck">${g.st.b.map((p, i) => { const dk = (Math.floor(i / 8) + i % 8) % 2 === 1;
-      return `<button class="${dk ? "dk" : ""} ${gSel === i ? "sel" : ""} ${tos.has(i) ? "to" : ""}" data-act="g-ck" data-i="${i}" ${dk && (froms.has(i) || tos.has(i)) ? "" : "disabled"} aria-label="Square ${i}">${p ? `<span class="disc p${p.s}">${p.k ? "♛" : ""}</span>` : ""}</button>`; }).join("")}</div>`;
-  }
-  const status = g.status === "done" ? (g.winner === 2 ? `🤝 A draw (${esc(g.why)})` : `🏆 ${esc(g.names[g.winner])} won (${esc(g.why)})`)
-    : myTurn ? `Your move, ${look[g.turn]}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping" : ""}${g.local ? ` (${esc(g.names[g.turn])})` : ""}` : `Waiting on ${esc(g.names[g.turn])} (${look[g.turn]})`;
-  openSheet(`<div class="sheet-head" data-game><div style="flex:1;min-width:0"><div class="eyebrow">${GAMES[g.kind]}${g.local ? " · pass & play" : ""}</div><h2 style="font-size:20px">${esc(g.names[0])} <span class="muted">(${look[0]})</span> vs ${esc(g.names[1])} <span class="muted">(${look[1]})</span></h2></div><button class="icon-btn" data-act="games" aria-label="Back to the Game Room">←</button></div>
-    <div class="card" style="text-align:center;font-weight:700">${status}</div>
-    ${board}
-    <div class="actions" style="justify-content:center">${g.status === "live" ? (g.local || g.me >= 0 ? `<button class="btn sm ghost" data-act="g-resign">Resign</button>` : "") : `<button class="btn sm primary" data-act="g-again">Play again</button>`}</div>
-    ${g.kind === "checkers" ? `<p class="small muted" style="margin:0">Tap a piece, then a dot. A jump must be taken; keep jumping when you can. Reach the far row to be crowned ♛.</p>` : ""}`);
 }
 async function gMove(mv){
   const g = gCurrent(); if(!g || g.status !== "live") return;
@@ -3469,7 +3893,13 @@ document.addEventListener("click", e => {
       break; }
     case "want": toggleWant(b.dataset.rid); break;
     case "year": sheetYear(+b.dataset.y); break;
-    case "games": sheetGames(); break;
+    case "games": gPick = null; sheetGames(); break;
+    case "g-pick": gPick = b.dataset.k; sheetGamePick(gPick); break;
+    case "g-room": gPick = null; sheetGames(); break;
+    case "g-back": sheetGames(); break;
+    case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gView ? drawGame() : sheetGames(); toast(xl ? "Extra large" : "Large"); break; }
+    case "ttt-col": { const c = tttCols(); c[+b.dataset.s] = b.dataset.c; if(c[0] === c[1]){ toast("Pick a different colour from the other player"); break; } try { localStorage.setItem("t7.tttcol", JSON.stringify(c)); } catch {} drawGame(); break; }
+    case "sp-card": { const c = b.dataset.c; if(spPick === c){ spPick = null; gMove({card:c}); } else { spPick = c; drawGame(); } break; }
     case "g-local": { const k = b.dataset.k; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["Player 1", "Player 2"]}; gSel = null; drawGame(); break; }
     case "g-new": sheetGameNew(b.dataset.k); break;
     case "g-start": { const v = x => document.getElementById(x).value, A = [st.me, v("gn-a2")].filter(Boolean), B = [v("gn-b1"), v("gn-b2")].filter(Boolean);
@@ -3502,7 +3932,7 @@ document.addEventListener("click", e => {
       b.disabled = true; b.textContent = "Starting…";
       gamesCall({action:"new", kind:"feud", survey:id, sideA, sideB}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start Family Feud"; toast(gWhyNot(d.code)); return; }
         await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Survey says… let's play!"); }); break; }
-    case "tv-start": { const table = b.dataset.k === "table", cat = document.getElementById("tv-cat").value, body = {action:"new", kind:"trivia", cat};
+    case "tv-start": { const table = b.dataset.k === "table", cat = document.getElementById("tv-cat").value, body = {action:"new", kind:"trivia", cat, secs:+document.getElementById("tv-secs").value};
       if(table){ const t = x => document.getElementById(x).value.trim(); body.table = true; body.teams = [t("tv-t1") || "Team 1", t("tv-t2") || "Team 2"]; }
       else { const picks = [...document.querySelectorAll("[data-pid]")]; body.sideA = [st.me, ...picks.filter(x => x.value === "a").map(x => x.dataset.pid)]; body.sideB = picks.filter(x => x.value === "b").map(x => x.dataset.pid);
         if(body.sideA.length > 4 || body.sideB.length > 4){ toast("Four players a team at most."); return; }
@@ -3517,9 +3947,9 @@ document.addEventListener("click", e => {
     case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "spades" ? "Resign this game of Spades for your team?" : g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
       if(g.local){ gView.over = {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
       gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
-    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gSel = null; drawGame(); break; }
+    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gView.cheered = false; gSel = null; drawGame(); break; }
       const old = st.games.find(x => x.id === g.id), flip = !gTable(old) && gMySide(old) === 1, again = {action:"new", kind:g.kind, sideA:flip ? old.b : old.a, sideB:flip ? old.a : old.b};
-      if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, table:gTable(old), teams:old.st.teams || undefined});
+      if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, secs:old.st.secs || 20, table:gTable(old), teams:old.st.teams || undefined});
       if(g.kind === "spades") Object.assign(again, {sideA:[st.me, old.st.seats[(old.st.seats.indexOf(st.me) + 2) % 4]], sideB:[old.st.seats[(old.st.seats.indexOf(st.me) + 1) % 4], old.st.seats[(old.st.seats.indexOf(st.me) + 3) % 4]], target:old.st.target});
       gamesCall(again).then(async d => {
         if(!d.ok){ toast(gWhyNot(d.code)); return; } await refresh(true); gView = {id:d.game.id}; drawGame(); }); break; }
