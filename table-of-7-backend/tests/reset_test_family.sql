@@ -19,3 +19,4 @@ delete from standing_dinners where family_id = 'zztest';
 delete from games where family_id = 'zztest';
 delete from feud_surveys where family_id = 'zztest';
 delete from movie_nights where family_id = 'zztest';   -- movie_people go with them
+delete from golf_outings where family_id = 'zztest';   -- golf_people go with them

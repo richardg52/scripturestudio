@@ -3,7 +3,7 @@
 import re, pathlib
 root = pathlib.Path(__file__).resolve().parents[2]
 html = root / "table-of-7" / "index.html"; s = html.read_text(encoding="utf-8")
-for name, fn in [("GAME RULES", "rules.js"), ("SPADES RULES", "spades.js"), ("BLACKJACK RULES", "blackjack.js"), ("WILDCARD RULES", "wildcard.js"), ("BIDWHIST RULES", "bidwhist.js"), ("DOMINOES RULES", "dominoes.js")]:
+for name, fn in [("GAME RULES", "rules.js"), ("SPADES RULES", "spades.js"), ("BLACKJACK RULES", "blackjack.js"), ("WILDCARD RULES", "wildcard.js"), ("BIDWHIST RULES", "bidwhist.js"), ("DOMINOES RULES", "dominoes.js"), ("SOLITAIRE RULES", "solitaire.js")]:
     src = (root / "table-of-7-backend/supabase/functions/games" / fn).read_text(encoding="utf-8")
     src = re.sub(r"^export ", "", src, flags=re.M).strip()
     block = f"/* {name} START */\n{src}\n/* {name} END */"
