@@ -436,6 +436,34 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:300;overflow:hidden}
 .confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:gfall linear forwards}
 @keyframes gfall{to{transform:translateY(110vh) rotate(720deg)}}
+/* round 2: computer levels, Blackjack table */
+.ailv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(100%,460px)}
+.ailv .btn{min-height:calc(52px*var(--gs));padding-inline:6px}
+.bjtable{border-radius:30px;padding:14px;display:grid;gap:12px;background:radial-gradient(ellipse at 50% 0%,#2fb164 0%,#178a45 45%,#0a5a2a 100%);box-shadow:inset 0 0 0 10px #6b3a17,inset 0 0 0 13px #a8692d,inset 0 0 40px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.6);padding:24px 20px}
+.bjrule{text-align:center;font:900 calc(11px*var(--gs)) var(--f-display);letter-spacing:.14em;color:#ffe08a;opacity:.9;border-top:1px dashed rgba(255,224,138,.5);border-bottom:1px dashed rgba(255,224,138,.5);padding:5px 0}
+.bjseat{display:grid;gap:6px;justify-items:center;padding:6px;border-radius:16px;border:2px solid transparent}
+.bjseat.turn{border-color:#ffd36b;box-shadow:0 0 18px rgba(255,211,107,.6)}
+.bjname{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;font:800 calc(15px*var(--gs)) var(--f-display);color:#fff}
+.bjname .bank{background:rgba(0,0,0,.4);border-radius:999px;padding:2px 10px;color:#ffe08a}
+.bjname .tk{font:700 calc(12.5px*var(--gs)) var(--f-body);color:#e9ffef;background:rgba(0,0,0,.35);border-radius:8px;padding:2px 8px}
+.bjhands{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bjhand{display:grid;gap:4px;justify-items:center;padding:4px;border-radius:12px}
+.bjhand.on{background:rgba(255,211,107,.18);box-shadow:0 0 0 2px #ffd36b}
+.bjcards{display:flex;justify-content:center}
+.bjc{width:calc(min(19vw,92px) * var(--gs));margin-left:calc(min(19vw,92px) * var(--gs) * -0.42)}
+.bjc:first-child{margin-left:0}
+.bjmeta{display:flex;gap:6px;align-items:center;font:900 calc(16px*var(--gs)) var(--f-display);color:#fff}
+.bjmeta .bet{background:#ffd36b;color:#3a2200;border-radius:999px;padding:1px 9px;font-size:calc(13px*var(--gs))}
+.bjtag{border-radius:8px;padding:2px 8px;font:900 calc(12.5px*var(--gs)) var(--f-display);letter-spacing:.04em}
+.bjtag.win{background:#2fe08a;color:#04331a}.bjtag.lose{background:#ff5577;color:#fff}.bjtag.push{background:#d8def0;color:#1d2b53}
+.bjchips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bjchip{width:calc(58px*var(--gs));height:calc(58px*var(--gs));border-radius:50%;border:0;padding:0;font:900 calc(16px*var(--gs)) var(--f-display);color:var(--f);
+  background:radial-gradient(circle,var(--c) 0 50%,#fff 51% 55%,var(--c) 56% 66%,repeating-conic-gradient(#fff 0 12deg,var(--c) 12deg 30deg) 67%);box-shadow:0 4px 0 rgba(0,0,0,.45),0 7px 12px rgba(0,0,0,.4)}
+.bjchip:disabled{filter:grayscale(.7) brightness(.6)}
+.bjchip:not(:disabled):active{transform:translateY(3px)}
+.bjacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.bjacts .btn{min-height:calc(56px*var(--gs));padding-inline:4px}
+.gt-bj,.todo .ic.gt-bj{background:linear-gradient(150deg,#0f7a43,#063b20)}
 @media (prefers-reduced-motion:reduce){.stage *{animation:none!important;transition:none!important}}
 .photos button{padding:0;border:0;background:none;border-radius:8px;overflow:hidden}
 .photos img{display:block;width:100%;aspect-ratio:1;object-fit:cover;max-width:100%}
@@ -1229,7 +1257,7 @@ function redraw(){
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
 
 /* ================= Lookups ================= */
-const F = id => st.fam.find(f => f.id === id) || {name:"Someone",color:"#666",id};
+const F = id => st.fam.find(f => f.id === id) || (String(id).startsWith("bot:") ? {name:"Computer", color:"#55607a", id} : {name:"Someone",color:"#666",id});
 const ME = () => F(st.me);
 const first = n => String(n||"").split(" ")[0];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2070,6 +2098,9 @@ function sheetTips(){
     ["Game Room","Our Table → Game Room, or “🎲 Play while you wait” on the dinner card. Every game opens full screen; tap a game's picture to start. Tap A+ (top right) to make the whole game bigger, A− to go back. Tic-Tac-Toe, Connect Four and Checkers: slide a checker with your finger. Pass & play shares one phone; Play the family puts each player on their own phone, one on one or couple against couple. Family games count toward the standings."],
     ["Trivia Night","Game Room → 🎤 Trivia Night. Ten questions on Music, TV & Movies, the Bible, or a mix. “At the table” runs both teams on one phone; “Family teams” puts up to four a team on their own phones. Pick a clock (10, 15, 20 or 30 seconds): when it runs out, the other team gets one chance to steal. The right answer shows only after a team answers."],
     ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."],
+    ["Play the computer","Tic-Tac-Toe, Connect Four and Checkers: tap Easy, Medium or Hard. Spades: “Me and a computer partner”, or pick 🤖 Computer for any empty seat in a family game. Trivia: “Just me, against the clock”. Blackjack: “Just me vs the dealer”. Your record against the computer stays on your phone and never counts in the family standings."],
+    ["Blackjack","Game Room → 🃏 Blackjack. Alone against the dealer, or a family table of up to four on their own phones. Tap chips to make your bet (10 to 500), then Bet; then Hit, Stand, Double or Split. Blackjack pays 3 to 2; the dealer stands on 17. Everyone starts with 1,000 points. Chips are points for fun, never money."],
+    ["Game sounds","Tap 🔇 at the top of any game to turn sounds on (🔊), and again to turn them off. They start off. Cards, chips, pieces, right and wrong answers, a buzzer for a strike, a fanfare for a win."],
     ["Spades","Game Room → ♠️ Deal a game of Spades. Two couples, partners across, each on their own phone and seeing only their own cards. Jokers & deuces: Big Joker, Little Joker, 2♠, 2♦ are the top trumps; 2♣ and 2♥ are out. The cards you can play lift up and glow gold: tap one, then tap it again (or Play) to put it down."]
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
@@ -2110,6 +2141,9 @@ function guideBody(k){
     step(19, "Trivia Night", `In the Game Room, under <b>🎤 Trivia Night</b>: ${pic("At the table · one phone","primary")} runs the whole game on one phone (name the two teams, then pass the phone or read each question aloud), or ${pic("Family teams · own phones","wine")} lets you put each person on <b>My team</b> or <b>Other team</b>, up to four a team, each answering on their own phone. Pick a category (Music, TV &amp; Movies, Bible, or a mix) and an <b>answer clock</b> (10, 15, 20 or 30 seconds), and tap ${pic("Start Trivia Night","primary")}. The ring counts down and turns red in the last five seconds. If the clock runs out, the same question passes to the other team with a <b>STEAL</b> badge: one chance, their own clock; if that runs out too, the answer shows and the game moves on. The teams take turns: ten questions, one each in turn, four answers to choose from. Tap an answer and the screen shows ✓ or ✗ and the right answer, then the next team's question. The score sits at the top. Family-teams games count toward the 🏆 standings; at-the-table games don't, because one phone can't say who answered. ${pic("End the game","ghost")} stops an at-the-table game; ${pic("Play again","primary")} plays ten new questions.`),
     step(20, "Family Feud", `In the Game Room, under <b>📋 Family Feud</b>, tap ${pic("Start a survey","primary")}. Five questions are filled in for you; change any, tap ${pic("🔀 Different questions")} for new ones, then ${pic("Send the survey to the family","primary")}. Everyone is notified and taps ${pic("Answer the survey","primary")} to answer privately, a few words each; no one, not even the host, sees anyone's answers. When enough people have answered (at least two), the person who started it or the host taps ${pic("Close the survey","wine")}. At the table, one person taps ${pic("Play Family Feud")} and becomes the <b>judge</b>: they put each person on Team 1 or Team 2 and tap ${pic("Start Family Feud","primary")}. The judge's phone shows the family's answers; everyone else sees the hidden board. The team on turn calls out answers: the judge taps ${pic("Reveal","primary")} on a match (its points, one for each person who said it, go into the bank) or ${pic("✗ Strike","wine")}. Three strikes and the other team gets one guess to steal the bank. When the board is cleared or the steal is decided, the round's points go to the winner; the judge taps ${pic("Next round","primary")}. Most points after the last question wins. Similar answers count together when only the spelling differs (“Pizza” and “pizzas”); different words stay separate, and the judge decides at the table whether a guess matches.`),
     step(21, "Spades for couples", `In the Game Room tap ${pic("Deal a game of Spades","wine")}, pick your partner and the other couple, choose 300 or 500 points, and tap ${pic("Deal Spades","primary")}. All four get a notification and play on their own phones; each phone shows only its own cards. <b>Our house rules, Jokers &amp; deuces:</b> 2♣ and 2♥ are out and both jokers are in; the trumps, highest first, are Big Joker, Little Joker, 2♠, 2♦, then A♠ down to 3♠; the 2♦ and the jokers count as spades. <b>Bidding:</b> when it's your turn, tap how many tricks you'll take, or ${pic("Nil","wine")} for none. <b>Play:</b> the cards you may play lift up and glow gold; tap one and it rises with a ${pic("Play","primary")} button, then tap the card again or ${pic("Play","primary")}. Every card stays bright: the ones that don't lift just can't be played right now (follow the suit led if you can, and spades can't be led until one has been played). The trick is laid on the felt in front of each player, and the winning card is outlined in gold. The highest spade wins a trick, or else the highest card of the suit led. <b>Scoring:</b> make your team's bid and score 10 a trick bid plus 1 for each extra trick (a bag); miss it and lose 10 a trick bid. Nil made is +100, nil broken is −100. Every 10 bags cost 100. First couple to the target wins; a couple at −200 loses. ${pic("Resign for our team","ghost")} gives the game to the other couple.`),
+    step(22, "Play the computer", `Every game can be played against the computer on your own phone. <b>Tic-Tac-Toe, Connect Four, Checkers:</b> open the game and tap ${pic("Easy")} ${pic("Medium","primary")} or ${pic("Hard","wine")}; you move first, and the computer answers in under a second (Tic-Tac-Toe on Hard never loses). <b>Spades:</b> ${pic("🤖 Me and a computer partner","primary")} deals you and a computer partner against two computers; or in a family game choose <b>🤖 Computer</b> for any seat you can't fill, and the computers bid and play by themselves. <b>Trivia:</b> ${pic("🧠 Just me, against the clock","primary")}: ten questions; when time runs out the answer shows and the next question comes up; your best score is kept. Your record against the computer shows under each game; computer games never count in the 🏆 family standings.`),
+    step(23, "Blackjack", `Tap the <b>Blackjack</b> picture. ${pic("🤖 Just me vs the dealer","primary")} plays on your phone; ${pic("👨‍👩‍👧 Family table · own phones","wine")} opens a table for up to four (pick who's playing, then ${pic("Open the table","primary")}). Everyone starts with <b>1,000 points</b>. Tap the chips (10, 25, 50, 100, 500) to build your bet, then ${pic("Bet","primary")}. When everyone has bet, the cards are dealt: the dealer shows one card. On your turn tap ${pic("Hit","primary")} for another card, ${pic("Stand","wine")} to stay, ${pic("Double")} to double your bet for exactly one more card, or ${pic("Split")} to play a pair as two hands. Over 21 is a bust. The dealer then plays, standing on 17; closest to 21 wins. A blackjack (an ace and a ten-card) pays 3 to 2. ${pic("Deal the next hand","primary")} starts the next round; ${pic("Close the table for everyone","ghost")} ends it and lists everyone's final stack, and the biggest stacks show in the Game Room. <b>Chips are points for fun, never money.</b>`),
+    step(24, "Game sounds", `At the top of every game, next to ${pic("A+")}, tap ${pic("🔇")} to turn sounds on; it becomes ${pic("🔊")}. Tap again to turn them off. Sounds start off, and your phone remembers your choice.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2127,6 +2161,7 @@ function guideBody(k){
     step("M", "Trivia while the food comes", `Zoey taps ${pic("At the table · one phone","primary")}, names the teams “Kids” and “Grown-ups”, picks <b>TV &amp; Movies</b> and taps ${pic("Start Trivia Night","primary")}. She reads out: “Who played Steve Urkel on Family Matters?” The kids tap <b>Jaleel White</b>: <b>✓ Kids got it</b>. The grown-ups miss the next one and the screen says <b>“✗ It was Chicago.”</b> After ten questions: <b>🏆 Kids won, 6–4.</b> Mario taps ${pic("Play again","primary")} for a rematch.`),
     step("N", "Family Feud at Sunday dinner", `On Tuesday Jasmine taps ${pic("Start a survey","primary")}, keeps “Name something the family always orders when we eat out”, and sends it. Everyone's phone buzzes; by Saturday six have answered, and Jasmine taps ${pic("Close the survey","wine")}. At dinner Richard taps ${pic("Play Family Feud")}, puts the kids on Team 1 and the grown-ups on Team 2, and judges. Team 1 shouts “Wings!” Richard taps ${pic("Reveal","primary")}: <b>Wings · 3</b>, because three of the six said it. Then “Salad?”: ${pic("✗ Strike","wine")}. After three strikes the grown-ups steal with “Catfish” and take the bank.`),
     step("O", "Couples at the card table", `Richard taps ${pic("Deal a game of Spades","wine")}, picks Jasmine as his partner and Mario and Rosa as the other couple, and taps ${pic("Deal Spades","primary")}. Everyone's phone shows their own 13 cards. Richard bids 4, Mario bids Nil, Jasmine 3, Rosa 5. Hearts are led; Jasmine has none and trumps with the 2♦, but Rosa drops the Big Joker and takes it. At the end of the hand the card reads <b>“Richard &amp; Jasmine bid 7, took 8 → +71”</b>. Mario's nil holds: +100 for his couple.`),
+    step("P", "Blackjack after dessert", `Devonte taps the <b>Blackjack</b> picture, then ${pic("👨‍👩‍👧 Family table · own phones","wine")}, marks Mario and Candyce as <b>Playing</b> and taps ${pic("Open the table","primary")}. Each taps chips to bet (Mario goes 100, Candyce 25) and taps ${pic("Bet","primary")}. Devonte has 16 against the dealer's 10 and taps ${pic("Hit","primary")}: a 4, twenty. Candyce has a pair of 8s and taps ${pic("Split")}. The dealer stands on 18; Devonte wins 100. After a few hands Devonte taps ${pic("Close the table for everyone","ghost")}, and the Game Room shows the biggest stacks. Later, waiting for the check, Zoey plays ${pic("Hard","wine")} Connect Four against the computer.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2165,6 +2200,10 @@ function guideBody(k){
     ["A checker won't move where I tap", "When any jump is possible you must jump, so only pieces that can jump are tappable. Mid-jump, the same piece must keep jumping."],
     ["A checker slides back when I let go", "You let go off a gold dot. Only the glowing pieces can move, and only onto a gold dot; the square turns green when you're over a good one."],
     ["The game is too small (or too big)", "Tap A+ at the top right of any game to make everything bigger; A− makes it smaller. Your phone remembers it."],
+    ["The computer didn't move", "Give it a second: it moves on its own after yours. If the screen was closed mid-game, the game on your phone ended; start it again from the game's picture."],
+    ["My Blackjack bet button is grey", "Tap chips until your bet is at least 10. The chips that would take you over 500, or over your points, are greyed out."],
+    ["Nobody can bet at Blackjack", "A player with fewer than 10 points sits out. When nobody can bet, the table closes by itself."],
+    ["I don't hear any sounds", "Tap 🔇 at the top of the game so it shows 🔊, and check your phone isn't on silent."],
     ["The Trivia clock ran out", "Time's up passes the same question to the other team for one steal. Nobody can stop the clock: it's kept on our server, not on any phone."],
     ["The answer buttons are grey", "It's the other team's question. Your buttons light up when your team's turn comes round."],
     ["My cards don't lift in Spades", "It isn't your turn, or that card isn't allowed: follow the suit led if you can, and don't lead a spade until spades are broken (unless you hold only spades). The cards you can play lift up and glow gold."],
@@ -2182,10 +2221,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Play six family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock) and Family Feud</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Play seven family games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud and Blackjack</li><li>Play against the computer (Easy, Medium, Hard), with computers filling empty Spades seats</li><li>Play sounds, if you turn them on</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Count computer games in the family standings</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -3106,12 +3145,151 @@ function spApply(st0, hands0, seat, mv, deal = spDeal){
   st.hand += 1; spFresh(st, (st.dealer + 1) % 4);
   return { st, hands: deal(), over: null };
 }
+// ---- The computer player (his order, 2026-10-17: play against the computer). Used for computer seats in a family
+// game (the server plays them) and for Spades alone on one phone. It plays only legal cards, from its own hand.
+const spRank = c => c === "BJ" || c === "LJ" ? 15 : Number(c.slice(1));
+function spBotBid(hand){
+  const sp = hand.filter(c => spSuit(c) === "S"), n = sp.length; let t = 0;
+  for(const c of sp){ const p = spPower(c); if(p >= 101) t += 1; else if(c === "S14") t += 1; else if(c === "S13" && n >= 2) t += 0.8; else if(c === "S12" && n >= 3) t += 0.5; }
+  if(n > 3) t += (n - 3) * 0.7;
+  for(const s of ["H", "C", "D"]){ const x = hand.filter(c => spSuit(c) === s), len = x.length;
+    if(x.includes(s + "14")) t += len <= 5 ? 1 : 0.6;
+    if(x.includes(s + "13") && len >= 2 && len <= 5) t += 0.6;
+    if(len <= 1 && n >= 3) t += len === 0 ? 0.8 : 0.4; }
+  return Math.max(1, Math.min(13, Math.round(t * 0.8)));   // tuned: bots make ~83% of their bids (400 test hands)
+}
+function spBotPlay(st, hand, seat){
+  const legal = spLegal(st, hand); if(legal.length === 1) return legal[0];
+  const low = cs => [...cs].sort((a, b) => spPower(a) - spPower(b))[0], high = cs => [...cs].sort((a, b) => spPower(b) - spPower(a))[0];
+  const partner = (seat + 2) % 4, myTeamBid = (st.bids[seat] || 0) + (st.bids[partner] || 0), myTeamWon = st.tricks[seat] + st.tricks[partner];
+  const need = myTeamWon < myTeamBid;
+  if(!st.trick.length){                                     // leading: cash a sure side ace, else lead low from a long side suit
+    const aces = legal.filter(c => spSuit(c) !== "S" && spRank(c) === 14); if(aces.length && need) return aces[0];
+    const side = legal.filter(c => spSuit(c) !== "S");
+    if(side.length){ const by = {}; side.forEach(c => (by[spSuit(c)] ||= []).push(c)); const longest = Object.values(by).sort((a, b) => b.length - a.length)[0]; return low(longest); }
+    return need ? high(legal) : low(legal);
+  }
+  const winsWith = c => spWinner([...st.trick, { seat, card: c }]) === seat;
+  const now = spWinner(st.trick), partnerWinning = now === partner, last = st.trick.length === 3;
+  const winners = legal.filter(winsWith);
+  if(partnerWinning && (last || spPower(st.trick.find(t => t.seat === partner).card) >= 90 || !need)) return low(legal.filter(c => !winsWith(c)).length ? legal.filter(c => !winsWith(c)) : legal);
+  if(winners.length && (need || last)) return low(winners);
+  const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
+}
 /* SPADES RULES END */
+/* BLACKJACK RULES START */
+// Table of 7 Blackjack (his order, 2026-10-17). ONE copy of the rules: the server (functions/games) runs a family
+// table with it, and the app carries the identical text (index.html, between the BLACKJACK RULES markers) for a game
+// alone against the dealer on one phone. tests/blackjack_rules_test.mjs proves both. CHIPS ARE POINTS, NEVER MONEY.
+// The table: 4 decks, reshuffled when fewer than 60 cards are left at a deal. The dealer stands on every 17. A
+// blackjack (an ace and a ten-card as your first two) pays 3 to 2. Double down on any first two cards. Split a pair
+// once (two cards of the same value); split aces get one card each. The dealer checks for blackjack when showing an
+// ace or a ten-card. No insurance, no surrender. Everyone starts with 1,000 points; a bet is 10 to 500.
+// A move: {bet:n} while betting (each player once a round, in any order); {act:"hit"|"stand"|"double"|"split"} from
+// the player whose turn it is, on their current hand; {next:true} from anyone after a round, to start the next one.
+// Cards: suit letter + rank 2..14 (11 J, 12 Q, 13 K, 14 A), e.g. "S14" is A♠. The dealer's face-down card and the
+// shoe are hidden state (the server's game_secrets); the public state never holds them.
+const BJ_START = 1000, BJ_MIN = 10, BJ_MAX = 500, BJ_DECKS = 4;
+function bjShoe(rand = Math.random){
+  const d = []; for(let k = 0; k < BJ_DECKS; k++) for(const s of ["S", "H", "D", "C"]) for(let r = 2; r <= 14; r++) d.push(s + r);
+  for(let i = d.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; }
+  return d;
+}
+const bjVal = c => { const r = Number(c.slice(1)); return r === 14 ? 11 : r >= 10 ? 10 : r; };
+function bjTotal(cards){
+  let t = 0, aces = 0;
+  for(const c of cards){ t += bjVal(c); if(Number(c.slice(1)) === 14) aces++; }
+  while(t > 21 && aces){ t -= 10; aces--; }
+  return { t, soft: aces > 0 };
+}
+const bjNatural = h => h.cards.length === 2 && !h.split && bjTotal(h.cards).t === 21;
+function bjInit(players){
+  return { players, bank: players.map(() => BJ_START), bets: players.map(() => null), hands: players.map(() => []), dealer: [],
+    phase: "bet", seat: -1, h: 0, round: 1, results: null, shoeLeft: BJ_DECKS * 52 };
+}
+const bjSecret = (rand = Math.random) => ({ shoe: bjShoe(rand), hole: null });
+function bjDraw(sec, rand){ if(!sec.shoe.length) sec.shoe = bjShoe(rand); return sec.shoe.pop(); }
+// the next hand still to play, from the current one on; false when every hand is done
+function bjNext(st){
+  for(let p = Math.max(st.seat, 0); p < st.players.length; p++)
+    for(let i = p === st.seat ? st.h : 0; i < st.hands[p].length; i++)
+      if(!st.hands[p][i].done){ st.seat = p; st.h = i; return true; }
+  return false;
+}
+function bjFinish(st, sec, rand){
+  st.dealer = [st.dealer[0], sec.hole]; sec.hole = null;
+  const anyLive = st.hands.some(hs => hs.some(h => !h.bust && !bjNatural(h)));
+  if(anyLive) while(bjTotal(st.dealer).t < 17) st.dealer.push(bjDraw(sec, rand));
+  const d = bjTotal(st.dealer).t, dNat = st.dealer.length === 2 && d === 21;
+  st.results = st.players.map((_, p) => st.hands[p].map(h => {
+    let pay = 0, res;
+    if(h.bust) res = "bust";
+    else if(bjNatural(h) && dNat){ res = "push"; pay = h.bet; }
+    else if(bjNatural(h)){ res = "blackjack"; pay = h.bet + Math.floor(h.bet * 1.5); }
+    else if(dNat) res = "lose";
+    else { const t = bjTotal(h.cards).t; if(d > 21 || t > d){ res = "win"; pay = h.bet * 2; } else if(t === d){ res = "push"; pay = h.bet; } else res = "lose"; }
+    st.bank[p] += pay; return { res, net: pay - h.bet };
+  }));
+  st.phase = "over"; st.seat = -1; st.h = 0; st.shoeLeft = sec.shoe.length;
+}
+function bjDeal(st, sec, rand){
+  if(sec.shoe.length < 60) sec.shoe = bjShoe(rand);
+  st.hands = st.players.map((_, p) => st.bets[p] ? [{ cards: [], bet: st.bets[p], done: false }] : []);
+  for(let k = 0; k < 2; k++){
+    st.players.forEach((_, p) => { if(st.hands[p].length) st.hands[p][0].cards.push(bjDraw(sec, rand)); });
+    if(k === 0) st.dealer = [bjDraw(sec, rand)]; else sec.hole = bjDraw(sec, rand);
+  }
+  st.hands.forEach(hs => hs.forEach(h => { if(bjTotal(h.cards).t === 21) h.done = true; }));
+  st.phase = "play"; st.seat = -1; st.h = 0; st.shoeLeft = sec.shoe.length;
+  if(bjVal(st.dealer[0]) >= 10 && bjTotal([st.dealer[0], sec.hole]).t === 21){ bjFinish(st, sec, rand); return; }   // the dealer peeks
+  if(!bjNext(st)) bjFinish(st, sec, rand);
+}
+// p: the player's index in st.players. Returns { st, sec, over } (over: true when nobody can bet any more).
+function bjApply(st0, sec0, p, mv, rand = Math.random){
+  const st = JSON.parse(JSON.stringify(st0)), sec = JSON.parse(JSON.stringify(sec0));
+  if(!Number.isInteger(p) || p < 0 || p >= st.players.length) throw new Error("player");
+  if(mv && mv.next === true){
+    if(st.phase !== "over") throw new Error("illegal");
+    Object.assign(st, { round: st.round + 1, bets: st.players.map(() => null), hands: st.players.map(() => []), dealer: [], results: null, phase: "bet", seat: -1, h: 0 });
+    return { st, sec, over: st.bank.every(b => b < BJ_MIN) };
+  }
+  if(st.phase === "bet"){
+    const b = mv && mv.bet;
+    if(st.bets[p] !== null || !Number.isInteger(b) || b < BJ_MIN || b > BJ_MAX || b > st.bank[p]) throw new Error("illegal");
+    st.bets[p] = b; st.bank[p] -= b;
+    if(st.bets.every((x, i) => x !== null || st.bank[i] < BJ_MIN)) bjDeal(st, sec, rand);   // who can't cover the smallest bet sits out
+    return { st, sec, over: false };
+  }
+  if(st.phase !== "play" || st.seat !== p) throw new Error("turn");
+  const hs = st.hands[p], h = hs[st.h], a = mv && mv.act;
+  if(a === "hit"){ h.cards.push(bjDraw(sec, rand)); const t = bjTotal(h.cards).t; if(t > 21){ h.bust = true; h.done = true; } else if(t === 21) h.done = true; }
+  else if(a === "stand") h.done = true;
+  else if(a === "double"){
+    if(h.cards.length !== 2 || st.bank[p] < h.bet) throw new Error("illegal");
+    st.bank[p] -= h.bet; h.bet *= 2; h.doubled = true; h.cards.push(bjDraw(sec, rand)); if(bjTotal(h.cards).t > 21) h.bust = true; h.done = true;
+  } else if(a === "split"){
+    if(hs.length !== 1 || h.cards.length !== 2 || bjVal(h.cards[0]) !== bjVal(h.cards[1]) || st.bank[p] < h.bet) throw new Error("illegal");
+    st.bank[p] -= h.bet; const aces = Number(h.cards[0].slice(1)) === 14;
+    hs.push({ cards: [h.cards[1]], bet: h.bet, done: false, split: true }); h.cards = [h.cards[0]]; h.split = true;
+    for(const x of hs){ x.cards.push(bjDraw(sec, rand)); if(aces || bjTotal(x.cards).t === 21) x.done = true; }
+  } else throw new Error("illegal");
+  if(!bjNext(st)) bjFinish(st, sec, rand);
+  return { st, sec, over: false };
+}
+// what the player whose turn it is may do now
+function bjCan(st, p){
+  if(st.phase !== "play" || st.seat !== p) return [];
+  const hs = st.hands[p], h = hs[st.h], out = ["hit", "stand"];
+  if(h.cards.length === 2 && st.bank[p] >= h.bet) out.push("double");
+  if(hs.length === 1 && h.cards.length === 2 && bjVal(h.cards[0]) === bjVal(h.cards[1]) && st.bank[p] >= h.bet) out.push("split");
+  return out;
+}
+/* BLACKJACK RULES END */
 /* Game Room (his order, 2026-10-17). Pass & play keeps the game on this phone only. A family game lives on the
    server: every move goes through functions/games, which checks the player, the turn and the move with the very same
    rules above, so the board on every phone agrees and no one can move for someone else. */
 const GLOOK = { ttt: ["X", "O"], c4: ["Red", "Yellow"], checkers: ["Red", "Black"], trivia: ["Team 1", "Team 2"] };
-const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades" };
+const GLABEL = { ...GAMES, trivia: "Trivia Night", feud: "Family Feud", spades: "Spades", blackjack: "Blackjack" };
 /* FEUD PROMPTS START (a copy of functions/games/feud.js FEUD_PROMPTS; tests/feud_rules_test.mjs proves they match) */
 const FEUD_PROMPTS = [
   "Name something the family always orders when we eat out.",
@@ -3151,7 +3329,7 @@ const gTable = g => g.kind === "trivia" && g.st?.table === true;     // Trivia a
 let gView = null;            // {local:true, kind, st, turn, over, names} or {id} for a family game
 let gSel = null;             // checkers: the piece picked up
 const gFeud = g => g.kind === "feud", gJudge = g => gFeud(g) && g.by === st.me;
-const gMine = g => g.kind === "spades" ? g.st.seats[g.st.seat] === st.me : gMySide(g) === g.turn;   // is it my move now?
+const gMine = g => g.kind === "spades" ? g.st.seats[g.st.seat] === st.me : g.kind === "blackjack" ? bjMine(g) : gMySide(g) === g.turn;   // is it my move now?
 const gMySide = g => gFeud(g) ? (gJudge(g) ? g.turn : -1) : gTable(g) ? ((g.a || []).includes(st.me) ? g.turn : -1) : (g.a || []).includes(st.me) ? 0 : (g.b || []).includes(st.me) ? 1 : -1;
 const gNames = ids => (ids || []).map(id => first(F(id)?.name || "Someone")).join(" & ");
 const gSideName = (g, side) => gTable(g) ? (g.st.teams || GLOOK.trivia)[side] : gNames(side === 0 ? g.a : g.b);
@@ -3165,7 +3343,7 @@ const gWhyNot = c => ({not_your_turn:"It's not your turn yet.", stale:"The board
   survey_closed:"That survey is closed.", blank:"Answer every question.", few:"Wait until at least two people have answered.", not_starter:"Only the person who started the survey, or the host, can close it.",
   no_answers:"Nobody answered that survey.", four:"Spades needs two on each team.", not_judge:"Only the judge runs the board.", prompts:"Write at least one question.", not_on_side:"You have to be on the first team."})[c] || "Couldn't do that. Try again.";
 function gStandings(){
-  const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g)).forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
+  const w = {}; (st.games || []).filter(g => g.status === "done" && !gTable(g) && g.kind !== "blackjack" && ![...g.a, ...g.b].some(x => String(x).startsWith("bot:"))).forEach(g => { [...g.a, ...g.b].forEach(id => { w[id] ||= {w:0, d:0, p:0}; w[id].p++; });
     if(g.winner === 2) [...g.a, ...g.b].forEach(id => w[id].d++); else (g.winner === 0 ? g.a : g.b).forEach(id => w[id].w++); });
   return Object.entries(w).sort((x, y) => y[1].w - x[1].w || y[1].d - x[1].d);
 }
@@ -3175,7 +3353,8 @@ const gPrev = {};                                    // the last board each game
 const gCheered = new Set();                          // finished games already celebrated on this phone
 const gSzOn = () => { try { return localStorage.getItem("t7.gsize") === "xl"; } catch { return false; } };
 document.body.dataset.gsize = gSzOn() ? "xl" : "l";
-const gSizeBtn = () => `<button class="icon-btn gsz" data-act="g-size" aria-label="${gSzOn() ? "Make the game smaller" : "Make the game bigger"}">${gSzOn() ? "A−" : "A+"}</button>`;
+const gSizeBtn = () => gSndBtn() + `<button class="icon-btn gsz" data-act="g-size" aria-label="${gSzOn() ? "Make the game smaller" : "Make the game bigger"}">${gSzOn() ? "A−" : "A+"}</button>`;
+const gSndBtn = () => `<button class="icon-btn gsz" data-act="g-snd" aria-label="${gSndOn() ? "Turn game sounds off" : "Turn game sounds on"}">${gSndOn() ? "🔊" : "🔇"}</button>`;
 const gBack = (act = "games", label = "Back to the Game Room") => `<button class="icon-btn" data-act="${act}" aria-label="${label}">←</button>`;
 const SUIT_PATH = {
   S: "M50 3C62 22 97 38 97 61C97 76 86 85 73 85C63 85 56 80 53 73C54 85 59 93 68 97H32C41 93 46 85 47 73C44 80 37 85 27 85C14 85 3 76 3 61C3 38 38 22 50 3Z",
@@ -3284,6 +3463,11 @@ function gArt(k){
     <circle cx="60" cy="52" r="20" fill="url(#ga-m)" stroke="#333" stroke-width="1.5"/><path d="M44 46H76M42 54H78M46 62H74" stroke="#55556a" stroke-width="1.6"/>
     <rect x="52" y="70" width="16" height="10" rx="2" fill="#ffd84d"/><rect x="56" y="80" width="8" height="24" rx="3" fill="#2a2a3a"/><rect x="42" y="102" width="36" height="8" rx="4" fill="#2a2a3a"/>
     <circle cx="96" cy="86" r="14" fill="#fff"/><text x="96" y="93" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="20" fill="#c42dff">?</text>`);
+  if(k === "blackjack") return S(`<defs><radialGradient id="ga-ch" cx=".5" cy=".5"><stop offset=".55" stop-color="#e3264f"/><stop offset=".56" stop-color="#fff"/><stop offset=".62" stop-color="#fff"/><stop offset=".63" stop-color="#e3264f"/></radialGradient></defs>
+    <g transform="rotate(-12 45 70)"><rect x="18" y="22" width="50" height="72" rx="7" fill="#fff" stroke="#bbb"/><text x="27" y="41" font-family="Georgia,serif" font-weight="700" font-size="16" fill="#141414">A</text><use href="#su-S" x="29" y="50" width="28" height="28" fill="#141414"/></g>
+    <g transform="rotate(10 75 70)"><rect x="50" y="24" width="50" height="72" rx="7" fill="#fff" stroke="#bbb"/><text x="58" y="43" font-family="Georgia,serif" font-weight="700" font-size="16" fill="#d0142c">K</text><use href="#su-H" x="62" y="52" width="26" height="26" fill="#d0142c"/></g>
+    <circle cx="94" cy="96" r="16" fill="url(#ga-ch)" stroke="#7a0c1f" stroke-width="2"/><circle cx="94" cy="96" r="9" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <text x="22" y="112" font-family="Arial,sans-serif" font-weight="900" font-size="15" fill="#ffd36b">21</text>`);
   if(k === "feud") return S(`<rect x="8" y="12" width="104" height="96" rx="12" fill="#0b2a7a" stroke="#e9b23a" stroke-width="4"/>
     ${[0,1,2].map(i => `<rect x="18" y="${24 + i*24}" width="84" height="18" rx="5" fill="${i ? "#2b6dff" : "#ffffff"}"/><circle cx="29" cy="${33 + i*24}" r="6" fill="${i ? "#0d2c86" : "#e9b23a"}" stroke="#e9b23a" stroke-width="1.5"/>`).join("")}
     <text x="39" y="36.5" font-family="Arial,sans-serif" font-weight="900" font-size="7.6" fill="#0b1d55">SURVEY SAYS</text>
@@ -3291,12 +3475,12 @@ function gArt(k){
   return "";
 }
 const GTILES = [["ttt","Tic-Tac-Toe","Three in a row","gt-ttt"],["c4","Connect Four","Drop four in a row","gt-c4"],["checkers","Checkers","Slide, jump, get crowned","gt-ck"],
-  ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"]];
+  ["spades","Spades","Couples · Jokers & deuces","gt-sp"],["trivia","Trivia Night","Music · TV · Bible","gt-tv"],["feud","Family Feud","We are the survey","gt-fd"],["blackjack","Blackjack","Beat the dealer to 21","gt-bj"]];
 const GTILE_BG = Object.fromEntries(GTILES.map(t => [t[0], t[3]]));
 function gLiveRow(g){
   const me = gMySide(g), mine = gMine(g), tv = g.kind === "trivia";
-  const note = g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
-  return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic ${GTILE_BG[g.kind]}" style="width:48px;height:48px;border-radius:14px;padding:4px">${gArt(g.kind === "trivia" ? "trivia" : g.kind)}</span><span><b>${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}</b><small>${gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`;
+  const note = g.kind === "blackjack" ? ` · hand ${g.st.round}` : g.kind === "spades" ? ` · hand ${g.st.hand} · ${g.st.score[0]} to ${g.st.score[1]}` : gFeud(g) ? ` · round ${g.st.round} of ${g.st.rounds} · ${g.st.score[0]}–${g.st.score[1]}` : tv ? ` · question ${g.st.n} of ${g.st.total} · ${g.st.score[0]}–${g.st.score[1]}` : "";
+  return `<button class="todo" data-act="g-open" data-id="${g.id}"><span class="ic ${GTILE_BG[g.kind]}" style="width:48px;height:48px;border-radius:14px;padding:4px">${gArt(g.kind === "trivia" ? "trivia" : g.kind)}</span><span><b>${g.kind === "blackjack" ? `Blackjack · ${esc(gNames(g.st.players))}` : g.st?.solo ? `Trivia Night · ${esc(gNames(g.a))} alone` : `${GLABEL[g.kind]} · ${esc(gSideName(g, 0))} vs ${esc(gSideName(g, 1))}`}</b><small>${g.kind === "blackjack" ? (mine ? "Your move!" : "At the table") : gFeud(g) ? (gJudge(g) ? "You're the judge" : "Watch the board") : g.st?.solo ? "Playing alone" : gTable(g) ? "Playing at the table" : mine ? (tv ? "Your team's question!" : "Your move!") : me < 0 ? "Watching" : `Waiting on ${esc(gSideName(g, g.turn))}`}${note}</small></span><span class="chev">${I.chev}</span></button>`;
 }
 function sheetGames(){
   gView = null; gSel = null; gDefs();
@@ -3312,6 +3496,9 @@ function sheetGames(){
     ${live.length ? `<div class="lbl">GAMES IN PLAY</div><div style="display:grid;gap:8px">${live.map(gLiveRow).join("")}</div>` : ""}
     <div class="lbl">🏆 FAMILY STANDINGS</div>
     ${table.length ? `<div style="display:grid;gap:8px">${table.map(([id, x], i) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${["🥇","🥈","🥉"][i] || (i + 1) + "."} ${esc(F(id)?.name || "Family")}</b><small>${x.w} ${x.w === 1 ? "win" : "wins"} · ${x.d} ${x.d === 1 ? "draw" : "draws"} · ${x.p} played</small></span></div>`).join("")}</div>` : `<div class="empty">No family games finished yet. Pass &amp; play and at-the-table trivia don't count.</div>`}
+    ${(() => { const big = {}; (st.games || []).filter(g => g.kind === "blackjack" && g.status === "done").forEach(g => g.st.players.forEach((id, i) => { big[id] = Math.max(big[id] || 0, g.st.bank[i]); }));
+      const list = Object.entries(big).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      return list.length ? `<div class="lbl">💰 BLACKJACK · BIGGEST STACKS</div><div style="display:grid;gap:8px">${list.map(([id, v]) => `<div class="person">${av(id, "sm")}<span style="min-width:0"><b>${esc(F(id)?.name || "Family")}</b><small>${v.toLocaleString()} points</small></span></div>`).join("")}</div>` : ""; })()}
     ${done.length ? `<div class="lbl">RECENT RESULTS</div>${done.map(g => `<div class="small">${GLABEL[g.kind]}: ${g.why === "stopped" ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} stopped early` : g.winner === 2 ? `${esc(gSideName(g, 0))} and ${esc(gSideName(g, 1))} drew` : `${esc(gSideName(g, g.winner))} beat ${esc(gSideName(g, 1 - g.winner))}`}${g.why === "stopped" ? "" : ` · ${esc(g.why)}`}</div>`).join("")}` : ""}`);
 }
 function sheetGamePick(k){
@@ -3322,10 +3509,14 @@ function sheetGamePick(k){
     checkers: "Slide your piece with your finger. Jumps must be taken; reach the far side to be crowned.",
     spades: "Two couples, partners across. Big Joker, Little Joker, 2♠, 2♦ are the top trumps.",
     trivia: "Ten questions on Music, TV & Movies and the Bible, against the clock. Time's up? The other team can steal.",
-    feud: "The family is the survey: everyone answers privately, then one of us runs the board."}[k];
-  const modes = ["ttt", "c4", "checkers"].includes(k) ? `<button class="btn primary" data-act="g-local" data-k="${k}">📱 Pass &amp; play on this phone</button><button class="btn wine" data-act="g-new" data-k="${k}">👨‍👩‍👧 Play the family · own phones</button>`
-    : k === "spades" ? `<button class="btn primary" data-act="sp-new">🃏 Deal a game of Spades</button>`
-    : k === "trivia" ? `<button class="btn primary" data-act="tv-new" data-k="table">📱 At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">👨‍👩‍👧 Family teams · own phones</button>`
+    feud: "The family is the survey: everyone answers privately, then one of us runs the board.",
+    blackjack: "Get closer to 21 than the dealer without going over. Blackjack pays 3 to 2. Chips are points for fun, never money."}[k];
+  const rec = aiLine(k), best = k === "trivia" ? tvBest() : 0;
+  const modes = ["ttt", "c4", "checkers"].includes(k) ? `<div class="lbl">🤖 PLAY THE COMPUTER</div><div class="ailv">${[1, 2, 3].map(lv => `<button class="btn ${lv === 1 ? "" : lv === 2 ? "primary" : "wine"}" data-act="g-ai" data-k="${k}" data-lv="${lv}">${AI_LV[lv]}</button>`).join("")}</div>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}
+      <div class="lbl">OR PLAY EACH OTHER</div><button class="btn primary" data-act="g-local" data-k="${k}">📱 Pass &amp; play on this phone</button><button class="btn wine" data-act="g-new" data-k="${k}">👨‍👩‍👧 Play the family · own phones</button>`
+    : k === "spades" ? `<button class="btn primary" data-act="sp-solo">🤖 Me and a computer partner</button>${rec ? `<p class="small muted" style="margin:0">${rec}</p>` : ""}<button class="btn wine" data-act="sp-new">👨‍👩‍👧 Deal a family game · computers fill empty seats</button>`
+    : k === "trivia" ? `<button class="btn primary" data-act="tv-new" data-k="solo">🧠 Just me, against the clock</button>${best ? `<p class="small muted" style="margin:0">Your best: ${best} of 10</p>` : ""}<button class="btn" data-act="tv-new" data-k="table">📱 At the table · one phone</button><button class="btn wine" data-act="tv-new" data-k="teams">👨‍👩‍👧 Family teams · own phones</button>`
+    : k === "blackjack" ? `<button class="btn primary" data-act="bj-solo">🤖 Just me vs the dealer</button><p class="small muted" style="margin:0">Your best: ${bjBest().toLocaleString()} points</p><button class="btn wine" data-act="bj-new">👨‍👩‍👧 Family table · own phones</button>`
     : `<div style="width:min(100%,460px);display:grid;gap:10px">${feudRoom()}</div>`;
   openSheet(`<div class="sheet-head" data-room>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>${t[1]}</h2></div>${gSizeBtn()}</div>
     <div class="gpick"><div class="art ${t[3]}">${gArt(k)}</div><p class="small" style="margin:0;max-width:44ch">${how}</p>${modes}</div>
@@ -3339,7 +3530,8 @@ function gCheer(g){
   if(g.local){ if(gView.cheered) return; gView.cheered = true; }
   else { if(gCheered.has(g.id)) return; gCheered.add(g.id); }
   const mine = g.local || g.table || (g.me >= 0 && g.winner === g.me) || (g.kind === "spades" && g.winner === g.st.seats.indexOf(st.me) % 2) || g.judge;
-  if(!mine || g.winner === 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if(!mine || (g.winner === 2 && !(g.st?.solo && g.st.score[0] >= 7)) || (g.local && (g.ai || g.kind === "spades") && g.winner !== 0)) return;
+  gSnd("win"); if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const box = document.createElement("div"); box.className = "confetti"; const cols = ["#ff3b5c","#ffd36b","#2fa8ff","#2fe08a","#b45cff","#ff8a1f"];
   box.innerHTML = Array.from({length:110}, () => `<i style="left:${Math.random() * 100}%;background:${cols[Math.floor(Math.random() * cols.length)]};animation-duration:${2 + Math.random() * 2}s;animation-delay:${Math.random() * .6}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join("");
   document.body.appendChild(box); setTimeout(() => box.remove(), 4800);
@@ -3354,6 +3546,9 @@ const CROWN = `<svg viewBox="0 0 40 30" aria-hidden="true"><path d="M3 27L5 8L13
 function drawGame(){
   gDefs();
   const g = gCurrent(); if(!g){ sheetGames(); return; }
+  aiResult();
+  if(!g.local){ const mk = g.id + ":moves"; if(gPrev[mk] !== undefined && g.moves > gPrev[mk]) gSndFor(g); gPrev[mk] = g.moves; }
+  if(g.kind === "blackjack"){ drawBlackjack(g); gCheer(g); return; }
   if(g.kind === "trivia"){ drawTrivia(g); gCheer(g); return; }
   if(g.kind === "feud"){ drawFeud(g); gCheer(g); return; }
   if(g.kind === "spades"){ drawSpades(g); gCheer(g); return; }
@@ -3381,8 +3576,8 @@ function drawGame(){
       return `<button class="${dk ? "dk" : ""} ${gSel === i ? "sel" : ""} ${tos.has(i) ? "to" : ""} ${isNew(i) ? "new" : ""}" data-act="g-ck" data-i="${i}" ${dk && (froms.has(i) || tos.has(i)) ? "" : "disabled"} aria-label="Square ${i}${p ? (p.s ? ", black" : ", red") + (p.k ? " king" : "") : ""}">${p ? `<span class="gp p${p.s} ${froms.has(i) ? "can" : ""}" data-from="${froms.has(i) ? i : ""}">${p.k ? CROWN : ""}</span>` : ""}</button>`; }).join("")}</div></div>`;
   }
   const status = g.status === "done" ? (g.winner === 2 ? `🤝 A draw (${esc(g.why)})` : `🏆 ${esc(g.names[g.winner])} won! (${esc(g.why)})`)
-    : myTurn ? `Your move${g.local ? `, ${esc(g.names[g.turn])}` : ""}: ${pieceName(g.turn)}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping!" : ""}` : `Waiting on ${esc(g.names[g.turn])} (${pieceName(g.turn)})`;
-  openSheet(`${gHead(`${GAMES[g.kind]}${g.local ? " · pass & play" : ""}`, GAMES[g.kind])}
+    : myTurn ? `Your move${g.local && !g.ai ? `, ${esc(g.names[g.turn])}` : ""}: ${pieceName(g.turn)}${g.kind === "checkers" && g.st.chain != null ? " · keep jumping!" : ""}` : g.ai ? `🤖 The computer is thinking… (${pieceName(g.turn)})` : `Waiting on ${esc(g.names[g.turn])} (${pieceName(g.turn)})`;
+  openSheet(`${gHead(`${GAMES[g.kind]}${g.local ? (g.ai ? ` · vs the computer (${AI_LV[g.ai.lv]})` : " · pass & play") : ""}`, GAMES[g.kind])}
     ${gScore(`${esc(g.names[0])} · ${pieceName(0)}`, `${esc(g.names[1])} · ${pieceName(1)}`, "", "", g.status === "live" ? g.turn : -1)}
     <div class="gstatus ${g.status === "done" ? "win" : myTurn ? "go" : ""}">${status}</div>
     ${board}
@@ -3426,6 +3621,7 @@ document.addEventListener("click", e => { if(Date.now() < ckNoClick && e.target.
 let spPick = null;
 function drawSpades(g){
   const s = g.st, live = g.status === "live", mySeat = s.seats.indexOf(st.me), key = `${g.id}:${g.moves}`;
+  if(g.local) spHands[key] = gView.hands[mySeat];
   if(live && mySeat >= 0 && !spHands[key]){ spHands[key] = "…"; gamesCall({action:"hand", id:g.id}).then(d => { spHands[key] = d.ok ? d.hand : null; if(!d.ok) setTimeout(() => { delete spHands[key]; if(gView?.id === g.id) drawGame(); }, 1500); if(gView?.id === g.id) drawGame(); }); }
   const hand = Array.isArray(spHands[key]) ? spHands[key] : null, myTurn = live && s.seat === mySeat;
   const legal = myTurn && hand ? spLegal(s, hand) : [];
@@ -3472,22 +3668,23 @@ function tvTickStart(){
     arc.style.strokeDashoffset = String(1 - left / g.st.secs); num.textContent = Math.ceil(left);
     ring.classList.toggle("low", left <= 5); arc.style.stroke = left <= 5 ? "#ff5c7a" : left <= 10 ? "#ffd84d" : "#2fe08a";
     const player = g.table || g.me >= 0 || (st.games.find(x => x.id === g.id)?.a || []).concat(st.games.find(x => x.id === g.id)?.b || []).includes(st.me);
+    if(left <= 5 && left > 0 && Math.ceil(left) !== c.tick){ c.tick = Math.ceil(left); gSnd("tick"); }
     if(left <= 0 && !c.sent && player){ c.sent = true;
       gamesCall({action:"move", id:g.id, mv:{timeout:true}, at:g.moves}).then(async d => { if(!d.ok && d.code === "early"){ setTimeout(() => { c.sent = false; }, 900); return; } await refresh(true); if(gView?.id === g.id) drawGame(); }); }
   }, 200);
 }
 function drawTrivia(g){
-  const s = g.st, live = g.status === "live", myTurn = live && g.me === g.turn, L = s.last;
-  const last = !L ? "" : L.timeout && !L.answer ? `<div class="tvlast time">⏱ Time's up for <b>${esc(g.names[L.side])}</b>! <b>${esc(g.names[1 - L.side])}</b> can steal it.</div>`
+  const s = g.st, live = g.status === "live", myTurn = live && g.me === g.turn, L = s.last, tvWho = i => s.solo ? "You" : esc(g.names[i]);
+  const last = !L ? "" : L.timeout && !L.answer ? `<div class="tvlast time">⏱ Time's up for <b>${tvWho(L.side)}</b>! <b>${esc(g.names[1 - L.side])}</b> can steal it.</div>`
     : L.timeout ? `<div class="tvlast time">⏱ Time's up! It was <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`
-    : L.right ? `<div class="tvlast ok">✓ <b>${esc(g.names[L.side])}</b> ${L.stole ? "stole it" : "got it"}: <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`
-    : `<div class="tvlast no">✗ <b>${esc(g.names[L.side])}</b> missed it. It was <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`;
+    : L.right ? `<div class="tvlast ok">✓ <b>${tvWho(L.side)}</b> ${L.stole ? "stole it" : "got it"}: <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`
+    : `<div class="tvlast no">✗ <b>${tvWho(L.side)}</b> missed it. It was <b>${esc(L.answer)}</b><br><span class="muted">${esc(L.q)}</span></div>`;
   const status = !live ? (g.why === "stopped" ? "Game stopped early" : g.winner === 2 ? `🤝 A tie, ${esc(g.why)}` : `🏆 ${esc(g.names[g.winner])} won, ${esc(g.why)}`)
     : myTurn ? (g.table ? `${esc(g.names[g.turn])}, this one's yours!` : s.steal ? "Steal it! Your team's chance" : "Your team's question!") : `${esc(g.names[g.turn])} ${s.steal ? "is trying to steal" : "is answering"}…`;
   const left = live && s.secs ? tvLeft(g).left : 0, shapes = ["▲", "◆", "●", "■"];
   openSheet(`${gHead(`Trivia Night · ${esc(TCATS[s.cat] || "")}`, "🎤 Trivia Night")}
-    ${gScore(esc(g.names[0]), esc(g.names[1]), s.score[0], s.score[1], live ? g.turn : -1)}
-    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${status}</div>
+    ${s.solo ? `<div class="gscore" style="grid-template-columns:1fr"><div class="team on"><b>Your score</b><div class="pts">${s.score[0]} <small style="font-size:.5em;color:#b8c4dc">of ${s.total}</small></div></div></div>` : gScore(esc(g.names[0]), esc(g.names[1]), s.score[0], s.score[1], live ? g.turn : -1)}
+    <div class="gstatus ${!live ? "win" : myTurn ? "go" : ""}">${s.solo ? (!live ? (g.why === "stopped" ? "Game stopped early" : `🏁 You scored ${s.score[0]} of ${s.total}${s.score[0] >= tvBest() && s.score[0] ? " · your best!" : ""}`) : "Your question!") : status}</div>
     ${last}
     ${live ? `<div class="tvstage"><div class="tvmeta"><span class="eyebrow" style="color:#ffd9ff">Question ${s.n} of ${s.total} · ${esc(s.q.cat)} ${s.steal ? `<span class="steal">STEAL</span>` : ""}</span>
         ${s.secs ? `<div class="ring" id="tv-ring" role="timer" aria-label="Seconds left"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="10"/><circle class="arc" pathLength="1" cx="50" cy="50" r="44" fill="none" stroke="#2fe08a" stroke-width="10" stroke-linecap="round" stroke-dasharray="1" style="stroke-dashoffset:${1 - left / s.secs};transition:stroke-dashoffset .2s linear"/></svg><span class="num">${Math.ceil(left)}</span></div>` : ""}</div>
@@ -3587,9 +3784,10 @@ function sheetSpadesNew(){
   const opt = (id, sel) => `<option value="${id}" ${sel ? "selected" : ""}>${esc(F(id).name)}</option>`;
   openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Spades for couples</div><h2>♠️ Jokers &amp; deuces</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Four players, two couples, partners sit across. Each plays on their own phone and sees only their own cards. Trumps, highest first: Big Joker, Little Joker, 2♠, 2♦, then A♠ down. 2♣ and 2♥ are out of the deck.</p>
-    <div class="field"><label for="sp-a2">Your partner</label><select class="input" id="sp-a2">${others.map((f, i) => opt(f.id, i === 0)).join("")}</select></div>
-    <div class="field"><label for="sp-b1">Other couple</label><select class="input" id="sp-b1">${others.map((f, i) => opt(f.id, i === 1)).join("")}</select></div>
-    <div class="field"><label for="sp-b2">…and their partner</label><select class="input" id="sp-b2">${others.map((f, i) => opt(f.id, i === 2)).join("")}</select></div>
+    <div class="field"><label for="sp-a2">Your partner</label><select class="input" id="sp-a2">${others.map((f, i) => opt(f.id, i === 0)).join("")}<option value="bot:2">🤖 Computer</option></select></div>
+    <div class="field"><label for="sp-b1">Other couple</label><select class="input" id="sp-b1">${others.map((f, i) => opt(f.id, i === 1)).join("")}<option value="bot:1">🤖 Computer</option></select></div>
+    <div class="field"><label for="sp-b2">…and their partner</label><select class="input" id="sp-b2">${others.map((f, i) => opt(f.id, i === 2)).join("")}<option value="bot:3">🤖 Computer</option></select></div>
+    <p class="small muted" style="margin:0">Short of players? Pick 🤖 Computer for any seat. Games with a computer don't count in the family standings.</p>
     <div class="field"><label for="sp-t">Play to</label><select class="input" id="sp-t"><option value="300">300 points (a shorter game)</option><option value="500" selected>500 points (the full game)</option></select></div>
     <button class="btn primary block" data-act="sp-start">Deal Spades</button>
     <p class="small muted" style="margin:0">Everyone in the game gets a notification.</p>`);
@@ -3599,16 +3797,158 @@ function spFace(c){ if(c === "BJ") return {t:"Big 🃏", red:true}; if(c === "LJ
   const r = +c.slice(1); return {t:(SPR[r] || r) + SPS[c[0]], red:c[0] === "H" || c[0] === "D"}; }
 const spCard = (c, attrs = "", big = false) => { const f = spFace(c); return `<button class="pc ${f.red ? "red" : ""} ${big ? "big" : ""}" ${attrs}>${f.t}</button>`; };
 const spHands = {};       // this phone's own cards, per game and move, fetched from the server
+/* ===== Play the computer (his order, 2026-10-17). Computer games run on this phone only and keep their own record
+   here; they never count in the family standings. Spades with computer seats in a family game is played by the server. ===== */
+const AI_LV = ["", "Easy", "Medium", "Hard"];
+function aiRec(){ try { return JSON.parse(localStorage.getItem("t7.airec") || "{}"); } catch { return {}; } }
+function aiNote(key, res){ const r = aiRec(); r[key] ||= {w:0, l:0, d:0}; r[key][res]++; try { localStorage.setItem("t7.airec", JSON.stringify(r)); } catch {} }
+function aiLine(kind){
+  const r = aiRec(), lv = kind === "spades" ? [""] : [1, 2, 3];
+  const parts = lv.map(n => { const x = r[kind + ":" + n]; return x ? `${n ? AI_LV[n] + " " : ""}${x.w} won · ${x.l} lost${x.d ? ` · ${x.d} drawn` : ""}` : ""; }).filter(Boolean);
+  return parts.length ? `Your record against the computer: ${parts.join(" · ")}` : "";
+}
+const shuf = a => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+function aiEval(kind, s, me){
+  if(kind === "c4"){ let sc = 0; const b = s.b, W = cells => { const m = cells.filter(v => v === me).length, o = cells.filter(v => v === 1 - me).length;
+      if(m && o) return 0; return m === 3 ? 5 : m === 2 ? 2 : o === 3 ? -6 : o === 2 ? -2 : 0; };
+    for(let r = 0; r < 6; r++) for(let c = 0; c < 7; c++){ if(c === 3 && b[r*7+c] === me) sc += 3;
+      for(const [dr, dc] of [[0,1],[1,0],[1,1],[1,-1]]){ const cells = []; for(let k = 0; k < 4; k++){ const y = r + k*dr, x = c + k*dc; if(y < 0 || y > 5 || x < 0 || x > 6) break; cells.push(b[y*7+x]); } if(cells.length === 4) sc += W(cells); } }
+    return sc; }
+  if(kind === "checkers"){ let sc = 0; s.b.forEach((p, i) => { if(!p) return; const r = Math.floor(i / 8), v = p.k ? 1.7 : 1 + (p.s === 0 ? 7 - r : r) * 0.04; sc += p.s === me ? v : -v; }); return sc * 10; }
+  return 0;
+}
+function aiSearch(kind, s, turn, depth, me, a, b){
+  const moves = shuf(gameLegal(kind, s, turn));
+  if(!moves.length) return {score: turn === me ? -1e6 : 1e6};
+  if(depth === 0) return {score: aiEval(kind, s, me)};
+  let best = moves[0], bs = turn === me ? -Infinity : Infinity;
+  for(const m of moves){ const r = gameApply(kind, s, turn, m);
+    const sc = r.over ? (r.over.winner === 2 ? 0 : r.over.winner === me ? 1e5 + depth : -1e5 - depth) : aiSearch(kind, r.st, r.turn, depth - 1, me, a, b).score;
+    if(turn === me ? sc > bs : sc < bs){ bs = sc; best = m; }
+    if(turn === me) a = Math.max(a, sc); else b = Math.min(b, sc); if(b <= a) break; }
+  return {score: bs, move: best};
+}
+// Easy plays loosely, Medium looks a couple of moves ahead, Hard looks deep (Tic-Tac-Toe Hard never loses)
+function aiMove(kind, s, side, lv){
+  const legal = gameLegal(kind, s, side); if(legal.length === 1) return legal[0];
+  const rnd = () => legal[Math.floor(Math.random() * legal.length)];
+  if(lv === 1 && Math.random() < (kind === "ttt" ? .55 : .45)) return rnd();
+  if(lv === 2 && Math.random() < .15) return rnd();
+  const depth = {ttt:[0, 2, 2, 9], c4:[0, 1, 3, 6], checkers:[0, 1, 2, 4]}[kind][lv];
+  return aiSearch(kind, s, side, depth, side, -Infinity, Infinity).move || rnd();
+}
+let aiTimer = null;
+function aiRun(){
+  clearTimeout(aiTimer); const v = gView; if(!v || !v.local || v.over) return;
+  if(v.kind === "spades"){ if(!String(v.st.seats[v.st.seat]).startsWith("bot")) return;
+    aiTimer = setTimeout(() => { if(gView !== v || v.over) return; const s = v.st, k = s.seat, mv = s.phase === "bid" ? {bid:spBotBid(v.hands[k])} : {card:spBotPlay(s, v.hands[k], k)};
+      const r = spApply(s, v.hands, k, mv, () => spDeal()); v.st = r.st; v.hands = r.hands; if(r.over) v.over = r.over; gSnd(mv.card ? "card" : "chip"); drawGame(); aiRun(); },
+      v.st.phase === "play" && !v.st.trick.length && v.st.last ? 1400 : 800);
+    return; }
+  if(v.ai && v.turn === v.ai.side){
+    aiTimer = setTimeout(() => { if(gView !== v || v.over) return; const m = aiMove(v.kind, v.st, v.turn, v.ai.lv), r = gameApply(v.kind, v.st, v.turn, m);
+      v.st = r.st; v.turn = r.turn; v.over = r.over; gSnd("place"); drawGame(); aiRun(); }, v.kind === "checkers" && v.st.chain != null ? 550 : 700); }
+}
+// a computer game's result goes in this phone's record once
+function aiResult(){
+  const v = gView; if(!v || !v.local || !v.over || v.noted || !(v.ai || v.kind === "spades")) return; v.noted = true;
+  const w = v.over.winner; aiNote(v.kind + ":" + (v.ai ? v.ai.lv : ""), w === 2 ? "d" : w === 0 ? "w" : "l");
+}
+/* ===== Sounds (his order, 2026-10-17): optional, OFF until turned on with 🔇 / 🔊. Made on the phone, no files. ===== */
+let gAC = null;
+const gSndOn = () => { try { return localStorage.getItem("t7.gsound") === "on"; } catch { return false; } };
+function gSnd(kind){
+  if(!gSndOn()) return;
+  try { gAC ||= new (window.AudioContext || window.webkitAudioContext)(); if(gAC.state === "suspended") gAC.resume();
+    const t = gAC.currentTime;
+    const tone = (f, d, type = "sine", v = .18, at = 0, f2 = 0) => { const o = gAC.createOscillator(), g = gAC.createGain(); o.type = type; o.frequency.setValueAtTime(f, t + at);
+      if(f2) o.frequency.exponentialRampToValueAtTime(f2, t + at + d); g.gain.setValueAtTime(v, t + at); g.gain.exponentialRampToValueAtTime(.001, t + at + d); o.connect(g).connect(gAC.destination); o.start(t + at); o.stop(t + at + d + .03); };
+    const swish = (d, v, hp) => { const n = gAC.createBuffer(1, Math.floor(gAC.sampleRate * d), gAC.sampleRate), x = n.getChannelData(0); for(let i = 0; i < x.length; i++) x[i] = (Math.random() * 2 - 1) * (1 - i / x.length);
+      const s = gAC.createBufferSource(), f = gAC.createBiquadFilter(), g = gAC.createGain(); f.type = "highpass"; f.frequency.value = hp; g.gain.value = v; s.buffer = n; s.connect(f).connect(g).connect(gAC.destination); s.start(t); };
+    ({ place: () => tone(540, .13, "triangle", .22, 0, 330), card: () => swish(.13, .35, 2200), chip: () => { tone(2500, .05, "square", .05); tone(3200, .06, "square", .04, .045); },
+       right: () => { tone(660, .12, "sine", .22); tone(990, .22, "sine", .22, .1); }, wrong: () => tone(230, .38, "sawtooth", .12, 0, 140),
+       buzz: () => { tone(110, .55, "square", .14); tone(117, .55, "square", .12); }, tick: () => tone(1250, .04, "square", .06),
+       win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .28, "triangle", .2, i * .12)) })[kind]?.();
+  } catch {}
+}
+// a family game moved on another phone (or this one): the sound that fits it
+function gSndFor(g){
+  if(g.kind === "trivia"){ const L = g.st.last; gSnd(!L ? "place" : L.timeout ? "buzz" : L.right ? "right" : "wrong"); return; }
+  if(g.kind === "feud"){ const L = g.st.last || {}; gSnd(L.kind === "strike" || L.kind === "nosteal" ? "buzz" : L.kind ? "right" : "place"); return; }
+  gSnd(g.kind === "spades" || g.kind === "blackjack" ? "card" : "place");
+}
+/* ===== Blackjack (his order, 2026-10-17). Chips are points, never money. ===== */
+let bjPend = 0;
+const BJ_CHIPS = [[10, "#f4f4f4", "#1d47a6"], [25, "#2fbf5f", "#fff"], [50, "#e3264f", "#fff"], [100, "#1b1b1b", "#ffd36b"], [500, "#7b3fe4", "#fff"]];
+const bjMine = g => { const s = g.st, p = (s.players || []).indexOf(st.me); return p >= 0 && ((s.phase === "bet" && s.bets[p] === null && s.bank[p] >= BJ_MIN) || (s.phase === "play" && s.seat === p)); };
+function drawBlackjack(g){
+  const s = g.st, live = g.status === "live", p = s.players.indexOf(st.me);
+  const nm = i => s.players[i] === st.me ? "You" : esc(first(F(s.players[i]).name));
+  const total = cards => { const x = bjTotal(cards); return (x.soft && x.t < 21 ? "soft " : "") + x.t; };
+  const row = (cards, hole) => `<div class="bjcards">${cards.map(c => `<div class="bjc">${svgCard(c)}</div>`).join("")}${hole ? `<div class="bjc">${cardBack()}</div>` : ""}</div>`;
+  const tagOf = r => r ? ({blackjack:["BLACKJACK! +" + r.net, "win"], win:["WIN +" + r.net, "win"], push:["PUSH", "push"], lose:["LOSE " + r.net, "lose"], bust:["BUST " + r.net, "lose"]})[r.res] : null;
+  const dealer = `<div class="bjseat"><div class="bjname">🎩 Dealer${s.dealer.length ? ` · <b>${s.phase === "over" ? total(s.dealer) : bjVal(s.dealer[0]) === 11 ? "A" : bjVal(s.dealer[0])}</b>` : ""}</div>
+    ${s.dealer.length ? row(s.dealer, s.phase === "play") : `<div class="small" style="color:#d6f5e0">Place your bets</div>`}</div>`;
+  const players = s.players.map((id, i) => { const hs = s.hands[i] || [], res = s.results?.[i] || [];
+    return `<div class="bjseat ${s.phase === "play" && s.seat === i ? "turn" : ""}"><div class="bjname"><span>${nm(i)}</span><span class="bank">💰 ${s.bank[i].toLocaleString()}</span>${s.phase === "bet" ? `<span class="tk">${s.bets[i] !== null ? "bet " + s.bets[i] : s.bank[i] < BJ_MIN ? "sitting out" : "betting…"}</span>` : ""}</div>
+      ${hs.length ? `<div class="bjhands">${hs.map((h, k) => { const t = tagOf(res[k]);
+        return `<div class="bjhand ${s.phase === "play" && s.seat === i && s.h === k ? "on" : ""}">${row(h.cards)}<div class="bjmeta"><b>${total(h.cards)}</b><span class="bet">${h.bet}${h.doubled ? " ×2" : ""}</span>${t ? `<span class="bjtag ${t[1]}">${t[0]}</span>` : ""}</div></div>`; }).join("")}</div>` : ""}</div>`; }).join("");
+  const can = live && p >= 0 ? bjCan(s, p) : [];
+  let ctl = "";
+  if(live && p >= 0 && s.phase === "bet" && s.bets[p] === null && s.bank[p] >= BJ_MIN){
+    const most = Math.min(BJ_MAX, s.bank[p]);
+    ctl = `<div class="lbl" style="text-align:center">YOUR BET · ${bjPend || 0} <span class="muted">(10 to ${most})</span></div>
+      <div class="bjchips">${BJ_CHIPS.map(([v, bg, fg]) => `<button class="bjchip" style="--c:${bg};--f:${fg}" data-act="bj-chip" data-v="${v}" ${bjPend + v > most ? "disabled" : ""} aria-label="Add ${v}">${v}</button>`).join("")}</div>
+      <div class="actions" style="justify-content:center"><button class="btn" data-act="bj-clear" ${bjPend ? "" : "disabled"}>Clear</button><button class="btn primary" data-act="bj-bet" ${bjPend >= BJ_MIN ? "" : "disabled"}>Bet ${bjPend || ""}</button></div>`;
+  } else if(can.length){
+    ctl = `<div class="bjacts">${[["hit", "Hit", "primary"], ["stand", "Stand", "wine"], ["double", "Double", ""], ["split", "Split", ""]].map(([a, l, c]) => `<button class="btn ${c}" data-act="g-move" data-m='${JSON.stringify({act:a})}' ${can.includes(a) ? "" : "disabled"}>${l}</button>`).join("")}</div>`;
+  } else if(live && s.phase === "over" && p >= 0) ctl = `<button class="btn primary block" data-act="g-move" data-m='{"next":true}' style="max-width:460px;margin-inline:auto">Deal the next hand</button>`;
+  const status = !live ? `🏁 Table closed${g.why ? ": " + esc(g.why) : ""}`
+    : s.phase === "bet" ? (p >= 0 && s.bets[p] === null && s.bank[p] >= BJ_MIN ? "Place your bet" : "Waiting for the others to bet…")
+    : s.phase === "play" ? (s.seat === p ? `Your move: ${total(s.hands[p][s.h].cards)}${s.hands[p].length > 1 ? ` (hand ${s.h + 1} of ${s.hands[p].length})` : ""}` : `${nm(s.seat)} is playing…`)
+    : (() => { const r = (s.results?.[p] || []).reduce((a, x) => a + x.net, 0); return p < 0 ? "Hand over" : r > 0 ? `You won ${r}!` : r < 0 ? `You lost ${-r}` : "Even this hand"; })();
+  openSheet(`${gHead(`Blackjack · hand ${s.round}${g.local ? " · you vs the dealer" : ""}`, "🃏 Blackjack")}
+    <div class="gstatus ${!live ? "win" : bjMine(g) || (s.phase === "over" && (s.results?.[p] || []).some(x => x.net > 0)) ? "go" : ""}">${status}</div>
+    <div class="bjtable">${dealer}<div class="bjrule">BLACKJACK PAYS 3 TO 2 · DEALER STANDS ON 17</div>${players}</div>
+    ${ctl}
+    <div class="actions" style="justify-content:center">${live ? `<button class="btn sm ghost" data-act="g-resign">${g.local ? "Leave the table" : "Close the table for everyone"}</button>` : `<button class="btn primary" data-act="g-again">Play again</button>`}</div>
+    <p class="small muted" style="margin:0;text-align:center">Chips are points for fun, never money.${g.local ? ` Your best: ${bjBest().toLocaleString()} points.` : ""}</p>`);
+}
+function bjBest(){ try { return +(localStorage.getItem("t7.bjbest") || 1000); } catch { return 1000; } }
+function bjNoteBest(v){ try { if(v > bjBest()) localStorage.setItem("t7.bjbest", String(v)); } catch {} }
+function sheetBlackjackNew(){
+  const others = st.fam.filter(f => f.id !== st.me && f.status !== "suspended");
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Blackjack</div><h2>🃏 A family table</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Up to four players against the dealer, each on their own phone. Everyone starts with 1,000 points; bet 10 to 500 a hand. Chips are points for fun, never money.</p>
+    <div class="lbl">WHO'S AT THE TABLE · UP TO 3 MORE</div>
+    ${others.map(f => `<div class="field" style="display:flex;align-items:center;gap:10px"><label for="bj-p-${f.id}" style="flex:1;margin:0">${esc(f.name)}</label><select class="input" style="width:auto" id="bj-p-${f.id}" data-bjp="${f.id}"><option value="">Not playing</option><option value="y">Playing</option></select></div>`).join("")}
+    <button class="btn primary block" data-act="bj-start">Open the table</button>
+    <p class="small muted" style="margin:0">Everyone at the table gets a notification.</p>`);
+}
+function sheetTriviaSolo(){
+  openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Trivia Night</div><h2>🧠 Just me</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
+    <p class="small muted" style="margin:0">Ten questions, just you against the clock. When time runs out the answer shows and the next question comes up. Your best score is kept.</p>
+    <div class="field"><label for="tv-cat">Category</label><select class="input" id="tv-cat">${Object.entries(TCATS).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></div>
+    <div class="field"><label for="tv-secs">Answer clock</label><select class="input" id="tv-secs"><option value="10">10 seconds · fast!</option><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds · relaxed</option></select></div>
+    <button class="btn primary block" data-act="tv-start" data-k="solo">Start</button>`);
+}
+const tvBest = () => Math.max(0, ...(st.games || []).filter(g => g.kind === "trivia" && g.st?.solo && g.status === "done" && (g.a || []).includes(st.me) && g.why !== "stopped").map(g => g.st.score[0]));
 function gCurrent(){
   if(!gView) return null;
-  if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.turn, local:true};
+  if(gView.local) return {kind:gView.kind, st:gView.st, turn:gView.turn, status:gView.over ? "done" : "live", winner:gView.over?.winner, why:gView.over?.why || "", names:gView.names, me:gView.ai || gView.kind === "spades" || gView.kind === "blackjack" ? 0 : gView.turn, local:true, ai:gView.ai};
   const g = (st.games || []).find(x => x.id === gView.id); if(!g) return null;
   return {kind:g.kind, st:g.st, turn:g.turn, status:g.status, winner:g.winner, why:g.why, names:[gSideName(g, 0), gSideName(g, 1)], me:gMySide(g), moves:g.moves, id:g.id, table:gTable(g), judge:gJudge(g), by:g.by};
 }
 async function gMove(mv){
   const g = gCurrent(); if(!g || g.status !== "live") return;
-  if(g.local){ try { const r = gameApply(g.kind, gView.st, gView.turn, mv); gView.st = r.st; gView.turn = r.turn; gView.over = r.over; } catch { toast("That move isn't allowed."); } gSel = null; drawGame(); return; }
-  const d = await gamesCall({action:"move", id:g.id, mv, at:g.moves}); gSel = null;
+  if(g.local){ const v = gView;
+    try {
+      if(g.kind === "spades"){ const r = spApply(v.st, v.hands, 0, mv, () => spDeal()); v.st = r.st; v.hands = r.hands; v.over = r.over; gSnd(mv.card ? "card" : "chip"); }
+      else if(g.kind === "blackjack"){ const r = bjApply(v.st, v.sec, 0, mv); v.st = r.st; v.sec = r.sec; bjNoteBest(v.st.bank[0]); if(r.over) v.over = {winner:2, why:"out of points"}; gSnd(mv.bet ? "chip" : "card"); if(mv.bet) bjPend = 0; }
+      else { const r = gameApply(g.kind, v.st, v.turn, mv); v.st = r.st; v.turn = r.turn; v.over = r.over; gSnd("place"); }
+    } catch { toast("That move isn't allowed."); }
+    gSel = null; drawGame(); aiRun(); return; }
+  const d = await gamesCall({action:"move", id:g.id, mv, at:g.moves}); gSel = null; if(d.ok && mv.bet) bjPend = 0;
   if(!d.ok) toast(gWhyNot(d.code));
   await refresh(true); drawGame();
 }
@@ -3895,6 +4235,18 @@ document.addEventListener("click", e => {
     case "year": sheetYear(+b.dataset.y); break;
     case "games": gPick = null; sheetGames(); break;
     case "g-pick": gPick = b.dataset.k; sheetGamePick(gPick); break;
+    case "g-ai": { const k = b.dataset.k, lv = +b.dataset.lv; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["You", `Computer · ${AI_LV[lv]}`], ai:{side:1, lv}}; gSel = null; drawGame(); break; }
+    case "sp-solo": gView = {local:true, kind:"spades", st:spInit([st.me, "bot:1", "bot:2", "bot:3"], 300), hands:spDeal(), turn:0, over:null, names:["You & Computer", "Computer & Computer"]}; spPick = null; drawGame(); aiRun(); break;
+    case "bj-solo": bjPend = 0; gView = {local:true, kind:"blackjack", st:bjInit([st.me]), sec:bjSecret(), turn:0, over:null, names:["You"]}; drawGame(); break;
+    case "bj-new": sheetBlackjackNew(); break;
+    case "bj-start": { const players = [st.me, ...[...document.querySelectorAll("[data-bjp]")].filter(x => x.value === "y").map(x => x.dataset.bjp)];
+      if(players.length > 4){ toast("Four players at most."); return; } b.disabled = true; b.textContent = "Opening…";
+      gamesCall({action:"new", kind:"blackjack", sideA:players}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Open the table"; toast(gWhyNot(d.code)); return; }
+        bjPend = 0; await refresh(true); gView = {id:d.game.id}; drawGame(); if(players.length > 1) toast("The table is open! Everyone's been told."); }); break; }
+    case "bj-chip": bjPend += +b.dataset.v; gSnd("chip"); drawGame(); break;
+    case "bj-clear": bjPend = 0; drawGame(); break;
+    case "bj-bet": if(bjPend >= BJ_MIN) gMove({bet:bjPend}); break;
+    case "g-snd": { const on = !gSndOn(); try { localStorage.setItem("t7.gsound", on ? "on" : "off"); } catch {} if(on) gSnd("right"); gView ? drawGame() : sheetGames(); toast(on ? "Game sounds on" : "Game sounds off"); break; }
     case "g-room": gPick = null; sheetGames(); break;
     case "g-back": sheetGames(); break;
     case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gView ? drawGame() : sheetGames(); toast(xl ? "Extra large" : "Large"); break; }
@@ -3908,11 +4260,11 @@ document.addEventListener("click", e => {
       gamesCall({action:"new", kind:b.dataset.k, sideA:A, sideB:B}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start"; toast(gWhyNot(d.code)); return; }
         await refresh(true); gView = {id:d.game.id}; gSel = null; drawGame(); toast("Game on! Everyone's been told."); }); break; }
     case "g-open": gView = {id}; gSel = null; drawGame(); break;
-    case "tv-new": sheetTriviaNew(b.dataset.k === "table"); break;
+    case "tv-new": b.dataset.k === "solo" ? sheetTriviaSolo() : sheetTriviaNew(b.dataset.k === "table"); break;
     case "fs-new": sheetSurveyNew(); break;
     case "sp-new": sheetSpadesNew(); break;
     case "sp-start": { const v = x => document.getElementById(x).value, A = [st.me, v("sp-a2")], B = [v("sp-b1"), v("sp-b2")];
-      if(new Set([...A, ...B]).size !== 4){ toast("Pick four different people."); return; } b.disabled = true; b.textContent = "Dealing…";
+      if(new Set([...A, ...B]).size !== 4){ toast("Pick four different people (or a computer)."); return; } b.disabled = true; b.textContent = "Dealing…";
       gamesCall({action:"new", kind:"spades", sideA:A, sideB:B, target:+v("sp-t")}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Deal Spades"; toast(gWhyNot(d.code)); return; }
         await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Cards are dealt! Everyone's been told."); }); break; }
     case "fs-send": { const prompts = [0,1,2,3,4].map(i => document.getElementById("fs-q" + i).value.trim()).filter(Boolean);
@@ -3933,23 +4285,27 @@ document.addEventListener("click", e => {
       gamesCall({action:"new", kind:"feud", survey:id, sideA, sideB}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start Family Feud"; toast(gWhyNot(d.code)); return; }
         await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Survey says… let's play!"); }); break; }
     case "tv-start": { const table = b.dataset.k === "table", cat = document.getElementById("tv-cat").value, body = {action:"new", kind:"trivia", cat, secs:+document.getElementById("tv-secs").value};
-      if(table){ const t = x => document.getElementById(x).value.trim(); body.table = true; body.teams = [t("tv-t1") || "Team 1", t("tv-t2") || "Team 2"]; }
+      if(b.dataset.k === "solo") body.solo = true;
+      else if(table){ const t = x => document.getElementById(x).value.trim(); body.table = true; body.teams = [t("tv-t1") || "Team 1", t("tv-t2") || "Team 2"]; }
       else { const picks = [...document.querySelectorAll("[data-pid]")]; body.sideA = [st.me, ...picks.filter(x => x.value === "a").map(x => x.dataset.pid)]; body.sideB = picks.filter(x => x.value === "b").map(x => x.dataset.pid);
         if(body.sideA.length > 4 || body.sideB.length > 4){ toast("Four players a team at most."); return; }
         if(!body.sideB.length){ toast("Put at least one person on the other team."); return; } }
       b.disabled = true; b.textContent = "Starting…";
       gamesCall(body).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Start Trivia Night"; toast(gWhyNot(d.code)); return; }
-        await refresh(true); gView = {id:d.game.id}; drawGame(); if(!table) toast("Trivia's on! Everyone's been told."); }); break; }
+        await refresh(true); gView = {id:d.game.id}; drawGame(); if(!table && !body.solo) toast("Trivia's on! Everyone's been told."); }); break; }
     case "g-move": gMove(JSON.parse(b.dataset.m)); break;
     case "g-ck": { const i = +b.dataset.i, g = gCurrent(); if(!g) break; const legal = gameLegal(g.kind, g.st, g.turn);
       if(gSel !== null && legal.some(m => m.f === gSel && m.t === i)){ gMove({f:gSel, t:i}); break; }
       gSel = legal.some(m => m.f === i) ? i : null; drawGame(); break; }
     case "g-resign": { const g = gCurrent(); if(!g) break; if(!confirm(g.kind === "spades" ? "Resign this game of Spades for your team?" : g.kind === "feud" ? "Stop this Family Feud?" : g.table ? "End this Trivia Night?" : `Resign this ${GLABEL[g.kind]} game?`)) break;
-      if(g.local){ gView.over = {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
+      if(g.local){ clearTimeout(aiTimer); gView.over = g.kind === "blackjack" ? {winner:2, why:`you left with ${gView.st.bank[0].toLocaleString()} points`} : g.kind === "spades" || gView.ai ? {winner:1, why:"you resigned"} : {winner:1 - gView.turn, why:`${g.names[gView.turn]} resigned`}; drawGame(); break; }
       gamesCall({action:"resign", id:g.id}).then(async d => { if(!d.ok) toast(gWhyNot(d.code)); await refresh(true); drawGame(); }); break; }
-    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ gView.st = gameInit(g.kind); gView.turn = 0; gView.over = null; gView.cheered = false; gSel = null; drawGame(); break; }
+    case "g-again": { const g = gCurrent(); if(!g) break; if(g.kind === "feud"){ sheetGames(); break; } if(g.local){ clearTimeout(aiTimer); Object.assign(gView, {turn:0, over:null, cheered:false, noted:false});
+        if(g.kind === "spades") Object.assign(gView, {st:spInit([st.me, "bot:1", "bot:2", "bot:3"], 300), hands:spDeal()}); else if(g.kind === "blackjack"){ bjPend = 0; Object.assign(gView, {st:bjInit([st.me]), sec:bjSecret()}); } else gView.st = gameInit(g.kind);
+        gSel = null; spPick = null; drawGame(); aiRun(); break; }
       const old = st.games.find(x => x.id === g.id), flip = !gTable(old) && gMySide(old) === 1, again = {action:"new", kind:g.kind, sideA:flip ? old.b : old.a, sideB:flip ? old.a : old.b};
-      if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, secs:old.st.secs || 20, table:gTable(old), teams:old.st.teams || undefined});
+      if(g.kind === "trivia") Object.assign(again, {cat:old.st.cat, secs:old.st.secs || 20, table:gTable(old), solo:!!old.st.solo, teams:old.st.solo ? undefined : old.st.teams || undefined});
+      if(g.kind === "blackjack") Object.assign(again, {sideA:[st.me, ...old.st.players.filter(x => x !== st.me)], sideB:undefined});
       if(g.kind === "spades") Object.assign(again, {sideA:[st.me, old.st.seats[(old.st.seats.indexOf(st.me) + 2) % 4]], sideB:[old.st.seats[(old.st.seats.indexOf(st.me) + 1) % 4], old.st.seats[(old.st.seats.indexOf(st.me) + 3) % 4]], target:old.st.target});
       gamesCall(again).then(async d => {
         if(!d.ok){ toast(gWhyNot(d.code)); return; } await refresh(true); gView = {id:d.game.id}; drawGame(); }); break; }
