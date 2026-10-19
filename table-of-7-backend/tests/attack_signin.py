@@ -38,8 +38,12 @@ def check(name, ok, detail=""):
     print(("PASS " if ok else "FAIL ") + name + ("" if ok else f"  -> {detail}"))
 
 
+# Table of 8 signs in with EMAIL + PIN (his order, 2026-10-19). The proofs still name the test seats; this maps each
+# name to the seat's test email (set by reset_test_family.sql). An unknown name is sent as an unknown email.
+TEST_EMAIL = {"zed testhost": "z1@zztest.invalid", "zed testmember": "z2@zztest.invalid", "zed testpaused": "z3@zztest.invalid", "zed testfour": "z4@zztest.invalid"}
 def signin(name, pin, pin2=None):
-    return call("POST", FN, {"name": name, "pin": pin, "pin2": pin2}, headers={"Origin": "https://table-of-7.netlify.app"})
+    email = TEST_EMAIL.get(" ".join(name.split()).lower(), name.strip().lower().replace(" ", ".") + "@nowhere.invalid")
+    return call("POST", FN, {"email": email, "pin": pin, "pin2": pin2}, headers={"Origin": "https://table-of-8.netlify.app"})
 
 
 def rest(method, path, token, body=None, prefer=None):
@@ -52,11 +56,12 @@ pin_p = f"{random.randint(0, 9999):04d}"
 wrong = f"{(int(pin_m) + 1) % 10000:04d}"
 
 # --- sign-in itself ---
-s, b, _ = signin("Nobody Here", "1234"); check("unknown name is refused", b.get("code") == "no_name", b)
+s, b, _ = signin("Nobody Here", "1234"); check("an email that isn't on a seat is refused", b.get("code") == "no_email", b)
+s, b, _ = call("POST", FN, {"name": "Zed Testmember", "pin": "1234"}, headers={"Origin": "https://table-of-8.netlify.app"}); check("the old full-name sign-in is gone (an old app copy is told to reopen)", b.get("code") == "update" and "session" not in b, b)
 s, b, _ = signin("zed testmember", "12a4"); check("PIN must be 4 numbers", b.get("code") in ("format", "create"), b)
 s, b, _ = signin("Zed Testmember", pin_m); check("first time asks to create a PIN", b.get("code") == "create", b)
 s, b, _ = signin("Zed Testmember", pin_m, wrong); check("mismatched new PINs are refused", b.get("code") == "mismatch", b)
-s, b, _ = signin("  zed   TESTMEMBER ", pin_m, pin_m); check("PIN created; name match ignores case and spaces", b.get("ok") and b.get("session"), b)
+s, b, _ = call("POST", FN, {"email": "  Z2@ZZTEST.invalid ", "pin": pin_m, "pin2": pin_m}, headers={"Origin": "https://table-of-8.netlify.app"}); check("PIN created; the email ignores capitals and spaces", b.get("ok") and b.get("session"), b)
 s, b, _ = signin("Zed Testmember", pin_m); check("right PIN signs in", b.get("ok"), b); tok_m = b["session"]["access_token"]
 s, b, _ = signin("Zed Testhost", pin_h, pin_h); tok_h = b["session"]["access_token"]; check("host signs in", b.get("ok"), b)
 s, b, _ = signin("Zed Testpaused", pin_p, pin_p); tok_p = b["session"]["access_token"]; check("paused-to-be seat signs in", b.get("ok"), b)
@@ -64,17 +69,19 @@ left = []
 for i in range(4):
     s, b, _ = signin("Zed Testmember", wrong); left.append(b.get("tries_left"))
 check("wrong PIN counts down 4,3,2,1", left == [4, 3, 2, 1], left)
-s, b, _ = signin("Zed Testmember", wrong); check("5th wrong PIN locks for 5 minutes", b.get("code") == "locked" and b.get("minutes") == 5, b)
+s, b, _ = signin("Zed Testmember", wrong); check("5th wrong PIN locks the seat (no timer: the host unlocks it)", b.get("code") == "locked" and "minutes" not in b, b)
 s, b, _ = signin("Zed Testmember", pin_m); check("RIGHT PIN is still refused while locked", b.get("code") == "locked", b)
 s, b, h = signin("Zed Testhost", pin_h); check("a session never comes back without the right PIN", "session" not in (signin("Zed Testhost", wrong)[1] or {}), "")
-s, b, h = call("POST", FN, {"name": "x", "pin": "1"}, headers={"Origin": "https://evil.example"})
+s, b, h = call("POST", FN, {"email": "x@y.z", "pin": "1"}, headers={"Origin": "https://evil.example"})
 check("another website cannot use the sign-in from a browser", h.get("Access-Control-Allow-Origin") != "https://evil.example", h.get("Access-Control-Allow-Origin"))
 
 # --- PINs can never be read or forced ---
 s, b, _ = rest("GET", "member_secrets?select=*", tok_h); check("host cannot read PIN table", s in (401, 403) or b == [], (s, b))
 s, b, _ = rest("GET", "member_secrets?select=*", None); check("public cannot read PIN table", s in (401, 403) or b == [], (s, b))
-s, b, _ = rest("POST", "rpc/t7_pin_signin", tok_h, {"p_name": "Zed Testmember", "p_pin": pin_m, "p_pin2": None, "p_ip": "1"})
+s, b, _ = rest("POST", "rpc/t7_pin_signin_email", tok_h, {"p_email": "z2@zztest.invalid", "p_pin": pin_m, "p_pin2": None, "p_ip": "1"})
 check("phones cannot call the PIN checker directly", s in (401, 403, 404), (s, b))
+s, b, _ = rest("POST", "rpc/t7_pin_signin_email", None, {"p_email": "z2@zztest.invalid", "p_pin": pin_m, "p_pin2": None, "p_ip": "1"})
+check("the public cannot call the PIN checker directly", s in (401, 403, 404), (s, b))
 s, b, _ = rest("GET", "members?select=*", None); check("public sees no members", s in (401, 403) or b == [], (s, b))
 
 # --- family walls ---
@@ -93,6 +100,18 @@ check("member cannot pause/unpause a seat", s >= 400, (s, b))
 s, b, _ = rest("PATCH", "members?id=eq.z2", tok_m, {"role": "host"}, "return=representation")
 check("member cannot make themselves host", s >= 400, (s, b))
 s, b, _ = rest("POST", "rpc/host_reset_pin", tok_m, {"p_member": "z1"}); check("member cannot reset a PIN", b.get("ok") is False, b)
+s, b, _ = rest("POST", "rpc/pin_status", tok_m, {}); check("a member can't see who is locked out", b == [] or s >= 400, (s, b))
+s, b, _ = rest("POST", "rpc/pin_status", tok_h, {}); st_ = {x["member_id"]: x for x in (b or [])}
+check("the host sees the locked seat (never a PIN)", st_.get("z2", {}).get("locked") is True and all(set(x) == {"member_id", "has_pin", "locked"} for x in (b or [])), b)
+s, b, _ = rest("POST", "rpc/host_unlock_pin", tok_m, {"p_member": "z2"}); check("a member cannot unlock a seat", b.get("ok") is False, b)
+s, b, _ = rest("POST", "rpc/host_unlock_pin", tok_h, {"p_member": "m1"}); check("the test host cannot unlock a Clark seat", b.get("ok") is False, b)
+s, b, _ = rest("POST", "rpc/host_unlock_pin", tok_h, {"p_member": "z2"}); check("the host unlocks the seat", b.get("ok") is True, b)
+s, b, _ = signin("Zed Testmember", pin_m); check("after the unlock the same PIN works", b.get("ok") and b.get("session"), b); tok_m = b["session"]["access_token"]
+for i in range(5): signin("Zed Testmember", wrong)
+s, b, _ = rest("PATCH", "members?id=eq.z2", tok_m, {"email": "z2-new@zztest.invalid"}, "return=representation"); check("a member cannot change their own sign-in email", s >= 400, (s, b))
+s, b, _ = rest("PATCH", "members?id=eq.z3", tok_h, {"email": "z2@zztest.invalid"}, "return=representation"); check("two seats can't share a sign-in email", s >= 400, (s, b))
+s, b, _ = rest("PATCH", "members?id=eq.z4", tok_h, {"email": "z4-new@zztest.invalid"}, "return=representation"); check("the host changes a seat's sign-in email", s == 200 and b and b[0]["email"] == "z4-new@zztest.invalid", (s, b))
+rest("PATCH", "members?id=eq.z4", tok_h, {"email": "z4@zztest.invalid"})
 s, b, _ = rest("POST", "rpc/host_reset_pin", tok_h, {"p_member": "m1"}); check("test host cannot reset a Clark seat", b.get("ok") is False, b)
 s, b, _ = rest("POST", "rpc/host_reset_pin", tok_h, {"p_member": "z2"}); check("host resets a PIN (and clears the lock)", b.get("ok") is True, b)
 s, b, _ = signin("Zed Testmember", pin_m); check("after reset the member creates a new PIN", b.get("code") == "create", b)

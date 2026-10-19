@@ -6,7 +6,7 @@ insert into members(id,family_id,name,role) values ('z1','zztest','Zed Testhost'
 delete from events where family_id = 'zztest';
 delete from media where family_id = 'zztest';
 delete from alerts where to_member in ('z1','z2','z3','z4');
-update members set status = 'active', diet = null where family_id = 'zztest';
+update members set status = 'active', diet = null, email = id || '@zztest.invalid' where family_id = 'zztest';   -- Table of 8 signs in by email
 update members set status = 'suspended' where id = 'z4';   -- z4 waits paused; attack_signin.py wakes it only for the Family Feud proofs
 insert into member_secrets(member_id) values ('z1'),('z2'),('z3'),('z4') on conflict (member_id) do update set pin_hash = null, fails = 0, locked_until = null;
 delete from signin_ip_attempts;
