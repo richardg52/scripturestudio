@@ -463,10 +463,12 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .hand .pcard.pick{transform:translateY(-30px) scale(1.1);z-index:5}
 .hand .pcard.pick .card-svg{filter:drop-shadow(0 0 12px #ffd36b) drop-shadow(0 8px 10px rgba(0,0,0,.5))}
 .bidpad{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;max-width:560px;width:100%}
-.chip{aspect-ratio:1;border-radius:50%;border:0;padding:0;min-width:0;font:900 calc(18px*var(--gs)) var(--f-display);color:#fff;
+/* the poker-chip bid buttons (Spades). Scoped to the bid pad: unscoped, this turned every chip in the app into a
+   round blue chip with no padding (cuisine filters, guide tabs, invitees), from 2026-10-17 to 2026-10-18 */
+.bidpad .chip{aspect-ratio:1;border-radius:50%;border:0;padding:0;min-width:0;font:900 calc(18px*var(--gs)) var(--f-display);color:#fff;
   background:radial-gradient(circle,#2a62d8 0 46%,#fff 47% 52%,#2a62d8 53% 64%,#fff 65% 70%,#1d47a6 71%);box-shadow:0 4px 0 #0f2a66,0 6px 10px rgba(0,0,0,.4)}
-.chip.nil{background:radial-gradient(circle,#e3264f 0 46%,#fff 47% 52%,#e3264f 53% 64%,#fff 65% 70%,#a8143a 71%);box-shadow:0 4px 0 #6d0a22,0 6px 10px rgba(0,0,0,.4);font-size:calc(13px*var(--gs))}
-.chip:active{transform:translateY(3px);box-shadow:0 1px 0 #0f2a66}
+.bidpad .chip.nil{background:radial-gradient(circle,#e3264f 0 46%,#fff 47% 52%,#e3264f 53% 64%,#fff 65% 70%,#a8143a 71%);box-shadow:0 4px 0 #6d0a22,0 6px 10px rgba(0,0,0,.4);font-size:calc(13px*var(--gs))}
+.bidpad .chip:active{transform:translateY(3px);box-shadow:0 1px 0 #0f2a66}
 .backs{display:flex}.backs svg{width:calc(20px*var(--gs));margin-left:calc(-14px*var(--gs))}.backs svg:first-child{margin-left:0}
 /* Trivia Night: a game-show stage with a countdown ring */
 .tvstage{border-radius:28px;padding:16px;display:grid;gap:14px;background:radial-gradient(ellipse at 50% 0%,rgba(255,120,255,.35),transparent 60%),linear-gradient(180deg,#3a0d7a,#1a0745);box-shadow:inset 0 0 0 2px rgba(255,160,255,.3),0 18px 40px rgba(0,0,0,.55);position:relative;overflow:hidden}
@@ -538,6 +540,59 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .bjacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .bjacts .btn{min-height:calc(56px*var(--gs));padding-inline:4px}
 .gt-bj,.todo .ic.gt-bj{background:linear-gradient(150deg,#0f7a43,#063b20)}
+/* Prayer Wall: a sunrise look (violet to gold) */
+#sheet-wrap.stage.prayer .sheet{background:radial-gradient(120% 60% at 50% -10%,#f2b45a 0%,#8a3f8f 40%,#24123f 100%) fixed}
+.prcard{border-radius:20px;padding:14px;background:rgba(255,255,255,.1);color:#fff;display:grid;gap:8px;box-shadow:inset 0 0 0 1px rgba(255,220,170,.25)}
+.prcard p{margin:0;font-size:calc(17px*var(--gs));line-height:1.5;white-space:pre-wrap}
+.prcard.answered{background:linear-gradient(160deg,rgba(255,236,190,.95),rgba(255,214,140,.9));color:#3a1f05}
+.prcard .who{font:800 calc(13px*var(--gs)) var(--f-display);opacity:.85}
+.prcard.answered .btn{background:rgba(58,31,5,.1);color:#3a1f05;border:1px solid rgba(58,31,5,.35);box-shadow:none}
+.prpraise{border-radius:14px;padding:10px;background:rgba(255,255,255,.65);color:#3a1f05;font-size:calc(15.5px*var(--gs));white-space:pre-wrap}
+/* Family Recipe Book: a kitchen look (copper to walnut); each recipe is a cream recipe card with dark ink */
+#sheet-wrap.stage.recipe .sheet{background:radial-gradient(120% 60% at 50% -10%,#d9813f 0%,#7a3a17 42%,#24120a 100%) fixed}
+#sheet-wrap.stage.recipe .input{background:#2b150b;border-color:rgba(255,210,160,.3)}
+.rclist{display:grid;gap:10px}
+.rcrow{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:0;border-radius:18px;padding:10px;background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,210,160,.25)}
+.rcrow .th{flex:none;width:calc(64px*var(--gs));aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-size:calc(30px*var(--gs));background:linear-gradient(150deg,#e39a55,#8a4216);overflow:hidden}
+.rcrow .th img{width:100%;height:100%;object-fit:cover}
+.rcrow b{display:block;font:900 calc(17px*var(--gs))/1.2 var(--f-display)}.rcrow small{display:block;color:#ffe2c4;font-size:calc(13px*var(--gs))}
+.rcphoto{width:100%;max-height:340px;object-fit:cover;border-radius:20px;box-shadow:0 8px 22px rgba(0,0,0,.45)}
+.rccard{border-radius:20px;padding:16px;background:linear-gradient(180deg,#fffaf0,#f7ead2);color:#3a1f05;display:grid;gap:10px;box-shadow:0 8px 22px rgba(0,0,0,.4)}
+.rccard h3{margin:0;font:900 calc(17px*var(--gs)) var(--f-display);color:#8a3a10}
+.rccard .rcby{font:800 calc(14px*var(--gs)) var(--f-display);color:#8a3a10}
+.rccard .small,.rccard .muted{color:#5a3a1a}
+.rcing{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rcing label{display:flex;gap:10px;align-items:flex-start;font-size:calc(16.5px*var(--gs));line-height:1.4}
+.rcing input{width:calc(22px*var(--gs));height:calc(22px*var(--gs));flex:none;accent-color:#b4521c;margin-top:2px}
+.rcing input:checked + span{text-decoration:line-through;opacity:.55}
+.rcsteps{margin:0;padding-left:22px;display:grid;gap:8px;font-size:calc(16.5px*var(--gs));line-height:1.5}
+.rcnote{border-radius:14px;padding:10px;background:rgba(180,82,28,.1);font-size:calc(15.5px*var(--gs));white-space:pre-wrap}
+.rccard .btn{background:rgba(58,31,5,.08);color:#3a1f05;border:1px solid rgba(58,31,5,.35);box-shadow:none}
+.rccard .btn.on{background:#ffcf4a;border-color:#b07a00}
+/* Rides: an evening-drive look (dusk blue to headlight amber) */
+#sheet-wrap.stage.rides .sheet{background:radial-gradient(120% 60% at 50% -10%,#f0a33a 0%,#3b3f8f 38%,#0b1230 100%) fixed}
+.rdchoose{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rdchoose .btn{min-height:calc(64px*var(--gs));font-size:calc(17px*var(--gs))}
+.rdrider{display:grid;gap:6px;padding:10px 0;border-top:1px solid rgba(255,255,255,.15)}
+.rdaddr{border-radius:14px;padding:10px;background:rgba(255,236,190,.95);color:#2a1a04;font-size:calc(15.5px*var(--gs))}
+.rdaddr .small{color:#4a3510}.rdaddr .btn.primary{box-shadow:none}
+.rdstrip .btn{flex:none}
+/* Family Outing: a night-out look (deep blue to teal); a Tigers outing wears Memphis blue and grey */
+#sheet-wrap.stage.outing .sheet{background:radial-gradient(120% 60% at 50% -10%,#1d4f9e 0%,#0d2a5e 48%,#06132e 100%) fixed}
+.oukinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.oukind{display:grid;gap:4px;justify-items:start;text-align:left;border:0;border-radius:18px;padding:14px;background:rgba(255,255,255,.09);color:#fff;box-shadow:inset 0 0 0 1px rgba(160,200,255,.25)}
+.oukind .ic{font-size:calc(30px*var(--gs))}.oukind b{font:900 calc(16px*var(--gs))/1.2 var(--f-display)}.oukind small{color:#cfe0ff;font-size:calc(12.5px*var(--gs))}
+.oubadge{display:grid;place-items:center;width:calc(64px*var(--gs));aspect-ratio:1;border-radius:18px;font-size:calc(34px*var(--gs));background:linear-gradient(150deg,#2a62d8,#0d2a5e);box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.oubadge.tigers{background:linear-gradient(150deg,#0033a0,#8a8d8f)}
+/* Secret Santa: a Christmas look (deep red, pine, gold) */
+#sheet-wrap.stage.santa .sheet{background:radial-gradient(120% 60% at 50% -10%,#b3122e 0%,#5e0a18 45%,#0d2a1a 100%) fixed}
+.sawho{display:flex;flex-wrap:wrap;gap:8px}
+.sacard{border-radius:20px;padding:16px;background:linear-gradient(160deg,#fffaf0,#f3e7cc);color:#3a1a10;display:grid;gap:8px;box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 0 0 3px #d7b45a}
+.sacard .big{font:900 calc(26px*var(--gs))/1.15 var(--f-display);color:#9b0f26}
+.sawish{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.sawish li{background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
+.sacard .sawish li{background:#fff;color:#3a1a10;box-shadow:inset 0 0 0 1px #e4d3a8}
+.sarow{display:grid;grid-template-columns:1fr;gap:6px;padding:10px;border-radius:14px;background:rgba(255,255,255,.07)}
 /* Topgolf Outing: a night-range look (turf green, target colours) */
 #sheet-wrap.stage.golf .sheet{background:radial-gradient(120% 60% at 50% -10%,#1f7a3a 0%,#0d3d1f 48%,#061a0e 100%) fixed}
 .tgbadge{display:grid;place-items:center;width:calc(64px*var(--gs));aspect-ratio:1;border-radius:50%;font-size:calc(30px*var(--gs));
@@ -1271,7 +1326,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -1313,12 +1368,22 @@ async function pull(){
   const MP = {}; D.movie_people.forEach(x => (MP[x.night_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
   const GP = {}; D.golf_people.forEach(x => (GP[x.outing_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
   n.golf = D.golf_outings.map(x => ({id:x.id, pid:x.venue_pid, city:x.city, date:x.date, time:x.time, hours:+x.hours, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, booking:x.booking, by:x.created_by, people:GP[x.id] || {}, t:iso2ms(x.updated_at)}));
+  const SW = {}; D.santa_wishes.forEach(x => (SW[x.exchange_id] ||= {})[x.member_id] = x.items || []);
+  n.santa = D.santa_exchanges.map(x => ({id:x.id, name:x.name, budget:x.budget == null ? null : +x.budget, date:x.exchange_date, note:x.note || "", joined:x.joined || [], homes:x.households || [], status:x.status, by:x.created_by, wishes:SW[x.id] || {}, t:iso2ms(x.updated_at)}));
+  const OP = {}; D.outing_people.forEach(x => (OP[x.outing_id] ||= {})[x.member_id] = {rsvp:x.rsvp, pay:x.pay, amount:x.amount, via:x.via, own:x.own, sent_at:x.sent_at, received_at:x.received_at});
+  n.outings = D.outings.map(x => ({id:x.id, kind:x.kind, title:x.title || "", game:x.game, pid:x.place_pid, city:x.city, date:x.date, time:x.time, hours:x.hours == null ? null : +x.hours, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, booking:x.booking, by:x.created_by, people:OP[x.id] || {}, t:iso2ms(x.updated_at)}));
+  n.prayers = D.prayers.map(x => ({id:x.id, by:x.shown_by, text:x.text, prayed:x.prayed || [], status:x.status, praise:x.praise || "", t:iso2ms(x.created_at), answered:x.answered_at ? iso2ms(x.answered_at) : null}));
+  n.tourneys = D.tournaments.map(x => ({id:x.id, name:x.name, date:x.date, players:x.players, games:x.games || [], results:x.results || [], status:x.status, champions:x.champions || [], by:x.created_by, t:iso2ms(x.updated_at)}));
   n.movies = D.movie_nights.map(x => ({id:x.id, movie:x.movie, pid:x.theater_pid, city:x.city, date:x.date, time:x.time, note:x.note || "", dinner:x.dinner_event, invited:x.invited, status:x.status, buyer:x.buyer, tickets:x.tickets, by:x.created_by, people:MP[x.id] || {}, t:iso2ms(x.updated_at)}));
   n.games = D.games.map(x => ({id:x.id, kind:x.kind, a:x.side_a, b:x.side_b, st:x.state, turn:x.turn, status:x.status, winner:x.winner, why:x.why || "", moves:x.moves, by:x.created_by, t:iso2ms(x.updated_at)}));
-  const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path)];
+  const paths = [...D.media.map(m => m.storage_path), ...D.cards.filter(c => c.upload_path).map(c => c.upload_path), ...D.recipes.filter(r => r.photo_path).map(r => r.photo_path)];
   const urls = {};
   if(paths.length){ const {data} = await sb.storage.from("media").createSignedUrls(paths, 6*3600); (data || []).forEach(u => { if(u.signedUrl) urls[u.path] = u.signedUrl; }); }
   n.photos = D.media.map(m => ({id:m.id, eventId:m.event_id, rid:m.restaurant_id, cat:m.category, caption:m.caption || "", by:m.by, t:iso2ms(m.at), status:m.status, path:m.storage_path, data:urls[m.storage_path] || ""}));
+  n.recipes = D.recipes.map(x => ({id:x.id, title:x.title, credit:x.credit || "", kind:x.kind, serves:x.serves || "", time:x.time || "", ingredients:x.ingredients || [], steps:x.steps || [], notes:x.notes || "",
+    path:x.photo_path, photo:x.photo_path ? (urls[x.photo_path] || "") : "", favs:x.favorites || [], by:x.added_by, t:iso2ms(x.created_at)}));
+  n.rideOffers = D.ride_offers.map(x => ({id:x.id, kind:x.kind, ref:x.ref_id, driver:x.driver, seats:x.seats, leaving:x.leaving || "", note:x.note || "", t:iso2ms(x.created_at)}));
+  n.rideAsks = D.ride_asks.map(x => ({id:x.id, kind:x.kind, ref:x.ref_id, rider:x.rider, party:x.party, note:x.note || "", driver:x.driver, declined:x.declined || [], t:iso2ms(x.created_at)}));
   n.cards = D.cards.map(c => ({id:c.id, by:c.by, photoId:c.media_id, style:c.style, msg:c.message || "", eventId:c.event_id, rid:c.restaurant_id, to:c.recipients || [], status:c.status,
     t:iso2ms(c.at), uploadPath:c.upload_path, upload:c.upload_path ? (urls[c.upload_path] || "") : null}));
   const L = by(D.tab_lines, "event_id");
@@ -1367,7 +1432,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1387,7 +1452,7 @@ function redraw(){
   if(inviteId && !ev(inviteId)) closeInvite();
   render();
   // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
-  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); }
+  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); saRedraw(); ouRedraw(); prRedraw(); tnRedraw(); rcRedraw(); rdRedraw(); }
   if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
@@ -1755,6 +1820,8 @@ function vHome(){
   ${isSuspended() ? `<div class="warnbox" style="color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)">Your seat is paused by ${esc(first(F(ADMIN).name))}. You can look around, but voting and posting are off for now.</div>` : ""}
   ${isAdmin() && queueCount() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>${queueCount()} waiting for your approval</b><small>Photos, cards and posts from the family</small></span><span class="chev">${I.chev}</span></button>` : ""}
 
+  ${ouNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎉 Family Outing</h2></div>${ouNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="ou-open" data-id="${o.id}"><span class="ic">${OU_KINDS[o.kind].ic}</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
+  ${saNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎁 Secret Santa</h2></div>${saNeeds().slice(0, 3).map(([x, a, b2]) => `<button class="todo" data-act="sa-open" data-id="${x.id}"><span class="ic">🎁</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${tgNeeds().length ? `<section class="sec"><div class="sec-head"><h2>⛳ Topgolf</h2></div>${tgNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="tg-open" data-id="${o.id}"><span class="ic">⛳</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${mvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎬 Movie night</h2></div>${mvNeeds().slice(0, 3).map(([n, a, b2]) => `<button class="todo" data-act="mv-open" data-id="${n.id}"><span class="ic">🎬</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
@@ -2105,6 +2172,8 @@ function eventCard(e){
   body += `<div class="sec" style="gap:8px"><div class="lbl">ARE YOU COMING? <span class="muted" style="font-weight:400">· ${counts.yes} yes · ${counts.maybe} maybe · ${counts.no} can't</span></div>
     <div class="rsvp">${[["yes","I'll be there"],["maybe","Maybe"],["no","Can't make it"]].map(([k,l]) => `<button class="${k}" data-act="rsvp" data-id="${e.id}" data-v="${k}" aria-pressed="${my===k}">${l}</button>`).join("")}</div>
     <div class="stack">${st.fam.filter(f => e.rsvp[f.id]==="yes").map(f => av(f.id,"sm")).join("")}</div></div>`;
+  // rides (his order, 2026-10-18)
+  if(!rdPlan("dinner", e.id)?.past) body += rdStrip("dinner", e.id);
   // guests
   if(e.guests.length){
     body += `<div class="divider"></div><div class="sec" style="gap:10px"><div class="lbl">GUEST REQUESTS · ${majority()} HANDS NEEDED</div>${e.guests.map(g => { const ok = guestApproved(g); const up = g.hands.includes(st.me);
@@ -2154,8 +2223,12 @@ function vTable(){
   return `
   <section class="sec"><div class="eyebrow">Our Table</div><h1 style="font-size:30px">Favorites, tabs &amp; memories</h1></section>
   ${isAdmin() ? `<button class="todo" data-act="host" style="border-color:var(--brass)"><span class="ic" style="color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent)">✓</span><span><b>Host controls</b><small>${queueCount() ? queueCount() + " waiting for approval · " : ""}Approve photos and cards, pause members, delete posts, standing dinners</small></span><span class="chev">${I.chev}</span></button>` : ""}
-  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Tic-Tac-Toe, Connect Four, Checkers, Spades, Trivia Night and Family Feud${(st.games || []).some(g => g.status === "live" && gMine(g)) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="games"><span class="ic">🎲</span><span><b>Game Room</b><small>Thirteen games: cards, board games, Trivia, Family Feud, Solitaire and more${(st.games || []).some(g => g.status === "live" && gMine(g)) ? " · your move!" : ""}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="movies"><span class="ic">🎬</span><span><b>Movie Night</b><small>${(() => { const k = mvNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a movie, read reviews, buy tickets, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="prayers"><span class="ic">🙏</span><span><b>Prayer Wall</b><small>${(() => { const n = (st.prayers || []).filter(x => x.status === "open").length; return n ? `${n} ${n === 1 ? "request" : "requests"} to pray for` : "Share a request, pray for each other, praise God for answers"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="recipes"><span class="ic">🍗</span><span><b>Family Recipe Book</b><small>${(() => { const n = (st.recipes || []).length; return n ? `${n} family ${n === 1 ? "recipe" : "recipes"} · search, star and cook` : "Save the dishes the family loves, with who made them and a photo"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="outings"><span class="ic">🎉</span><span><b>Family Outing</b><small>${(() => { const k = ouNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Tigers games, bowling, the zoo and more, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="santa"><span class="ic">🎁</span><span><b>Secret Santa</b><small>${(() => { const k = saNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Draw names, share wish lists, keep the secret"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="golf"><span class="ic">⛳</span><span><b>Topgolf Outing</b><small>${(() => { const k = tgNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a day, book a bay, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="year" data-y="${yearShowing() || today0.getFullYear()}"><span class="ic">🎄</span><span><b>Year at the Table</b><small>Our year in dinners: top place, new places, best photos</small></span><span class="chev">${I.chev}</span></button>
   <section class="card">
@@ -2199,7 +2272,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf|santa|outing|prayer|recipe|rides)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.toggle("santa", /data-santa[\s>=]/.test(html)); wrap.classList.toggle("outing", /data-outing[\s>=]/.test(html)); wrap.classList.toggle("prayer", /data-prayer[\s>=]/.test(html)); wrap.classList.toggle("recipe", /data-recipe[\s>=]/.test(html)); wrap.classList.toggle("rides", /data-rides[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -2243,6 +2316,12 @@ function sheetTips(){
     ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt."],
     ["Topgolf Outing","Our Table → ⛳ Topgolf Outing → Plan a Topgolf outing. Pick a day, time and how long, tap Find Topgolf, invite the family. One person books the bay on Topgolf's own site; everyone else pays them back or pays their own way, and gets a receipt."],
     ["Solitaire","Game Room → Solitaire. Draw 1 is easier, Draw 3 is classic. Tap a card and it moves by itself; tap the deck to draw. Undo, Hint and Finish are under the board."],
+    ["Secret Santa","Our Table → 🎁 Secret Santa. Start one, everyone joins and writes a wish list, the organizer marks couples, then taps Draw names. Each person sees only who they got; couples never draw each other."],
+    ["Family Outing","Our Table → 🎉 Family Outing. Tap a kind: a Memphis Tigers home game (from the Tigers' own schedule), bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or something else. One person books on the place's own site; everyone pays them back or pays their own way and gets a receipt."],
+    ["Prayer Wall","Our Table → 🙏 Prayer Wall. Share a request (tick “Don't show my name” to keep it unnamed), tap 🙏 I prayed for others, and mark yours Answered with a praise report. The whole family sees every request."],
+    ["Family Recipe Book","Our Table → 🍗 Family Recipe Book. Tap ＋ Add a family recipe: the name, whose recipe it is, the ingredients and the steps (one on each line), and a photo if you like. The family is told and the photo shows right away. Search by dish, ingredient or who made it; tap ☆ Favorite to star it; tick ingredients off while you cook."],
+    ["Rides","On a dinner card, a Family Outing, a Movie Night or a Topgolf outing, tap 🚗 Rides. Have room? Tap I can drive and pick your seats. Need one? Tap I need a ride, say how many are riding and where to pick you up. The app matches you, tells you both, and only your driver sees your address."],
+    ["Game Night Tournament","Game Room → 🏆 Start a game night tournament. Pick the players and the games; after each game, record who came 1st (3 points) and 2nd (1 point). The leaderboard runs all night; Crown the champion at the end."],
     ["Wild Card","Game Room → 🌈 Wild Card: Uno's rules. Match the colour, the number or the symbol; a Wild lets you name the colour. Down to two cards? Tap 🔔 before you play, or anyone can tap 🚨 Catch and you draw 2. Play 1, 2 or 3 computers, or a family game of up to four, one round or first to 200."],
     ["Bid Whist","Game Room → ♣ Bid Whist: couples, partners across, jokers in. Bid 4 to 7 Uptown, Downtown or No Trump; the top bidder takes the kitty, puts back 6 and names trump. First to 7 wins, no trump counts double, and taking all 13 books (a Boston) wins outright."],
     ["Dominoes","Game Room → 🁫 Dominoes, All Fives. Tap a glowing tile; if it fits two ends, pick Left, Right, Top or Bottom. When the open ends add up to 5, 10, 15 or more by fives, you score it. Can't play? Draw from the boneyard. First to 150."],
@@ -2300,6 +2379,12 @@ function guideBody(k){
     step(30, "Word Guess", `Tap the <b>Word Guess</b> picture and a category: ${pic("📖 Bible","primary")} ${pic("🎵 Music")} ${pic("🍗 Family & Food","wine")}. Tap letters: right ones turn green and fill in; wrong ones pop a balloon. Six balloons, then the word is shown. ${pic("✍️ Write a word for someone to guess")} hides your word behind dots while you type; tap ${pic("Hide it and start","primary")} and hand the phone over.`),
     step(31, "Topgolf Outing", `Tap ${pic("Our Table")} → <b>⛳ Topgolf Outing</b> → ${pic("⛳ Plan a Topgolf outing","primary")}. Pick the date, the start time and how long (1 to 4 hours), choose the area and tap ${pic("Find Topgolf","primary")}: Google lists the Topgolf venues there. Tap one, tap the family you're inviting, add a note if you like, and tap ${pic("⛳ Send the invitation","primary")}. Everyone answers ${pic("Going","primary")}, Maybe or Can't go. <b>Booking:</b> one person who is going taps ${pic("⛳ I'll book the bay","primary")} so nobody books twice, books on ${pic("Book on Topgolf's site","primary")} (or calls), then types the players, bays, the bay cost and any food, drinks and fees from the confirmation and taps ${pic("✓ I booked the bay","wine")}. Topgolf prices each bay by the hour and up to 6 play in a bay, so the app never guesses a price: it splits the real total by the players. <b>Paying back:</b> everyone else sees their share, pays the booker their own way (Cash App, Zelle, cash…) and taps <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and that person's receipt appears with the time, the Topgolf, the booking and their share. Paying your own way? Tap <b>I'm paying my own way</b>.`),
     step(32, "Solitaire", `Tap the <b>Solitaire</b> picture in the Game Room and choose ${pic("Draw 1 · easier","primary")} or ${pic("Draw 3 · classic","wine")}. Build each column down in alternating red and black; only a king goes in an empty column. Send every card home to the four piles at the top, from Ace up to King, by suit. <b>Tap a card</b> and it goes to the best place by itself: home if it can, otherwise a column (tap it again to try the next column). A face-up card with cards on it moves them all together. <b>Tap the deck</b> to turn over cards; when it's empty, tap ↻ to turn the pile back over. ${pic("↩ Undo")} takes back a move, ${pic("💡 Hint")} outlines a good move in gold, and when every card is face up ${pic("✨ Finish","primary")} plays the rest home for you. Your wins and best times stay on your phone.`),
+    step(33, "Secret Santa", `Tap ${pic("Our Table")} → <b>🎁 Secret Santa</b> → ${pic("🎁 Start a Secret Santa","primary")}. Give it a name, a spending limit if you want one, and the day gifts are exchanged, then tap ${pic("🎁 Start it and tell the family","primary")}; you're in it yourself. Everyone is notified and taps ${pic("🎁 Join","primary")}. <b>Wish lists:</b> under <b>My wish list</b>, write what you'd love, with a size or colour and a link if you have one, and tap ${pic("Save my wish list","primary")}; ${pic("＋ Add a wish")} adds another line (up to 12). Everyone in it can read the wish lists. <b>Couples:</b> the organizer gives people who are married or live together the same <b>Household</b> letter and taps ${pic("Save households")}. They will never draw each other. <b>Drawing:</b> once at least 3 are in, the organizer taps ${pic("🎅 Draw names","primary")}. The app draws the names itself, and each person sees only <b>their own</b> person under <b>You're Secret Santa for</b>, with that person's wish list. Tap ${pic("Mark the gift bought","wine")} to keep track; only you see it. On the day, the organizer taps ${pic("🎉 Reveal the Santas","wine")} and everyone sees who had whom.`),
+    step(34, "Family Outing", `Tap ${pic("Our Table")} → <b>🎉 Family Outing</b> and tap a kind. <b>🏀 Memphis Tigers basketball:</b> the app shows the Tigers' home games at FedExForum from their official schedule (gotigersgo.com); tap the game you want. FedExForum is filled in for you. Times come from the Tigers' schedule and can change, so check the ticket page before you buy. <b>Everything else</b> (bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or ${pic("Something else")} with your own name for it): pick the date, start time and how long, choose the area, and tap ${pic("Find","primary")} to have Google list places; tap one. Then tap who's invited and ${pic("🎉 Send the invitation","primary")}. Everyone answers Going, Maybe or Can't go. <b>Booking:</b> one person who's going taps ${pic("🎟️ I'll book it","primary")}, books on the place's own site (for the Tigers: ${pic("Tigers' schedule & tickets","primary")} or ${pic("Tickets on SeatGeek")}), then types how many people it covers, the price each and any extras (a lane, parking, fees, food) and taps ${pic("✓ I booked it","wine")}. The app splits the real total by the people it covers. <b>Paying back</b> works like Topgolf: pay the booker your own way and tap <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and your receipt appears.`),
+    step(35, "Prayer Wall", `Tap ${pic("Our Table")} → <b>🙏 Prayer Wall</b>. Under <b>Share a prayer request</b>, write what you'd like the family to pray about and tap ${pic("🙏 Share it with the family","primary")}; everyone is notified. Tick <b>Don't show my name</b> to share it unnamed: then the family sees “A family member”, and nobody, not even the host, can find out from the app who wrote it. Under <b>Praying for</b>, tap ${pic("🙏 I prayed")} on a request when you've prayed; the person who shared it is told, and you can see who else prayed. When your prayer is answered, tap ${pic("🙌 Mark answered","wine")}, write a praise report if you like, and tap ${pic("Share the good news","primary")}: everyone who prayed is told, and it moves to <b>Answered prayers</b>. ${pic("Still praying","ghost")} moves it back. You, or the host, can tap ${pic("Take down","ghost")}.`),
+    step(36, "Game Night Tournament", `In the Game Room tap ${pic("🏆 Start a game night tournament","wine")}. Give it a name, tap who's playing, and tap the games you'll play, in order (2 to 10). For a game that isn't in the app, like cards at the table, type it under <b>Another game</b> and tap ${pic("＋ Add")}. Tap ${pic("🏆 Start the tournament","primary")}; the players are told. Play each game, here in the Game Room or at the table. Then anyone playing taps ${pic("Record result","wine")} on that game, picks who came <b>🥇 1st</b> (and <b>🥈 2nd</b> if you like) and taps ${pic("Save result","primary")}. 1st place earns 3 points, 2nd place 1; a team win gives each partner the points. The <b>Leaderboard</b> updates on every phone. At the end, the organizer taps ${pic("🏆 Crown the champion","primary")}: everyone is told, and the champion is added to the <b>Year at the Table</b>. A tie means co-champions.`),
+    step(37, "Family Recipe Book", `Tap ${pic("Our Table")} → <b>🍗 Family Recipe Book</b>. <b>Adding one:</b> tap ${pic("＋ Add a family recipe","primary")}, type the <b>name of the dish</b>, <b>whose recipe it is</b> (Grandma, Rosa…), pick the kind (main dish, side, dessert, bread, breakfast, drink or other), how many it serves and how long it takes. Type the <b>ingredients</b> one on each line, then the <b>steps</b> one on each line, and any notes (the secret, the story). Tap ${pic("📷 Add a photo")} to pick a picture, then ${pic("🍗 Add it to the Recipe Book","primary")}. The whole family is told, and the photo shows right away (no approval). <b>Finding one:</b> type in <b>Search</b> (a dish, an ingredient like “pecans”, or who made it), or tap a chip: ${pic("All")}, ${pic("⭐ My favorites")} or a kind. Tap a recipe to open it. <b>Cooking:</b> tick each ingredient as you add it (only your phone sees the ticks), and tap ${pic("A+")} for bigger print. Tap ${pic("☆ Favorite")} to star it for yourself; you can see who else starred it. <b>Changing it:</b> the person who added it, or the host, taps ${pic("✏️ Change it")}, makes the change and taps ${pic("Save the changes","primary")}; ${pic("Take the photo off","ghost")} removes the picture, and ${pic("Remove")} takes the whole recipe and its photo out of the book.`),
+    step(38, "Rides", `Every dinner card in the ${pic("Feed")}, and every Family Outing, Movie Night and Topgolf page, has a <b>🚗 Rides</b> strip; tap ${pic("Rides")}. <b>Driving:</b> tap ${pic("🚗 I can drive","primary")}, tap how many you can take (not counting you), add when you'll leave and a note if you like (“I have a car seat”), and tap ${pic("🚗 Offer my seats","primary")}. Anyone waiting who fits is put in your car at once. Under <b>You're driving</b> you see each rider, how many are with them, their note and <b>📍 where to pick them up</b>, with ${pic("🧭 Directions","primary")} and ${pic("📞 Call")} / ${pic("💬 Text")}. ${pic("I'll pick them up","primary")} takes someone waiting; ${pic("Let go","ghost")} hands them back to the list (you won't be matched with them again unless you tap I'll pick them up); ${pic("Change seats or time")} and ${pic("I can't drive after all","ghost")} do what they say, and your riders are told. <b>Riding:</b> tap ${pic("🙋 I need a ride","wine")}, tap how many are riding (you and anyone with you, such as a grandparent or the children), type where to pick you up and anything the driver should know there (the apartment, the gate code), and tap ${pic("🙋 Ask for a ride","primary")}. Next time the app fills in your last pickup address for you. The app puts you with the driver who has the most room, and never splits your group across two cars; if no car has room yet, you wait on the list and are told the moment one does. You'll see <b>who is driving you</b>, when they leave, and ${pic("Change")} or ${pic("I don't need a ride now","ghost")}. <b>Privacy:</b> where to pick you up is seen only by you and your own driver, never the rest of the family, and it never appears on a lock screen.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2326,6 +2411,12 @@ function guideBody(k){
     step("V", "A word for Dad", `Zoey taps ${pic("✍️ Write a word for someone to guess")}, types PEACH COBBLER behind the dots and hands the phone to Richard. He tries E, A, then R, and has it with four balloons still floating.`),
     step("W", "Saturday at Topgolf", `Mario taps ${pic("⛳ Plan a Topgolf outing","primary")}, picks Saturday at 5:00 PM for 2 hours, taps ${pic("Find Topgolf","primary")}, chooses Topgolf Memphis and invites everyone. Five tap Going. Jasmine taps ${pic("⛳ I'll book the bay","primary")}, books one bay on Topgolf's site, and types the bay cost and the food from her confirmation. Everyone's phone shows their share. Richard pays Jasmine by Cash App and taps <b>I paid by Cash App</b>; Jasmine taps ${pic("✓ Received","wine")} and Richard's receipt appears: Topgolf Memphis, Saturday 5:00 PM, his share, balance $0.00.`),
     step("X", "Solitaire after church", `Richard opens ${pic("Solitaire")} and taps ${pic("Draw 1 · easier","primary")}. He taps the A♥ and it flies home; a hidden card turns over. Stuck, he taps ${pic("💡 Hint")} and the 4♣ lights up gold, ready to go on a red 5. Twenty minutes later every card is face up, he taps ${pic("✨ Finish","primary")} and the cards play themselves home: <b>“You won!”</b>`),
+    step("Y", "Secret Santa at Christmas", `In November Jasmine taps ${pic("🎁 Start a Secret Santa","primary")}, sets a $40 limit and December 20. Seven join and write wish lists. She gives each married couple their own household letter, then taps ${pic("🎅 Draw names","primary")}. Zoey opens it and reads <b>“You're Secret Santa for Richard”</b>, with his wish list: a Bluetooth speaker in red, with a link. She buys it and taps ${pic("Mark the gift bought","wine")}. On December 20 Jasmine taps ${pic("🎉 Reveal the Santas","wine")}: everyone sees who had whom.`),
+    step("Z", "Tigers vs Louisville", `Mario taps ${pic("🏀 Memphis Tigers basketball")}, sees the home games from the Tigers' schedule, and taps <b>vs Louisville</b>. FedExForum fills in by itself. He invites the family. Six tap Going. Jasmine taps ${pic("🎟️ I'll book it","primary")}, buys six seats on the Tigers' ticket page, and types 6 tickets, the price each and the fees, with “Sec 104, Row F”. Everyone's phone shows their share; each pays Jasmine back and gets a receipt with the game, the time, FedExForum and the seats.`),
+    step("AA", "Answered prayer", `On Tuesday Zoey shares “Please pray for my exam on Friday” on the ${pic("🙏 Prayer Wall")}. Five of the family tap ${pic("🙏 I prayed")}; each time her phone says someone prayed for her. The next week she taps ${pic("🙌 Mark answered","wine")} and writes “I passed! Thank you.” Everyone who prayed gets the good news, and it moves to Answered prayers.`),
+    step("AB", "The family championship", `After Sunday dinner Mario taps ${pic("🏆 Start a game night tournament","wine")}, picks six players and three games: Spades, Family Feud and “Dominoes at the table”. After Spades he records Jasmine &amp; Richard 🥇 and Zoey &amp; Mario 🥈. Jasmine wins Dominoes outright. When Feud is done the leaderboard shows Jasmine on 6 points; Mario taps ${pic("🏆 Crown the champion","primary")}, and every phone says <b>“Jasmine is the Game Night champion!”</b>`),
+    step("AC", "Rosa's pie, saved", `Jasmine opens ${pic("🍗 Family Recipe Book")}, taps ${pic("＋ Add a family recipe","primary")} and types “Sweet potato pie”, from “Rosa”, a dessert that serves 8. She types the ingredients and the steps line by line, adds a photo of the pie and taps ${pic("🍗 Add it to the Recipe Book","primary")}. Everyone's phone says she added it. At Thanksgiving Mario types “sweet potato” in Search, opens it, taps ${pic("A+")} and ticks the ingredients off as he goes.`),
+    step("AD", "Grandma gets a ride", `Sunday Dinner is at Gus's. Mario opens the dinner card, taps ${pic("Rides")} → ${pic("🚗 I can drive","primary")}, picks 3 seats and “4:30 PM from Cordova”, and taps ${pic("🚗 Offer my seats","primary")}. Zoey taps ${pic("🙋 I need a ride","wine")}, picks 2 (she's bringing Grandma), types her address and “Grandma needs the front seat”, and taps ${pic("🙋 Ask for a ride","primary")}. Her screen says Mario is driving her; Mario's phone says he's driving Zoey and 1 more, and his Rides screen shows her address with ${pic("🧭 Directions","primary")}.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2374,6 +2465,24 @@ function guideBody(k){
     ["Find Topgolf shows nothing", "Google only lists Topgolf venues inside the area you choose. Pick another area in the list next to it (Memphis has Topgolf Memphis on S Germantown Rd)."],
     ["“A bay holds up to 6 players.”", "Topgolf lets up to 6 play in one bay. For more people, put 2 bays (or more) in the booking."],
     ["My Topgolf share looks wrong", "The share is the booking total (bay cost plus food, drinks and fees) divided by the number of players the booker typed. Ask the booker to check their confirmation."],
+    ["I can't record a tournament result", "Only the players (and the host) can. Pick at least the 1st place, and nobody can be both 1st and 2nd."],
+    ["Crown the champion says to record a game first", "The champion is worked out from the results. Record at least one game, then crown."],
+    ["I can't see who shared a prayer request", "If it says “A family member”, the person chose not to show their name. The app keeps that private for them; nobody can see it."],
+    ["There's no Mark answered button on a request", "Only the person who shared it can mark it answered. You can tap I prayed."],
+    ["I can't find a recipe", "Search looks in the name, whose recipe it is, who added it and the ingredients. Tap All so no kind or favorites chip is hiding it."],
+    ["There's no Change it button on a recipe", "Only the person who added it, or the host, can change or remove it. Anyone can star it."],
+    ["My recipe photo didn't save", "The photo uploads when you tap Add it (or Save the changes). If your signal drops, the app says so and nothing is saved; tap Try again."],
+    ["My ingredient ticks disappeared", "Ticks stay on your phone only while the app is open, so the next cook starts fresh."],
+    ["I asked for a ride but nobody's driving me", "No car has room for everyone in your group yet (the app never splits a group). You're on the waiting list and will be told the moment a driver has room. You can also ask a driver to tap I'll pick them up."],
+    ["I can't see the rider's address", "Only their own driver sees it. Once they're in your car, it shows under You're driving."],
+    ["“More people are already riding with you”", "You tried to offer fewer seats than the people already in your car. Let someone go first, or keep more seats."],
+    ["There's no Rides strip on a plan", "Rides close once the plan's day has passed or the plan is cancelled. A dinner you were taken off doesn't show its rides either."],
+    ["The Tigers list says “Getting the Tigers' schedule…” for a long time", "The app reads the schedule from the Tigers' own website. If their site is slow, tap Try again in a minute."],
+    ["A Tigers game time looks odd", "Times come straight from the Tigers' official schedule and can change. Check the ticket page; if the game moved, plan the outing again."],
+    ["Find shows the wrong kind of place", "Change the words in the box under the area (for example “bowling alley Cordova”) and tap Find again. Google lists only places inside the area you pick."],
+    ["Secret Santa says there's no way to draw names", "With the households marked, someone would have to draw their own partner. Invite more people, or take someone out of a household, then draw again."],
+    ["I can't see who I drew", "Names appear after the organizer taps Draw names. You see only your own person; nobody else can see it, not even the host, until the reveal."],
+    ["I want to change my Secret Santa wish list", "Open it, change the lines and tap Save my wish list. You can change it any time until the reveal."],
     ["A Solitaire card won't move", "It has nowhere to go yet: a column needs a card one higher in the other colour, an empty column needs a king, and home needs the card just below it. Try Hint, or draw from the deck."],
     ["Solitaire says “No moves left”", "Nothing can move and the deck is used up. Tap New deal for another game; not every deal can be won."],
     ["Wild Card won't let me play my card", "Only glowing cards play: same colour, same number or symbol, or a Wild. After you draw, only the card you drew can play; otherwise tap Pass."],
@@ -2400,10 +2509,10 @@ function guideBody(k){
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers home games from the Tigers' official schedule, bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Undo a card or tile once it's played</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Read a recipe off a photo of a recipe card: you type it in</li><li>Drive anyone, or show where a car is on the road</li><li>Keep an address book: each rider types where to be picked up, and only their own last one is filled in for them</li><li>Let anyone but the person who added a recipe (or the host) change or remove it</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Buy Tigers tickets or book a lane for you, or promise a game time: the booker uses the official ticket page, and times come from the Tigers' schedule</li><li>Show who wrote an unnamed prayer request, to anyone</li><li>Plan a Tigers away game: the planner lists home games at FedExForum</li><li>Show anyone who drew whom before the organizer reveals it, or buy the gifts for you</li><li>Undo a card or tile once it's played</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -2543,6 +2652,8 @@ function sheetYear(Y = yearShowing() || today0.getFullYear()){
       ${x.top ? stat("★", "TOP-SCORED PLACE", name(x.top[0]), `${fmt10(x.top[1])} out of 10 · ${x.top[2]} ${x.top[2] === 1 ? "score" : "scores"}`) : ""}
       ${x.most ? stat("♥", "MOST VISITED", name(x.most[0]), `${x.most[1]} ${x.most[1] === 1 ? "visit" : "visits"} this year`) : ""}
       ${stat("✦", "NEW PLACES TRIED", `${x.fresh.length} new ${x.fresh.length === 1 ? "place" : "places"}`, x.fresh.slice(0, 8).map(name).join(" · "))}
+      ${(() => { const champs = (st.tourneys || []).filter(t => t.status === "done" && String(t.date).startsWith(String(Y)));
+        return champs.length ? stat("🏆", "GAME NIGHT CHAMPIONS", `${champs.length} ${champs.length === 1 ? "tournament" : "tournaments"}`, champs.slice(0, 8).map(t => `${esc(t.name)}: ${esc(t.champions.map(c => first(F(c)?.name || "?")).join(" & "))}`).join(" · ")) : ""; })()}
       ${x.dishes ? stat("🍴", "DISHES REMEMBERED", `${x.dishes} ${x.dishes === 1 ? "dish" : "dishes"}`, "from “What did you order?”") : ""}
       <div class="lbl">📷 BEST PHOTOS</div>
       ${x.photos.length ? `<div class="photos">${x.photos.map(p => `<button data-act="photo" data-id="${p.id}" aria-label="Photo by ${esc(first(F(p.by).name))}"><img src="${p.data}" alt=""></button>`).join("")}</div><span class="small muted">From the year's highest-scored dinners.</span>` : `<div class="empty">No approved photos from ${Y} yet.</div>`}
@@ -3356,6 +3467,55 @@ function spBotPlay(st, hand, seat){
   const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
 }
 /* SPADES RULES END */
+/* RIDES RULES START */
+// Table of 7 Rides matching (his order, 2026-10-18). ONE copy: the server (functions/rides) matches riders to drivers
+// with it, and the app carries the identical text (index.html, between the RIDES RULES markers) to show the seats left.
+// tests/rides_match_test.mjs proves both. Every helper carries the "rd" prefix.
+//   offers: [{driver, seats, t}]   seats = passengers the driver can take (not counting the driver)
+//   asks:   [{id, rider, party, driver, t, declined}]   party = the rider and everyone coming with them;
+//           declined = drivers who let this rider go (never matched to them again)
+// The oldest ask is matched first, to the driver with the most free seats that fit the WHOLE party (a party is never
+// split; ties go to whoever offered first). Nobody is put in their own car, or back in a car that let them go. An ask that fits nowhere waits.
+function rdFree(offers, asks){
+  const free = {};
+  for(const o of offers) free[o.driver] = o.seats;
+  for(const a of asks) if(a.driver && free[a.driver] !== undefined) free[a.driver] -= a.party;
+  return free;
+}
+function rdMatch(offers, asks){
+  const free = rdFree(offers, asks), drivers = [...offers].sort((a, b) => a.t - b.t), plan = [];
+  for(const a of asks.filter(x => !x.driver).sort((x, y) => x.t - y.t)){
+    let best = null;
+    for(const o of drivers){ if(o.driver === a.rider || (a.declined || []).includes(o.driver) || free[o.driver] < a.party) continue; if(!best || free[o.driver] > free[best]) best = o.driver; }
+    if(best){ free[best] -= a.party; plan.push({ ask: a.id, driver: best }); }
+  }
+  return plan;
+}
+/* RIDES RULES END */
+/* TOURNEY RULES START */
+// Table of 7 Game Night Tournament scoring (his order, 2026-10-18). ONE copy: the server (functions/tourney) crowns
+// the champion with it, and the app carries the identical text (index.html, between the TOURNEY RULES markers) for the
+// running leaderboard. tests/tourney_score_test.mjs proves both. Every helper carries the "tn" prefix.
+// Each game: 1st place = 3 points, 2nd place = 1 point (a team that wins gives each member the points).
+// The leaderboard: most points first; a tie is broken by most 1st places; still tied = shared place.
+const TN_FIRST = 3, TN_SECOND = 1;
+function tnBoard(players, results){
+  const pts = Object.fromEntries(players.map(p => [p, { id: p, points: 0, wins: 0, seconds: 0 }]));
+  for(const r of results || []){
+    if(!r) continue;
+    for(const p of r.first || []) if(pts[p]){ pts[p].points += TN_FIRST; pts[p].wins += 1; }
+    for(const p of r.second || []) if(pts[p]){ pts[p].points += TN_SECOND; pts[p].seconds += 1; }
+  }
+  const list = Object.values(pts).sort((a, b) => b.points - a.points || b.wins - a.wins || a.id.localeCompare(b.id));
+  let place = 0, prev = null;
+  list.forEach((x, i) => { if(!prev || x.points !== prev.points || x.wins !== prev.wins) place = i + 1; x.place = place; prev = x; });
+  return list;
+}
+// the champion(s): everyone in 1st place, or none when no game has a result yet
+function tnChampions(players, results){
+  const b = tnBoard(players, results); return b.length && b[0].points > 0 ? b.filter(x => x.place === 1).map(x => x.id) : [];
+}
+/* TOURNEY RULES END */
 /* SOLITAIRE RULES START */
 // Table of 7 Solitaire (Klondike; his order, 2026-10-18). Played on one phone, never on the server: this file is kept
 // beside the other games' rules so tests/sync_rules_copy.py copies it into index.html (between the SOLITAIRE RULES
@@ -3995,7 +4155,16 @@ const gPrev = {};                                    // the last board each game
 const gCheered = new Set();                          // finished games already celebrated on this phone
 const gSzOn = () => { try { return localStorage.getItem("t7.gsize") === "xl"; } catch { return false; } };
 document.body.dataset.gsize = gSzOn() ? "xl" : "l";
-const gSizeBtn = () => gSndBtn() + `<button class="icon-btn gsz" data-act="g-size" aria-label="${gSzOn() ? "Make the game smaller" : "Make the game bigger"}">${gSzOn() ? "A−" : "A+"}</button>`;
+const gSzBtn = () => `<button class="icon-btn gsz" data-act="g-size" aria-label="${gSzOn() ? "Make it smaller" : "Make it bigger"}">${gSzOn() ? "A−" : "A+"}</button>`;
+const gSizeBtn = () => gSndBtn() + gSzBtn();
+// A+ and 🔇 work by CSS (--gs) and a stored setting, so only the game screens gRedraw knows are redrawn; every other
+// screen (Movie Night, Topgolf, Santa, Outings, Prayer Wall, Tournament, Recipe Book) keeps its place and just
+// swaps the two buttons. (Before 2026-10-18 a tap on A+ there threw you into the Game Room.)
+function gToggled(){
+  if(sheet.querySelector("[data-game],[data-room],[data-sol],.mmgrid,.wgkeys")){ gRedraw(); return; }
+  sheet.querySelectorAll('[data-act="g-size"]').forEach(b => b.outerHTML = gSzBtn());
+  sheet.querySelectorAll('[data-act="g-snd"]').forEach(b => b.outerHTML = gSndBtn());
+}
 const gSndBtn = () => `<button class="icon-btn gsz" data-act="g-snd" aria-label="${gSndOn() ? "Turn game sounds off" : "Turn game sounds on"}">${gSndOn() ? "🔊" : "🔇"}</button>`;
 const gBack = (act = "games", label = "Back to the Game Room") => `<button class="icon-btn" data-act="${act}" aria-label="${label}">←</button>`;
 const SUIT_PATH = {
@@ -4164,6 +4333,8 @@ function sheetGames(){
   const waiting = k => live.filter(g => g.kind === k && gMine(g)).length + (k === "feud" ? (st.surveys || []).filter(x => x.status === "open" && !x.answered.includes(st.me)).length : 0);
   openSheet(`<div class="sheet-head" data-room><button class="icon-btn" data-act="close" aria-label="Close the Game Room">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Game Room</div><h2>🎲 Let's play!</h2></div>${gSizeBtn()}</div>
     ${myMoves ? `<div class="gstatus go">It's your move in ${myMoves} ${myMoves === 1 ? "game" : "games"}</div>` : ""}
+    ${(() => { const open = (st.tourneys || []).filter(x => x.status === "open").sort((a, b) => b.t - a.t);
+      return `<div class="lbl">🏆 GAME NIGHT TOURNAMENT</div>${open.map(x => `<button class="todo" data-act="tn-open" data-id="${x.id}"><span class="ic">🏆</span><span><b>${esc(x.name)}</b><small>${x.results.filter(Boolean).length} of ${x.games.length} games played · leader ${esc((() => { const b = tnBoard(x.players, x.results); return b[0] && b[0].points ? first(F(b[0].id)?.name || "?") : "nobody yet"; })())}</small></span><span class="chev">${I.chev}</span></button>`).join("")}<button class="btn wine" data-act="tn-new">🏆 Start a game night tournament</button>`; })()}
     <div class="gtiles">${GTILES.map(([k, l, sub, bg]) => { const n = waiting(k);
       return `<button class="gtile ${bg}" data-act="g-pick" data-k="${k}" aria-label="${l}">${n ? `<span class="badge">${n}</span>` : ""}${gArt(k)}<span><b>${l}</b><small>${sub}</small></span></button>`; }).join("")}</div>
     ${live.length ? `<div class="lbl">GAMES IN PLAY</div><div style="display:grid;gap:8px">${live.map(gLiveRow).join("")}</div>` : ""}
@@ -5063,12 +5234,12 @@ function drawMovieNight(id){
       <div><div class="mvtitle">${esc(n.movie.title)}</div><div class="mvfacts">${n.movie.cert ? `<span class="cert">${esc(n.movie.cert)}</span>` : ""}${n.movie.runtime ? `<span>${Math.floor(n.movie.runtime / 60)}h ${n.movie.runtime % 60}m</span>` : ""}${n.movie.rating ? `<span>★ ${n.movie.rating}/10</span>` : ""}</div>
         <div class="mvwhen">${esc(mvWhen(n))}</div>
         <div class="small">${th ? `🎦 <b>${esc(th.name)}</b><br>${esc(th.address)}` : n.pid ? "Finding the theater…" : "Theater to be decided"}</div>
-        ${dinner ? `<div class="small" style="color:#ffd9a8">🍽️ After ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
+        ${dinner ? `<div class="small" style="color:#7a1426">🍽️ After ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
         ${n.note ? `<div class="small" style="font-style:italic">“${esc(n.note)}”</div>` : ""}
         <div class="actions">${th?.mapsUri ? `<a class="btn sm" href="${esc(th.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}<button class="btn sm" data-act="mv-movie" data-id="${n.movie.id}">Reviews &amp; trailer</button></div></div></div>
     ${open && !mvPast(n) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k, l]) => `<button class="btn ${me.rsvp === k ? (k === "yes" ? "primary" : "wine") : ""}" data-act="mv-rsvp" data-v="${k}" aria-pressed="${me.rsvp === k}">${l}</button>`).join("")}</div>` : ""}
     <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
-    ${tk}${pay}${owes}${shown}
+    ${open && !mvPast(n) ? rdStrip("movie", n.id) : ""}${tk}${pay}${owes}${shown}
     ${open && (n.by === st.me || isAdmin()) && !mvPast(n) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="mv-cancel">Cancel this movie night</button></div>` : ""}
     ${TMDB_NOTE}`);
 }
@@ -5203,12 +5374,12 @@ function drawGolf(id){
     <div class="mvstub"><span class="tgbadge" aria-hidden="true"></span>
       <div><div class="mvwhen">${esc(tgWhen(o))}</div><div class="small">${tgHrs(o.hours)} · ${going.length} coming</div>
         <div class="small">${v ? `⛳ <b>${esc(v.name)}</b><br>${esc(v.address)}` : "Finding the Topgolf…"}</div>
-        ${dinner ? `<div class="small" style="color:#d6f5df">🍽️ With ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
+        ${dinner ? `<div class="small" style="color:#1f6b35">🍽️ With ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
         ${o.note ? `<div class="small" style="font-style:italic">“${esc(o.note)}”</div>` : ""}
         <div class="actions">${v?.mapsUri ? `<a class="btn sm" href="${esc(v.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}${v?.website ? `<a class="btn sm" href="${esc(v.website)}" target="_blank" rel="noopener">Topgolf's page</a>` : ""}</div></div></div>
     ${open && !mvPast(o) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k, l]) => `<button class="btn ${me.rsvp === k ? (k === "yes" ? "primary" : "wine") : ""}" data-act="tg-rsvp" data-v="${k}" aria-pressed="${me.rsvp === k}">${l}</button>`).join("")}</div>` : ""}
     <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
-    ${tk}${pay}${owes}${shown}
+    ${open && !mvPast(o) ? rdStrip("golf", o.id) : ""}${tk}${pay}${owes}${shown}
     ${open && (o.by === st.me || isAdmin()) && !mvPast(o) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="tg-cancel">Cancel this outing</button></div>` : ""}
     <p class="small muted" style="margin:0;text-align:center">Venue details from Google. The app doesn't book or take payment; Topgolf does the booking.</p>`);
 }
@@ -5218,6 +5389,515 @@ function tgKeep(){ const d = tgDraft; if(!d) return; const v = x => document.get
 async function tgAct(body, okToast){
   const d = await golfCall(body); if(!d.ok){ toast(tgWhy(d.code)); return false; }
   await refresh(true); if(okToast) toast(okToast); return d;
+}
+/* ===== Secret Santa (his order, 2026-10-18; couples kept apart). Someone starts an exchange, the family joins and
+   writes wish lists, the organizer marks couples / households, and the SERVER draws names: nobody draws themselves
+   or their own household. Each phone learns only its own match (santa "mine"); nobody else's is ever sent. Wish
+   lists are shared with everyone in it. Writes go through functions/santa. ===== */
+let saOpen = null, saPairs = {};
+const saMineCache = {}, saWishDraft = {};
+async function santaCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/santa", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const saWhy = c => ({budget:"Check the spending limit.", when:"Pick a real date.", drawn:"The names are already drawn.", not_boss:"Only the organizer or the host can do that.", groups:"Each person can be in one household only.",
+  not_in:"Join first.", revealed:"This exchange is over.", too_many:"Up to 12 things on a wish list.", link:"A link has to start with http:// or https://.", few:"At least 3 people have to join first.",
+  seats:"Everyone in it has to be an active family seat.", no_draw:"With these households there's no way to draw names. Take someone out of a household, or invite more people.", not_drawn:"Names aren't drawn yet.",
+  not_revealed:"Not revealed yet.", cancelled:"That exchange was cancelled.", offline:"Can't reach the table right now.", no_exchange:"That exchange isn't open to you."})[c] || "Couldn't do that. Try again.";
+const saBoss = x => x.by === st.me || isAdmin();
+const saDate = x => x.date ? new Date(x.date + "T12:00:00").toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"}) : "";
+function saMine(x){       // who I drew: asked of the server, kept on this phone only while the screen is open
+  const key = `${x.id}:${x.status}`; if(x.status === "open" || !x.joined.includes(st.me)) return null;
+  if(!saMineCache[key]){ saMineCache[key] = "…"; santaCall({action:"mine", id:x.id}).then(d => { saMineCache[key] = d.ok ? {receiver:d.receiver, bought:d.bought} : null; saRedraw(); }); }
+  return saMineCache[key] === "…" ? null : saMineCache[key];
+}
+function saNeeds(){
+  return (st.santa || []).filter(x => x.status === "open" || x.status === "drawn").map(x => {
+    const inIt = x.joined.includes(st.me), wish = (x.wishes[st.me] || []).length;
+    if(x.status === "open" && !inIt) return [x, `Join ${x.name}?`, "Secret Santa: draw names and share wish lists"];
+    if(inIt && !wish) return [x, "Add your Secret Santa wish list", x.name];
+    if(x.status === "drawn" && inIt){ const m = saMineCache[`${x.id}:drawn`]; if(!m || !m.bought) return [x, "See who you're Secret Santa for", x.name]; }
+    return null; }).filter(Boolean);
+}
+function saRedraw(){ const box = sheet.querySelector("[data-saroom],[data-saone]"); if(!box || !wrap.classList.contains("open")) return;
+  if(box.hasAttribute("data-saone")) drawSanta(saOpen); else sheetSanta(); }
+function sheetSanta(){
+  saOpen = null; const all = (st.santa || []).filter(x => x.status !== "cancelled").sort((a, b) => b.t - a.t);
+  const live = all.filter(x => x.status !== "revealed"), past = all.filter(x => x.status === "revealed").slice(0, 4);
+  const row = x => `<button class="mvcard" data-act="sa-open" data-id="${x.id}"><span class="tgbadge" style="background:radial-gradient(circle,#ffd36b 0 30%,#b3122e 31%)" aria-hidden="true">🎁</span>
+    <span><b>${esc(x.name)}</b><small>${x.joined.length} in${x.budget ? ` · ${money(x.budget)} limit` : ""}${x.date ? ` · ${esc(saDate(x))}` : ""}</small><span class="mvtag">${x.status === "open" ? (x.joined.includes(st.me) ? "You're in" : "Join") : x.status === "drawn" ? "🎅 Names drawn" : "Revealed"}</span></span></button>`;
+  openSheet(`<div class="sheet-head" data-santa data-saroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Secret Santa</div><h2>🎁 Who'll you get?</h2></div>${gSizeBtn()}</div>
+    <button class="btn primary block" data-act="sa-new" style="min-height:calc(58px*var(--gs))">🎁 Start a Secret Santa</button>
+    <p class="small" style="margin:0;color:#ffe3e8">Everyone joins and writes a wish list. The app draws the names, and each person sees only who <b>they</b> got. Couples and households never draw each other.</p>
+    ${live.length ? `<div class="lbl">THIS YEAR</div><div class="mvlist">${live.map(row).join("")}</div>` : `<div class="empty">No Secret Santa yet. Tap Start a Secret Santa.</div>`}
+    ${past.length ? `<div class="lbl">PAST EXCHANGES</div><div class="mvlist">${past.map(row).join("")}</div>` : ""}`);
+}
+function sheetSantaNew(){
+  const y = today0.getFullYear(), dflt = `${y}-12-20`;
+  openSheet(`<div class="sheet-head" data-santa data-sanew>${gBack("santa", "Back to Secret Santa")}<div style="flex:1;min-width:0"><div class="eyebrow">Secret Santa</div><h2>🎁 Start one</h2></div>${gSizeBtn()}</div>
+    <div class="field"><label for="sa-name">Name</label><input class="input" id="sa-name" maxlength="60" value="Christmas ${y}"></div>
+    <div class="grid2"><div class="field"><label for="sa-budget">Spending limit (optional)</label><input class="input num" id="sa-budget" inputmode="decimal" placeholder="$50"></div>
+      <div class="field"><label for="sa-date">Gift exchange day</label><input class="input" type="date" id="sa-date" value="${dflt}" min="${iso(today0)}"></div></div>
+    <div class="field"><label for="sa-note">A note (optional)</label><input class="input" id="sa-note" maxlength="300" placeholder="e.g. Gifts open after Christmas dinner"></div>
+    <button class="btn primary block" data-act="sa-start" style="min-height:calc(56px*var(--gs))">🎁 Start it and tell the family</button>
+    <p class="small" style="margin:0;color:#ffe3e8">You join it yourself. Once people have joined, you mark the couples and draw the names.</p>`);
+}
+function saWishList(items){ return items.length ? `<ul class="sawish">${items.map(it => `<li><b>${esc(it.text)}</b>${it.size ? ` <span class="small">· ${esc(it.size)}</span>` : ""}${it.link ? `<br><a class="small" href="${esc(it.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Open the link</a>` : ""}</li>`).join("")}</ul>` : `<p class="small" style="margin:0">No wish list yet.</p>`; }
+function drawSanta(id){
+  const x = (st.santa || []).find(e => e.id === id); if(!x){ sheetSanta(); return; }
+  saOpen = id; const inIt = x.joined.includes(st.me), boss = saBoss(x), open = x.status === "open", mine = saMine(x);
+  const myWish = saWishDraft[id] || ((x.wishes[st.me] || []).length ? x.wishes[st.me].map(it => ({...it})) : [{text:"", size:"", link:""}]);
+  const homeOf = {}; x.homes.forEach((g, i) => g.forEach(m => { homeOf[m] = i; }));
+  let main = "";
+  if(open && !inIt) main = `<button class="btn primary block" data-act="sa-join">🎁 Join ${esc(x.name)}</button>`;
+  if(x.status === "drawn" && inIt) main = !mine ? `<div class="empty">Opening your secret…</div>` : `<div class="sacard"><div class="lbl" style="color:#9b0f26">🤫 YOU'RE SECRET SANTA FOR</div><div class="big">${esc(F(mine.receiver)?.name || "someone")}</div>
+      ${x.budget ? `<div class="small">Spending limit: <b>${money(x.budget)}</b></div>` : ""}${x.date ? `<div class="small">Gifts exchanged ${esc(saDate(x))}</div>` : ""}
+      <div class="lbl" style="color:#9b0f26">THEIR WISH LIST</div>${saWishList(x.wishes[mine.receiver] || [])}
+      <button class="btn ${mine.bought ? "primary" : "wine"}" data-act="sa-bought" data-v="${mine.bought ? "0" : "1"}">${mine.bought ? "✓ Gift bought" : "Mark the gift bought"}</button>
+      <p class="small" style="margin:0">Only you can see this. Keep it a secret!</p></div>`;
+  if(x.status === "revealed") main = `<div class="card"><div class="lbl">🎅 WHO HAD WHOM</div>${saPairs[id] ? saPairs[id].map(p => `<div class="mvowe"><span><b>${esc(first(F(p.giver)?.name || "?"))}</b></span><span>→</span><span><b>${esc(first(F(p.receiver)?.name || "?"))}</b></span></div>`).join("") : `<div class="small">Loading…</div>`}</div>`;
+  if(x.status === "revealed" && !saPairs[id]) santaCall({action:"pairs", id}).then(d => { if(d.ok){ saPairs[id] = d.pairs; saRedraw(); } });
+  const wishEd = inIt && x.status !== "revealed" ? `<div class="card"><div class="lbl">🎄 MY WISH LIST</div><p class="small" style="margin:0">Your Santa sees this. Add sizes and links to help them.</p>
+      ${myWish.map((it, i) => `<div class="sarow"><input class="input" id="sa-w${i}" maxlength="120" value="${esc(it.text || "")}" placeholder="Something you'd love" aria-label="Wish ${i + 1}">
+        <div class="grid2"><input class="input" id="sa-s${i}" maxlength="40" value="${esc(it.size || "")}" placeholder="Size or colour" aria-label="Size ${i + 1}"><input class="input" id="sa-l${i}" maxlength="400" value="${esc(it.link || "")}" placeholder="Link (optional)" aria-label="Link ${i + 1}"></div></div>`).join("")}
+      <div class="actions">${myWish.length < 12 ? `<button class="btn" data-act="sa-add">＋ Add a wish</button>` : ""}<button class="btn primary" data-act="sa-save">Save my wish list</button></div></div>` : "";
+  const lists = x.joined.filter(m => m !== st.me).map(m => `<details class="card"><summary><b>${esc(F(m)?.name || "Family")}</b> <span class="small">· ${(x.wishes[m] || []).length} ${(x.wishes[m] || []).length === 1 ? "wish" : "wishes"}</span></summary>${saWishList(x.wishes[m] || [])}</details>`).join("");
+  const homesEd = boss && open && x.joined.length > 1 ? `<div class="card"><div class="lbl">🏠 COUPLES &amp; HOUSEHOLDS</div><p class="small" style="margin:0">Give people who live together (or are married) the same letter. They will never draw each other.</p>
+      ${x.joined.map(m => `<div class="field" style="display:flex;align-items:center;gap:10px"><label for="sa-h-${m}" style="flex:1;margin:0">${esc(F(m)?.name || "Family")}</label><select class="input" style="width:auto" id="sa-h-${m}" data-sah="${m}"><option value="">On their own</option>${"ABCDEF".split("").map((L, i) => `<option value="${i}" ${homeOf[m] === i ? "selected" : ""}>Household ${L}</option>`).join("")}</select></div>`).join("")}
+      <button class="btn" data-act="sa-homes">Save households</button></div>` : "";
+  const bossBar = boss ? `<div class="actions" style="justify-content:center">${open ? `<button class="btn primary" data-act="sa-draw" ${x.joined.length < 3 ? "disabled" : ""}>🎅 Draw names</button>` : ""}${x.status === "drawn" ? `<button class="btn wine" data-act="sa-reveal">🎉 Reveal the Santas</button><button class="btn sm ghost" data-act="sa-undraw">Draw again</button>` : ""}${x.status !== "revealed" ? `<button class="btn sm ghost" data-act="sa-cancel">Cancel it</button>` : ""}</div>${open && x.joined.length < 3 ? `<p class="small" style="margin:0;text-align:center;color:#ffe3e8">At least 3 people have to join before names are drawn.</p>` : ""}` : "";
+  openSheet(`<div class="sheet-head" data-santa data-saone>${gBack("santa", "Back to Secret Santa")}<div style="flex:1;min-width:0"><div class="eyebrow">Secret Santa · ${open ? "joining" : x.status === "drawn" ? "names drawn" : "revealed"}</div><h2>${esc(x.name)}</h2></div>${gSizeBtn()}</div>
+    <div class="card" style="gap:4px">${x.budget ? `<div>💵 Spending limit <b>${money(x.budget)}</b></div>` : ""}${x.date ? `<div>📅 Gifts exchanged <b>${esc(saDate(x))}</b></div>` : ""}<div class="small">Started by ${esc(first(F(x.by)?.name || "family"))}</div>${x.note ? `<div class="small" style="font-style:italic">“${esc(x.note)}”</div>` : ""}</div>
+    <div class="lbl">WHO'S IN · ${x.joined.length}</div><div class="sawho">${x.joined.map(m => `<span class="chip" aria-pressed="true">${esc(first(F(m)?.name || "?"))}${homeOf[m] !== undefined ? ` · ${"ABCDEF"[homeOf[m]]}` : ""}</span>`).join("")}</div>
+    ${main}${wishEd}${homesEd}
+    ${lists ? `<div class="lbl">EVERYONE'S WISH LISTS</div>${lists}` : ""}
+    ${bossBar}
+    ${open && inIt && !boss ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="sa-leave">Leave this Secret Santa</button></div>` : ""}`);
+}
+function saKeepWish(){ const id = saOpen; if(!id || !document.getElementById("sa-w0") && !saWishDraft[id]) return;
+  const list = []; for(let i = 0; i < 12; i++){ const t = document.getElementById("sa-w" + i); if(!t) break; list.push({text:t.value, size:document.getElementById("sa-s" + i)?.value || "", link:document.getElementById("sa-l" + i)?.value || ""}); }
+  saWishDraft[id] = list; }
+async function saAct(body, okToast){ const d = await santaCall(body); if(!d.ok){ toast(saWhy(d.code)); return false; } await refresh(true); if(okToast) toast(okToast); return d; }
+/* ===== Family Outing (his order, 2026-10-18, with "University of Memphis Tigers Basketball Games"). One planner for
+   every kind of outing, built on Topgolf Outing: pick the kind and the place (Google), everyone answers, one person
+   books on the place's own site, everyone pays them back or pays their own way, and each gets a receipt. A Tigers
+   outing picks a home game from the Tigers' official calendar (the server reads it) and the place is FedExForum.
+   The app never books and never moves money. Writes go through functions/outings. ===== */
+const OU_KINDS = {
+  tigers:{ic:"🏀", l:"Memphis Tigers basketball", s:"A home game at FedExForum", q:"FedExForum"},
+  bowling:{ic:"🎳", l:"Bowling", s:"Lanes for the family", q:"bowling alley"}, minigolf:{ic:"⛳", l:"Mini golf", s:"18 holes, all ages", q:"mini golf"},
+  zoo:{ic:"🦒", l:"The zoo", s:"A day with the animals", q:"zoo"}, escape:{ic:"🔐", l:"Escape room", s:"Solve it together", q:"escape room"},
+  skating:{ic:"⛸️", l:"Skating", s:"Roller or ice", q:"skating rink"}, arcade:{ic:"🕹️", l:"Arcade", s:"Games and prizes", q:"arcade"},
+  museum:{ic:"🏛️", l:"Museum", s:"History, art, music", q:"museum"}, other:{ic:"🎉", l:"Something else", s:"Name it yourself", q:""}};
+const TIGERS_SITE = "https://gotigersgo.com/sports/mens-basketball/schedule", TIGERS_SEATGEEK = "https://seatgeek.com/memphis-tigers-basketball-tickets";
+let ouOpen = null, ouDraft = null, ouShowRcpt = null, ouGames = null, ouGamesErr = "";
+const ouPlace = {}, ouPlaceBusy = new Set();
+async function outingsCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/outings", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const ouWhy = c => ({feed:"The Tigers' schedule didn't answer. Try again in a minute.", game:"That game isn't on the Tigers' schedule any more.", claimed:"Someone else is already booking.", going:"Tap Going first, then you can book.",
+  numbers:"Check the number of people and the prices.", paid:"You've already paid; ask the booker to change it.", cancelled:"That outing was cancelled.", not_buyer:"Only the person booking can do that.",
+  not_planner:"Only the planner or the host can cancel.", seats:"Everyone invited has to be an active family seat.", when:"Pick a date and a time.", hours:"Pick how long.", place:"Pick the place first: tap Find.",
+  title:"Give the outing a name.", offline:"Can't reach the table right now.", no_outing:"That outing isn't open to you."})[c] || "Couldn't do that. Try again.";
+const ouName = o => o.kind === "tigers" ? `Tigers vs ${o.game?.opponent || "?"}` : o.title || OU_KINDS[o.kind].l;
+const ouTime = t => t === "TBA" ? "time to be announced" : mvTime(t);
+const ouWhen = o => `${mvDate(o).toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"})} · ${ouTime(o.time)}`;
+const ouMe = o => o.people[st.me] || {};
+function ouPlaceInfo(pid){
+  if(!pid || ouPlace[pid] || ouPlaceBusy.has(pid)) return ouPlace[pid] || null;
+  ouPlaceBusy.add(pid);
+  placesCall({action:"details", ids:[pid], level:"full"}).then(d => { ouPlaceBusy.delete(pid); if(d.ok && d.places[0]){ const p = d.places[0]; ouPlace[pid] = {name:p.name, address:p.address, website:p.website, phone:p.phone, mapsUri:p.mapsUri}; ouRedraw(); } });
+  return null;
+}
+function ouRedraw(){ const box = sheet.querySelector("[data-ouone],[data-ouroom],[data-ounew]"); if(!box || !wrap.classList.contains("open")) return;
+  if(box.hasAttribute("data-ouone")) drawOuting(ouOpen); else if(box.hasAttribute("data-ouroom")) sheetOutings(); else if(ouDraft) sheetOutingNew(); }
+function ouNeeds(){
+  return (st.outings || []).filter(o => o.status === "open" && !mvPast(o)).map(o => { const me = ouMe(o);
+    if(me.rsvp == null) return [o, `${ouName(o)}: are you coming?`, ouWhen(o)];
+    if(me.pay === "owe") return [o, `Pay ${first(F(o.buyer).name)} back ${money(+me.amount)}`, ouName(o)];
+    if(o.buyer === st.me && !o.booking) return [o, `Book ${ouName(o)}`, ouWhen(o)];
+    if(o.buyer === st.me && Object.values(o.people).some(p => p.pay === "sent")) return [o, "Confirm outing money received", ouName(o)];
+    return null; }).filter(Boolean);
+}
+function ouCard(o){
+  const me = ouMe(o), going = Object.values(o.people).filter(p => p.rsvp === "yes").length, v = ouPlace[o.pid];
+  const tag = o.status === "cancelled" ? "Cancelled" : me.pay === "owe" ? `You owe ${money(+me.amount)}` : me.pay === "received" ? "🧾 Receipt ready" : me.pay === "self" ? "Paying your own way" : o.booking ? "🎟️ Booked" : o.buyer ? `${esc(first(F(o.buyer).name))} is booking` : me.rsvp ? {yes:"You're coming", maybe:"Maybe", no:"Can't make it"}[me.rsvp] : "Answer the invitation";
+  return `<button class="mvcard" data-act="ou-open" data-id="${o.id}"><span class="oubadge ${o.kind === "tigers" ? "tigers" : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
+    <span><b>${esc(ouName(o))}</b><small>${esc(ouWhen(o))}</small><small>${going} coming${v ? ` · ${esc(v.name)}` : ""}</small><span class="mvtag">${tag}</span></span></button>`;
+}
+function sheetOutings(){
+  ouOpen = null; (st.outings || []).forEach(o => ouPlaceInfo(o.pid));
+  const all = (st.outings || []).slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const up = all.filter(o => o.status === "open" && !mvPast(o)), past = all.filter(o => o.status !== "open" || mvPast(o)).reverse().slice(0, 6);
+  openSheet(`<div class="sheet-head" data-outing data-ouroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Family Outing</div><h2>🎉 Let's go out</h2></div>${gSizeBtn()}</div>
+    <div class="lbl">PLAN AN OUTING</div>
+    <div class="oukinds">${Object.entries(OU_KINDS).map(([k, x]) => `<button class="oukind" data-act="ou-kind" data-k="${k}"><span class="ic">${x.ic}</span><b>${x.l}</b><small>${x.s}</small></button>`).join("")}</div>
+    <div class="lbl">COMING UP</div>
+    ${up.length ? `<div class="mvlist">${up.map(ouCard).join("")}</div>` : `<div class="empty">No outing planned yet. Pick one above.</div>`}
+    ${past.length ? `<div class="lbl">PAST OUTINGS &amp; RECEIPTS</div><div class="mvlist">${past.map(ouCard).join("")}</div>` : ""}`);
+}
+async function ouLoadGames(){ if(ouGames) return; ouGamesErr = ""; const d = await outingsCall({action:"tigers"}); if(d.ok) ouGames = d.games; else ouGamesErr = ouWhy(d.code); ouRedraw(); }
+function sheetOutingNew(){
+  if(!ouDraft){ sheetOutings(); return; }
+  const d = ouDraft, k = OU_KINDS[d.kind], people = st.fam.filter(f => f.status !== "suspended"), tig = d.kind === "tigers";
+  if(tig && !ouGames && !ouGamesErr) ouLoadGames();
+  const dinners = st.events.filter(e => e.status !== "done" && e.date >= iso(today0)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
+  const home = (ouGames || []).filter(g => g.home);
+  const gameBox = !tig ? "" : ouGamesErr ? `<div class="warnbox">${esc(ouGamesErr)}</div><button class="btn" data-act="ou-kind" data-k="tigers">Try again</button>`
+    : !ouGames ? `<div class="empty">Getting the Tigers' schedule…</div>`
+    : !home.length ? `<div class="empty">No more home games on the Tigers' schedule this season.</div>`
+    : `<div class="mvths">${home.map(g => `<button class="mvth ${d.game === g.uid ? "on" : ""}" data-act="ou-game" data-uid="${esc(g.uid)}"><b>🏀 vs ${esc(g.opponent)}</b><small>${esc(new Date(g.date + "T12:00:00").toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"}))} · ${esc(g.time ? mvTime(g.time) : "time to be announced")} · FedExForum</small></button>`).join("")}</div>
+      <p class="small" style="margin:0;color:#cfe0ff">Home games from the Tigers' official schedule (gotigersgo.com). Times can change: check the ticket page before you buy.</p>`;
+  const placeBox = tig ? (d.pid ? `<div class="strip">🏟️ <b>${esc(d.pname || "FedExForum")}</b></div>` : d.busy ? `<div class="empty">Finding FedExForum…</div>` : d.err ? `<div class="warnbox">${esc(d.err)}</div>` : "")
+    : `<div class="lbl">THE PLACE</div>
+    <div class="grid2" style="grid-template-columns:1fr auto"><select class="input" id="ou-city" aria-label="Area">${GCITIES.map(c => `<option ${c === d.city ? "selected" : ""}>${c}</option>`).join("")}</select><button class="btn primary" data-act="ou-find">Find</button></div>
+    <input class="input" id="ou-q" maxlength="80" value="${esc(d.q || "")}" placeholder="What to look for, e.g. ${esc(k.q || "a place")}" aria-label="What to look for">
+    ${d.busy ? `<div class="empty">Asking Google…</div>` : d.err ? `<div class="warnbox">${esc(d.err)}</div>` : d.places ? (d.places.length ? `<div class="mvths">${d.places.map(t => `<button class="mvth ${d.pid === t.placeId ? "on" : ""}" data-act="ou-place" data-pid="${t.placeId}"><b>${esc(t.name)}</b><small>${esc(t.short || t.address)}</small></button>`).join("")}</div><p class="small muted" style="margin:0">Results from Google</p>` : `<div class="empty">Google found nothing for that in ${esc(d.city)}. Try other words or another area.</div>`) : d.pid ? `<div class="strip">📍 <b>${esc(d.pname)}</b></div>` : ""}`;
+  openSheet(`<div class="sheet-head" data-outing data-ounew>${gBack("outings", "Back to Family Outing")}<div style="flex:1;min-width:0"><div class="eyebrow">Plan an outing</div><h2>${k.ic} ${esc(k.l)}</h2></div>${gSizeBtn()}</div>
+    ${d.kind === "other" ? `<div class="field"><label for="ou-title">What is it?</label><input class="input" id="ou-title" maxlength="60" value="${esc(d.title || "")}" placeholder="e.g. Shelby Farms picnic"></div>` : ""}
+    ${tig ? `<div class="lbl">PICK A GAME</div>${gameBox}${placeBox}` : `<div class="grid2"><div class="field"><label for="ou-date">Date</label><input class="input" type="date" id="ou-date" value="${d.date}" min="${iso(today0)}"></div>
+      <div class="field"><label for="ou-time">Start time</label><input class="input" type="time" id="ou-time" value="${d.time}"></div></div>
+      <div class="field"><label for="ou-hours">How long (optional)</label><select class="input" id="ou-hours"><option value="">Not sure</option>${[1, 1.5, 2, 2.5, 3, 4, 6].map(h => `<option value="${h}" ${+d.hours === h ? "selected" : ""}>${h} ${h === 1 ? "hour" : "hours"}</option>`).join("")}</select></div>${placeBox}`}
+    <div class="lbl">WHO'S INVITED</div>
+    <div class="mvwho">${people.map(f => `<button class="chip" data-act="ou-inv" data-id="${f.id}" aria-pressed="${f.id === st.me || d.invited.includes(f.id)}" ${f.id === st.me ? "disabled" : ""}>${esc(first(f.name))}</button>`).join("")}</div>
+    ${dinners.length ? `<div class="field"><label for="ou-dinner">With a dinner? (optional)</label><select class="input" id="ou-dinner"><option value="">No, just the outing</option>${dinners.map(e => `<option value="${e.id}" ${d.dinner === e.id ? "selected" : ""}>${esc(e.title)} · ${fmtDate(e.date)}</option>`).join("")}</select></div>` : ""}
+    <div class="field"><label for="ou-note">A note (optional)</label><input class="input" id="ou-note" maxlength="300" value="${esc(d.note || "")}" placeholder="e.g. Meet at the front door"></div>
+    <button class="btn primary block" data-act="ou-send" style="min-height:calc(56px*var(--gs))">🎉 Send the invitation</button>`);
+}
+function ouReceipt(o, id){
+  const p = o.people[id], b = o.booking || {}, v = ouPlace[o.pid], self = p.pay === "self";
+  return `<section class="mvreceipt"><div class="mvr-top"><span>🧾 RECEIPT · FAMILY OUTING</span><span class="pill good">${self ? "OWN WAY" : "PAID"}</span></div>
+    ${self ? "" : `<div class="mvr-amt">${money(+p.amount)}</div><div class="small">Paid ${esc(whenPaid(Date.parse(p.received_at || p.sent_at || Date.now())))}${p.via ? ` · by ${esc(p.via)}` : ""}</div>`}
+    <div class="mvr-row"><span>Guest</span><b>${esc(F(id).name)}</b></div>
+    <div class="mvr-row"><span>Outing</span><b>${esc(ouName(o))}</b></div>
+    <div class="mvr-row"><span>When</span><b>${esc(ouWhen(o))}</b></div>
+    <div class="mvr-row"><span>Where</span><b>${v ? `${esc(v.name)}<br><small>${esc(v.address)}</small>` : "The place"}</b></div>
+    ${self ? `${p.own?.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(p.own.conf)}</b></div>` : ""}<div class="mvr-row"><span>Paid</span><b>Their own way</b></div>`
+      : `${b.details ? `<div class="mvr-row"><span>Details</span><b>${esc(b.details)}</b></div>` : ""}${b.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(b.conf)}</b></div>` : ""}
+      <div class="mvr-row"><span>Booking</span><b>${+b.each ? `${b.count} × ${money(+b.each)}` : ""}${+b.each && +b.extras ? " + " : ""}${+b.extras ? `${money(+b.extras)} extras` : ""} = ${money(+b.total)}</b></div>
+      <div class="mvr-row"><span>Split</span><b>${b.count} ${b.count === 1 ? "person" : "people"} · ${money(+b.share)} each</b></div><div class="mvr-row"><span>Your share</span><b>${money(+p.amount)}</b></div><div class="mvr-row"><span>Balance</span><b>$0.00</b></div>
+      <div class="mvr-sign">Received by ${esc(lastFirst(F(o.buyer).name))}</div>`}
+  </section>`;
+}
+function drawOuting(id){
+  const o = (st.outings || []).find(x => x.id === id); if(!o){ sheetOutings(); return; }
+  ouOpen = id; const v = ouPlaceInfo(o.pid), me = ouMe(o), b = o.booking, open = o.status === "open", buyer = o.buyer, isBuyer = buyer === st.me, tig = o.kind === "tigers";
+  const ppl = Object.entries(o.people), going = ppl.filter(([, p]) => p.rsvp === "yes"), dinner = o.dinner && ev(o.dinner);
+  const links = tig ? `<a class="btn primary" href="${TIGERS_SITE}" target="_blank" rel="noopener">Tigers' schedule &amp; tickets</a><a class="btn" href="${TIGERS_SEATGEEK}" target="_blank" rel="noopener">Tickets on SeatGeek</a>`
+    : `${v?.website ? `<a class="btn primary" href="${esc(v.website)}" target="_blank" rel="noopener">Book on their site</a>` : ""}${v?.phone ? `<a class="btn" href="tel:${v.phone.replace(/[^\d+]/g, "")}">📞 Call ${esc(v.phone)}</a>` : ""}${!v ? `<span class="small muted">Getting the place's website from Google…</span>` : ""}`;
+  let tk = "";
+  if(!open) tk = `<div class="warnbox">This outing was cancelled.</div>`;
+  else if(!buyer) tk = me.rsvp === "yes" ? `<button class="btn primary block" data-act="ou-claim">🎟️ I'll book it</button><p class="small" style="margin:0;text-align:center;color:#cfe0ff">Tap this before you book, so nobody books twice.</p>` : `<p class="small" style="margin:0;text-align:center;color:#cfe0ff">Tap Going, then anyone coming can offer to book.</p>`;
+  else if(isBuyer && !b) tk = `<div class="card"><div class="lbl">🎟️ BOOK IT</div><p class="small" style="margin:0">${tig ? "Buy the tickets on the Tigers' ticket page" : "Book on the place's own site (or call them)"}, then fill in what you paid from your confirmation.</p>
+      <div class="actions">${links}</div>
+      <div class="grid2"><div class="field"><label for="ou-count">People it covers</label><input class="input num" id="ou-count" inputmode="numeric" value="${going.length || 1}"></div><div class="field"><label for="ou-each">${tig ? "Ticket price each" : "Price each (optional)"}</label><input class="input num" id="ou-each" inputmode="decimal" placeholder="$0.00"></div></div>
+      <div class="field"><label for="ou-extras">${tig ? "Fees, parking &amp; extras (total)" : "Lane, room, food, fees or other (total)"}</label><input class="input num" id="ou-extras" inputmode="decimal" placeholder="$0.00"></div>
+      <div class="grid2"><div class="field"><label for="ou-details">${tig ? "Section &amp; seats" : "Details"}</label><input class="input" id="ou-details" maxlength="120" placeholder="${tig ? "e.g. Sec 104, Row F, 1–6" : "e.g. Lanes 7–8"}"></div><div class="field"><label for="ou-conf">Confirmation</label><input class="input" id="ou-conf" maxlength="40" placeholder="From your email"></div></div>
+      <button class="btn wine block" data-act="ou-booked">✓ I booked it</button><button class="btn sm ghost" data-act="ou-unclaim">Let someone else book it</button></div>`;
+  else if(!b) tk = `<div class="strip">🎟️ <b>${esc(first(F(buyer).name))}</b>&nbsp;is booking. Please don't book twice.</div>`;
+  else tk = `<div class="mvticket"><div class="lbl">🎟️ BOOKED BY ${esc(first(F(buyer).name)).toUpperCase()}</div>
+      ${+b.each ? `<div class="mvr-row"><span>${tig ? "Tickets" : "Each"}</span><b>${b.count} × ${money(+b.each)}</b></div>` : ""}${+b.extras ? `<div class="mvr-row"><span>Extras</span><b>${money(+b.extras)}</b></div>` : ""}<div class="mvr-row"><span>Total</span><b>${money(+b.total)}</b></div><div class="mvr-row"><span>Each (${b.count} ${b.count === 1 ? "person" : "people"})</span><b>${money(+b.share)}</b></div>
+      ${b.details ? `<div class="mvr-row"><span>${tig ? "Seats" : "Details"}</span><b>${esc(b.details)}</b></div>` : ""}${b.conf ? `<div class="mvr-row"><span>Confirmation</span><b>${esc(b.conf)}</b></div>` : ""}</div>`;
+  let pay = "";
+  if(open && !isBuyer && me.rsvp === "yes"){
+    if(me.pay === "owe"){ const opts = payOptions(buyer, +me.amount);
+      pay = `<div class="card"><div class="lbl">YOUR SHARE</div><div class="mvr-amt">${money(+me.amount)}</div><p class="small" style="margin:0">Pay ${esc(first(F(buyer).name))} back yourself, then tap the way you paid.</p>
+        <div class="actions">${opts.map(([lbl, url, handle]) => url ? `<a class="btn" href="${url}" target="_blank" rel="noopener">${lbl} ${esc(handle)}</a>` : handle ? `<span class="strip">${lbl}: <b>${esc(handle)}</b></span>` : "").join("")}</div>
+        <div class="mvpaid">${opts.map(([lbl]) => `<button class="btn primary" data-act="ou-paid" data-v="${lbl}">I paid by ${lbl}</button>`).join("")}</div>
+        <button class="btn sm ghost" data-act="ou-self">I'm paying my own way instead</button></div>`; }
+    else if(me.pay === "sent") pay = `<div class="strip">💸 You paid ${esc(first(F(buyer).name))} ${money(+me.amount)} by ${esc(me.via)}. Waiting for them to tap Received.</div>`;
+    else if(me.pay === "received" || me.pay === "self") pay = ouReceipt(o, st.me);
+    else if(b) pay = `<div class="card"><p class="small" style="margin:0">It was booked for ${b.count} before you said yes, and every place is taken. Pay your own way, then tap below so ${esc(first(F(buyer).name))} knows.</p><button class="btn primary" data-act="ou-self">Paying my own way</button></div>`;
+    else pay = `<button class="btn sm ghost" data-act="ou-self">I'm paying my own way</button>`;
+  }
+  const owes = isBuyer && b ? `<div class="card"><div class="lbl">WHO'S PAYING YOU BACK</div>${ppl.filter(([pid, p]) => pid !== st.me && (p.pay || p.rsvp === "yes")).map(([pid, p]) => `<div class="mvowe"><span>${av(pid, "sm")} <b>${esc(first(F(pid).name))}</b></span><span>${p.pay === "self" ? "Own way" : p.pay === "received" ? `✓ ${money(+p.amount)} received` : p.pay === "sent" ? `Sent ${money(+p.amount)} by ${esc(p.via)}` : p.pay === "owe" ? `Owes ${money(+p.amount)}` : "Not paying yet"}</span>${p.pay === "owe" || p.pay === "sent" ? `<button class="btn sm wine" data-act="ou-recv" data-m="${pid}">✓ Received</button>` : p.pay === "received" ? `<button class="btn sm" data-act="ou-rcpt" data-m="${pid}">Receipt</button>` : ""}</div>`).join("")}</div>` : "";
+  const shown = ouShowRcpt && o.people[ouShowRcpt] ? ouReceipt(o, ouShowRcpt) : "";
+  openSheet(`<div class="sheet-head" data-outing data-ouone>${gBack("outings", "Back to Family Outing")}<div style="flex:1;min-width:0"><div class="eyebrow">Family Outing${o.status === "cancelled" ? " · cancelled" : mvPast(o) ? " · past" : ""}</div><h2>${esc(ouName(o))}</h2></div>${gSizeBtn()}</div>
+    <div class="mvstub"><span class="oubadge ${tig ? "tigers" : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
+      <div><div class="mvwhen">${esc(ouWhen(o))}</div><div class="small">${o.hours ? `${o.hours} ${o.hours === 1 ? "hour" : "hours"} · ` : ""}${going.length} coming</div>
+        <div class="small">${v ? `📍 <b>${esc(v.name)}</b><br>${esc(v.address)}` : "Finding the place…"}</div>
+        ${tig ? `<div class="small" style="color:#1d3f8f;font-weight:700">From the Tigers' official schedule. Times can change: check before you go.</div>` : ""}
+        ${dinner ? `<div class="small" style="color:#1d3f8f">🍽️ With ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
+        ${o.note ? `<div class="small" style="font-style:italic">“${esc(o.note)}”</div>` : ""}
+        <div class="actions">${v?.mapsUri ? `<a class="btn sm" href="${esc(v.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}${tig ? `<a class="btn sm" href="${TIGERS_SITE}" target="_blank" rel="noopener">Tigers' schedule</a>` : v?.website ? `<a class="btn sm" href="${esc(v.website)}" target="_blank" rel="noopener">Their website</a>` : ""}</div></div></div>
+    ${open && !mvPast(o) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k2, l]) => `<button class="btn ${me.rsvp === k2 ? (k2 === "yes" ? "primary" : "wine") : ""}" data-act="ou-rsvp" data-v="${k2}" aria-pressed="${me.rsvp === k2}">${l}</button>`).join("")}</div>` : ""}
+    <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
+    ${open && !mvPast(o) ? rdStrip("outing", o.id) : ""}${tk}${pay}${owes}${shown}
+    ${open && (o.by === st.me || isAdmin()) && !mvPast(o) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="ou-cancel">Cancel this outing</button></div>` : ""}
+    <p class="small muted" style="margin:0;text-align:center">Place details from Google${tig ? "; game from the Tigers' official schedule" : ""}. The app doesn't book or take payment.</p>`);
+}
+function ouKeep(){ const d = ouDraft; if(!d) return; const v = x => document.getElementById(x)?.value;
+  for(const [k, el] of [["date", "ou-date"], ["time", "ou-time"], ["city", "ou-city"], ["dinner", "ou-dinner"], ["note", "ou-note"], ["title", "ou-title"], ["q", "ou-q"]]) if(v(el) != null) d[k] = v(el);
+  if(v("ou-hours") != null) d.hours = v("ou-hours") === "" ? null : +v("ou-hours"); }
+async function ouAct(body, okToast){ const d = await outingsCall(body); if(!d.ok){ toast(ouWhy(d.code)); return false; } await refresh(true); if(okToast) toast(okToast); return d; }
+function ouFindFedEx(){ const d = ouDraft; d.busy = true; d.err = "";
+  placesCall({action:"search", q:"FedExForum", city:"Memphis", kind:"any"}).then(r => { d.busy = false; const hit = r.ok && (r.results.find(x => /fedexforum/i.test(x.name)) || null);
+    if(hit){ d.pid = hit.placeId; d.pname = hit.name; } else d.err = r.ok ? "Google couldn't find FedExForum. Try again." : gWhy(r.code); if(ouDraft === d) sheetOutingNew(); }); }
+/* ===== Family Prayer Wall (his order, 2026-10-18; the whole family sees every request). Share a request (with or
+   without your name), tap "I prayed", and the author marks it Answered with a praise report. Who wrote an unnamed
+   request stays on the server only. Writes go through functions/prayer. ===== */
+let prMine = null, prAnswering = null;
+async function prayerCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/prayer", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const prWhy = c => ({empty:"Write your request first.", not_author:"Only the person who shared it can do that.", no_prayer:"That request was taken down.", offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+function prLoadMine(){ prayerCall({action:"mine"}).then(d => { if(d.ok){ prMine = new Set(d.ids); prRedraw(); } }); }
+function prRedraw(){ if(sheet.querySelector("[data-prwall]") && wrap.classList.contains("open")) sheetPrayers(true); }
+function prCard(x){
+  const mine = prMine && prMine.has(x.id), iPrayed = x.prayed.includes(st.me), ans = x.status === "answered";
+  const who = x.by ? esc(F(x.by)?.name || "Family") : "A family member";
+  const names = x.prayed.map(m => first(F(m)?.name || "?"));
+  return `<article class="prcard ${ans ? "answered" : ""}"><div class="who">${ans ? "🙌 ANSWERED · " : ""}${who} · ${esc(new Date(x.t).toLocaleDateString(undefined, {month:"short", day:"numeric"}))}${mine && !x.by ? " · you (no name shown)" : ""}</div>
+    <p>${esc(x.text)}</p>
+    ${ans && x.praise ? `<div class="prpraise"><b>Praise report:</b> ${esc(x.praise)}</div>` : ""}
+    <div class="small" style="${ans ? "" : "color:#ffe7c2"}">${names.length ? `🙏 ${names.length} prayed: ${esc(names.join(", "))}` : ans ? "" : "Be the first to pray"}</div>
+    <div class="actions">${!ans ? `<button class="btn ${iPrayed ? "primary" : ""}" data-act="pr-pray" data-id="${x.id}">${iPrayed ? "✓ I prayed" : "🙏 I prayed"}</button>` : ""}
+      ${mine && !ans ? `<button class="btn wine" data-act="pr-answer" data-id="${x.id}">🙌 Mark answered</button>` : ""}${mine && ans ? `<button class="btn sm ghost" data-act="pr-reopen" data-id="${x.id}">Still praying</button>` : ""}
+      ${mine || isAdmin() ? `<button class="btn sm ghost" data-act="pr-remove" data-id="${x.id}">Take down</button>` : ""}</div>
+    ${prAnswering === x.id ? `<div class="field"><label for="pr-praise">Praise report (optional)</label><textarea class="input" id="pr-praise" rows="3" maxlength="600" placeholder="How God answered"></textarea></div><button class="btn primary" data-act="pr-answer-go" data-id="${x.id}">Share the good news</button>` : ""}</article>`;
+}
+function sheetPrayers(keep){
+  if(!keep || prMine === null) prLoadMine();
+  const y = keep ? sheet.scrollTop : 0, draft = document.getElementById("pr-text")?.value || "";
+  const all = (st.prayers || []).slice(), open = all.filter(x => x.status === "open").sort((a, b) => b.t - a.t), done = all.filter(x => x.status === "answered").sort((a, b) => (b.answered || 0) - (a.answered || 0)).slice(0, 12);
+  openSheet(`<div class="sheet-head" data-prayer data-prwall><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Prayer Wall</div><h2>🙏 Pray for one another</h2></div>${gSizeBtn()}</div>
+    <div class="card" style="gap:8px"><div class="field"><label for="pr-text">Share a prayer request</label><textarea class="input" id="pr-text" rows="3" maxlength="600" placeholder="What can the family pray with you about?">${esc(draft)}</textarea></div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pr-anon"> Don't show my name</label>
+      <button class="btn primary" data-act="pr-new">🙏 Share it with the family</button></div>
+    <div class="lbl">PRAYING FOR · ${open.length}</div>
+    ${open.length ? open.map(prCard).join("") : `<div class="empty">No requests right now. Share one above.</div>`}
+    ${done.length ? `<div class="lbl">🙌 ANSWERED PRAYERS</div>${done.map(prCard).join("")}` : ""}`);
+  if(keep) sheet.scrollTop = y;
+}
+/* ===== Rides (his order, 2026-10-18: "I can drive 3" / "I need a ride", matched up, on any dinner or outing, so
+   everyone gets there, the young ones and the elders included). A strip on each dinner card, Family Outing, Movie
+   Night and Topgolf page opens one Rides screen. Matching: RIDES RULES above (functions/rides/match.js). The pickup
+   address is fetched from functions/rides, which gives it only to the rider and their own driver; it is never kept on
+   this phone. Writes go through functions/rides. ===== */
+let rdOpen = null, rdForm = null, rdDraft = null, rdPick = {}; const rdLoading = new Set();
+async function ridesCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/rides", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const rdWhy = c => ({seats:"Pick how many seats you have (1 to 7).", party:"Pick how many are riding (1 to 7).", address:"Type where to pick you up.", both:"You can't drive and ask for a ride on the same plan.",
+  seats_taken:"More people are already riding with you. Let someone go first, or keep more seats.", full:"Your car doesn't have room for them.", taken:"Someone else is already picking them up.",
+  no_offer:"Tap “I can drive” first.", not_invited:"You're not on this plan.", over:"This plan's day has passed.", plan:"That plan isn't there any more.", not_yours:"That isn't your ride.",
+  not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+function rdPlan(kind, ref){
+  if(kind === "dinner"){ const e = ev(ref); if(!e) return null; const r = RBY[e.chosen], occ = (OCCASIONS.find(o => o.k === e.type) || {}).label;
+    return {title:e.title || occ || "Family dinner", date:e.date, time:fmtTime(e.time), where:r ? r.name : "", addr:r ? (r.addr || r.city || "") : "", maps:r ? mapsDir(r) : "", past:e.status === "done" || parse(e.date) < today0}; }
+  const x = ({outing:st.outings, movie:st.movies, golf:st.golf}[kind] || []).find(y => y.id === ref); if(!x) return null;
+  const title = kind === "outing" ? (x.title || OU_KINDS[x.kind]?.l || "Family Outing") : kind === "movie" ? (x.movie?.title || "Movie Night") : "Topgolf";
+  return {title, date:x.date, time:mvTime(x.time), where:"", past:x.status !== "open" || mvPast(x)};
+}
+const rdOf = (kind, ref) => ({offers:(st.rideOffers || []).filter(o => o.kind === kind && o.ref === ref).sort((a, b) => a.t - b.t), asks:(st.rideAsks || []).filter(a => a.kind === kind && a.ref === ref).sort((a, b) => a.t - b.t)});
+function rdStrip(kind, ref){
+  const {offers, asks} = rdOf(kind, ref), free = rdFree(offers, asks), seats = Object.values(free).reduce((n, v) => n + Math.max(0, v), 0), waiting = asks.filter(a => !a.driver).length;
+  const myA = asks.find(a => a.rider === st.me);
+  const mine = offers.some(o => o.driver === st.me) ? "you're driving" : myA ? (myA.driver ? `${first(F(myA.driver)?.name || "?")} is driving you` : "you're waiting for a ride") : "";
+  const sum = offers.length || asks.length ? [`${offers.length} ${offers.length === 1 ? "driver" : "drivers"}`, `${seats} ${seats === 1 ? "seat" : "seats"} free`, waiting ? `${waiting} waiting` : ""].filter(Boolean).join(" · ") : "Need a ride, or have room in your car?";
+  return `<div class="strip rdstrip"><span>🚗</span><span class="grow"><b>Rides</b>${mine ? ` · ${esc(mine)}` : ""}<br><span class="small">${sum}</span></span><button class="btn sm" data-act="rides" data-k="${kind}" data-id="${ref}">Rides</button></div>`;
+}
+function rdRedraw(){ if(rdOpen && !rdForm && wrap.classList.contains("open") && sheet.querySelector("[data-rides]")) sheetRides(rdOpen.kind, rdOpen.ref, true); }
+function rdLoadPick(id){ if(rdLoading.has(id)) return; rdLoading.add(id);
+  ridesCall({action:"pickup", id}).then(d => { rdLoading.delete(id); rdPick[id] = d.ok ? {address:d.address, details:d.details} : null; rdRedraw(); }); }
+function rdKeep(){ const d = rdDraft; if(!d) return; const v = id => document.getElementById(id)?.value;
+  for(const [k, id] of [["leaving", "rd-leaving"], ["note", "rd-note"], ["address", "rd-address"], ["details", "rd-details"]]) if(v(id) !== undefined) d[k] = v(id); }
+function sheetRides(kind, ref, keep){
+  const P = rdPlan(kind, ref); if(!P){ rdOpen = null; closeSheet(); return; }
+  if(!keep){ rdPick = {}; rdForm = null; }
+  rdOpen = {kind, ref}; const y = keep ? sheet.scrollTop : 0;
+  const {offers, asks} = rdOf(kind, ref), free = rdFree(offers, asks), myO = offers.find(o => o.driver === st.me), myA = asks.find(a => a.rider === st.me);
+  const nm = id => esc(first(F(id)?.name || "?")), more = a => a.party > 1 ? ` + ${a.party - 1}` : "";
+  const reach = id => { const p = String(F(id)?.phone || "").replace(/[^\d+]/g, ""); return p ? `<a class="btn sm" href="tel:${p}">📞 Call</a><a class="btn sm" href="sms:${p}">💬 Text</a>` : ""; };
+  const pick = a => { if(!(a.id in rdPick)){ rdLoadPick(a.id); return `<span class="small">Getting the pickup address…</span>`; } const k = rdPick[a.id]; if(!k) return "";
+    return `<div class="rdaddr">📍 <b>${esc(k.address)}</b>${k.details ? `<br><span class="small">${esc(k.details)}</span>` : ""}<div class="actions" style="margin-top:6px"><a class="btn sm primary" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(k.address)}" target="_blank" rel="noopener">🧭 Directions</a></div></div>`; };
+  const chips = (act, val, label) => [1, 2, 3, 4, 5, 6, 7].map(n => `<button class="chip" data-act="${act}" data-v="${n}" aria-pressed="${val === n}">${label(n)}</button>`).join("");
+  let mine = "";
+  if(P.past) mine = `<div class="warnbox">This plan's day has passed, so rides are closed.</div>`;
+  else if(rdForm === "drive"){ const d = rdDraft;
+    mine = `<div class="card"><div class="lbl">🚗 I CAN DRIVE</div><div class="small">How many can you take? (not counting you)</div><div class="mvwho">${chips("rd-seats", d.seats, n => String(n))}</div>
+      <div class="field"><label for="rd-leaving">When you'll leave (optional)</label><input class="input" id="rd-leaving" maxlength="40" placeholder="e.g. 4:30 PM from Cordova" value="${esc(d.leaving)}"></div>
+      <div class="field"><label for="rd-note">A note (optional)</label><input class="input" id="rd-note" maxlength="200" placeholder="e.g. I have a car seat" value="${esc(d.note)}"></div>
+      <div class="actions"><button class="btn primary" data-act="rd-offer">${myO ? "Save" : "🚗 Offer my seats"}</button><button class="btn sm ghost" data-act="rd-cancelform">Back</button></div></div>`; }
+  else if(rdForm === "ride"){ const d = rdDraft;
+    mine = `<div class="card"><div class="lbl">🙋 I NEED A RIDE</div><div class="small">How many are riding? (you and anyone coming with you)</div><div class="mvwho">${chips("rd-party", d.party, n => n === 1 ? "Just me" : String(n))}</div>
+      <div class="field"><label for="rd-address">Where to pick you up</label><input class="input" id="rd-address" maxlength="200" autocomplete="street-address" placeholder="Street address" value="${esc(d.address)}"></div>
+      <div class="field"><label for="rd-details">Anything the driver should know there (optional)</label><input class="input" id="rd-details" maxlength="200" placeholder="e.g. Apartment 4B, the gate code, the side door" value="${esc(d.details)}"></div>
+      <div class="field"><label for="rd-note">A note for the family (optional)</label><input class="input" id="rd-note" maxlength="200" placeholder="e.g. Grandma needs the front seat" value="${esc(d.note)}"></div>
+      <p class="small" style="margin:0">Only your driver will see where to pick you up.</p>
+      <div class="actions"><button class="btn primary" data-act="rd-ask">${myA ? "Save" : "🙋 Ask for a ride"}</button><button class="btn sm ghost" data-act="rd-cancelform">Back</button></div></div>`; }
+  else if(myO){ const riders = asks.filter(a => a.driver === st.me);
+    mine = `<div class="card"><div class="lbl">🚗 YOU'RE DRIVING · ${Math.max(0, free[st.me])} OF ${myO.seats} ${myO.seats === 1 ? "SEAT" : "SEATS"} FREE</div>${myO.leaving ? `<div class="small">Leaving ${esc(myO.leaving)}</div>` : ""}${myO.note ? `<div class="small">${esc(myO.note)}</div>` : ""}
+      ${riders.length ? riders.map(a => `<div class="rdrider"><b>${nm(a.rider)}${more(a)}</b>${a.note ? `<div class="small">${esc(a.note)}</div>` : ""}${pick(a)}<div class="actions">${reach(a.rider)}<button class="btn sm ghost" data-act="rd-release" data-id="${a.id}">Let go</button></div></div>`).join("")
+        : `<p class="small" style="margin:0">Nobody in your car yet. Anyone who asks is matched to you, or tap “I'll pick them up” below.</p>`}
+      <div class="actions"><button class="btn sm" data-act="rd-form" data-v="drive">Change seats or time</button><button class="btn sm ghost" data-act="rd-unoffer">I can't drive after all</button></div></div>`; }
+  else if(myA){ const o = myA.driver && offers.find(x => x.driver === myA.driver);
+    mine = myA.driver ? `<div class="card"><div class="lbl">🚗 ${nm(myA.driver).toUpperCase()} IS DRIVING YOU${myA.party > 1 ? ` · ${myA.party} OF YOU` : ""}</div>${o?.leaving ? `<div class="small">Leaving ${esc(o.leaving)}</div>` : ""}${o?.note ? `<div class="small">${esc(o.note)}</div>` : ""}${pick(myA)}
+        <div class="actions">${reach(myA.driver)}<button class="btn sm" data-act="rd-form" data-v="ride">Change</button><button class="btn sm ghost" data-act="rd-unask">I don't need a ride now</button></div></div>`
+      : `<div class="card"><div class="lbl">🙋 WAITING FOR A RIDE · ${myA.party} ${myA.party === 1 ? "SEAT" : "SEATS"}</div><p class="small" style="margin:0">You'll be told the moment a driver has room for ${myA.party === 1 ? "you" : `all ${myA.party} of you`}.</p>${pick(myA)}
+        <div class="actions"><button class="btn sm" data-act="rd-form" data-v="ride">Change</button><button class="btn sm ghost" data-act="rd-unask">I don't need a ride now</button></div></div>`; }
+  else mine = `<div class="rdchoose"><button class="btn primary" data-act="rd-form" data-v="drive">🚗 I can drive</button><button class="btn wine" data-act="rd-form" data-v="ride">🙋 I need a ride</button></div>`;
+  const drivers = offers.map(o => { const rs = asks.filter(a => a.driver === o.driver);
+    return `<div class="person">${av(o.driver, "sm")}<span style="min-width:0"><b>${nm(o.driver)}</b><small>${Math.max(0, free[o.driver])} of ${o.seats} ${o.seats === 1 ? "seat" : "seats"} free${o.leaving ? ` · leaving ${esc(o.leaving)}` : ""}</small>${o.note ? `<small>${esc(o.note)}</small>` : ""}${rs.length ? `<small>Riding: ${rs.map(a => nm(a.rider) + more(a)).join(", ")}</small>` : ""}</span><span></span></div>`; }).join("");
+  const waiting = asks.filter(a => !a.driver).map(a => `<div class="person">${av(a.rider, "sm")}<span style="min-width:0"><b>${nm(a.rider)}${more(a)}</b><small>${a.party} ${a.party === 1 ? "seat" : "seats"} needed${a.note ? ` · ${esc(a.note)}` : ""}</small></span>
+    ${!P.past && myO && free[st.me] >= a.party ? `<button class="btn sm primary" data-act="rd-take" data-id="${a.id}">I'll pick them up</button>` : "<span></span>"}</div>`).join("");
+  openSheet(`<div class="sheet-head" data-rides><button class="icon-btn" data-act="rd-back" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">Rides · ${esc(parse(P.date).toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"}))}${P.time ? ` · ${esc(P.time)}` : ""}</div><h2>🚗 ${esc(P.title)}</h2></div>${gSzBtn()}</div>
+    ${P.where ? `<div class="strip">📍 <span class="grow"><b>${esc(P.where)}</b><br><span class="small">${esc(P.addr)}</span></span><a class="btn sm" href="${P.maps}" target="_blank" rel="noopener">Directions</a></div>` : ""}
+    ${mine}
+    <div class="lbl">DRIVERS · ${offers.length}</div>${drivers || `<div class="empty">No drivers yet. Have room? Tap “I can drive”.</div>`}
+    <div class="lbl">WAITING FOR A RIDE · ${asks.filter(a => !a.driver).length}</div>${waiting || `<div class="empty">${asks.length ? "Everyone who asked has a ride." : "Nobody has asked for a ride yet."}</div>`}
+    <p class="small muted" style="margin:0;text-align:center">Where to pick someone up is private: only the rider and their own driver ever see it.</p>`);
+  if(keep) sheet.scrollTop = y;
+}
+async function rdAct(body, okMsg){ const d = await ridesCall(body); if(!d.ok){ toast(rdWhy(d.code)); return null; } await refresh(true); if(okMsg) toast(okMsg); return d; }
+/* ===== Family Recipe Book (his order, 2026-10-18; photos show right away, no approval, his choice). Anyone adds a
+   recipe with who it came from, ingredients, steps and a photo; anyone stars it; the person who added it (or the host)
+   changes or removes it. The photo is uploaded into the family's own folder (<family>/recipes/…); writes go through
+   functions/recipes. Ticking an ingredient off while you cook stays on your phone. ===== */
+const RC_KINDS = [["main","🍗","Main dish"],["side","🥗","Side"],["dessert","🍰","Dessert"],["bread","🍞","Bread"],["breakfast","🥞","Breakfast"],["drink","🥤","Drink"],["other","🍲","Other"]];
+const rcKind = k => RC_KINDS.find(x => x[0] === k) || RC_KINDS[6];
+let rcFilter = "all", rcQ = "", rcOpenId = null, rcDraft = null; const rcTicked = new Set();
+async function recipesCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/recipes", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const rcWhy = c => ({title:"Give the recipe a name.", empty:"Add the ingredients or the steps.", photo:"That photo couldn't be used. Choose it again.", upload:"The photo didn't upload. Check your signal and try again.",
+  not_owner:"Only the person who added it, or the host, can do that.", not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, no_recipe:"That recipe was removed.", offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+const rcCan = x => x.by === st.me || isAdmin();
+function rcRedraw(){ if(!wrap.classList.contains("open")) return; if(sheet.querySelector("[data-rcbook]")) sheetRecipes(true); else if(sheet.querySelector("[data-rcview]")) drawRecipe(rcOpenId, true); }
+function rcSearch(){ const q = rcQ.trim().toLowerCase(); let n = 0;
+  document.querySelectorAll("#rc-list .rcrow").forEach(r => { r.hidden = !!q && !r.dataset.s.includes(q); if(!r.hidden) n++; });
+  const none = document.getElementById("rc-none"); if(none) none.hidden = n > 0 || !document.querySelector("#rc-list .rcrow"); }
+function sheetRecipes(keep){
+  const y = keep ? sheet.scrollTop : 0, all = (st.recipes || []).slice().sort((a, b) => a.title.localeCompare(b.title));
+  const count = f => all.filter(f).length, isFav = x => x.favs.includes(st.me);
+  const shown = all.filter(x => rcFilter === "all" || (rcFilter === "fav" ? isFav(x) : x.kind === rcFilter));
+  const chip = (k, label, n) => `<button class="chip" data-act="rc-filter" data-k="${k}" aria-pressed="${rcFilter === k}">${label} · ${n}</button>`;
+  const row = x => { const k = rcKind(x.kind), who = first(F(x.by)?.name || "");
+    return `<button class="rcrow" data-act="rc-open" data-id="${x.id}" data-s="${esc([x.title, x.credit, who, k[2], ...x.ingredients].join(" ").toLowerCase())}"><span class="th">${x.photo ? `<img src="${x.photo}" alt="">` : k[1]}</span>
+      <span style="min-width:0;flex:1"><b>${isFav(x) ? "⭐ " : ""}${esc(x.title)}</b><small>${k[1]} ${k[2]}${x.credit ? ` · from ${esc(x.credit)}` : ""}</small><small>${[x.serves && `Serves ${esc(x.serves)}`, x.time && esc(x.time)].filter(Boolean).join(" · ")}</small></span><span class="chev">${I.chev}</span></button>`; };
+  openSheet(`<div class="sheet-head" data-recipe data-rcbook><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Family Recipe Book</div><h2>🍗 The dishes we love</h2></div>${gSzBtn()}</div>
+    <button class="btn primary block" data-act="rc-new">＋ Add a family recipe</button>
+    ${all.length ? `<div class="field" style="margin:0"><label for="rc-q">Search</label><input class="input" id="rc-q" type="search" enterkeyhint="search" placeholder="A dish, an ingredient, or who made it" value="${esc(rcQ)}"></div>
+    <div class="chips" style="flex-wrap:wrap">${chip("all", "All", all.length)}${chip("fav", "⭐ My favorites", count(isFav))}${RC_KINDS.filter(([k]) => count(x => x.kind === k)).map(([k, ic, l]) => chip(k, `${ic} ${l}`, count(x => x.kind === k))).join("")}</div>
+    <div class="rclist" id="rc-list">${shown.map(row).join("")}</div>
+    <div class="empty" id="rc-none" hidden>No recipe matches that. Try another word.</div>
+    ${shown.length ? "" : `<div class="empty">${rcFilter === "fav" ? "No favorites yet. Open a recipe and tap ☆ Favorite." : "None of this kind yet."}</div>`}`
+    : `<div class="empty">No recipes yet. Add the dishes the family asks for every holiday, with who made them and a photo.</div>`}`);
+  rcSearch(); if(keep) sheet.scrollTop = y;
+}
+function drawRecipe(id, keep){
+  const x = (st.recipes || []).find(r => r.id === id); if(!x){ sheetRecipes(); return; }
+  const y = keep ? sheet.scrollTop : 0, k = rcKind(x.kind), fav = x.favs.includes(st.me), who = F(x.by)?.name;
+  const favs = x.favs.map(m => first(F(m)?.name || "?"));
+  rcOpenId = id;
+  openSheet(`<div class="sheet-head" data-recipe data-rcview><button class="icon-btn" data-act="recipes" aria-label="Back to the Recipe Book">←</button><div style="flex:1;min-width:0"><div class="eyebrow">${k[1]} ${k[2]}</div><h2>${esc(x.title)}</h2></div>${gSzBtn()}</div>
+    ${x.photo ? `<img class="rcphoto" src="${x.photo}" alt="${esc(x.title)}">` : ""}
+    <article class="rccard">
+      ${x.credit ? `<div class="rcby">From ${esc(x.credit)}</div>` : ""}
+      <div class="small">${[x.serves && `🍽️ Serves ${esc(x.serves)}`, x.time && `⏱️ ${esc(x.time)}`, who && `Added by ${esc(first(who))}`].filter(Boolean).join(" · ")}</div>
+      <div class="actions"><button class="btn sm ${fav ? "on" : ""}" data-act="rc-fav" data-id="${x.id}">${fav ? "⭐ Favorite" : "☆ Favorite"}</button>${favs.length ? `<span class="small" style="align-self:center">⭐ ${esc(favs.join(", "))}</span>` : ""}</div>
+      ${x.ingredients.length ? `<h3>Ingredients</h3><ul class="rcing">${x.ingredients.map((t, i) => `<li><label><input type="checkbox" data-act="rc-tick" data-k="${x.id}:${i}" ${rcTicked.has(x.id + ":" + i) ? "checked" : ""}><span>${esc(t)}</span></label></li>`).join("")}</ul>` : ""}
+      ${x.steps.length ? `<h3>Steps</h3><ol class="rcsteps">${x.steps.map(t => `<li>${esc(t)}</li>`).join("")}</ol>` : ""}
+      ${x.notes ? `<h3>Notes</h3><div class="rcnote">${esc(x.notes)}</div>` : ""}
+      ${rcCan(x) ? `<div class="actions"><button class="btn" data-act="rc-edit" data-id="${x.id}">✏️ Change it</button><button class="btn sm" data-act="rc-remove" data-id="${x.id}">Remove</button></div>` : ""}
+    </article>`);
+  if(keep) sheet.scrollTop = y;
+}
+function rcKeep(){ const d = rcDraft; if(!d) return; const v = id => document.getElementById(id)?.value ?? "";
+  if(!document.getElementById("rc-title")) return;
+  Object.assign(d, {title:v("rc-title"), credit:v("rc-credit"), kind:v("rc-kind") || d.kind, serves:v("rc-serves"), time:v("rc-time"), ingredients:v("rc-ing"), steps:v("rc-steps"), notes:v("rc-notes")}); }
+function sheetRecipeEdit(){
+  const d = rcDraft, pic = d.newPhoto || (d.keepPhoto ? d.photo : "");
+  openSheet(`<div class="sheet-head" data-recipe data-rcedit><button class="icon-btn" data-act="${d.id ? "rc-open" : "recipes"}" ${d.id ? `data-id="${d.id}"` : ""} aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">Family Recipe Book</div><h2>${d.id ? "✏️ Change the recipe" : "＋ Add a family recipe"}</h2></div>${gSzBtn()}</div>
+    <div class="field"><label for="rc-title">Name of the dish</label><input class="input" id="rc-title" maxlength="80" placeholder="e.g. Sweet potato pie" value="${esc(d.title)}"></div>
+    <div class="field"><label for="rc-credit">Whose recipe is it? (optional)</label><input class="input" id="rc-credit" maxlength="60" placeholder="e.g. Grandma, or Rosa" value="${esc(d.credit)}"></div>
+    <div class="grid2"><div class="field"><label for="rc-kind">Kind</label><select class="input" id="rc-kind">${RC_KINDS.map(([k, ic, l]) => `<option value="${k}" ${d.kind === k ? "selected" : ""}>${ic} ${l}</option>`).join("")}</select></div>
+      <div class="field"><label for="rc-serves">Serves</label><input class="input" id="rc-serves" maxlength="30" placeholder="e.g. 8" value="${esc(d.serves)}"></div></div>
+    <div class="field"><label for="rc-time">How long it takes</label><input class="input" id="rc-time" maxlength="30" placeholder="e.g. 1 hour 15 minutes" value="${esc(d.time)}"></div>
+    <div class="field"><label for="rc-ing">Ingredients · one on each line</label><textarea class="input" id="rc-ing" rows="7" placeholder="2 cups flour&#10;1 stick butter, softened&#10;3 eggs">${esc(d.ingredients)}</textarea></div>
+    <div class="field"><label for="rc-steps">Steps · one on each line</label><textarea class="input" id="rc-steps" rows="7" placeholder="Heat the oven to 350°F.&#10;Cream the butter and sugar.&#10;Bake 45 minutes.">${esc(d.steps)}</textarea></div>
+    <div class="field"><label for="rc-notes">Notes (optional)</label><textarea class="input" id="rc-notes" rows="3" maxlength="800" placeholder="The secret, the story, what to serve it with">${esc(d.notes)}</textarea></div>
+    <div class="lbl">PHOTO</div>
+    ${pic ? `<img class="rcphoto" id="rc-prev" src="${pic}" alt="">` : ""}
+    <div class="actions"><label class="btn">${pic ? "📷 Choose another photo" : "📷 Add a photo"}<input type="file" accept="image/*" hidden id="rc-file"></label>${pic ? `<button class="btn sm ghost" data-act="rc-nophoto">Take the photo off</button>` : ""}</div>
+    <button class="btn primary block" data-act="rc-save" style="min-height:calc(56px*var(--gs))">${d.id ? "Save the changes" : "🍗 Add it to the Recipe Book"}</button>
+    ${d.id ? "" : `<p class="small muted" style="margin:0;text-align:center">The whole family is told, and the photo shows right away.</p>`}`);
+  document.getElementById("rc-file").addEventListener("change", async e2 => { const f = e2.target.files?.[0]; if(!f) return; rcKeep();
+    try { d.newPhoto = await downscale(f); sheetRecipeEdit(); } catch { toast("That file isn't a photo this phone can read"); } });
+}
+async function rcSave(b){
+  rcKeep(); const d = rcDraft, split = t => String(t).split(/\n+/).map(x => x.trim()).filter(Boolean);
+  if(!d.title.trim()){ toast(rcWhy("title")); return; }
+  const ingredients = split(d.ingredients), steps = split(d.steps);
+  if(!ingredients.length && !steps.length){ toast(rcWhy("empty")); return; }
+  b.disabled = true; b.textContent = "Saving…";
+  const body = {action:"save", id:d.id || undefined, title:d.title, credit:d.credit, kind:d.kind, serves:d.serves, time:d.time, ingredients, steps, notes:d.notes};
+  let uploaded = null;
+  if(d.newPhoto){ const path = `${FAMILY}/recipes/${crypto.randomUUID().replace(/-/g, "")}.jpg`;
+    const {error} = await sb.storage.from("media").upload(path, await toBlob(d.newPhoto), {contentType:"image/jpeg", upsert:false});
+    if(error){ b.disabled = false; b.textContent = "Try again"; toast(rcWhy("upload")); return; }
+    body.photo_path = uploaded = path; }
+  else if(d.id && d.photo && !d.keepPhoto) body.photo_path = null;
+  const r = await recipesCall(body);
+  if(!r.ok){ if(uploaded) await sb.storage.from("media").remove([uploaded]); b.disabled = false; b.textContent = "Try again"; toast(rcWhy(r.code)); return; }
+  rcDraft = null; await refresh(true); toast(d.id ? "Saved." : "Added! The family has been told."); drawRecipe(r.id);
+}
+/* ===== Game Night Tournament (his order, 2026-10-18). Pick the players and the games; after each game, anyone
+   playing taps who came 1st (3 points) and 2nd (1 point), at the table or in the app; the leaderboard runs all night;
+   Crown the champion ends it, and the champions go into the Year at the Table. Scoring: TOURNEY RULES above
+   (functions/tourney/score.js). Writes go through functions/tourney. ===== */
+let tnOpenId = null, tnDraft = null, tnRec = null;
+async function tourneyCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/tourney", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const tnWhy = c => ({when:"Pick the date.", players:"Pick at least 2 players (up to 12).", seats:"Everyone has to be an active family seat.", games:"Pick 2 to 10 games.", over:"That tournament is over.",
+  not_player:"Only the players can record results.", placing:"Pick who came 1st (and 2nd if you like); one person can't be both.", not_boss:"Only the organizer or the host can do that.",
+  no_results:"Record at least one game first.", offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+function tnRedraw(){ const box = sheet.querySelector("[data-tn],[data-tnnew]"); if(!box || !wrap.classList.contains("open")) return; if(box.hasAttribute("data-tn")) drawTourney(tnOpenId); }
+function sheetTourneyNew(){
+  const d = tnDraft, people = st.fam.filter(f => f.status !== "suspended");
+  openSheet(`<div class="sheet-head" data-gstage data-tnnew>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Night Tournament</div><h2>🏆 Set it up</h2></div>${gSizeBtn()}</div>
+    <div class="grid2"><div class="field"><label for="tn-name">Name</label><input class="input" id="tn-name" maxlength="60" value="${esc(d.name)}"></div><div class="field"><label for="tn-date">Date</label><input class="input" type="date" id="tn-date" value="${d.date}"></div></div>
+    <div class="lbl">WHO'S PLAYING</div>
+    <div class="mvwho">${people.map(f => `<button class="chip" data-act="tn-pl" data-id="${f.id}" aria-pressed="${d.players.includes(f.id)}">${esc(first(f.name))}</button>`).join("")}</div>
+    <div class="lbl">THE GAMES · ${d.games.length} PICKED</div>
+    <div class="mvwho">${GTILES.map(([k, l]) => `<button class="chip" data-act="tn-game" data-k="${k}" data-l="${esc(l)}" aria-pressed="${d.games.some(g => g.kind === k)}">${esc(l)}</button>`).join("")}</div>
+    <div class="grid2" style="grid-template-columns:1fr auto"><input class="input" id="tn-other" maxlength="40" placeholder="Another game, e.g. Uno at the table"><button class="btn" data-act="tn-addother">＋ Add</button></div>
+    ${d.games.length ? `<ol class="small" style="margin:0;padding-left:20px;display:grid;gap:4px">${d.games.map((g, i) => `<li>${esc(g.label)} <button class="link-btn" data-act="tn-ungame" data-i="${i}" style="color:#ffd36b">remove</button></li>`).join("")}</ol>` : ""}
+    <p class="small muted" style="margin:0">Each game: 1st place earns 3 points, 2nd place 1. A team win gives each member the points.</p>
+    <button class="btn primary block" data-act="tn-start" style="min-height:calc(56px*var(--gs))">🏆 Start the tournament</button>`);
+}
+function drawTourney(id){
+  const x = (st.tourneys || []).find(t => t.id === id); if(!x){ sheetGames(); return; }
+  tnOpenId = id; const board = tnBoard(x.players, x.results), boss = x.by === st.me || isAdmin(), open = x.status === "open", plays = x.players.includes(st.me) || isAdmin();
+  const medal = p => ["🥇", "🥈", "🥉"][p - 1] || `${p}.`;
+  const nm = ids => ids.map(i => first(F(i)?.name || "?")).join(" & ");
+  const games = x.games.map((g, i) => { const r = x.results[i];
+    return `<div class="card" style="gap:6px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${i + 1}. ${esc(g.label)}</b>${r ? `<span class="small">🥇 ${esc(nm(r.first))}${r.second?.length ? ` · 🥈 ${esc(nm(r.second))}` : ""}</span>` : `<span class="small muted">not played yet</span>`}</div>
+      ${open && plays ? (tnRec === i ? `<div style="display:grid;gap:6px">${x.players.map(p => `<div class="field" style="display:flex;align-items:center;gap:10px;margin:0"><label for="tn-r-${p}" style="flex:1;margin:0">${esc(F(p)?.name || "?")}</label><select class="input" style="width:auto" id="tn-r-${p}" data-tnr="${p}"><option value="">—</option><option value="1" ${r?.first.includes(p) ? "selected" : ""}>🥇 1st</option><option value="2" ${r?.second?.includes(p) ? "selected" : ""}>🥈 2nd</option></select></div>`).join("")}
+          <div class="actions"><button class="btn primary" data-act="tn-save" data-i="${i}">Save result</button>${r ? `<button class="btn sm ghost" data-act="tn-clear" data-i="${i}">Clear</button>` : ""}<button class="btn sm ghost" data-act="tn-rec" data-i="-1">Close</button></div></div>`
+        : `<div class="actions"><button class="btn sm ${r ? "" : "wine"}" data-act="tn-rec" data-i="${i}">${r ? "Change result" : "Record result"}</button></div>`) : ""}</div>`; }).join("");
+  const champs = x.status === "done" ? `<div class="gstatus win">🏆 ${esc(nm(x.champions))} ${x.champions.length > 1 ? "are the champions" : "is the champion"}!</div>` : "";
+  openSheet(`<div class="sheet-head" data-gstage data-tn>${gBack("g-room")}<div style="flex:1;min-width:0"><div class="eyebrow">Game Night Tournament · ${esc(new Date(x.date + "T12:00:00").toLocaleDateString(undefined, {month:"short", day:"numeric"}))}</div><h2>🏆 ${esc(x.name)}</h2></div>${gSizeBtn()}</div>
+    ${champs}
+    <div class="lbl">LEADERBOARD</div>
+    <div style="display:grid;gap:8px">${board.map(b => `<div class="person">${av(b.id, "sm")}<span style="min-width:0;flex:1"><b>${medal(b.place)} ${esc(F(b.id)?.name || "?")}</b><small>${b.points} ${b.points === 1 ? "point" : "points"} · ${b.wins} ${b.wins === 1 ? "win" : "wins"}${b.seconds ? ` · ${b.seconds} second${b.seconds === 1 ? "" : "s"}` : ""}</small></span></div>`).join("")}</div>
+    <div class="lbl">THE GAMES · ${x.results.filter(Boolean).length} OF ${x.games.length} PLAYED</div>
+    ${games}
+    ${open && boss ? `<div class="actions" style="justify-content:center"><button class="btn primary" data-act="tn-finish">🏆 Crown the champion</button><button class="btn sm ghost" data-act="tn-cancel">Cancel it</button></div>` : ""}
+    ${open ? `<p class="small muted" style="margin:0;text-align:center">Play each game here in the Game Room or at the table, then record who came 1st and 2nd.</p>` : ""}`);
+  if(x.status === "done" && !drawTourney.cheered?.[id]){ (drawTourney.cheered ||= {})[id] = 1; gSnd("win"); }
 }
 // redraw whatever game screen is open (Memory Match and Word Guess live outside gView)
 function gRedraw(){ if(document.querySelector("#sheet .slboard") && sol) drawSolitaire(); else if(document.querySelector("#sheet .mmgrid") && mm) drawMemory(); else if(document.querySelector("#sheet .wgkeys") && wg) drawWordGuess(); else gView ? drawGame() : sheetGames(); }
@@ -5411,7 +6091,7 @@ function calc(){
     <div class="line total"><span>Total</span><span class="num">${money(total)}</span></div>
     <div class="pp num">${money(total/n)}</div><div class="small muted" style="text-align:center">per person · ${n} diner${n>1?"s":""}</div>`;
 }
-sheet.addEventListener("input", e => { if(e.target.matches("[data-calc]")) calc(); });
+sheet.addEventListener("input", e => { if(e.target.matches("[data-calc]")) calc(); if(e.target.id === "rc-q"){ rcQ = e.target.value; rcSearch(); } });
 sheet.addEventListener("change", e => { if(e.target.matches("[data-calc]")) calc(); });
 
 /* Wrap-up: rate + who paid */
@@ -5554,6 +6234,110 @@ document.addEventListener("click", e => {
     case "mv-self": mvAct({action:"pay", id:mvOpen, mode:"self"}, "Got it: you're paying for your own ticket.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-recv": mvAct({action:"received", id:mvOpen, member:b.dataset.m}, "Marked received. Their receipt is ready.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-rcpt": mvShowRcpt = mvShowRcpt === b.dataset.m ? null : b.dataset.m; drawMovieNight(mvOpen); break;
+    case "prayers": prAnswering = null; sheetPrayers(); break;
+    case "recipes": rcDraft = null; sheetRecipes(); break;
+    case "rides": sheetRides(b.dataset.k, id); break;
+    case "rd-back": { const o = rdOpen; rdOpen = null; rdForm = null; if(!o || o.kind === "dinner") closeSheet(); else ({outing:drawOuting, movie:drawMovieNight, golf:drawGolf})[o.kind](o.ref); break; }
+    case "rd-form": { const {offers, asks} = rdOf(rdOpen.kind, rdOpen.ref), myO = offers.find(o => o.driver === st.me), myA = asks.find(a => a.rider === st.me);
+      rdForm = b.dataset.v;
+      if(rdForm === "drive") rdDraft = {seats:myO?.seats || 3, leaving:myO?.leaving || "", note:myO?.note || ""};
+      else { rdDraft = {party:myA?.party || 1, address:"", details:"", note:myA?.note || ""}; const k = myA && rdPick[myA.id];
+        if(k){ rdDraft.address = k.address; rdDraft.details = k.details || ""; }
+        else ridesCall({action:"last"}).then(d => { if(d.ok && d.address && rdForm === "ride" && rdDraft && !rdDraft.address){ const inp = document.getElementById("rd-address"); if(inp && !inp.value){ inp.value = d.address; rdDraft.address = d.address; } } }); }
+      sheetRides(rdOpen.kind, rdOpen.ref, true); break; }
+    case "rd-cancelform": rdForm = null; rdDraft = null; sheetRides(rdOpen.kind, rdOpen.ref, true); break;
+    case "rd-seats": rdKeep(); rdDraft.seats = +b.dataset.v; sheetRides(rdOpen.kind, rdOpen.ref, true); break;
+    case "rd-party": rdKeep(); rdDraft.party = +b.dataset.v; sheetRides(rdOpen.kind, rdOpen.ref, true); break;
+    case "rd-offer": { rdKeep(); const d = rdDraft, o = rdOpen; b.disabled = true;
+      rdAct({action:"offer", kind:o.kind, ref:o.ref, seats:d.seats, leaving:d.leaving, note:d.note}).then(r => { b.disabled = false; if(!r) return; rdForm = null; rdDraft = null;
+        toast(r.matched ? `Thank you! ${r.matched} ${r.matched === 1 ? "rider is" : "riders are"} now in your car.` : "Thank you! Anyone who asks for a ride will be matched to you."); sheetRides(o.kind, o.ref, true); }); break; }
+    case "rd-ask": { rdKeep(); const d = rdDraft, o = rdOpen; if((d.address || "").trim().length < 3){ toast(rdWhy("address")); break; } b.disabled = true;
+      rdAct({action:"ask", kind:o.kind, ref:o.ref, party:d.party, address:d.address, details:d.details, note:d.note}).then(r => { b.disabled = false; if(!r) return; rdForm = null; rdDraft = null; delete rdPick[r.id];
+        toast(r.driver ? `🚗 ${first(F(r.driver)?.name || "A driver")} is driving you.` : "You're on the list. You'll be told when a driver has room."); sheetRides(o.kind, o.ref, true); }); break; }
+    case "rd-unoffer": if(!confirm("Stop driving? Anyone in your car goes back on the list.")) break; rdAct({action:"unoffer", kind:rdOpen.kind, ref:rdOpen.ref}, "Done. Your riders are back on the list.").then(r => r && sheetRides(rdOpen.kind, rdOpen.ref, true)); break;
+    case "rd-unask": rdAct({action:"unask", kind:rdOpen.kind, ref:rdOpen.ref}, "Done. You're off the ride list.").then(r => r && sheetRides(rdOpen.kind, rdOpen.ref, true)); break;
+    case "rd-take": rdAct({action:"take", id}, "They're in your car. They've been told.").then(r => r && sheetRides(rdOpen.kind, rdOpen.ref, true)); break;
+    case "rd-release": if(!confirm("Let this rider go? They go back on the list for another driver.")) break; rdAct({action:"release", id}, "Done. They've been told.").then(r => r && sheetRides(rdOpen.kind, rdOpen.ref, true)); break;
+    case "rc-filter": rcFilter = b.dataset.k; sheetRecipes(); break;
+    case "rc-open": rcDraft = null; drawRecipe(id); break;
+    case "rc-tick": { const k = b.dataset.k; if(b.checked) rcTicked.add(k); else rcTicked.delete(k); break; }
+    case "rc-new": rcDraft = {id:null, title:"", credit:"", kind:rcFilter !== "all" && rcFilter !== "fav" ? rcFilter : "main", serves:"", time:"", ingredients:"", steps:"", notes:"", photo:"", keepPhoto:false, newPhoto:null}; sheetRecipeEdit(); break;
+    case "rc-edit": { const x = (st.recipes || []).find(r => r.id === id); if(!x) break;
+      rcDraft = {id:x.id, title:x.title, credit:x.credit, kind:x.kind, serves:x.serves, time:x.time, ingredients:x.ingredients.join("\n"), steps:x.steps.join("\n"), notes:x.notes, photo:x.photo, keepPhoto:!!x.path, newPhoto:null}; sheetRecipeEdit(); break; }
+    case "rc-nophoto": rcKeep(); rcDraft.newPhoto = null; rcDraft.keepPhoto = false; sheetRecipeEdit(); break;
+    case "rc-save": rcSave(b); break;
+    case "rc-fav": recipesCall({action:"fav", id}).then(async r => { if(!r.ok){ toast(rcWhy(r.code)); return; } await refresh(true); toast(r.fav ? "⭐ Saved to your favorites." : "Taken off your favorites."); drawRecipe(id, true); }); break;
+    case "rc-remove": if(!confirm("Remove this recipe from the family's book? Its photo goes too.")) break; recipesCall({action:"remove", id}).then(async r => { if(!r.ok){ toast(rcWhy(r.code)); return; } await refresh(true); toast("Removed."); sheetRecipes(); }); break;
+    case "tn-new": tnDraft = {name:"Game Night", date:iso(today0), players:[st.me], games:[]}; sheetTourneyNew(); break;
+    case "tn-keep": break;
+    case "tn-pl": { const d = tnDraft; d.name = document.getElementById("tn-name")?.value || d.name; d.date = document.getElementById("tn-date")?.value || d.date; const i = d.players.indexOf(id); if(i >= 0) d.players.splice(i, 1); else d.players.push(id); sheetTourneyNew(); break; }
+    case "tn-game": { const d = tnDraft; d.name = document.getElementById("tn-name")?.value || d.name; d.date = document.getElementById("tn-date")?.value || d.date; const k = b.dataset.k, i = d.games.findIndex(g => g.kind === k); if(i >= 0) d.games.splice(i, 1); else if(d.games.length < 10) d.games.push({kind:k, label:b.dataset.l}); sheetTourneyNew(); break; }
+    case "tn-addother": { const d = tnDraft, v = (document.getElementById("tn-other")?.value || "").trim(); d.name = document.getElementById("tn-name")?.value || d.name; d.date = document.getElementById("tn-date")?.value || d.date; if(!v){ toast("Type the game's name."); break; } if(d.games.length < 10) d.games.push({kind:"other", label:v}); sheetTourneyNew(); break; }
+    case "tn-ungame": { const d = tnDraft; d.name = document.getElementById("tn-name")?.value || d.name; d.games.splice(+b.dataset.i, 1); sheetTourneyNew(); break; }
+    case "tn-start": { const d = tnDraft; d.name = document.getElementById("tn-name")?.value || d.name; d.date = document.getElementById("tn-date")?.value || d.date;
+      b.disabled = true; b.textContent = "Starting…";
+      tourneyCall({action:"new", name:d.name, date:d.date, players:d.players, games:d.games}).then(async r => { if(!r.ok){ b.disabled = false; b.textContent = "🏆 Start the tournament"; toast(tnWhy(r.code)); return; }
+        tnDraft = null; tnRec = null; await refresh(true); toast("Game on! The players have been told."); drawTourney(r.tournament.id); }); break; }
+    case "tn-open": tnRec = null; drawTourney(id); break;
+    case "tn-rec": tnRec = +b.dataset.i < 0 ? null : +b.dataset.i; drawTourney(tnOpenId); break;
+    case "tn-save": { const firstP = [], second = []; document.querySelectorAll("[data-tnr]").forEach(sel => { if(sel.value === "1") firstP.push(sel.dataset.tnr); else if(sel.value === "2") second.push(sel.dataset.tnr); });
+      tourneyCall({action:"result", id:tnOpenId, i:+b.dataset.i, first:firstP, second}).then(async r => { if(!r.ok){ toast(tnWhy(r.code)); return; } tnRec = null; await refresh(true); gSnd("right"); drawTourney(tnOpenId); }); break; }
+    case "tn-clear": tourneyCall({action:"clear", id:tnOpenId, i:+b.dataset.i}).then(async r => { if(!r.ok){ toast(tnWhy(r.code)); return; } tnRec = null; await refresh(true); drawTourney(tnOpenId); }); break;
+    case "tn-finish": if(!confirm("Crown the champion and end the tournament?")) break; tourneyCall({action:"finish", id:tnOpenId}).then(async r => { if(!r.ok){ toast(tnWhy(r.code)); return; } await refresh(true); drawTourney(tnOpenId); }); break;
+    case "tn-cancel": if(!confirm("Cancel this tournament?")) break; tourneyCall({action:"cancel", id:tnOpenId}).then(async r => { if(!r.ok){ toast(tnWhy(r.code)); return; } await refresh(true); sheetGames(); }); break;
+    case "pr-new": { const t = document.getElementById("pr-text")?.value.trim() || ""; if(!t){ toast(prWhy("empty")); break; } const anon = !!document.getElementById("pr-anon")?.checked;
+      b.disabled = true; b.textContent = "Sharing…";
+      prayerCall({action:"new", text:t, anon}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "🙏 Share it with the family"; toast(prWhy(d.code)); return; }
+        (prMine ||= new Set()).add(d.prayer.id); const ta = document.getElementById("pr-text"); if(ta) ta.value = ""; await refresh(true); toast(anon ? "Shared without your name. The family has been told." : "Shared. The family has been told."); sheetPrayers(); }); break; }
+    case "pr-pray": prayerCall({action:"pray", id}).then(async d => { if(!d.ok){ toast(prWhy(d.code)); return; } await refresh(true); if(d.prayed) toast("🙏 Thank you for praying."); sheetPrayers(true); }); break;
+    case "pr-answer": prAnswering = prAnswering === id ? null : id; sheetPrayers(true); break;
+    case "pr-answer-go": { const praise = document.getElementById("pr-praise")?.value || ""; prayerCall({action:"answer", id, praise}).then(async d => { if(!d.ok){ toast(prWhy(d.code)); return; } prAnswering = null; await refresh(true); toast("🙌 Praise God! Everyone who prayed has been told."); sheetPrayers(true); }); break; }
+    case "pr-reopen": prayerCall({action:"reopen", id}).then(async d => { if(!d.ok){ toast(prWhy(d.code)); return; } await refresh(true); sheetPrayers(true); }); break;
+    case "pr-remove": if(!confirm("Take this request down for everyone?")) break; prayerCall({action:"remove", id}).then(async d => { if(!d.ok){ toast(prWhy(d.code)); return; } await refresh(true); toast("Taken down."); sheetPrayers(true); }); break;
+    case "outings": sheetOutings(); break;
+    case "ou-kind": { const k = b.dataset.k, nx = new Date(today0); nx.setDate(nx.getDate() + ((6 - nx.getDay() + 7) % 7 || 7));
+      if(k === "tigers"){ ouGames = null; ouGamesErr = ""; }
+      ouDraft = {kind:k, date:iso(nx), time:"14:00", hours:null, city:"Memphis", q:OU_KINDS[k].q, pid:"", pname:"", invited:[], note:"", dinner:"", title:"", game:"", places:null};
+      sheetOutingNew(); if(k === "tigers") ouFindFedEx(); break; }
+    case "ou-game": { ouKeep(); ouDraft.game = b.dataset.uid; sheetOutingNew(); break; }
+    case "ou-find": { ouKeep(); const d = ouDraft; if((d.q || "").trim().length < 2){ toast("Type what to look for."); break; } d.busy = true; d.err = ""; sheetOutingNew();
+      placesCall({action:"search", q:d.q.trim(), city:d.city, kind:"any"}).then(r => { d.busy = false; if(r.ok) d.places = r.results.filter(x => x.status !== "CLOSED_PERMANENTLY"); else d.err = gWhy(r.code); if(ouDraft === d) sheetOutingNew(); }); break; }
+    case "ou-place": { ouKeep(); const t = (ouDraft.places || []).find(x => x.placeId === b.dataset.pid); ouDraft.pid = b.dataset.pid; ouDraft.pname = t?.name || ""; sheetOutingNew(); break; }
+    case "ou-inv": { ouKeep(); const i = ouDraft.invited.indexOf(id); if(i >= 0) ouDraft.invited.splice(i, 1); else ouDraft.invited.push(id); sheetOutingNew(); break; }
+    case "ou-send": { ouKeep(); const d = ouDraft;
+      if(d.kind === "tigers" && !d.game){ toast("Pick a game first."); break; } if(!d.pid){ toast(ouWhy("place")); break; } if(d.kind === "other" && !(d.title || "").trim()){ toast(ouWhy("title")); break; }
+      b.disabled = true; b.textContent = "Sending…";
+      ouAct({action:"new", kind:d.kind, title:d.title, game:d.game || null, date:d.date, time:d.time, hours:d.hours, place_pid:d.pid, city:d.city, invited:d.invited, note:d.note, dinner_event:d.dinner || null}, "Invitation sent! Everyone's been told.")
+        .then(r => { if(r){ ouDraft = null; drawOuting(r.outing.id); } else { b.disabled = false; b.textContent = "🎉 Send the invitation"; } }); break; }
+    case "ou-open": ouShowRcpt = null; drawOuting(id); break;
+    case "ou-rsvp": ouAct({action:"rsvp", id:ouOpen, ans:b.dataset.v}).then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-claim": ouAct({action:"claim", id:ouOpen}, "You're booking it. Everyone's been told.").then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-unclaim": ouAct({action:"unclaim", id:ouOpen}).then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-booked": { const v = x => document.getElementById(x)?.value || "", num = x => parseFloat(String(v(x)).replace(/[^\d.]/g, "")) || 0;
+      ouAct({action:"booking", id:ouOpen, count:Math.round(num("ou-count")), each:num("ou-each"), extras:num("ou-extras"), details:v("ou-details"), conf:v("ou-conf")}, "Booked! Everyone coming has been told their share.").then(ok => ok && drawOuting(ouOpen)); break; }
+    case "ou-paid": ouAct({action:"pay", id:ouOpen, mode:"sent", via:b.dataset.v}, "Sent! The booker has been told.").then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-self": ouAct({action:"pay", id:ouOpen, mode:"self"}, "Got it: you're paying your own way.").then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-recv": ouAct({action:"received", id:ouOpen, member:b.dataset.m}, "Marked received. Their receipt is ready.").then(ok => ok && drawOuting(ouOpen)); break;
+    case "ou-rcpt": ouShowRcpt = ouShowRcpt === b.dataset.m ? null : b.dataset.m; drawOuting(ouOpen); break;
+    case "ou-cancel": if(!confirm("Cancel this outing for everyone?")) break; ouAct({action:"cancel", id:ouOpen}, "Outing cancelled. Everyone's been told.").then(ok => ok && drawOuting(ouOpen)); break;
+    case "santa": sheetSanta(); break;
+    case "sa-new": sheetSantaNew(); break;
+    case "sa-start": { const v = x => document.getElementById(x)?.value || "", bud = parseFloat(v("sa-budget").replace(/[^\d.]/g, ""));
+      b.disabled = true; b.textContent = "Starting…";
+      saAct({action:"new", name:v("sa-name"), budget:isNaN(bud) ? null : bud, date:v("sa-date") || null, note:v("sa-note")}, "Started! The family has been told.").then(r => { if(r) drawSanta(r.exchange.id); else { b.disabled = false; b.textContent = "🎁 Start it and tell the family"; } }); break; }
+    case "sa-open": drawSanta(id); break;
+    case "sa-join": saAct({action:"join", id:saOpen}, "You're in! Add your wish list.").then(ok => ok && drawSanta(saOpen)); break;
+    case "sa-leave": saAct({action:"leave", id:saOpen}, "You've left this Secret Santa.").then(ok => ok && drawSanta(saOpen)); break;
+    case "sa-add": { saKeepWish(); (saWishDraft[saOpen] ||= []).push({text:"", size:"", link:""}); drawSanta(saOpen); break; }
+    case "sa-save": { saKeepWish(); const items = (saWishDraft[saOpen] || []).filter(it => it.text.trim());
+      saAct({action:"wish", id:saOpen, items}, "Wish list saved. Your Santa can see it.").then(ok => { if(ok){ delete saWishDraft[saOpen]; drawSanta(saOpen); } }); break; }
+    case "sa-homes": { const groups = {}; document.querySelectorAll("[data-sah]").forEach(sel => { if(sel.value !== "") (groups[sel.value] ||= []).push(sel.dataset.sah); });
+      saAct({action:"households", id:saOpen, groups:Object.values(groups)}, "Households saved.").then(ok => ok && drawSanta(saOpen)); break; }
+    case "sa-draw": if(!confirm("Draw the names now? Everyone will be told to look.")) break; saAct({action:"draw", id:saOpen}, "Names are drawn! Everyone's been told.").then(ok => ok && drawSanta(saOpen)); break;
+    case "sa-undraw": if(!confirm("Put the names back in the hat? Everyone gets a new person.")) break; Object.keys(saMineCache).forEach(k => k.startsWith(saOpen) && delete saMineCache[k]); saAct({action:"undraw", id:saOpen}, "Names cleared. Draw again when ready.").then(ok => ok && drawSanta(saOpen)); break;
+    case "sa-bought": { const v = b.dataset.v === "1"; santaCall({action:"bought", id:saOpen, value:v}).then(d => { if(!d.ok){ toast(saWhy(d.code)); return; } const k = `${saOpen}:drawn`; if(saMineCache[k] && saMineCache[k] !== "…") saMineCache[k].bought = v; toast(v ? "Marked bought. Only you can see this." : "Unmarked."); drawSanta(saOpen); }); break; }
+    case "sa-reveal": if(!confirm("Reveal who had whom to everyone?")) break; saAct({action:"reveal", id:saOpen}, "Revealed! 🎉").then(ok => ok && drawSanta(saOpen)); break;
+    case "sa-cancel": if(!confirm("Cancel this Secret Santa for everyone?")) break; saAct({action:"cancel", id:saOpen}, "Cancelled. Everyone's been told.").then(ok => ok && sheetSanta()); break;
     case "golf": sheetGolf(); break;
     case "tg-new": { const nx = new Date(today0); nx.setDate(nx.getDate() + ((6 - nx.getDay() + 7) % 7 || 7));
       tgDraft = {date:iso(nx), time:"17:00", hours:2, city:"Memphis", pid:"", pname:"", invited:[], note:"", dinner:"", venues:null}; sheetGolfNew(); break; }
@@ -5624,10 +6408,10 @@ document.addEventListener("click", e => {
     case "bj-chip": bjPend += +b.dataset.v; gSnd("chip"); drawGame(); break;
     case "bj-clear": bjPend = 0; drawGame(); break;
     case "bj-bet": if(bjPend >= BJ_MIN) gMove({bet:bjPend}); break;
-    case "g-snd": { const on = !gSndOn(); try { localStorage.setItem("t7.gsound", on ? "on" : "off"); } catch {} if(on) gSnd("right"); gRedraw(); toast(on ? "Game sounds on" : "Game sounds off"); break; }
+    case "g-snd": { const on = !gSndOn(); try { localStorage.setItem("t7.gsound", on ? "on" : "off"); } catch {} if(on) gSnd("right"); gToggled(); toast(on ? "Game sounds on" : "Game sounds off"); break; }
     case "g-room": gPick = null; sheetGames(); break;
     case "g-back": sheetGames(); break;
-    case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gRedraw(); toast(xl ? "Extra large" : "Large"); break; }
+    case "g-size": { const xl = !gSzOn(); try { localStorage.setItem("t7.gsize", xl ? "xl" : "l"); } catch {} document.body.dataset.gsize = xl ? "xl" : "l"; gToggled(); toast(xl ? "Extra large" : "Large"); break; }
     case "ttt-col": { const c = tttCols(); c[+b.dataset.s] = b.dataset.c; if(c[0] === c[1]){ toast("Pick a different colour from the other player"); break; } try { localStorage.setItem("t7.tttcol", JSON.stringify(c)); } catch {} drawGame(); break; }
     case "sp-card": { const c = b.dataset.c; if(spPick === c){ spPick = null; gMove({card:c}); } else { spPick = c; drawGame(); } break; }
     case "g-local": { const k = b.dataset.k; gView = {local:true, kind:k, st:gameInit(k), turn:0, over:null, names:["Player 1", "Player 2"]}; gSel = null; drawGame(); break; }
