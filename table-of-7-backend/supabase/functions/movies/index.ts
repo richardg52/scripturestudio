@@ -5,6 +5,7 @@
 //   new {movie_id, date, time, theater_pid, city, invited[], note?, dinner_event?}   the planner; everyone invited is told
 //   rsvp {id, ans: yes|maybe|no}
 //   claim {id} / unclaim {id}   "I'll buy the tickets" (one buyer, so nobody buys twice)
+//   buy {id, addr, theater}     where to buy: the most specific real Fandango link for this night (fandango.js), fresh
 //   tickets {id, count, each, fees, seats, conf, room}   the buyer, after buying on Fandango or the theater's own site
 //   pay {id, mode: sent|self, via?, seats?, conf?}     "I paid <buyer> back" or "Paying for myself"
 //   received {id, member}       the buyer confirms the money arrived: that person's receipt is ready, and they're told
@@ -12,6 +13,7 @@
 // The app never buys a ticket and never moves money. TMDB data: "This product uses the TMDB API but is not endorsed or
 // certified by TMDB." The token is the Supabase secret TMDB_TOKEN (TMDB's free "API Read Access Token").
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { fdBest, fdShowtimesUrl, fdReferer, fdZip, fdSearch } from "./fandango.js";
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -19,9 +21,9 @@ const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 // 32-character "API Key" (sent as ?api_key=). Spaces, line breaks or a pasted "Bearer " are ignored.
 const TMDB = (Deno.env.get("TMDB_TOKEN") ?? "").replace(/^\s*bearer\s+/i, "").replace(/\s+/g, "");
 const TMDB_V3 = /^[a-f0-9]{32}$/i.test(TMDB);
-const ALLOWED = [/^https:\/\/table-of-7\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-7\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
+const ALLOWED = [/^https:\/\/table-of-[78]\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-[78]\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
 const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-7.netlify.app",
+  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-8.netlify.app",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin",
 });
@@ -36,6 +38,23 @@ async function tmdb(path: string) {
   const d = await r.json().catch(() => ({}));
   if (!r.ok) { console.error("movies tmdb", r.status, TMDB_V3 ? "short key" : `token of ${TMDB.length} characters`, JSON.stringify(d).slice(0, 200)); return { error: r.status === 401 ? "bad_key" : r.status === 429 ? "resting" : "tmdb" }; }
   return { data: d };
+}
+// Fandango's showtimes for one ZIP and date, kept 10 minutes (each showtime's buy link carries a code, so it stays fresh)
+const fdKept: Record<string, { at: number; pages: unknown[] }> = {};
+async function fdPages(zip: string, date: string) {
+  const k = zip + date, c = fdKept[k];
+  if (c && Date.now() - c.at < 600e3) return c.pages;
+  const pages: unknown[] = [];
+  for (let page = 1; page <= 4; page++) {
+    try {
+      const r = await fetch(fdShowtimesUrl(zip, date, page), { headers: { "User-Agent": "Mozilla/5.0 (TableOf8 family app)", accept: "application/json", Referer: fdReferer(zip) } });
+      if (!r.ok) { console.error("movies fandango", r.status); break; }
+      const d = await r.json(); pages.push(d);
+      if (page >= Number(d?.pagination?.totalPages ?? 1)) break;
+    } catch (e) { console.error("movies fandango", (e as Error).message); break; }
+  }
+  if (pages.length) fdKept[k] = { at: Date.now(), pages };
+  return pages;
 }
 async function movieFull(id: number) {
   const g = await tmdb(`/movie/${id}?language=en-US&append_to_response=release_dates,videos,reviews,credits`);
@@ -115,6 +134,13 @@ Deno.serve(async (req) => {
     const mine = (ppl ?? []).find(p => p.member_id === me.id);
     const touch = () => admin.from("movie_nights").update({ updated_at: new Date().toISOString() }).eq("id", n.id);
     const title = n.movie?.title ?? "the movie";
+    if (body.action === "buy") {
+      const want = { title: String(n.movie?.title ?? ""), year: String(n.movie?.year ?? ""), date: String(n.date), time: String(n.time ?? "").slice(0, 5),
+        addr: String(body.addr ?? "").slice(0, 200), theaterName: String(body.theater ?? "").slice(0, 120) };
+      const zip = fdZip(want.addr) || "38103";
+      const pages = want.title ? await fdPages(zip, want.date) : [];
+      return reply({ ok: true, ...(want.title ? fdBest(pages, want) : { level: "search", url: fdSearch("") }) });
+    }
     if (body.action === "rsvp") {
       const ans = String(body.ans ?? ""); if (!["yes", "maybe", "no"].includes(ans) || !mine) return reply({ ok: false, code: "illegal" }, 400);
       if (ans !== "yes" && mine.pay && mine.pay !== "self" && mine.pay !== "owe") return reply({ ok: false, code: "paid" }, 409);
