@@ -1,5 +1,5 @@
-// Table of 7: sign in with full name + 4-digit PIN.
-// The PIN is checked in the database (bcrypt, 5 tries then a 5-minute lock, per name and per network).
+// Table of 8: sign in with email + 4-digit PIN (his order, 2026-10-19; full-name sign-in is gone).
+// The PIN is checked in the database (bcrypt; 5 wrong tries lock the seat until the host unlocks it; a network limit).
 // Only a correct PIN gets a session, and the session belongs to that one seat.
 // Deployed with verify_jwt = false: callers are not signed in yet; the PIN is the check.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -8,11 +8,11 @@ const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-const ALLOWED = [/^https:\/\/table-of-7\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-7\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
+const ALLOWED = [/^https:\/\/table-of-[78]\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-[78]\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
 function cors(origin: string | null) {
   const ok = origin && ALLOWED.some(r => r.test(origin));
   return {
-    "Access-Control-Allow-Origin": ok ? origin! : "https://table-of-7.netlify.app",
+    "Access-Control-Allow-Origin": ok ? origin! : "https://table-of-8.netlify.app",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin",
@@ -27,13 +27,14 @@ Deno.serve(async (req) => {
   const reply = (o: unknown, status = 200) => new Response(JSON.stringify(o), { status, headers: h });
   try {
     const body = await req.json().catch(() => ({}));
-    const name = String(body.name ?? "").slice(0, 80);
+    if (body.email == null && body.name != null) return reply({ ok: false, code: "update" });   // an old copy of the app
+    const email = String(body.email ?? "").slice(0, 160);
     const pin = String(body.pin ?? "").slice(0, 8);
     const pin2 = body.pin2 == null ? null : String(body.pin2).slice(0, 8);
     const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "?";
 
     const admin = createClient(URL_, SERVICE, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { data: r, error } = await admin.rpc("t7_pin_signin", { p_name: name, p_pin: pin, p_pin2: pin2, p_ip: ip });
+    const { data: r, error } = await admin.rpc("t7_pin_signin_email", { p_email: email, p_pin: pin, p_pin2: pin2, p_ip: ip });
     if (error) { console.error("pin-signin rpc", error.message); return reply({ ok: false, code: "server" }, 500); }
     if (!r.ok) return reply(r);
 
