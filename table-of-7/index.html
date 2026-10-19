@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Table of 7</title>
+<title>Table of 8</title>
 <meta name="author" content="Richard G. Clark">
 <meta name="copyright" content="© 2026 Richard G. Clark. All rights reserved.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0f1c18">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Table of 7">
+<meta name="apple-mobile-web-app-title" content="Table of 8">
 <!-- use-credentials: while the site sat behind a Netlify password (until 2026-10-18, his choice to remove it) the app description answered 401 without it and the phone never became a Home Screen app. Kept: harmless now, and right again if a password ever returns -->
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -584,6 +584,7 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .oukind .ic{font-size:calc(30px*var(--gs))}.oukind b{font:900 calc(16px*var(--gs))/1.2 var(--f-display)}.oukind small{color:#cfe0ff;font-size:calc(12.5px*var(--gs))}
 .oubadge{display:grid;place-items:center;width:calc(64px*var(--gs));aspect-ratio:1;border-radius:18px;font-size:calc(34px*var(--gs));background:linear-gradient(150deg,#2a62d8,#0d2a5e);box-shadow:0 6px 16px rgba(0,0,0,.5)}
 .oubadge.tigers{background:linear-gradient(150deg,#0033a0,#8a8d8f)}
+.oubadge.grizzlies{background:linear-gradient(150deg,#5d76a9,#12173f)}
 /* Secret Santa: a Christmas look (deep red, pine, gold) */
 #sheet-wrap.stage.santa .sheet{background:radial-gradient(120% 60% at 50% -10%,#b3122e 0%,#5e0a18 45%,#0d2a1a 100%) fixed}
 .sawho{display:flex;flex-wrap:wrap;gap:8px}
@@ -802,17 +803,17 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 </head>
 <body>
 
-<div id="splash" role="button" tabindex="0" aria-label="Table of 7 — tap to enter">
+<div id="splash" role="button" tabindex="0" aria-label="Table of 8 — tap to enter">
   <div>
     <div class="mark" aria-hidden="true">
       <svg viewBox="0 0 200 200">
         <circle class="ring" cx="100" cy="100" r="70"/>
         <circle class="ring" cx="100" cy="100" r="58" style="stroke-width:.6;animation-delay:.45s"/>
         <g id="seat-dots"></g>
-        <text class="five" x="100" y="126" text-anchor="middle">7</text>
+        <text class="five" x="100" y="126" text-anchor="middle">8</text>
       </svg>
     </div>
-    <div class="splash-title">TABLE OF 7</div>
+    <div class="splash-title">TABLE OF 8</div>
     <div class="splash-tag">Great food · Better company</div>
   </div>
   <div class="splash-hint">Tap to enter</div>
@@ -1180,7 +1181,7 @@ const KEY = DEMO ? "tableof7.v4" : "tableof7.live1";
 const SB_URL = "https://vhonljdavmklymrocgiu.supabase.co";
 const SB_KEY = "sb_publishable_F-Wjwoek1ZzMLKl_aoxK2w_pF2ac_Qw";
 const sb = window.supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"t7.auth"}});
-let pinSet = {};   // host view: which seats have set a PIN (read from the server, never the PIN itself)
+let pinSet = {}, pinLocked = {};   // host view: which seats have set a PIN, and which are locked out (never the PIN itself)
 const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
 function seed(){
   const fam = [
@@ -1666,8 +1667,8 @@ const I = {
 /* ================= Splash & gate ================= */
 (function splashDots(){
   const g = document.getElementById("seat-dots");
-  for(let i=0;i<7;i++){
-    const a = (-90 + i*360/7) * Math.PI/180;
+  for(let i=0;i<8;i++){
+    const a = (-90 + i*360/8) * Math.PI/180;
     const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
     c.setAttribute("cx", 100 + 86*Math.cos(a)); c.setAttribute("cy", 100 + 86*Math.sin(a)); c.setAttribute("r", 7);
     c.setAttribute("class","seat"); c.style.animationDelay = (0.9 + i*0.12) + "s"; c.style.transformOrigin = `${100+86*Math.cos(a)}px ${100+86*Math.sin(a)}px`;
@@ -1687,8 +1688,9 @@ splash.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ")
 setTimeout(endSplash, 3600);
 
 function partOfDay(){ const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; }
-/* Sign in: full name + 4-digit PIN, checked on the server (pin-signin). First time, each person creates
-   their PIN. Five wrong tries locks that name for 5 minutes on every phone. The host can reset anyone's PIN. */
+/* Sign in: email + 4-digit PIN (his order, 2026-10-19), checked on the server (pin-signin). First time, each person
+   chooses their PIN. Five wrong tries lock that seat until the host unlocks it (Host controls); the host also resets
+   PINs. The email last used on this phone is remembered (st.lastName keeps it, under its old name). */
 const norm = n => String(n || "").trim().toLowerCase().replace(/\s+/g, " ");
 let siMode = "signin", siWho = null;
 function showSignIn(msg = ""){
@@ -1697,27 +1699,27 @@ function showSignIn(msg = ""){
   const chairs = st.fam.map((f, i) => { const a2 = (-90 + i*(360/n)) * Math.PI/180; return `<span class="chair" style="left:${50 + 42*Math.cos(a2)}%;top:${50 + 42*Math.sin(a2)}%;background:${f.color}" aria-hidden="true">${esc(f.name[0])}</span>`; }).join("");
   gate.innerHTML = `<div class="gate-inner">
     <div class="eyebrow">Welcome to the table</div>
-    <div class="round small"><div class="tabletop">7</div>${chairs}</div>
+    <div class="round small"><div class="tabletop">8</div>${chairs}</div>
     <h1 class="greet" style="font-size:30px">Who's taking a seat?</h1>
     <form class="signin" id="signin" autocomplete="on">
-      <div class="field"><label for="si-name">Your full name</label><input class="input" id="si-name" autocomplete="name" autocapitalize="words" placeholder="e.g. Richard Clark" value="${esc(st.lastName || "")}" required></div>
+      <div class="field"><label for="si-name">Your email</label><input class="input" id="si-name" type="email" inputmode="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" value="${esc(/@/.test(st.lastName || "") ? st.lastName : "")}" required></div>
       <div class="field"><label for="si-pin" id="si-pin-label">PIN</label><input class="input pin" id="si-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" placeholder="••••" required></div>
       <div class="field" id="si-pin2-wrap" hidden><label for="si-pin2">Type the same PIN again</label><input class="input pin" id="si-pin2" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" placeholder="••••"></div>
       <div class="si-err" id="si-err" role="alert">${esc(msg)}</div>
       <button class="btn primary block" type="submit" id="si-go">Sign in</button>
     </form>
-    <p class="muted small" style="max-width:300px;margin:0">First time? Type your full name and you'll be asked to create a 4-digit PIN. Forgot it? Ask ${esc(first(F(ADMIN).name))} to reset it.</p>
+    <p class="muted small" style="max-width:300px;margin:0">First time? Type your email and you'll be asked to choose a 4-digit PIN. Forgot it, or locked out? Ask ${esc(first(F(ADMIN).name))}.</p>
     ${creditHtml()}
   </div>`;
   const f = document.getElementById("signin");
-  (st.lastName ? document.getElementById("si-pin") : document.getElementById("si-name")).focus();
+  (/@/.test(st.lastName || "") ? document.getElementById("si-pin") : document.getElementById("si-name")).focus();
   document.getElementById("si-name").addEventListener("input", () => { if(siMode === "create"){ siMode = "signin"; document.getElementById("si-pin2-wrap").hidden = true; document.getElementById("si-pin-label").textContent = "PIN"; document.getElementById("si-go").textContent = "Sign in"; } });
   f.addEventListener("submit", async ev2 => { ev2.preventDefault(); await trySignIn(); });
 }
 async function trySignIn(){
-  const err = document.getElementById("si-err"); err.style.color = ""; err.textContent = ""; const name = document.getElementById("si-name").value; const pin = document.getElementById("si-pin").value.trim();
+  const err = document.getElementById("si-err"); err.style.color = ""; err.textContent = ""; const email = document.getElementById("si-name").value.trim().toLowerCase(); const pin = document.getElementById("si-pin").value.trim();
   const host = first(F(ADMIN).name);
-  if(!name.trim()){ err.textContent = "Type your full name."; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent = "Type your email, like you@example.com."; return; }
   if(!/^\d{4}$/.test(pin)){ err.textContent = "Your PIN is 4 numbers."; return; }
   const creating = siMode === "create";
   const pin2 = creating ? document.getElementById("si-pin2").value.trim() : null;
@@ -1725,7 +1727,7 @@ async function trySignIn(){
   const goBtn = document.getElementById("si-go"); goBtn.disabled = true;
   let r;
   try {
-    const res = await fetch(SB_URL + "/functions/v1/pin-signin", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY}, body:JSON.stringify({name, pin, pin2})});
+    const res = await fetch(SB_URL + "/functions/v1/pin-signin", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY}, body:JSON.stringify({email, pin, pin2})});
     r = await res.json();
   } catch { r = {ok:false, code:"offline"}; }
   goBtn.disabled = false;
@@ -1735,18 +1737,19 @@ async function trySignIn(){
     if(error){ err.textContent = "Something went wrong at the table. Try again in a moment."; return; }
     st.me = who.id;
     try { await pull(); } catch { err.textContent = "Can't reach the table right now. Check your connection and try again."; st.me = null; return; }
-    subscribe(); st.lastName = F(st.me).name; draft = null; keepLocal(); showGreeting(); return;
+    subscribe(); st.lastName = email; draft = null; keepLocal(); showGreeting(); return;
   }
   switch(r.code){
-    case "no_name": err.textContent = `We couldn't find “${name.trim()}” at the table. Use your full name, or ask ${host} to add you.`; break;
+    case "no_email": err.textContent = `That email isn't at the table. Check it, or ask ${host} to add it to your seat.`; break;
+    case "update": err.textContent = "Close the app fully and open it again to get the new sign-in."; break;
     case "create":
       siMode = "create";
       document.getElementById("si-pin2-wrap").hidden = false; document.getElementById("si-pin-label").textContent = "Create a 4-digit PIN";
       document.getElementById("si-go").textContent = "Save my PIN"; err.style.color = "var(--brass)";
-      err.textContent = `Welcome, ${r.first || first(name)}! Choose a PIN only you know.`; document.getElementById("si-pin2").focus(); break;
+      err.textContent = `Welcome, ${r.first || "friend"}! Choose a PIN only you know.`; document.getElementById("si-pin2").focus(); break;
     case "mismatch": err.textContent = "Those PINs don't match. Try again."; document.getElementById("si-pin2").value = ""; break;
     case "wrong": err.textContent = `That PIN isn't right. ${r.tries_left} ${r.tries_left === 1 ? "try" : "tries"} left.`; document.getElementById("si-pin").value = ""; break;
-    case "locked": err.textContent = `Too many tries. Try again in ${r.minutes} min, or ask ${host} to reset your PIN.`; document.getElementById("si-pin").value = ""; break;
+    case "locked": err.textContent = `Your seat is locked after too many wrong PINs. Ask ${host} to unlock it.`; document.getElementById("si-pin").value = ""; break;
     case "ip_locked": err.textContent = `Too many wrong PINs from this network. Try again in ${r.minutes} min.`; break;
     case "format": err.textContent = "Your PIN is 4 numbers."; break;
     case "offline": err.textContent = "Can't reach the table right now. Check your connection and try again."; break;
@@ -2279,10 +2282,10 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet();
 
 function sheetTips(){
   const tips = [
-    ["Signing in","Type your full name and your 4-digit PIN. The first time, you create your PIN. Five wrong tries locks your name for 5 minutes on every phone. Tap your initial (top right) to lock the app, sign in as someone else, or change your PIN (you'll need your current one). Forgot it? Richard can reset it in Host controls."],
+    ["Signing in","Type your email and your 4-digit PIN. The first time, you choose your PIN. Five wrong tries lock your seat until Richard unlocks it. Tap your initial (top right) to lock the app, sign in as someone else, or change your PIN (you'll need your current one). Forgot it, or locked out? Ask Richard: he resets PINs and unlocks seats in Host controls."],
     ["One table for everyone","Votes, invitations, check-ins, photos, alerts and The Tab show on every family phone the moment someone taps. Nothing about the family is kept on your phone: lock the app and it's gone until you sign in again."],
     ["Every restaurant, from Google","In Explore, or under your choices when you plan, type what you want (Pappadeaux, hibachi, soul food, seafood, cupcakes, gelato) and pick a city. Google lists every match in that area, every location of a chain. Tap More from Google for price, rating, hours and phone, and Plan here or Add to choices to use it. It's free: if the family uses up this month's free searches, it rests until the 1st."],
-    ["Notifications","Tap your initial (top right) → Turn on notifications, and allow them when your phone asks. On iPhone, first add Table of 7 to your Home Screen (Share → Add to Home Screen) and open it from there. Then votes, invitations, check-ins, tickets and receipts reach your lock screen even when the app is closed."],
+    ["Notifications","Tap your initial (top right) → Turn on notifications, and allow them when your phone asks. On iPhone, first add Table of 8 to your Home Screen (Share → Add to Home Screen) and open it from there. Then votes, invitations, check-ins, tickets and receipts reach your lock screen even when the app is closed."],
     ["Which location?","When you pick a chain (Olive Garden, LongHorn, Chili's, Tops…) the app asks which location and lists the branches from Google. Choose one, and the vote, invitation, directions and dinner card all point everyone to that same address."],
     ["Who decides","Sunday Dinner, Just Because and Holidays are family votes. Birthdays, anniversaries and treats are the host's choice with an invitation."],
     ["The live vote","When you make a family vote, choose how long it runs: 5, 10, 15, 20, 30 or 60 minutes (10 if you don't choose). Tap “Start vote”. Everyone sees the ballot with typical cost, menu and location. Anyone can add a restaurant. It closes when all have voted or time runs out. A tie goes to the host's pick."],
@@ -2313,11 +2316,11 @@ function sheetTips(){
     ["Family Feud","Game Room → 📋 Family Feud. The family is the survey: start a survey, everyone answers privately, then the host or starter closes it. One person judges and runs the board; each answer is worth one point for every family member who gave it."],
     ["Play the computer","Tic-Tac-Toe, Connect Four and Checkers: tap Easy, Medium or Hard. Spades: “Me and a computer partner”, or pick 🤖 Computer for any empty seat in a family game. Trivia: “Just me, against the clock”. Blackjack: “Just me vs the dealer”. Your record against the computer stays on your phone and never counts in the family standings."],
     ["Blackjack","Game Room → 🃏 Blackjack. Alone against the dealer, or a family table of up to four on their own phones. Tap chips to make your bet (10 to 500), then Bet; then Hit, Stand, Double or Split. Blackjack pays 3 to 2; the dealer stands on 17. Everyone starts with 1,000 points. Chips are points for fun, never money."],
-    ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt."],
+    ["Movie Night","Our Table → 🎬 Movie Night → Plan a movie night. Pick from what's in theaters now (or search any movie), read its story, rating and viewer reviews, watch the trailer, then pick a date, showtime and theater and send the invitation. One person taps “I'll buy the tickets”, buys them on Fandango or the theater's site, and enters the seats and confirmation. Everyone going pays them back (or taps Paying for myself), and gets a receipt. When you're the buyer, the 🎟️ button opens Fandango's own buy page for that showtime at that theater when Fandango lists it."],
     ["Topgolf Outing","Our Table → ⛳ Topgolf Outing → Plan a Topgolf outing. Pick a day, time and how long, tap Find Topgolf, invite the family. One person books the bay on Topgolf's own site; everyone else pays them back or pays their own way, and gets a receipt."],
     ["Solitaire","Game Room → Solitaire. Draw 1 is easier, Draw 3 is classic. Tap a card and it moves by itself; tap the deck to draw. Undo, Hint and Finish are under the board."],
     ["Secret Santa","Our Table → 🎁 Secret Santa. Start one, everyone joins and writes a wish list, the organizer marks couples, then taps Draw names. Each person sees only who they got; couples never draw each other."],
-    ["Family Outing","Our Table → 🎉 Family Outing. Tap a kind: a Memphis Tigers home game (from the Tigers' own schedule), bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or something else. One person books on the place's own site; everyone pays them back or pays their own way and gets a receipt."],
+    ["Family Outing","Our Table → 🎉 Family Outing. Tap a kind: a Memphis Tigers or Memphis Grizzlies home game (each from the team's own schedule, each game with its own 🎟️ buy button), bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or something else. One person buys or books; everyone pays them back their own way (Zelle, Cash App, Apple Pay) or pays their own way, and gets a receipt."],
     ["Prayer Wall","Our Table → 🙏 Prayer Wall. Share a request (tick “Don't show my name” to keep it unnamed), tap 🙏 I prayed for others, and mark yours Answered with a praise report. The whole family sees every request."],
     ["Family Recipe Book","Our Table → 🍗 Family Recipe Book. Tap ＋ Add a family recipe: the name, whose recipe it is, the ingredients and the steps (one on each line), and a photo if you like. The family is told and the photo shows right away. Search by dish, ingredient or who made it; tap ☆ Favorite to star it; tick ingredients off while you cook."],
     ["Rides","On a dinner card, a Family Outing, a Movie Night or a Topgolf outing, tap 🚗 Rides. Have room? Tap I can drive and pick your seats. Need one? Tap I need a ride, say how many are riding and where to pick you up. The app matches you, tells you both, and only your driver sees your address."],
@@ -2332,7 +2335,7 @@ function sheetTips(){
   ];
   const part = GUIDE_PARTS.find(x => x[0] === guidePart) || GUIDE_PARTS[0];
   const body = part[0] === "tips" ? tips.map(([t,p],i) => `<div class="tip"><span class="n">${i+1}</span><div><b>${t}</b><p>${p}</p></div></div>`).join("") : guideBody(part[0]);
-  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Table of 7 guide</div><h2>${part[1]} ${part[2]}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+  openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Table of 8 guide</div><h2>${part[1]} ${part[2]}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <div class="chips" role="tablist" aria-label="Guide parts" style="flex-wrap:wrap">${GUIDE_PARTS.map(([k, ic, l]) => `<button class="chip" role="tab" data-act="guide" data-k="${k}" aria-pressed="${k === part[0]}">${ic} ${l}</button>`).join("")}</div>
     ${body}
     ${creditHtml()}`);
@@ -2347,7 +2350,7 @@ const step = (n, title, html) => `<div class="tip"><span class="n">${n}</span><d
 function guideBody(k){
   const host = esc(first(F(ADMIN).name));
   if(k === "manual") return [
-    step(1, "Getting in", `Open the family link, tap <b>Tap to enter</b>, then type your <b>full name</b> and your 4-digit PIN and tap ${pic("Sign in","primary")}. The first time, type your new PIN twice and tap ${pic("Save my PIN","primary")}.`),
+    step(1, "Getting in", `Open the family link (table-of-8.netlify.app), tap <b>Tap to enter</b>, then type your <b>email</b> and your 4-digit PIN and tap ${pic("Sign in","primary")}. The first time, type the PIN you choose twice and tap ${pic("Save my PIN","primary")}. The phone remembers your email for next time. After 10 minutes away, the app locks and asks for your PIN again.`),
     step(2, "Home", `Today's date and time are at the top, then anything that <b>needs you</b>. Start from ${pic("Start a family vote")} or ${pic("Send an invitation")}. The bell ${pic("🔔")} holds your alerts; the ${pic("?")} opens this guide; your initial opens your seat menu.`),
     step(3, "Plan a dinner", `Pick the occasion, then ${pic("Family votes")} or ${pic("I decide · just invite")}. Choose the date, time and <b>Vote length</b> (5–60 minutes), the dress code, and up to 3 restaurants. Not in our list? ${pic("Search Google","primary")} below the choices, then ${pic("Add to choices","wine")}. A chain like Olive Garden asks <b>Which location?</b>: tap ${pic("Choose this one","wine")} so everyone goes to the same branch. Tap send.`),
     step(4, "The live vote", `On the plan, tap ${pic("Start 10-minute vote","wine")} (it shows the length you chose). Everyone picks one place. It closes when everyone has voted or time runs out; the plan's host can ${pic("Lock in winner","primary")} early. A tie goes to the host's vote. The winner opens on every phone.`),
@@ -2356,7 +2359,7 @@ function guideBody(k){
     step(7, "The Tab: one check", `Tap ${pic("The Tab","wine")}. One person taps ${pic("I'll pay the restaurant","primary")}. Everyone else adds what they ate and taps ${pic("Send my ticket to…","wine")}. The payer taps ${pic("Verify","primary")}, then <b>Confirm</b> or <b>Send back</b> with a note. Pay the payer yourself (Zelle, Apple Pay, Cash App or cash). When it arrives the payer taps ${pic("Send receipt","wine")} and you get a receipt: <b>PAID</b>, date and time, every line, tax, tip and total, signed like “Clark, R.”`),
     step(8, "After dinner", `${pic("We dined — wrap up")} to give your score from 1 to 10, rate six details and say who paid. Everyone's scores average into the restaurant's family score. ${pic("+ Add photos of the night")} shares photos (${host} approves family photos first). ${pic("Add to Never Again list")} hides a place for good.`),
     step(9, "Guests", `${pic("+ Ask to bring a guest")} asks the family; a guest joins when a majority raise a hand ${pic("✋ 5/8")}.`),
-    step(10, "Notifications", `Tap your initial, then ${pic("Turn on notifications","primary")} and allow them. On iPhone add Table of 7 to your Home Screen first (Share → Add to Home Screen).`),
+    step(10, "Notifications", `Tap your initial, then ${pic("Turn on notifications","primary")} and allow them. On iPhone add Table of 8 to your Home Screen first (Share → Add to Home Screen).`),
     step(11, "Finding a place", `Tap ${pic("Explore")} and choose a <b>City</b>. Narrow it with <b>Show</b>, <b>Budget</b> and <b>Meal</b> (Breakfast, Lunch, Dinner or <b>Dessert &amp; treats</b>), or tap a chip such as ${pic("Steak")} ${pic("Fine Dining")} ${pic("Bakery & Dessert")}. Tap a place to see its family score, cost, menu and map. Not in our list? ${pic("Search Google","primary")} finds restaurants, bakeries and dessert shops. Our bakeries and dessert shops are a stop, not a dinner, so they stay out of dinner votes and the Concierge. Add one as <b>Dessert after</b> instead.`),
     step(12, "Dessert after", `When you plan, tap ${pic("+ Dessert after")} under the restaurants and pick a bakery, ice cream or dessert shop from our list, or search Google in the same sheet. A chain asks <b>Which location?</b> first. On a plan already sent, the plan's host taps ${pic("+ Dessert after")} or ${pic("Change","ghost")} on the plan. The stop shows on the invitation, the plan, the shared text and the dinner card with ${pic("Directions to dessert","primary")}. Everyone is told when it's added. ${pic("No dessert stop","ghost")} removes it.`),
     step(13, "Want to Try", `Open any restaurant (or a Google result) and tap ${pic("☆ Want to try")}. It turns into ${pic("★ Want to try · Zoey")} so everyone sees who saved it. The Concierge's Sunday picks on Home come from this list first, and Explore → <b>Show</b> → <b>Want to try</b> lists every saved place. Tap the star again to take it off; only the person who saved it, or ${host}, can.`),
@@ -2371,7 +2374,7 @@ function guideBody(k){
     step(22, "Play the computer", `Every game can be played against the computer on your own phone. <b>Tic-Tac-Toe, Connect Four, Checkers:</b> open the game and tap ${pic("Easy")} ${pic("Medium","primary")} or ${pic("Hard","wine")}; you move first, and the computer answers in under a second (Tic-Tac-Toe on Hard never loses). <b>Spades:</b> ${pic("🤖 Me and a computer partner","primary")} deals you and a computer partner against two computers; or in a family game choose <b>🤖 Computer</b> for any seat you can't fill, and the computers bid and play by themselves. <b>Trivia:</b> ${pic("🧠 Just me, against the clock","primary")}: ten questions; when time runs out the answer shows and the next question comes up; your best score is kept. Your record against the computer shows under each game; computer games never count in the 🏆 family standings.`),
     step(23, "Blackjack", `Tap the <b>Blackjack</b> picture. ${pic("🤖 Just me vs the dealer","primary")} plays on your phone; ${pic("👨‍👩‍👧 Family table · own phones","wine")} opens a table for up to four (pick who's playing, then ${pic("Open the table","primary")}). Everyone starts with <b>1,000 points</b>. Tap the chips (10, 25, 50, 100, 500) to build your bet, then ${pic("Bet","primary")}. When everyone has bet, the cards are dealt: the dealer shows one card. On your turn tap ${pic("Hit","primary")} for another card, ${pic("Stand","wine")} to stay, ${pic("Double")} to double your bet for exactly one more card, or ${pic("Split")} to play a pair as two hands. Over 21 is a bust. The dealer then plays, standing on 17; closest to 21 wins. A blackjack (an ace and a ten-card) pays 3 to 2. ${pic("Deal the next hand","primary")} starts the next round; ${pic("Close the table for everyone","ghost")} ends it and lists everyone's final stack, and the biggest stacks show in the Game Room. <b>Chips are points for fun, never money.</b>`),
     step(24, "Game sounds", `At the top of every game, next to ${pic("A+")}, tap ${pic("🔇")} to turn sounds on; it becomes ${pic("🔊")}. Tap again to turn them off. Sounds start off, and your phone remembers your choice.`),
-    step(25, "Movie Night", `Tap ${pic("Our Table")} → <b>🎬 Movie Night</b> → ${pic("🍿 Plan a movie night","primary")}. <b>Pick a movie:</b> posters of what's in theaters now, or type any title and tap ${pic("Search","primary")}. Tap a poster for the story, the age rating, the length, the TMDB score, the cast, viewer reviews and ${pic("▶ Watch the trailer","wine")}. Tap ${pic("🍿 Plan a movie night for this","primary")}: choose the date and the showtime you want, tap ${pic("Find theaters","primary")} and pick one, choose who's invited (and, if you like, which dinner it follows), and tap ${pic("🎬 Send the invitation","primary")}. Everyone invited is told. <b>On the night's page:</b> tap ${pic("Going","primary")}, ${pic("Maybe")} or ${pic("Can't go")}. <b>Tickets:</b> one person going taps ${pic("🎟️ I'll buy the tickets","primary")} so nobody buys twice, then ${pic("Fandango","primary")} or ${pic("Theater website")} to buy them there (the app never buys tickets or moves money). Back in the app they fill in how many, the price, the fees, the seats, the auditorium and the confirmation number, and tap ${pic("✓ I bought the tickets","wine")}. <b>Settling up:</b> everyone going sees their share and the buyer's Zelle, Cash App or Apple Pay; pay them yourself, then tap ${pic("I paid by Zelle","primary")} (or how you paid). Or tap ${pic("I'm paying for my own ticket instead")}. The buyer taps ${pic("✓ Received","wine")} when the money arrives, and your <b>🧾 receipt</b> appears: the movie, date and showtime, theater and address, seats, auditorium, confirmation, your share and “Received by” the buyer.`),
+    step(25, "Movie Night", `Tap ${pic("Our Table")} → <b>🎬 Movie Night</b> → ${pic("🍿 Plan a movie night","primary")}. <b>Pick a movie:</b> posters of what's in theaters now, or type any title and tap ${pic("Search","primary")}. Tap a poster for the story, the age rating, the length, the TMDB score, the cast, viewer reviews and ${pic("▶ Watch the trailer","wine")}. Tap ${pic("🍿 Plan a movie night for this","primary")}: choose the date and the showtime you want, tap ${pic("Find theaters","primary")} and pick one, choose who's invited (and, if you like, which dinner it follows), and tap ${pic("🎬 Send the invitation","primary")}. Everyone invited is told. <b>On the night's page:</b> tap ${pic("Going","primary")}, ${pic("Maybe")} or ${pic("Can't go")}. <b>Tickets:</b> one person going taps ${pic("🎟️ I'll buy the tickets","primary")} so nobody buys twice, then the 🎟️ buy button to buy them there (it opens <b>Fandango's own buy page for that showtime at that theater</b> when Fandango lists it; otherwise that theater's Fandango page for the day, or the movie's Fandango page), or ${pic("Theater website")} (the app never buys tickets or moves money). Back in the app they fill in how many, the price, the fees, the seats, the auditorium and the confirmation number, and tap ${pic("✓ I bought the tickets","wine")}. <b>Settling up:</b> everyone going sees their share and the buyer's Zelle, Cash App or Apple Pay; pay them yourself, then tap ${pic("I paid by Zelle","primary")} (or how you paid). Or tap ${pic("I'm paying for my own ticket instead")}. The buyer taps ${pic("✓ Received","wine")} when the money arrives, and your <b>🧾 receipt</b> appears: the movie, date and showtime, theater and address, seats, auditorium, confirmation, your share and “Received by” the buyer.`),
     step(26, "Wild Card", `Tap the <b>Wild Card</b> picture. ${pic("vs 1 computer")} ${pic("vs 2 computers","primary")} ${pic("vs 3 computers","wine")} play on your phone; ${pic("👨‍👩‍👧 Family game · own phones","wine")} lets you pick up to three players (or 🤖 Computer) and one round or first to 200, then ${pic("Deal Wild Card","primary")}. On your turn the cards you can play glow: tap one, then tap it again or ${pic("Play it","primary")}. A Wild asks for the new colour. Nothing glows? Tap ${pic("🂠 Draw a card")}; if the new card plays you may play it, or tap ${pic("Pass")}. With two cards left tap ${pic("🔔 Call “Last card!”")} first. If someone forgets, ${pic("🚨 Catch","wine")} appears for everyone else.`),
     step(27, "Bid Whist", `Tap the <b>Bid Whist</b> picture. ${pic("🤖 Me and a computer partner","primary")} plays on your phone; ${pic("👨‍👩‍👧 Deal a family game","wine")} lets you pick your partner and the other couple (🤖 Computer for any seat). <b>Bidding:</b> tap a bid such as ${pic("5 Uptown ⬆","primary")} or ${pic("Pass")}; a higher number beats a lower one, and No Trump beats the same number. If all pass, the dealer must bid. <b>The kitty:</b> the winner gets 6 more cards, taps 6 to put back, then taps a trump suit (or Uptown/Downtown for No Trump). <b>Play:</b> follow suit if you can; the kitty counts as your first book. You need 6 books plus your bid.`),
     step(28, "Dominoes", `Tap the <b>Dominoes</b> picture: ${pic("vs 1 computer")} to ${pic("vs 3 computers","wine")}, or ${pic("👨‍👩‍👧 Family game · own phones","wine")}. Your tiles that fit glow and rise: tap one. If it fits more than one end, tap ${pic("⬅ Left")} ${pic("Right ➡")} ${pic("⬆ Top")} or ${pic("⬇ Bottom")}. The gold bubble shows the open ends' total; a multiple of 5 scores it. Nothing fits? ${pic("🁢 Draw from the boneyard","primary")}. Going out scores everyone else's leftover dots.`),
@@ -2380,13 +2383,14 @@ function guideBody(k){
     step(31, "Topgolf Outing", `Tap ${pic("Our Table")} → <b>⛳ Topgolf Outing</b> → ${pic("⛳ Plan a Topgolf outing","primary")}. Pick the date, the start time and how long (1 to 4 hours), choose the area and tap ${pic("Find Topgolf","primary")}: Google lists the Topgolf venues there. Tap one, tap the family you're inviting, add a note if you like, and tap ${pic("⛳ Send the invitation","primary")}. Everyone answers ${pic("Going","primary")}, Maybe or Can't go. <b>Booking:</b> one person who is going taps ${pic("⛳ I'll book the bay","primary")} so nobody books twice, books on ${pic("Book on Topgolf's site","primary")} (or calls), then types the players, bays, the bay cost and any food, drinks and fees from the confirmation and taps ${pic("✓ I booked the bay","wine")}. Topgolf prices each bay by the hour and up to 6 play in a bay, so the app never guesses a price: it splits the real total by the players. <b>Paying back:</b> everyone else sees their share, pays the booker their own way (Cash App, Zelle, cash…) and taps <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and that person's receipt appears with the time, the Topgolf, the booking and their share. Paying your own way? Tap <b>I'm paying my own way</b>.`),
     step(32, "Solitaire", `Tap the <b>Solitaire</b> picture in the Game Room and choose ${pic("Draw 1 · easier","primary")} or ${pic("Draw 3 · classic","wine")}. Build each column down in alternating red and black; only a king goes in an empty column. Send every card home to the four piles at the top, from Ace up to King, by suit. <b>Tap a card</b> and it goes to the best place by itself: home if it can, otherwise a column (tap it again to try the next column). A face-up card with cards on it moves them all together. <b>Tap the deck</b> to turn over cards; when it's empty, tap ↻ to turn the pile back over. ${pic("↩ Undo")} takes back a move, ${pic("💡 Hint")} outlines a good move in gold, and when every card is face up ${pic("✨ Finish","primary")} plays the rest home for you. Your wins and best times stay on your phone.`),
     step(33, "Secret Santa", `Tap ${pic("Our Table")} → <b>🎁 Secret Santa</b> → ${pic("🎁 Start a Secret Santa","primary")}. Give it a name, a spending limit if you want one, and the day gifts are exchanged, then tap ${pic("🎁 Start it and tell the family","primary")}; you're in it yourself. Everyone is notified and taps ${pic("🎁 Join","primary")}. <b>Wish lists:</b> under <b>My wish list</b>, write what you'd love, with a size or colour and a link if you have one, and tap ${pic("Save my wish list","primary")}; ${pic("＋ Add a wish")} adds another line (up to 12). Everyone in it can read the wish lists. <b>Couples:</b> the organizer gives people who are married or live together the same <b>Household</b> letter and taps ${pic("Save households")}. They will never draw each other. <b>Drawing:</b> once at least 3 are in, the organizer taps ${pic("🎅 Draw names","primary")}. The app draws the names itself, and each person sees only <b>their own</b> person under <b>You're Secret Santa for</b>, with that person's wish list. Tap ${pic("Mark the gift bought","wine")} to keep track; only you see it. On the day, the organizer taps ${pic("🎉 Reveal the Santas","wine")} and everyone sees who had whom.`),
-    step(34, "Family Outing", `Tap ${pic("Our Table")} → <b>🎉 Family Outing</b> and tap a kind. <b>🏀 Memphis Tigers basketball:</b> the app shows the Tigers' home games at FedExForum from their official schedule (gotigersgo.com); tap the game you want. FedExForum is filled in for you. Times come from the Tigers' schedule and can change, so check the ticket page before you buy. <b>Everything else</b> (bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or ${pic("Something else")} with your own name for it): pick the date, start time and how long, choose the area, and tap ${pic("Find","primary")} to have Google list places; tap one. Then tap who's invited and ${pic("🎉 Send the invitation","primary")}. Everyone answers Going, Maybe or Can't go. <b>Booking:</b> one person who's going taps ${pic("🎟️ I'll book it","primary")}, books on the place's own site (for the Tigers: ${pic("Tigers' schedule & tickets","primary")} or ${pic("Tickets on SeatGeek")}), then types how many people it covers, the price each and any extras (a lane, parking, fees, food) and taps ${pic("✓ I booked it","wine")}. The app splits the real total by the people it covers. <b>Paying back</b> works like Topgolf: pay the booker your own way and tap <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and your receipt appears.`),
+    step(34, "Family Outing", `Tap ${pic("Our Table")} → <b>🎉 Family Outing</b> and tap a kind. <b>🏀 Memphis Tigers basketball</b> and <b>🐻 Memphis Grizzlies:</b> the app lists that team's home games at FedExForum from its own official schedule; each game shows “🎟️ Tickets on sale” when it has its own buy page. <b>Tigers:</b> the app shows the Tigers' home games at FedExForum from their official schedule (gotigersgo.com); tap the game you want. FedExForum is filled in for you. Times come from the Tigers' schedule and can change, so check the ticket page before you buy. <b>Everything else</b> (bowling, mini golf, the zoo, an escape room, skating, the arcade, a museum, or ${pic("Something else")} with your own name for it): pick the date, start time and how long, choose the area, and tap ${pic("Find","primary")} to have Google list places; tap one. Then tap who's invited and ${pic("🎉 Send the invitation","primary")}. Everyone answers Going, Maybe or Can't go. <b>Booking:</b> one person who's going taps ${pic("🎟️ I'll book it","primary")}, books on the place's own site (for a Tigers or Grizzlies game, tap ${pic("🎟️ Buy tickets for this game","primary")}: Tigers tickets open that game's page at the University of Memphis box office; Grizzlies tickets open that game's page on Ticketmaster, the Grizzlies' official seller), then types how many people it covers, the price each and any extras (a lane, parking, fees, food) and taps ${pic("✓ I booked it","wine")}. The app splits the real total by the people it covers. <b>Paying back</b> works like Topgolf: pay the booker your own way and tap <b>I paid by …</b>; the booker taps ${pic("✓ Received","wine")} and your receipt appears.`),
     step(35, "Prayer Wall", `Tap ${pic("Our Table")} → <b>🙏 Prayer Wall</b>. Under <b>Share a prayer request</b>, write what you'd like the family to pray about and tap ${pic("🙏 Share it with the family","primary")}; everyone is notified. Tick <b>Don't show my name</b> to share it unnamed: then the family sees “A family member”, and nobody, not even the host, can find out from the app who wrote it. Under <b>Praying for</b>, tap ${pic("🙏 I prayed")} on a request when you've prayed; the person who shared it is told, and you can see who else prayed. When your prayer is answered, tap ${pic("🙌 Mark answered","wine")}, write a praise report if you like, and tap ${pic("Share the good news","primary")}: everyone who prayed is told, and it moves to <b>Answered prayers</b>. ${pic("Still praying","ghost")} moves it back. You, or the host, can tap ${pic("Take down","ghost")}.`),
     step(36, "Game Night Tournament", `In the Game Room tap ${pic("🏆 Start a game night tournament","wine")}. Give it a name, tap who's playing, and tap the games you'll play, in order (2 to 10). For a game that isn't in the app, like cards at the table, type it under <b>Another game</b> and tap ${pic("＋ Add")}. Tap ${pic("🏆 Start the tournament","primary")}; the players are told. Play each game, here in the Game Room or at the table. Then anyone playing taps ${pic("Record result","wine")} on that game, picks who came <b>🥇 1st</b> (and <b>🥈 2nd</b> if you like) and taps ${pic("Save result","primary")}. 1st place earns 3 points, 2nd place 1; a team win gives each partner the points. The <b>Leaderboard</b> updates on every phone. At the end, the organizer taps ${pic("🏆 Crown the champion","primary")}: everyone is told, and the champion is added to the <b>Year at the Table</b>. A tie means co-champions.`),
     step(37, "Family Recipe Book", `Tap ${pic("Our Table")} → <b>🍗 Family Recipe Book</b>. <b>Adding one:</b> tap ${pic("＋ Add a family recipe","primary")}, type the <b>name of the dish</b>, <b>whose recipe it is</b> (Grandma, Rosa…), pick the kind (main dish, side, dessert, bread, breakfast, drink or other), how many it serves and how long it takes. Type the <b>ingredients</b> one on each line, then the <b>steps</b> one on each line, and any notes (the secret, the story). Tap ${pic("📷 Add a photo")} to pick a picture, then ${pic("🍗 Add it to the Recipe Book","primary")}. The whole family is told, and the photo shows right away (no approval). <b>Finding one:</b> type in <b>Search</b> (a dish, an ingredient like “pecans”, or who made it), or tap a chip: ${pic("All")}, ${pic("⭐ My favorites")} or a kind. Tap a recipe to open it. <b>Cooking:</b> tick each ingredient as you add it (only your phone sees the ticks), and tap ${pic("A+")} for bigger print. Tap ${pic("☆ Favorite")} to star it for yourself; you can see who else starred it. <b>Changing it:</b> the person who added it, or the host, taps ${pic("✏️ Change it")}, makes the change and taps ${pic("Save the changes","primary")}; ${pic("Take the photo off","ghost")} removes the picture, and ${pic("Remove")} takes the whole recipe and its photo out of the book.`),
     step(38, "Rides", `Every dinner card in the ${pic("Feed")}, and every Family Outing, Movie Night and Topgolf page, has a <b>🚗 Rides</b> strip; tap ${pic("Rides")}. <b>Driving:</b> tap ${pic("🚗 I can drive","primary")}, tap how many you can take (not counting you), add when you'll leave and a note if you like (“I have a car seat”), and tap ${pic("🚗 Offer my seats","primary")}. Anyone waiting who fits is put in your car at once. Under <b>You're driving</b> you see each rider, how many are with them, their note and <b>📍 where to pick them up</b>, with ${pic("🧭 Directions","primary")} and ${pic("📞 Call")} / ${pic("💬 Text")}. ${pic("I'll pick them up","primary")} takes someone waiting; ${pic("Let go","ghost")} hands them back to the list (you won't be matched with them again unless you tap I'll pick them up); ${pic("Change seats or time")} and ${pic("I can't drive after all","ghost")} do what they say, and your riders are told. <b>Riding:</b> tap ${pic("🙋 I need a ride","wine")}, tap how many are riding (you and anyone with you, such as a grandparent or the children), type where to pick you up and anything the driver should know there (the apartment, the gate code), and tap ${pic("🙋 Ask for a ride","primary")}. Next time the app fills in your last pickup address for you. The app puts you with the driver who has the most room, and never splits your group across two cars; if no car has room yet, you wait on the list and are told the moment one does. You'll see <b>who is driving you</b>, when they leave, and ${pic("Change")} or ${pic("I don't need a ride now","ghost")}. <b>Privacy:</b> where to pick you up is seen only by you and your own driver, never the rest of the family, and it never appears on a lock screen.`),
+    step(39, "Sign-in emails, lockouts and PINs (host)", `${host} only. Tap your initial → ${pic("Host controls")} → <b>Family seats</b>. Each seat has a <b>Sign-in email</b> box: type that person's email and tap ${pic("Save")} (two seats can't share one). A seat with five wrong PINs shows ${pic("Locked out","wine")} and an ${pic("Unlock","primary")} button: tap it and they sign in again with the same PIN. If they forgot the PIN, tap ${pic("Reset PIN","ghost")} instead; next time they sign in they choose a new one. Nobody else can unlock a seat or reset a PIN.`),
   ].join("");
-  if(k === "voice") return `<div class="card"><b>Table of 7 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
+  if(k === "voice") return `<div class="card"><b>Table of 8 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
     step("A", "A Sunday vote", `Jasmine taps ${pic("Start a family vote")}, offers Central BBQ, Gus's and Babalu with a 15-minute vote, and sends it. Everyone's bell rings. Devonte opens it and taps ${pic("Start 15-minute vote","wine")}; the clock starts for all. Rosa and Mario vote; when everyone has voted it closes and every phone shows <b>“The family chose Gus's.”</b>`),
     step("B", "A birthday invitation", `${host} taps ${pic("Send an invitation")}, chooses Birthday and Chez Philippe, adds “Wear red”, and sends. Each person sees a sealed envelope, opens it and taps <b>Accept</b>, <b>Maybe</b> or <b>Decline</b>; ${host} is told each answer.`),
@@ -2417,11 +2421,14 @@ function guideBody(k){
     step("AB", "The family championship", `After Sunday dinner Mario taps ${pic("🏆 Start a game night tournament","wine")}, picks six players and three games: Spades, Family Feud and “Dominoes at the table”. After Spades he records Jasmine &amp; Richard 🥇 and Zoey &amp; Mario 🥈. Jasmine wins Dominoes outright. When Feud is done the leaderboard shows Jasmine on 6 points; Mario taps ${pic("🏆 Crown the champion","primary")}, and every phone says <b>“Jasmine is the Game Night champion!”</b>`),
     step("AC", "Rosa's pie, saved", `Jasmine opens ${pic("🍗 Family Recipe Book")}, taps ${pic("＋ Add a family recipe","primary")} and types “Sweet potato pie”, from “Rosa”, a dessert that serves 8. She types the ingredients and the steps line by line, adds a photo of the pie and taps ${pic("🍗 Add it to the Recipe Book","primary")}. Everyone's phone says she added it. At Thanksgiving Mario types “sweet potato” in Search, opens it, taps ${pic("A+")} and ticks the ingredients off as he goes.`),
     step("AD", "Grandma gets a ride", `Sunday Dinner is at Gus's. Mario opens the dinner card, taps ${pic("Rides")} → ${pic("🚗 I can drive","primary")}, picks 3 seats and “4:30 PM from Cordova”, and taps ${pic("🚗 Offer my seats","primary")}. Zoey taps ${pic("🙋 I need a ride","wine")}, picks 2 (she's bringing Grandma), types her address and “Grandma needs the front seat”, and taps ${pic("🙋 Ask for a ride","primary")}. Her screen says Mario is driving her; Mario's phone says he's driving Zoey and 1 more, and his Rides screen shows her address with ${pic("🧭 Directions","primary")}.`),
+    step("AE", "Locked out on a Sunday", `Zoey types her PIN wrong five times and sees “Your seat is locked”. She texts ${host}. ${host} opens ${pic("Host controls")}, finds Zoey under Family seats marked ${pic("Locked out","wine")}, and taps ${pic("Unlock","primary")}. Zoey signs in with her email and her usual PIN.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
-    ["“We couldn't find … at the table.”", `Type your <b>full name</b> as ${host} set it (Nikki is “Nikki Honorable”). Still stuck? Ask ${host}.`],
-    ["“That PIN isn't right. N tries left.”", `Five wrong tries locks your name for 5 minutes on every phone. Forgot it? ${host} can reset it in Host controls; then you make a new one.`],
+    ["“That email isn't at the table.”", `Check the spelling of your email. Each seat signs in with the email ${host} saved for it in Host controls; ask ${host} to add or correct yours.`],
+    ["“That PIN isn't right. N tries left.”", `Five wrong tries lock your seat until ${host} unlocks it. Forgot your PIN? ${host} can reset it in Host controls; then you choose a new one.`],
+    ["“Your seat is locked”", `Ask ${host}. In Host controls → Family seats, your seat shows <b>Locked out</b> with an ${"Unlock"} button; you keep the same PIN. If you forgot the PIN, ${host} taps Reset PIN instead.`],
+    ["The old Table of 7 link or Home Screen icon", "It still works and moves you to the new address, table-of-8.netlify.app. Add the new address to your Home Screen (Share → Add to Home Screen) and turn notifications on again there; then delete the old icon."],
     ["“Too many wrong PINs from this network.”", "Wait 15 minutes, then try again."],
     ["“Can't reach the table right now.”", "Check Wi-Fi or mobile data and try again."],
     ["“Locked after 10 minutes away.”", "That's on purpose. Sign in again with your PIN."],
@@ -2432,8 +2439,8 @@ function guideBody(k){
     ["“That plan was cancelled.”", "Its host cancelled it; the screen closes by itself."],
     ["“Google search is resting until tomorrow / until the 1st.”", "The family used the free Google searches for now. Our own list still works; Google comes back then."],
     ["“Google found nothing like that in …”", "Try another word (a dish, a chain, a cuisine) or a nearby city."],
-    ["Notifications don't arrive", "Tap your initial and look at Notifications. On iPhone open Table of 7 from the Home Screen icon, not Safari. If it says blocked, turn notifications on for Table of 7 in the phone's Settings."],
-    ["I see an old screen", "Close Table of 7 fully (swipe it away), then open it again from the Home Screen icon. The app never keeps an old copy once it is reopened."],
+    ["Notifications don't arrive", "Tap your initial and look at Notifications. On iPhone open Table of 8 from the Home Screen icon, not Safari. If it says blocked, turn notifications on for Table of 8 in the phone's Settings."],
+    ["I see an old screen", "Close Table of 8 fully (swipe it away), then open it again from the Home Screen icon. The app never keeps an old copy once it is reopened."],
     ["A bakery isn't in the dinner vote or the Concierge's picks", "That's on purpose: our bakeries and dessert shops are a stop after dinner, not the dinner. Add one with “+ Dessert after” on the plan instead."],
     ["I don't see “+ Dessert after” or “Change” on a plan", `Only that plan's host, or ${host}, can set the dessert stop. Ask them.`],
     ["“… saved it. Only they or … can take it off.”", `A Want to Try star belongs to the person who saved it. Ask them, or ${host}.`],
@@ -2479,6 +2486,8 @@ function guideBody(k){
     ["There's no Rides strip on a plan", "Rides close once the plan's day has passed or the plan is cancelled. A dinner you were taken off doesn't show its rides either."],
     ["The Tigers list says “Getting the Tigers' schedule…” for a long time", "The app reads the schedule from the Tigers' own website. If their site is slow, tap Try again in a minute."],
     ["A Tigers game time looks odd", "Times come straight from the Tigers' official schedule and can change. Check the ticket page; if the game moved, plan the outing again."],
+    ["A game says “No ticket page yet”", "The team's own seller hasn't put that game on sale yet. You can still plan it; the 🎟️ button then opens the team's tickets page. Plan it again closer to the day to get the game's own page."],
+    ["The Fandango button opens the movie, not my showtime", "Fandango doesn't list that showtime at that theater (the time or the theater may differ). Pick the theater and time on Fandango, or use the theater's own website."],
     ["Find shows the wrong kind of place", "Change the words in the box under the area (for example “bowling alley Cordova”) and tap Find again. Google lists only places inside the area you pick."],
     ["Secret Santa says there's no way to draw names", "With the households marked, someone would have to draw their own partner. Invite more people, or take someone out of a household, then draw again."],
     ["I can't see who I drew", "Names appear after the organizer taps Draw names. You see only your own person; nobody else can see it, not even the host, until the reveal."],
@@ -2506,13 +2515,13 @@ function guideBody(k){
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
-  if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 7 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
+  if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 8 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers home games from the Tigers' official schedule, bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
-    <div class="card"><div class="lbl">⛔ TABLE OF 7 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
+      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers and Memphis Grizzlies home games from each team's official schedule, each game with its own real buy page (the Tigers box office, or Ticketmaster for the Grizzlies), bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+    <div class="card"><div class="lbl">⛔ TABLE OF 8 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
-      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Read a recipe off a photo of a recipe card: you type it in</li><li>Drive anyone, or show where a car is on the road</li><li>Keep an address book: each rider types where to be picked up, and only their own last one is filled in for them</li><li>Let anyone but the person who added a recipe (or the host) change or remove it</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Buy Tigers tickets or book a lane for you, or promise a game time: the booker uses the official ticket page, and times come from the Tigers' schedule</li><li>Show who wrote an unnamed prayer request, to anyone</li><li>Plan a Tigers away game: the planner lists home games at FedExForum</li><li>Show anyone who drew whom before the organizer reveals it, or buy the gifts for you</li><li>Undo a card or tile once it's played</li>
+      <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Read a recipe off a photo of a recipe card: you type it in</li><li>Let anyone but the host unlock a seat, reset a PIN or change a seat's sign-in email</li><li>Drive anyone, or show where a car is on the road</li><li>Keep an address book: each rider types where to be picked up, and only their own last one is filled in for them</li><li>Let anyone but the person who added a recipe (or the host) change or remove it</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Buy Tigers tickets or book a lane for you, or promise a game time: the booker uses the official ticket page, and times come from the Tigers' schedule</li><li>Show who wrote an unnamed prayer request, to anyone</li><li>Plan a Tigers away game: the planner lists home games at FedExForum</li><li>Show anyone who drew whom before the organizer reveals it, or buy the gifts for you</li><li>Undo a card or tile once it's played</li>
       <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
@@ -2540,10 +2549,10 @@ async function pushPanel(){
   const stEl = document.getElementById("push-state"), bEl = document.getElementById("push-btns"); if(!stEl) return;
   const say = (t, btns = "") => { stEl.textContent = t; bEl.innerHTML = btns; };
   if(!pushOK()){
-    if(isIOS() && !isStandalone()) return say("On iPhone, notifications work once Table of 7 is on your Home Screen: tap Share (the square with the arrow), then Add to Home Screen. Open Table of 7 from the Home Screen and come back here.");
-    return say("This browser can't show notifications. On iPhone, add Table of 7 to your Home Screen first.");
+    if(isIOS() && !isStandalone()) return say("On iPhone, notifications work once Table of 8 is on your Home Screen: tap Share (the square with the arrow), then Add to Home Screen. Open Table of 8 from the Home Screen and come back here.");
+    return say("This browser can't show notifications. On iPhone, add Table of 8 to your Home Screen first.");
   }
-  if(Notification.permission === "denied") return say("Notifications are blocked for Table of 7 on this phone. Turn them on in your phone's Settings, then come back here.");
+  if(Notification.permission === "denied") return say("Notifications are blocked for Table of 8 on this phone. Turn them on in your phone's Settings, then come back here.");
   const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription();
   if(sub) say("On. Votes, invitations, check-ins and The Tab reach this phone even when the app is closed.", `<button class="btn sm" data-act="push-test">Send me a test</button><button class="btn sm ghost" data-act="push-off">Turn off</button>`);
   else say("Off. Turn on to hear about votes, invitations, check-ins and The Tab even when the app is closed.", `<button class="btn sm primary" data-act="push-on">Turn on notifications</button>`);
@@ -2598,7 +2607,7 @@ function sheetPerson(kind, id){
     ${kind==="fam" && isNew ? `<p class="small muted" style="margin:0">A new seat at the family table. They get a vote and count toward guest approval.</p>` : ""}
     <div class="field"><label for="pp-name">Name</label><input class="input" id="pp-name" value="${esc(p.name)}" placeholder="Full name"></div>
     ${kind==="contact" ? `<div class="field"><label for="pp-rel">Relationship</label><input class="input" id="pp-rel" value="${esc(p.relation)}" placeholder="e.g. Cousin, Jasmine's fiancé"></div>` : ""}
-    <div class="field"><label for="pp-email">Email</label><input class="input" id="pp-email" type="email" value="${esc(p.email)}" placeholder="name@email.com"></div>
+    <div class="field"><label for="pp-email">${kind==="fam" ? "Email (also the sign-in email)" : "Email"}</label><input class="input" id="pp-email" type="email" autocapitalize="off" spellcheck="false" value="${esc(p.email)}" placeholder="name@email.com" ${kind==="fam" && !isNew && !isAdmin() ? `readonly aria-describedby="pp-email-note"` : ""}>${kind==="fam" && !isNew && !isAdmin() ? `<span class="small muted" id="pp-email-note">Only ${esc(first(F(ADMIN).name))} can change a sign-in email.</span>` : ""}</div>
     <div class="field"><label for="pp-phone">Mobile</label><input class="input" id="pp-phone" type="tel" value="${esc(p.phone)}" placeholder="(901) 555-0123"></div>
     ${kind==="fam" ? `<div class="field"><label for="pp-bday">Birthday</label><input class="input" id="pp-bday" type="date" value="${esc(p.birthday||"")}"></div>
     <div class="field"><label for="pp-diet">Allergies &amp; dietary notes</label><input class="input" id="pp-diet" value="${esc(p.diet||"")}" placeholder="e.g. Shellfish allergy, no pork"></div>
@@ -2776,7 +2785,7 @@ function hostQueue(){
 const queueCount = () => { const q = hostQueue(); return q.photos.length + q.cards.length + q.notes.length + q.reviews.length; };
 const hostEl = document.getElementById("host");
 function openHost(){ if(!isAdmin()) return; hostEl.hidden = false; document.body.style.overflow = "hidden"; drawHost();
-  sb.rpc("pin_status").then(({data}) => { if(data){ pinSet = Object.fromEntries(data.map(x => [x.member_id, x.has_pin])); if(!hostEl.hidden) drawHost(); } }); }
+  sb.rpc("pin_status").then(({data}) => { if(data){ pinSet = Object.fromEntries(data.map(x => [x.member_id, x.has_pin])); pinLocked = Object.fromEntries(data.map(x => [x.member_id, x.locked])); if(!hostEl.hidden) drawHost(); } }); }
 function closeHost(){ hostEl.hidden = true; document.body.style.overflow = ""; render(); }
 function drawHost(){
   const q = hostQueue(); const none = t => `<div class="empty">${t}</div>`;
@@ -2806,7 +2815,8 @@ function drawHost(){
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Family seats</h2></div>
       ${st.fam.map(f => `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${f.id === ADMIN ? "Host" : f.status === "suspended" ? "Paused: can look, can't vote or post" : "Active"}</small></span>${f.id === ADMIN ? "" : `<span class="actions" style="justify-content:flex-end">${f.status === "suspended" ? `<button class="btn sm primary" data-act="host-member" data-id="${f.id}" data-v="restore">Reinstate</button>` : `<button class="btn sm" data-act="host-member" data-id="${f.id}" data-v="pause">Pause</button>`}<button class="btn sm ghost" data-act="host-member" data-id="${f.id}" data-v="remove">Remove</button></span>`}</div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;margin:-4px 0 6px"><span class="small muted">${pinSet[f.id] ? "PIN set" : "No PIN yet"}</span>${pinSet[f.id] && f.id !== ADMIN ? `<button class="link-btn" data-act="host-pin" data-id="${f.id}">Reset PIN</button>` : ""}</div>`).join("")}
+        <div style="display:flex;gap:8px;align-items:center;margin:-2px 0 4px"><label class="small muted" for="em-${f.id}" style="flex:none">Sign-in email</label><input class="input" style="flex:1;min-width:0;padding:8px 10px" id="em-${f.id}" type="email" autocapitalize="off" spellcheck="false" placeholder="Needed to sign in" value="${esc(f.email)}"><button class="btn sm" data-act="host-email" data-id="${f.id}">Save</button></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;margin:0 0 6px">${pinLocked[f.id] ? `<span class="pill bad">Locked out</span><button class="btn sm primary" data-act="host-unlock" data-id="${f.id}">Unlock</button>` : ""}<span class="small muted">${pinSet[f.id] ? "PIN set" : "No PIN yet"}</span>${pinSet[f.id] && f.id !== ADMIN ? `<button class="link-btn" data-act="host-pin" data-id="${f.id}">Reset PIN</button>` : ""}</div>`).join("")}
     </section>
     <section class="card"><div class="sec-head"><h2 style="font-size:20px">Guests &amp; contacts</h2></div>
       ${st.contacts.map(c => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(c.name[0])}</span><span style="min-width:0"><b>${esc(c.name)}</b><small>${c.banned ? "Not welcome: can't be invited" : esc(c.relation || "Contact")}</small></span><button class="btn sm ${c.banned ? "primary" : "ghost"}" data-act="host-contact" data-id="${c.id}">${c.banned ? "Welcome back" : "Not welcome"}</button></div>`).join("") || none("No contacts yet.")}
@@ -2866,9 +2876,9 @@ async function renderCard(cv, d){
   try { await Promise.all(['64px "Pinyon Script"','italic 700 40px Nunito','800 44px Nunito','600 28px Figtree'].map(f => document.fonts.load(f))); } catch {}
   const src = d.upload || st.photos.find(p => p.id === d.photoId)?.data; const img = src ? await loadImg(src).catch(() => null) : null;
   const e = d.eventId ? ev(d.eventId) : null; const r = e?.chosen ? RBY[e.chosen] : d.rid ? RBY[d.rid] : null;
-  const place = r ? r.name : "Table of 7";
+  const place = r ? r.name : "Table of 8";
   const when = (e ? parse(e.date) : new Date()).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
-  const from = `— ${first(F(d.by || st.me).name)} & the Table of 7`;
+  const from = `— ${first(F(d.by || st.me).name)} & the Table of 8`;
   const BOD = 'Nunito, "Avenir Next", system-ui, sans-serif', SCR = '"Pinyon Script", "Snell Roundhand", cursive', SANS = 'Figtree, system-ui, sans-serif';
   ctx.clearRect(0, 0, W, H); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
   if(d.style === "snapshot"){
@@ -2908,15 +2918,15 @@ async function sendCard(){
   const rec = d.approvedId ? st.cards.find(c => c.id === d.approvedId) : null;
   if(rec) rec.status = "sent"; else st.cards.push({id:uid("cd"), by:st.me, photoId:d.photoId, style:d.style, msg:d.msg, eventId:d.eventId, rid:d.rid, to:[...d.to], status:"sent", t:Date.now()});
   save();
-  const file = blob ? new File([blob], "table-of-7-card.png", {type:"image/png"}) : null;
+  const file = blob ? new File([blob], "table-of-8-card.png", {type:"image/png"}) : null;
   if(file && navigator.canShare && navigator.canShare({files:[file]})){
-    try { await navigator.share({files:[file], title:"From the Table of 7", text:d.msg}); toast("Card sent"); return; } catch(err){ if(err && err.name === "AbortError") return; }
+    try { await navigator.share({files:[file], title:"From the Table of 8", text:d.msg}); toast("Card sent"); return; } catch(err){ if(err && err.name === "AbortError") return; }
   }
   const emails = d.to.map(id => st.fam.find(f => f.id === id)?.email || st.contacts.find(c => c.id === id)?.email).filter(Boolean);
   openSheet(`<div class="sheet-head"><h2>Your card is ready</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <img src="${cv.toDataURL("image/jpeg", .9)}" alt="Your card" style="width:100%;border-radius:10px">
     <p class="small muted" style="margin:0">Press and hold the card to save it to your photos, then text or email it. On the live app, “Send card” opens your phone's share menu directly.</p>
-    <a class="btn block" href="mailto:?bcc=${encodeURIComponent(emails.join(","))}&subject=${encodeURIComponent("A card from the Table of 7")}&body=${encodeURIComponent(d.msg + "\n\n" + "— " + first(ME().name) + " & the Table of 7")}">Email the note${emails.length ? ` to ${emails.length}` : ""}</a>`);
+    <a class="btn block" href="mailto:?bcc=${encodeURIComponent(emails.join(","))}&subject=${encodeURIComponent("A card from the Table of 8")}&body=${encodeURIComponent(d.msg + "\n\n" + "— " + first(ME().name) + " & the Table of 8")}">Email the note${emails.length ? ` to ${emails.length}` : ""}</a>`);
 }
 
 /* ================= The Tab: one check, one payer =================
@@ -2969,8 +2979,8 @@ function guestCheck(e, t, owner, editable){
   const status = owner === t.payer ? "payer" : k.status; const stp = STAMP[status];
   return `<div class="gcheck">
     ${stp ? `<div class="stamp ${stp[1]}">${stp[0]}</div>` : ""}
-    <div class="gc-title">Table of 7</div>
-    <div class="gc-head"><div>Table<b>7</b></div><div>Guests<b>${diners(e).length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${d.getMonth()+1}/${d.getDate()}</b></div></div>
+    <div class="gc-title">Table of 8</div>
+    <div class="gc-head"><div>Table<b>8</b></div><div>Guests<b>${diners(e).length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${d.getMonth()+1}/${d.getDate()}</b></div></div>
     <div class="gc-name"><span>Guest check</span><b>${esc(F(owner).name)}</b><span>${esc(r.name)}</span></div>
     <div class="gc-lines">${k.items.map(x => `<div class="gc-row"><span class="gc-cat">${esc(x.cat)}</span><span>${esc(x.desc || x.cat)}</span><span class="gc-amt">${money(x.amount)}</span>${editable ? `<button class="gc-x" data-act="tk-del" data-id="${x.id}" aria-label="Remove line">✕</button>` : "<span></span>"}</div>`).join("") || `<div class="gc-row"><span></span><span class="gc-muted">Nothing on this ticket yet</span><span></span><span></span></div>`}</div>
     <div class="gc-for">Paying for: <b>${k.covers.map(c => esc(first(dinerName(e, c)))).join(", ")}</b></div>
@@ -3023,8 +3033,8 @@ function drawTab(){
           <div class="actions">${waiting.filter(x => !x.fam).map(x => `<button class="btn sm" data-act="tk-cover-guest" data-id="${x.id}">Put ${esc(first(x.name))} on my ticket</button>`).join("")}${waiting.some(x => x.fam) ? `<button class="btn sm" data-act="tk-nudge">Remind them</button>` : ""}</div></section>` : ""}`;
     } else if(tabView === "check"){
       body += `<div class="gcheck">
-        <div class="gc-title">Table of 7</div>
-        <div class="gc-head"><div>Table<b>7</b></div><div>Guests<b>${ds.length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${parse(e.date).getMonth()+1}/${parse(e.date).getDate()}</b></div></div>
+        <div class="gc-title">Table of 8</div>
+        <div class="gc-head"><div>Table<b>8</b></div><div>Guests<b>${ds.length}</b></div><div>Check<b>${t.no}</b></div><div>Date<b>${parse(e.date).getMonth()+1}/${parse(e.date).getDate()}</b></div></div>
         <div class="gc-name"><span>Full check</span><b>${esc(r.name)}</b><span>Paid by ${esc(pf.name)}</span></div>
         ${all.map(x => `<div class="gc-section"><div class="gc-who"><b>${esc(F(x.o).name)}</b><span>${x.o === payer ? "Payer" : {draft:"Not sent",sent:"To verify",confirmed:"Confirmed",returned:"Sent back",settled:"Paid ✓"}[x.k.status]}</span></div>
           <div class="gc-lines">${x.k.items.map(it => `<div class="gc-row"><span class="gc-cat">${esc(it.cat)}</span><span>${esc(it.desc || it.cat)}</span><span class="gc-amt">${money(it.amount)}</span><span></span></div>`).join("")}</div>
@@ -3094,7 +3104,7 @@ function sheetPeople(id){
 /* Invitations by email / copy */
 function inviteText(e){
   const r = RBY[e.chosen];
-  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress} (${DRESS_NOTE[e.dress] || ""})${e.arrive ? `\nPlease arrive by ${fmtTime(e.arrive)}` : ""}${e.theme ? `\nWear: ${e.theme}` : ""}${e.adults ? "\nAdults only, please" : ""}${e.gifts ? `\n${e.gifts}` : ""}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${RBY[e.dessert] ? `\n\nDessert after: ${RBY[e.dessert].name}\n${addrOf(RBY[e.dessert])}\nDirections to dessert: ${mapsDir(RBY[e.dessert])}` : ""}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 7.`;
+  return `${F(e.host).name} invites you to ${e.title}\n\n${r.name}\n${fmtLong(e.date)} at ${fmtTime(e.time)}\nDress: ${e.dress} (${DRESS_NOTE[e.dress] || ""})${e.arrive ? `\nPlease arrive by ${fmtTime(e.arrive)}` : ""}${e.theme ? `\nWear: ${e.theme}` : ""}${e.adults ? "\nAdults only, please" : ""}${e.gifts ? `\n${e.gifts}` : ""}\n${addrOf(r)}\nTypical cost: ${costText(r)}\n\nDriving directions: ${mapsDir(r)}\nMenu: ${menuLink(r)}${RBY[e.dessert] ? `\n\nDessert after: ${RBY[e.dessert].name}\n${addrOf(RBY[e.dessert])}\nDirections to dessert: ${mapsDir(RBY[e.dessert])}` : ""}${e.note?`\n\n"${e.note}"`:""}\n\nPlease RSVP in Table of 8.`;
 }
 function mailInvite(e){
   const to = [...st.fam.filter(f => f.id !== st.me).map(f => f.email), ...e.guests.filter(guestApproved).map(g => g.email)].filter(Boolean);
@@ -5102,6 +5112,19 @@ const mvTime = t => { const [h, m] = String(t || "19:00").split(":").map(Number)
 const mvWhen = n => `${mvDate(n).toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"})} · ${mvTime(n.time)}`;
 const mvPast = n => mvDate(n) < new Date(today0.getTime() - DAY);
 const mvMe = n => n.people[st.me] || {};
+// The real place to buy (his order, 2026-10-19): the server asks Fandango for this night's showtime at this theater and
+// hands back the most specific link it lists (that showtime → that theater's day → the movie → a search). Fetched once
+// each time the page opens for the buyer, because a showtime's buy link carries a fresh code.
+const mvBuy = {}, mvBuyBusy = new Set();
+function mvBuyLink(n, th){
+  if(mvBuy[n.id]) return mvBuy[n.id];
+  if(!th || mvBuyBusy.has(n.id)) return null;
+  mvBuyBusy.add(n.id);
+  moviesCall({action:"buy", id:n.id, addr:th.address || "", theater:th.name || ""}).then(d => { mvBuyBusy.delete(n.id);
+    mvBuy[n.id] = d.ok ? d : {level:"search", url:`https://www.fandango.com/search?q=${encodeURIComponent(n.movie.title)}&mode=all`}; mvRedraw(); });
+  return null;
+}
+const mvBuyLabel = (b, n) => b.level === "showtime" ? `🎟️ Buy ${b.at} tickets at ${b.theater}` : b.level === "theater" ? `🎟️ ${b.theater} on Fandango` : b.level === "movie" ? `🎟️ ${n.movie.title} on Fandango` : "🔎 Search Fandango";
 function mvTheaterInfo(pid){
   if(!pid || mvTheater[pid] || mvTheaterBusy.has(pid)) return mvTheater[pid] || null;
   mvTheaterBusy.add(pid);
@@ -5199,13 +5222,14 @@ function drawMovieNight(id){
   const n = (st.movies || []).find(x => x.id === id); if(!n){ sheetMovies(); return; }
   mvOpen = id; const th = mvTheaterInfo(n.pid), me = mvMe(n), t = n.tickets, open = n.status === "open", buyer = n.buyer, isBuyer = buyer === st.me;
   const ppl = Object.entries(n.people), going = ppl.filter(([, p]) => p.rsvp === "yes");
-  const fandango = `https://www.fandango.com/search?q=${encodeURIComponent(n.movie.title)}&mode=all`;
+  const buy = isBuyer && !t && open ? mvBuyLink(n, th) : null;
   const dinner = n.dinner && ev(n.dinner);
   let tk = "";
   if(!open) tk = `<div class="warnbox">This movie night was cancelled.</div>`;
   else if(!buyer) tk = me.rsvp === "yes" ? `<button class="btn primary block" data-act="mv-claim">🎟️ I'll buy the tickets</button><p class="small muted" style="margin:0;text-align:center">Tap this before you buy, so nobody buys twice.</p>` : `<p class="small muted" style="margin:0;text-align:center">Tap Going, then anyone going can offer to buy the tickets.</p>`;
   else if(isBuyer && !t) tk = `<div class="card"><div class="lbl">🎟️ BUY THE TICKETS</div><p class="small" style="margin:0">Buy them on Fandango or the theater's own site, then fill in what you bought.</p>
-      <div class="actions"><a class="btn primary" href="${fandango}" target="_blank" rel="noopener">Fandango</a>${th?.website ? `<a class="btn" href="${esc(th.website)}" target="_blank" rel="noopener">Theater website</a>` : ""}${th?.phone ? `<a class="btn" href="tel:${th.phone.replace(/[^\d+]/g, "")}">📞 Call the theater</a>` : ""}</div>
+      ${buy?.url ? `<a class="btn primary block" href="${esc(buy.url)}" target="_blank" rel="noopener">${esc(mvBuyLabel(buy, n))}</a>${buy.level === "theater" && buy.times?.length ? `<p class="small" style="margin:0;text-align:center">Fandango lists ${esc(buy.theater)} showing it at ${esc(buy.times.join(", "))} that day.</p>` : buy.level === "movie" || buy.level === "search" ? `<p class="small" style="margin:0;text-align:center">Fandango doesn't list this showtime at this theater, so this opens the movie on Fandango; pick the theater and time there.</p>` : ""}` : `<p class="small" style="margin:0;text-align:center">Finding the buy page on Fandango…</p>`}
+      <div class="actions">${th?.website ? `<a class="btn" href="${esc(th.website)}" target="_blank" rel="noopener">Theater website</a>` : ""}${th?.phone ? `<a class="btn" href="tel:${th.phone.replace(/[^\d+]/g, "")}">📞 Call the theater</a>` : ""}</div>
       <div class="grid2"><div class="field"><label for="mv-count">Tickets</label><input class="input num" id="mv-count" inputmode="numeric" value="${going.length || 1}"></div><div class="field"><label for="mv-each">Price each</label><input class="input num" id="mv-each" inputmode="decimal" placeholder="$0.00"></div></div>
       <div class="grid2"><div class="field"><label for="mv-fees">Fees (total)</label><input class="input num" id="mv-fees" inputmode="decimal" placeholder="$0.00"></div><div class="field"><label for="mv-room">Auditorium</label><input class="input" id="mv-room" maxlength="20" placeholder="e.g. 7"></div></div>
       <div class="field"><label for="mv-seats">Seats</label><input class="input" id="mv-seats" maxlength="80" placeholder="e.g. F7–F12"></div>
@@ -5486,12 +5510,18 @@ async function saAct(body, okToast){ const d = await santaCall(body); if(!d.ok){
    The app never books and never moves money. Writes go through functions/outings. ===== */
 const OU_KINDS = {
   tigers:{ic:"🏀", l:"Memphis Tigers basketball", s:"A home game at FedExForum", q:"FedExForum"},
+  grizzlies:{ic:"🐻", l:"Memphis Grizzlies", s:"An NBA home game at FedExForum", q:"FedExForum"},
   bowling:{ic:"🎳", l:"Bowling", s:"Lanes for the family", q:"bowling alley"}, minigolf:{ic:"⛳", l:"Mini golf", s:"18 holes, all ages", q:"mini golf"},
   zoo:{ic:"🦒", l:"The zoo", s:"A day with the animals", q:"zoo"}, escape:{ic:"🔐", l:"Escape room", s:"Solve it together", q:"escape room"},
   skating:{ic:"⛸️", l:"Skating", s:"Roller or ice", q:"skating rink"}, arcade:{ic:"🕹️", l:"Arcade", s:"Games and prizes", q:"arcade"},
   museum:{ic:"🏛️", l:"Museum", s:"History, art, music", q:"museum"}, other:{ic:"🎉", l:"Something else", s:"Name it yourself", q:""}};
-const TIGERS_SITE = "https://gotigersgo.com/sports/mens-basketball/schedule", TIGERS_SEATGEEK = "https://seatgeek.com/memphis-tigers-basketball-tickets";
-let ouOpen = null, ouDraft = null, ouShowRcpt = null, ouGames = null, ouGamesErr = "";
+// The two home teams (his orders, 2026-10-18 and 2026-10-19). Each game comes from the team's official schedule on the
+// server, with its own real buy page: the Tigers' from the University's box office, the Grizzlies' official Ticketmaster
+// event. A game with no buy page yet falls back to the team's own tickets page.
+const OU_TEAMS = {
+  tigers:{team:"Tigers", sched:"the Tigers' official schedule (gotigersgo.com)", site:"https://gotigersgo.com/sports/mens-basketball/schedule", seller:"the Tigers box office", fallback:"https://gotigersgo.evenue.net/events/BKSGT"},
+  grizzlies:{team:"Grizzlies", sched:"the Grizzlies' official schedule (nba.com/grizzlies)", site:"https://www.nba.com/grizzlies/schedule", seller:"Ticketmaster, the Grizzlies' official seller", fallback:"https://www.nba.com/grizzlies/single-game-tickets"}};
+let ouOpen = null, ouDraft = null, ouShowRcpt = null; const ouGames = {}, ouGamesErr = {};
 const ouPlace = {}, ouPlaceBusy = new Set();
 async function outingsCall(body){
   try { const {data} = await sb.auth.getSession();
@@ -5502,7 +5532,7 @@ const ouWhy = c => ({feed:"The Tigers' schedule didn't answer. Try again in a mi
   numbers:"Check the number of people and the prices.", paid:"You've already paid; ask the booker to change it.", cancelled:"That outing was cancelled.", not_buyer:"Only the person booking can do that.",
   not_planner:"Only the planner or the host can cancel.", seats:"Everyone invited has to be an active family seat.", when:"Pick a date and a time.", hours:"Pick how long.", place:"Pick the place first: tap Find.",
   title:"Give the outing a name.", offline:"Can't reach the table right now.", no_outing:"That outing isn't open to you."})[c] || "Couldn't do that. Try again.";
-const ouName = o => o.kind === "tigers" ? `Tigers vs ${o.game?.opponent || "?"}` : o.title || OU_KINDS[o.kind].l;
+const ouName = o => OU_TEAMS[o.kind] ? `${OU_TEAMS[o.kind].team} vs ${o.game?.opponent || "?"}` : o.title || OU_KINDS[o.kind].l;
 const ouTime = t => t === "TBA" ? "time to be announced" : mvTime(t);
 const ouWhen = o => `${mvDate(o).toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"})} · ${ouTime(o.time)}`;
 const ouMe = o => o.people[st.me] || {};
@@ -5525,7 +5555,7 @@ function ouNeeds(){
 function ouCard(o){
   const me = ouMe(o), going = Object.values(o.people).filter(p => p.rsvp === "yes").length, v = ouPlace[o.pid];
   const tag = o.status === "cancelled" ? "Cancelled" : me.pay === "owe" ? `You owe ${money(+me.amount)}` : me.pay === "received" ? "🧾 Receipt ready" : me.pay === "self" ? "Paying your own way" : o.booking ? "🎟️ Booked" : o.buyer ? `${esc(first(F(o.buyer).name))} is booking` : me.rsvp ? {yes:"You're coming", maybe:"Maybe", no:"Can't make it"}[me.rsvp] : "Answer the invitation";
-  return `<button class="mvcard" data-act="ou-open" data-id="${o.id}"><span class="oubadge ${o.kind === "tigers" ? "tigers" : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
+  return `<button class="mvcard" data-act="ou-open" data-id="${o.id}"><span class="oubadge ${OU_TEAMS[o.kind] ? o.kind : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
     <span><b>${esc(ouName(o))}</b><small>${esc(ouWhen(o))}</small><small>${going} coming${v ? ` · ${esc(v.name)}` : ""}</small><span class="mvtag">${tag}</span></span></button>`;
 }
 function sheetOutings(){
@@ -5539,18 +5569,18 @@ function sheetOutings(){
     ${up.length ? `<div class="mvlist">${up.map(ouCard).join("")}</div>` : `<div class="empty">No outing planned yet. Pick one above.</div>`}
     ${past.length ? `<div class="lbl">PAST OUTINGS &amp; RECEIPTS</div><div class="mvlist">${past.map(ouCard).join("")}</div>` : ""}`);
 }
-async function ouLoadGames(){ if(ouGames) return; ouGamesErr = ""; const d = await outingsCall({action:"tigers"}); if(d.ok) ouGames = d.games; else ouGamesErr = ouWhy(d.code); ouRedraw(); }
+async function ouLoadGames(kind){ if(ouGames[kind]) return; ouGamesErr[kind] = ""; ouGames[kind] = null; const d = await outingsCall({action:kind}); if(d.ok) ouGames[kind] = d.games; else ouGamesErr[kind] = ouWhy(d.code); ouRedraw(); }
 function sheetOutingNew(){
   if(!ouDraft){ sheetOutings(); return; }
-  const d = ouDraft, k = OU_KINDS[d.kind], people = st.fam.filter(f => f.status !== "suspended"), tig = d.kind === "tigers";
-  if(tig && !ouGames && !ouGamesErr) ouLoadGames();
+  const d = ouDraft, k = OU_KINDS[d.kind], people = st.fam.filter(f => f.status !== "suspended"), team = OU_TEAMS[d.kind], tig = !!team;
+  if(tig && !ouGames[d.kind] && !ouGamesErr[d.kind]) ouLoadGames(d.kind);
   const dinners = st.events.filter(e => e.status !== "done" && e.date >= iso(today0)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
-  const home = (ouGames || []).filter(g => g.home);
-  const gameBox = !tig ? "" : ouGamesErr ? `<div class="warnbox">${esc(ouGamesErr)}</div><button class="btn" data-act="ou-kind" data-k="tigers">Try again</button>`
-    : !ouGames ? `<div class="empty">Getting the Tigers' schedule…</div>`
-    : !home.length ? `<div class="empty">No more home games on the Tigers' schedule this season.</div>`
-    : `<div class="mvths">${home.map(g => `<button class="mvth ${d.game === g.uid ? "on" : ""}" data-act="ou-game" data-uid="${esc(g.uid)}"><b>🏀 vs ${esc(g.opponent)}</b><small>${esc(new Date(g.date + "T12:00:00").toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"}))} · ${esc(g.time ? mvTime(g.time) : "time to be announced")} · FedExForum</small></button>`).join("")}</div>
-      <p class="small" style="margin:0;color:#cfe0ff">Home games from the Tigers' official schedule (gotigersgo.com). Times can change: check the ticket page before you buy.</p>`;
+  const home = (ouGames[d.kind] || []).filter(g => g.home);
+  const gameBox = !tig ? "" : ouGamesErr[d.kind] ? `<div class="warnbox">${esc(ouGamesErr[d.kind])}</div><button class="btn" data-act="ou-kind" data-k="${d.kind}">Try again</button>`
+    : !ouGames[d.kind] ? `<div class="empty">Getting the ${team.team}' schedule…</div>`
+    : !home.length ? `<div class="empty">No more home games on the ${team.team}' schedule this season.</div>`
+    : `<div class="mvths">${home.map(g => `<button class="mvth ${d.game === g.uid ? "on" : ""}" data-act="ou-game" data-uid="${esc(g.uid)}"><b>${k.ic} vs ${esc(g.opponent)}${g.preseason ? " (preseason)" : ""}</b><small>${esc(new Date(g.date + "T12:00:00").toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"}))} · ${esc(g.time ? mvTime(g.time) : "time to be announced")} · FedExForum${g.label ? ` · ${esc(g.label)}` : ""}</small><small>${g.tickets ? (g.soldOut ? "🎟️ Sold out at the box office" : "🎟️ Tickets on sale") : "No ticket page yet"}</small></button>`).join("")}</div>
+      <p class="small" style="margin:0;color:#cfe0ff">Home games from ${team.sched}. Times can change: check the ticket page before you buy.</p>`;
   const placeBox = tig ? (d.pid ? `<div class="strip">🏟️ <b>${esc(d.pname || "FedExForum")}</b></div>` : d.busy ? `<div class="empty">Finding FedExForum…</div>` : d.err ? `<div class="warnbox">${esc(d.err)}</div>` : "")
     : `<div class="lbl">THE PLACE</div>
     <div class="grid2" style="grid-template-columns:1fr auto"><select class="input" id="ou-city" aria-label="Area">${GCITIES.map(c => `<option ${c === d.city ? "selected" : ""}>${c}</option>`).join("")}</select><button class="btn primary" data-act="ou-find">Find</button></div>
@@ -5584,14 +5614,14 @@ function ouReceipt(o, id){
 }
 function drawOuting(id){
   const o = (st.outings || []).find(x => x.id === id); if(!o){ sheetOutings(); return; }
-  ouOpen = id; const v = ouPlaceInfo(o.pid), me = ouMe(o), b = o.booking, open = o.status === "open", buyer = o.buyer, isBuyer = buyer === st.me, tig = o.kind === "tigers";
+  ouOpen = id; const v = ouPlaceInfo(o.pid), me = ouMe(o), b = o.booking, open = o.status === "open", buyer = o.buyer, isBuyer = buyer === st.me, team = OU_TEAMS[o.kind], tig = !!team;
   const ppl = Object.entries(o.people), going = ppl.filter(([, p]) => p.rsvp === "yes"), dinner = o.dinner && ev(o.dinner);
-  const links = tig ? `<a class="btn primary" href="${TIGERS_SITE}" target="_blank" rel="noopener">Tigers' schedule &amp; tickets</a><a class="btn" href="${TIGERS_SEATGEEK}" target="_blank" rel="noopener">Tickets on SeatGeek</a>`
+  const links = tig ? (o.game?.tickets ? `<a class="btn primary" href="${esc(o.game.tickets)}" target="_blank" rel="noopener">🎟️ Buy tickets for this game</a>` : `<a class="btn primary" href="${team.fallback}" target="_blank" rel="noopener">🎟️ ${team.team} tickets</a>`) + `<a class="btn" href="${team.site}" target="_blank" rel="noopener">${team.team}' schedule</a>`
     : `${v?.website ? `<a class="btn primary" href="${esc(v.website)}" target="_blank" rel="noopener">Book on their site</a>` : ""}${v?.phone ? `<a class="btn" href="tel:${v.phone.replace(/[^\d+]/g, "")}">📞 Call ${esc(v.phone)}</a>` : ""}${!v ? `<span class="small muted">Getting the place's website from Google…</span>` : ""}`;
   let tk = "";
   if(!open) tk = `<div class="warnbox">This outing was cancelled.</div>`;
   else if(!buyer) tk = me.rsvp === "yes" ? `<button class="btn primary block" data-act="ou-claim">🎟️ I'll book it</button><p class="small" style="margin:0;text-align:center;color:#cfe0ff">Tap this before you book, so nobody books twice.</p>` : `<p class="small" style="margin:0;text-align:center;color:#cfe0ff">Tap Going, then anyone coming can offer to book.</p>`;
-  else if(isBuyer && !b) tk = `<div class="card"><div class="lbl">🎟️ BOOK IT</div><p class="small" style="margin:0">${tig ? "Buy the tickets on the Tigers' ticket page" : "Book on the place's own site (or call them)"}, then fill in what you paid from your confirmation.</p>
+  else if(isBuyer && !b) tk = `<div class="card"><div class="lbl">🎟️ BOOK IT</div><p class="small" style="margin:0">${tig ? `Buy the tickets from ${team.seller}${o.game?.tickets ? " (the button opens this game's own page)" : ""}` : "Book on the place's own site (or call them)"}, then fill in what you paid from your confirmation.</p>
       <div class="actions">${links}</div>
       <div class="grid2"><div class="field"><label for="ou-count">People it covers</label><input class="input num" id="ou-count" inputmode="numeric" value="${going.length || 1}"></div><div class="field"><label for="ou-each">${tig ? "Ticket price each" : "Price each (optional)"}</label><input class="input num" id="ou-each" inputmode="decimal" placeholder="$0.00"></div></div>
       <div class="field"><label for="ou-extras">${tig ? "Fees, parking &amp; extras (total)" : "Lane, room, food, fees or other (total)"}</label><input class="input num" id="ou-extras" inputmode="decimal" placeholder="$0.00"></div>
@@ -5616,18 +5646,18 @@ function drawOuting(id){
   const owes = isBuyer && b ? `<div class="card"><div class="lbl">WHO'S PAYING YOU BACK</div>${ppl.filter(([pid, p]) => pid !== st.me && (p.pay || p.rsvp === "yes")).map(([pid, p]) => `<div class="mvowe"><span>${av(pid, "sm")} <b>${esc(first(F(pid).name))}</b></span><span>${p.pay === "self" ? "Own way" : p.pay === "received" ? `✓ ${money(+p.amount)} received` : p.pay === "sent" ? `Sent ${money(+p.amount)} by ${esc(p.via)}` : p.pay === "owe" ? `Owes ${money(+p.amount)}` : "Not paying yet"}</span>${p.pay === "owe" || p.pay === "sent" ? `<button class="btn sm wine" data-act="ou-recv" data-m="${pid}">✓ Received</button>` : p.pay === "received" ? `<button class="btn sm" data-act="ou-rcpt" data-m="${pid}">Receipt</button>` : ""}</div>`).join("")}</div>` : "";
   const shown = ouShowRcpt && o.people[ouShowRcpt] ? ouReceipt(o, ouShowRcpt) : "";
   openSheet(`<div class="sheet-head" data-outing data-ouone>${gBack("outings", "Back to Family Outing")}<div style="flex:1;min-width:0"><div class="eyebrow">Family Outing${o.status === "cancelled" ? " · cancelled" : mvPast(o) ? " · past" : ""}</div><h2>${esc(ouName(o))}</h2></div>${gSizeBtn()}</div>
-    <div class="mvstub"><span class="oubadge ${tig ? "tigers" : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
+    <div class="mvstub"><span class="oubadge ${tig ? o.kind : ""}" aria-hidden="true">${OU_KINDS[o.kind].ic}</span>
       <div><div class="mvwhen">${esc(ouWhen(o))}</div><div class="small">${o.hours ? `${o.hours} ${o.hours === 1 ? "hour" : "hours"} · ` : ""}${going.length} coming</div>
         <div class="small">${v ? `📍 <b>${esc(v.name)}</b><br>${esc(v.address)}` : "Finding the place…"}</div>
-        ${tig ? `<div class="small" style="color:#1d3f8f;font-weight:700">From the Tigers' official schedule. Times can change: check before you go.</div>` : ""}
+        ${tig ? `<div class="small" style="color:#1d3f8f;font-weight:700">From ${team.sched.replace(/ \(.*\)$/, "")}. Times can change: check before you go.</div>` : ""}
         ${dinner ? `<div class="small" style="color:#1d3f8f">🍽️ With ${esc(dinner.title)} at ${esc(RBY[dinner.chosen]?.name || "dinner")}</div>` : ""}
         ${o.note ? `<div class="small" style="font-style:italic">“${esc(o.note)}”</div>` : ""}
-        <div class="actions">${v?.mapsUri ? `<a class="btn sm" href="${esc(v.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}${tig ? `<a class="btn sm" href="${TIGERS_SITE}" target="_blank" rel="noopener">Tigers' schedule</a>` : v?.website ? `<a class="btn sm" href="${esc(v.website)}" target="_blank" rel="noopener">Their website</a>` : ""}</div></div></div>
+        <div class="actions">${v?.mapsUri ? `<a class="btn sm" href="${esc(v.mapsUri)}" target="_blank" rel="noopener">Directions</a>` : ""}${tig ? `${o.game?.tickets && open && !mvPast(o) ? `<a class="btn sm primary" href="${esc(o.game.tickets)}" target="_blank" rel="noopener">🎟️ Tickets</a>` : ""}<a class="btn sm" href="${team.site}" target="_blank" rel="noopener">${team.team}' schedule</a>` : v?.website ? `<a class="btn sm" href="${esc(v.website)}" target="_blank" rel="noopener">Their website</a>` : ""}</div></div></div>
     ${open && !mvPast(o) ? `<div class="mvrsvp">${[["yes", "Going"], ["maybe", "Maybe"], ["no", "Can't go"]].map(([k2, l]) => `<button class="btn ${me.rsvp === k2 ? (k2 === "yes" ? "primary" : "wine") : ""}" data-act="ou-rsvp" data-v="${k2}" aria-pressed="${me.rsvp === k2}">${l}</button>`).join("")}</div>` : ""}
     <div class="mvwho">${ppl.map(([pid, p]) => `<span class="chip" aria-pressed="${p.rsvp === "yes"}">${p.rsvp === "yes" ? "✓ " : p.rsvp === "maybe" ? "? " : p.rsvp === "no" ? "✕ " : ""}${esc(first(F(pid).name))}</span>`).join("")}</div>
     ${open && !mvPast(o) ? rdStrip("outing", o.id) : ""}${tk}${pay}${owes}${shown}
     ${open && (o.by === st.me || isAdmin()) && !mvPast(o) ? `<div class="actions" style="justify-content:center"><button class="btn sm ghost" data-act="ou-cancel">Cancel this outing</button></div>` : ""}
-    <p class="small muted" style="margin:0;text-align:center">Place details from Google${tig ? "; game from the Tigers' official schedule" : ""}. The app doesn't book or take payment.</p>`);
+    <p class="small muted" style="margin:0;text-align:center">Place details from Google${tig ? `; game and ticket link from ${team.sched.replace(/ \(.*\)$/, "")}` : ""}. The app doesn't book or take payment.</p>`);
 }
 function ouKeep(){ const d = ouDraft; if(!d) return; const v = x => document.getElementById(x)?.value;
   for(const [k, el] of [["date", "ou-date"], ["time", "ou-time"], ["city", "ou-city"], ["dinner", "ou-dinner"], ["note", "ou-note"], ["title", "ou-title"], ["q", "ou-q"]]) if(v(el) != null) d[k] = v(el);
@@ -6127,7 +6157,7 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
   const a = b.dataset.act, id = b.dataset.id;
   if(isSuspended() && WRITE_ACTS.has(a)){ toast(`Your seat is paused. Please talk to ${first(F(ADMIN).name)}.`); return; }
-  if(/^(mod-|host-member|host-contact|host-pin|ev-people|ev-guest-del)/.test(a) && !isAdmin()) return;
+  if(/^(mod-|host-member|host-contact|host-pin|host-unlock|host-email|ev-people|ev-guest-del)/.test(a) && !isAdmin()) return;
   if(["vote","rsvp","hand","invite-rsvp","ask-guest","live","res-claim"].includes(a) && id && ev(id) && !inEvent(ev(id), st.me)){ toast(`${first(F(ADMIN).name)} has taken you off this event.`); return; }
   if((a === "person-new" || a === "person-del") && b.dataset.kind === "fam" && !isAdmin()){ toast(`Only ${first(F(ADMIN).name)} can change who sits at the table.`); return; }
   switch(a){
@@ -6142,15 +6172,22 @@ document.addEventListener("click", e => {
     case "push-off": b.disabled = true; pushOff(); break;
     case "push-test": b.disabled = true; pushCall({action:"test"}).then(() => { toast("Test sent. It should arrive in a moment."); b.disabled = false; }); break;
     case "pin-change-go": pinChangeGo(); break;
+    case "host-unlock": sb.rpc("host_unlock_pin", {p_member:id}).then(({data}) => { if(data?.ok){ pinLocked[id] = false; drawHost(); toast(`${first(F(id).name)} can sign in again with the same PIN`); } else toast("Couldn't unlock. Try again."); }); break;
+    case "host-email": { const v = (document.getElementById("em-" + id)?.value || "").trim().toLowerCase();
+      if(v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ toast("That doesn't look like an email."); break; }
+      sb.from("members").update({email: v || null}).eq("id", id).select("id").then(async ({data, error}) => {
+        if(error){ toast(/duplicate|unique/i.test(error.message) ? "That email is already on another seat." : "Couldn't save. Try again."); return; }
+        if(!data?.length){ toast("Couldn't save. Try again."); return; }
+        await refresh(true); drawHost(); toast(`Saved. ${first(F(id).name)} signs in with ${v || "no email yet"}.`); }); break; }
     case "host-pin": sb.rpc("host_reset_pin", {p_member:id}).then(({data}) => {
-        if(data?.ok){ pinSet[id] = false; drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); }
+        if(data?.ok){ pinSet[id] = false; pinLocked[id] = false; drawHost(); toast(`${first(F(id).name)} will create a new PIN next sign-in`); }
         else toast("Couldn't reset that PIN. Try again."); }); break;
     case "person-new": sheetPerson(b.dataset.kind, null); break;
     case "person-edit": sheetPerson(b.dataset.kind, id); break;
     case "person-save": {
       const kind = b.dataset.kind; const name = document.getElementById("pp-name").value.trim();
       if(!name){ toast("Add a name to save"); return; }
-      const data = {name, email:document.getElementById("pp-email").value.trim(), phone:document.getElementById("pp-phone").value.trim()};
+      const data = {name, email:document.getElementById("pp-email").value.trim().toLowerCase(), phone:document.getElementById("pp-phone").value.trim()};
       if(kind === "contact") data.relation = document.getElementById("pp-rel").value.trim();
       else { data.birthday = document.getElementById("pp-bday").value; data.diet = document.getElementById("pp-diet").value.trim(); ["zelle","cashtag","applepay"].forEach(k => data[k] = document.getElementById("pp-"+k).value.trim()); }
       const list = kind === "fam" ? st.fam : st.contacts;
@@ -6222,7 +6259,7 @@ document.addEventListener("click", e => {
       moviesCall({action:"new", movie_id:d.movieId, date:d.date, time:d.time, theater_pid:d.pid, city:d.city, invited:d.invited, note:d.note, dinner_event:d.dinner || undefined}).then(async r => {
         if(!r.ok){ b.disabled = false; b.textContent = "🎬 Send the invitation"; toast(mvWhy(r.code)); return; }
         mvDraft = null; mvOpen = r.night.id; await refresh(true); drawMovieNight(r.night.id); toast("Invitation sent! Everyone's been told."); }); break; }
-    case "mv-open": mvShowRcpt = null; drawMovieNight(id); break;
+    case "mv-open": mvShowRcpt = null; delete mvBuy[id]; drawMovieNight(id); break;
     case "mv-rsvp": mvAct({action:"rsvp", id:mvOpen, ans:b.dataset.v}).then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-claim": mvAct({action:"claim", id:mvOpen}, "You're buying the tickets. Everyone's been told.").then(ok => ok && drawMovieNight(mvOpen)); break;
     case "mv-unclaim": mvAct({action:"unclaim", id:mvOpen}).then(ok => ok && drawMovieNight(mvOpen)); break;
@@ -6296,16 +6333,16 @@ document.addEventListener("click", e => {
     case "pr-remove": if(!confirm("Take this request down for everyone?")) break; prayerCall({action:"remove", id}).then(async d => { if(!d.ok){ toast(prWhy(d.code)); return; } await refresh(true); toast("Taken down."); sheetPrayers(true); }); break;
     case "outings": sheetOutings(); break;
     case "ou-kind": { const k = b.dataset.k, nx = new Date(today0); nx.setDate(nx.getDate() + ((6 - nx.getDay() + 7) % 7 || 7));
-      if(k === "tigers"){ ouGames = null; ouGamesErr = ""; }
+      if(OU_TEAMS[k]){ ouGames[k] = null; ouGamesErr[k] = ""; }
       ouDraft = {kind:k, date:iso(nx), time:"14:00", hours:null, city:"Memphis", q:OU_KINDS[k].q, pid:"", pname:"", invited:[], note:"", dinner:"", title:"", game:"", places:null};
-      sheetOutingNew(); if(k === "tigers") ouFindFedEx(); break; }
+      sheetOutingNew(); if(OU_TEAMS[k]) ouFindFedEx(); break; }
     case "ou-game": { ouKeep(); ouDraft.game = b.dataset.uid; sheetOutingNew(); break; }
     case "ou-find": { ouKeep(); const d = ouDraft; if((d.q || "").trim().length < 2){ toast("Type what to look for."); break; } d.busy = true; d.err = ""; sheetOutingNew();
       placesCall({action:"search", q:d.q.trim(), city:d.city, kind:"any"}).then(r => { d.busy = false; if(r.ok) d.places = r.results.filter(x => x.status !== "CLOSED_PERMANENTLY"); else d.err = gWhy(r.code); if(ouDraft === d) sheetOutingNew(); }); break; }
     case "ou-place": { ouKeep(); const t = (ouDraft.places || []).find(x => x.placeId === b.dataset.pid); ouDraft.pid = b.dataset.pid; ouDraft.pname = t?.name || ""; sheetOutingNew(); break; }
     case "ou-inv": { ouKeep(); const i = ouDraft.invited.indexOf(id); if(i >= 0) ouDraft.invited.splice(i, 1); else ouDraft.invited.push(id); sheetOutingNew(); break; }
     case "ou-send": { ouKeep(); const d = ouDraft;
-      if(d.kind === "tigers" && !d.game){ toast("Pick a game first."); break; } if(!d.pid){ toast(ouWhy("place")); break; } if(d.kind === "other" && !(d.title || "").trim()){ toast(ouWhy("title")); break; }
+      if(OU_TEAMS[d.kind] && !d.game){ toast("Pick a game first."); break; } if(!d.pid){ toast(ouWhy("place")); break; } if(d.kind === "other" && !(d.title || "").trim()){ toast(ouWhy("title")); break; }
       b.disabled = true; b.textContent = "Sending…";
       ouAct({action:"new", kind:d.kind, title:d.title, game:d.game || null, date:d.date, time:d.time, hours:d.hours, place_pid:d.pid, city:d.city, invited:d.invited, note:d.note, dinner_event:d.dinner || null}, "Invitation sent! Everyone's been told.")
         .then(r => { if(r){ ouDraft = null; drawOuting(r.outing.id); } else { b.disabled = false; b.textContent = "🎉 Send the invitation"; } }); break; }

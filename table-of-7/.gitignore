@@ -1,0 +1,3 @@
+
+# the Netlify command-line tool keeps its own working copy here; it is never part of the app
+.netlify/
