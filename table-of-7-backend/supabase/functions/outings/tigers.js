@@ -32,3 +32,29 @@ export function tigersGames(text, fromDate){
   }
   return out.sort((a, b) => (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")));
 }
+
+// Tickets (his order, 2026-10-19: "real purchase links"). The Tigers' athletics site carries no per-game ticket link;
+// the University's own box office does: Paciolan "evenue", one page per home game, gotigersgo.evenue.net/event/<season>/<item>.
+// Read the single-game list there (its page data, __NEXT_DATA__ → discovery_eventlist) and pair each home game to it by
+// the Memphis date (a day either side, for a time still "to be announced") and the opponent's name. A game the box office
+// doesn't list gets no link (never a guessed one).
+export const TIGERS_BOX = "https://gotigersgo.evenue.net/events/BKSGT";
+const tgKey = s => String(s || "").toLowerCase().replace(/\bno\.?\s*\d+\b/g, " ").replace(/men'?s basketball|university of memphis|\bvs\.?|\bat\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+export function tigersBoxOffice(html){
+  const m = String(html || "").match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/); if(!m) return [];
+  let list; try { list = JSON.parse(m[1])?.props?.pageProps?.component?.props?.ssrData?.discovery_eventlist; } catch { return []; }
+  return (Array.isArray(list) ? list : []).filter(e => /^[A-Z0-9]{2,6}$/.test(e?.SEASONCD || "") && /^[A-Z0-9]{2,8}$/.test(e?.ITEMCD || "") && e?.EVENTDT)
+    .map(e => ({ date: tgCentral(Date.parse(e.EVENTDT)).date, name: tgKey(e.ITEMNAME), soldOut: !!e.SOLD_OUT,
+      url: `https://gotigersgo.evenue.net/event/${e.SEASONCD}/${e.ITEMCD}` }));
+}
+const dayGap = (a, b) => Math.abs(Date.parse(a + "T12:00:00Z") - Date.parse(b + "T12:00:00Z")) / 864e5;
+export function tigersTickets(games, box){
+  const used = new Set();
+  return games.map(g => {
+    if(!g.home) return { ...g, tickets: null };
+    const opp = tgKey(g.opponent);
+    const hit = box.find(b => !used.has(b.url) && dayGap(b.date, g.date) <= 1 && opp && b.name && (b.name.includes(opp) || opp.includes(b.name)));
+    if(hit) used.add(hit.url);
+    return { ...g, tickets: hit ? hit.url : null, soldOut: hit ? hit.soldOut : false };
+  });
+}

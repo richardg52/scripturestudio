@@ -1,36 +1,56 @@
 // Table of 7 Family Outing (his order, 2026-10-18, with "University of Memphis Tigers Basketball Games"). The only road
 // that writes an outing; phones only read. Built on the Topgolf Outing road (functions/golf), for any kind of outing.
-//   tigers {}                   the Tigers' men's basketball games from today on, read live from their official calendar
+//   tigers {}                   the Tigers' men's basketball games from today on, read live from their official calendar,
+//                               each home game with its own buy page at the University's box office, from the checked
+//                               links kept in tigers_ticket_links (the box office refuses servers; see that migration)
+//   grizzlies {}                the Grizzlies' home games from today on, from the team's own schedule service, each with
+//                               its official Ticketmaster page (grizzlies.js; his order, 2026-10-19)
 //   new {kind, title?, game?, date, time, hours?, place_pid?, city?, invited[], note?, dinner_event?}
-//                               a Tigers outing names its game by uid; the server takes the game from the official
-//                               calendar itself (never from the phone)
+//                               a Tigers or Grizzlies outing names its game by uid; the server takes the game (and its
+//                               ticket link) from the official schedule itself (never from the phone)
 //   rsvp {id, ans}   claim {id} / unclaim {id}   booking {id, count, each?, extras?, details?, conf?}
 //   pay {id, mode: sent|self, via?, conf?}   received {id, member}   cancel {id}
 // The app never books and never moves money: the booker types what they really paid, and it is split by the people
 // it covers.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { tigersGames, tgCentral, TIGERS_ICS } from "./tigers.js";
+import { grizzliesGames, grizSchedule, grizSeason } from "./grizzlies.js";
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ALLOWED = [/^https:\/\/table-of-7\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-7\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
+const ALLOWED = [/^https:\/\/table-of-[78]\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-[78]\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
 const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-7.netlify.app",
+  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-8.netlify.app",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin",
 });
-const KINDS: Record<string, string> = { tigers: "the Tigers game", bowling: "bowling", minigolf: "mini golf", zoo: "the zoo", escape: "an escape room",
+const KINDS: Record<string, string> = { tigers: "the Tigers game", grizzlies: "the Grizzlies game", bowling: "bowling", minigolf: "mini golf", zoo: "the zoo", escape: "an escape room",
   skating: "skating", arcade: "the arcade", museum: "the museum", other: "an outing" };
 const money = (n: number) => "$" + n.toFixed(2);
 const clip = (x: unknown, k: number) => String(x ?? "").replace(/\s+/g, " ").trim().slice(0, k);
-let cache: { at: number; text: string } | null = null;          // the official calendar, kept for 2 hours
-async function schedule() {
-  if (!cache || Date.now() - cache.at > 2 * 3600e3) {
-    const r = await fetch(TIGERS_ICS, { headers: { "User-Agent": "TableOf7/1.0 (family app)" } });
-    if (!r.ok) { console.error("outings tigers feed", r.status); if (!cache) return null; }
-    else cache = { at: Date.now(), text: await r.text() };
+// Each official source is kept for 2 hours; if a refresh fails, the last good copy is used.
+const kept: Record<string, { at: number; text: string }> = {};
+async function fetchKept(url: string) {
+  const c = kept[url];
+  if (!c || Date.now() - c.at > 2 * 3600e3) {
+    try {
+      const r = await fetch(url, { headers: { "User-Agent": "TableOf8/1.0 (family app)" } });
+      if (r.ok) kept[url] = { at: Date.now(), text: await r.text() }; else console.error("outings feed", url, r.status);
+    } catch (e) { console.error("outings feed", url, (e as Error).message); }
   }
-  return tigersGames(cache.text, tgCentral(Date.now()).date);
+  return kept[url]?.text ?? null;
+}
+async function schedule(admin: any) {
+  const today = tgCentral(Date.now()).date;
+  const ics = await fetchKept(TIGERS_ICS); if (!ics) return null;
+  const { data: links } = await admin.from("tigers_ticket_links").select("uid,url");
+  const byUid = Object.fromEntries((links ?? []).map((l: any) => [l.uid, l.url]));
+  return tigersGames(ics, today).map(g => ({ ...g, tickets: g.home ? byUid[g.uid] ?? null : null }));
+}
+async function grizzlies() {
+  const today = tgCentral(Date.now()).date, now = grizSeason(Date.now());
+  const text = await fetchKept(grizSchedule(now)); if (!text) return null;
+  try { return grizzliesGames(JSON.parse(text), today); } catch { return null; }
 }
 
 Deno.serve(async (req) => {
@@ -49,24 +69,28 @@ Deno.serve(async (req) => {
     const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
 
     if (body.action === "tigers") {
-      const games = await schedule(); if (!games) return reply({ ok: false, code: "feed" });
+      const games = await schedule(admin); if (!games) return reply({ ok: false, code: "feed" });
+      return reply({ ok: true, games });
+    }
+    if (body.action === "grizzlies") {
+      const games = await grizzlies(); if (!games) return reply({ ok: false, code: "feed" });
       return reply({ ok: true, games });
     }
 
     if (body.action === "new") {
       const kind = String(body.kind ?? ""); if (!(kind in KINDS)) return reply({ ok: false, code: "kind" }, 400);
       let date = String(body.date ?? ""), time = String(body.time ?? ""), game = null;
-      if (kind === "tigers") {
-        const games = await schedule(); if (!games) return reply({ ok: false, code: "feed" });
+      if (kind === "tigers" || kind === "grizzlies") {
+        const games = kind === "tigers" ? await schedule(admin) : await grizzlies(); if (!games) return reply({ ok: false, code: "feed" });
         const g = games.find(x => x.uid === String(body.game ?? "")); if (!g) return reply({ ok: false, code: "game" }, 400);
-        game = { uid: g.uid, opponent: g.opponent, home: g.home, location: g.location }; date = g.date; time = g.time ?? "TBA";
+        game = { uid: g.uid, opponent: g.opponent, home: g.home, location: g.location, tickets: g.tickets ?? null }; date = g.date; time = g.time ?? "TBA";
       }
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !(/^\d{2}:\d{2}$/.test(time) || (kind === "tigers" && time === "TBA"))) return reply({ ok: false, code: "when" }, 400);
       const hours = body.hours === undefined || body.hours === null || body.hours === "" ? null : Number(body.hours);
       if (hours !== null && !(hours >= 0.5 && hours <= 8)) return reply({ ok: false, code: "hours" }, 400);
       const pid = body.place_pid ? String(body.place_pid) : null;
       if (!pid || !/^[A-Za-z0-9_-]{10,}$/.test(pid)) return reply({ ok: false, code: "place" }, 400);
-      const title = clip(body.title, 60) || null; if (kind === "other" && !title) return reply({ ok: false, code: "title" }, 400);
+      const title = kind === "grizzlies" ? `Grizzlies vs ${game!.opponent}`.slice(0, 60) : clip(body.title, 60) || null; if (kind === "other" && !title) return reply({ ok: false, code: "title" }, 400);
       const asked = [...new Set([me.id, ...(Array.isArray(body.invited) ? body.invited : []).map(String)])];
       const { data: seats } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", asked);
       if ((seats ?? []).length !== asked.length || (seats ?? []).some(s => s.status !== "active")) return reply({ ok: false, code: "seats" }, 403);
@@ -77,7 +101,7 @@ Deno.serve(async (req) => {
       if (error) return reply({ ok: false, code: "server" }, 500);
       await admin.from("outing_people").insert(asked.map(x => ({ outing_id: o.id, member_id: x, rsvp: x === me.id ? "yes" : null })));
       const when = new Date(date + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-      const what = kind === "tigers" ? `the Tigers vs ${game!.opponent}` : title || KINDS[kind];
+      const what = kind === "tigers" ? `the Tigers vs ${game!.opponent}` : kind === "grizzlies" ? `the Grizzlies vs ${game!.opponent}` : title || KINDS[kind];
       await alert(asked, `🎉 ${first} invited you to ${what} on ${when}. Open Family Outing to answer.`);
       return reply({ ok: true, outing: o });
     }
