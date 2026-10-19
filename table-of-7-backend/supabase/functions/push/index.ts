@@ -11,9 +11,9 @@ import webpush from "npm:web-push@3.6.7";
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ALLOWED = [/^https:\/\/table-of-7\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-7\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
+const ALLOWED = [/^https:\/\/table-of-[78]\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--table-of-[78]\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
 const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-7.netlify.app",
+  "Access-Control-Allow-Origin": o && ALLOWED.some(r => r.test(o)) ? o : "https://table-of-8.netlify.app",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin",
 });
@@ -37,8 +37,8 @@ Deno.serve(async (req) => {
       const { data: a } = await admin.from("alerts").select("id,to_member,text,event_id").eq("id", String(body.alert_id ?? "")).maybeSingle();
       if (!a) return reply({ ok: true, sent: 0 });
       const { data: subs } = await admin.from("push_subscriptions").select("endpoint,keys").eq("member_id", a.to_member);
-      webpush.setVapidDetails("https://table-of-7.netlify.app", cfg.pub!, cfg.priv!);
-      const payload = JSON.stringify({ title: "Table of 7", body: a.text, tag: a.event_id || a.id, url: "./" });
+      webpush.setVapidDetails("https://table-of-8.netlify.app", cfg.pub!, cfg.priv!);
+      const payload = JSON.stringify({ title: "Table of 8", body: a.text, tag: a.event_id || a.id, url: "https://table-of-8.netlify.app/" });   // absolute: phones still holding the old table-of-7 helper open the new address
       let sent = 0;
       for (const s of subs ?? []) {
         try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload, { TTL: 60 * 60 * 24 }); sent++; }
