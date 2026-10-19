@@ -1,0 +1,24 @@
+// Table of 7 Rides matching, proven (node table-of-7-backend/tests/rides_match_test.mjs).
+import { readFileSync } from "node:fs";
+import { rdFree, rdMatch } from "../supabase/functions/rides/match.js";
+let fails = 0;
+const check = (name, ok, detail = "") => { if(!ok) fails++; console.log((ok ? "PASS " : "FAIL ") + name + (ok ? "" : `  -> ${JSON.stringify(detail)}`)); };
+const O = (driver, seats, t) => ({ driver, seats, t }), A = (id, rider, party, t, driver = null) => ({ id, rider, party, t, driver });
+check("one rider goes to the one driver", JSON.stringify(rdMatch([O("d1", 3, 1)], [A("a", "r1", 1, 1)])) === '[{"ask":"a","driver":"d1"}]');
+check("the driver with the most free seats is chosen", rdMatch([O("d1", 2, 1), O("d2", 4, 2)], [A("a", "r1", 1, 1)])[0].driver === "d2");
+check("equal seats: whoever offered first", rdMatch([O("d2", 3, 5), O("d1", 3, 1)], [A("a", "r1", 1, 1)])[0].driver === "d1");
+check("a party is never split across cars", rdMatch([O("d1", 2, 1), O("d2", 2, 2)], [A("a", "r1", 3, 1)]).length === 0);
+check("a party of 3 fits a car with 3 seats", rdMatch([O("d1", 3, 1)], [A("a", "r1", 3, 1)]).length === 1);
+const plan = rdMatch([O("d1", 3, 1)], [A("a", "r1", 2, 1), A("b", "r2", 2, 2), A("c", "r3", 1, 3)]);
+check("seats are never overfilled; the oldest ask goes first and a smaller one still fits", JSON.stringify(plan) === '[{"ask":"a","driver":"d1"},{"ask":"c","driver":"d1"}]', plan);
+check("riders already in a car use up its seats", rdMatch([O("d1", 2, 1)], [A("x", "r9", 2, 0, "d1"), A("a", "r1", 1, 1)]).length === 0);
+check("nobody is put in their own car", rdMatch([O("r1", 3, 1)], [A("a", "r1", 1, 1)]).length === 0);
+check("a driver who let a rider go never gets them back", rdMatch([O("d1", 3, 1), O("d2", 1, 2)], [{ ...A("a", "r1", 1, 1), declined: ["d1"] }])[0]?.driver === "d2");
+check("free seats count each party", JSON.stringify(rdFree([O("d1", 4, 1), O("d2", 2, 2)], [A("a", "r1", 3, 1, "d1"), A("b", "r2", 1, 2)])) === '{"d1":1,"d2":2}');
+check("no drivers, no matches (the ask waits)", rdMatch([], [A("a", "r1", 1, 1)]).length === 0);
+const html = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
+const m = html.match(/\/\* RIDES RULES START \*\/\n([\s\S]*?)\n\/\* RIDES RULES END \*\//);
+const src = readFileSync(new URL("../supabase/functions/rides/match.js", import.meta.url), "utf8").replace(/^export /gm, "").trim();
+check("the app's copy of the rides matching matches the server's", !!m && m[1].trim() === src);
+console.log(fails ? `\n${fails} FAILED` : "\nALL PROOFS HOLD");
+process.exit(fails ? 1 : 0);

@@ -20,3 +20,9 @@ delete from games where family_id = 'zztest';
 delete from feud_surveys where family_id = 'zztest';
 delete from movie_nights where family_id = 'zztest';   -- movie_people go with them
 delete from golf_outings where family_id = 'zztest';   -- golf_people go with them
+delete from santa_exchanges where family_id = 'zztest';   -- wishes and pairs go with them
+delete from outings where family_id = 'zztest';   -- outing_people go with them
+delete from prayers where family_id = 'zztest';   -- prayer_authors go with them
+delete from tournaments where family_id = 'zztest';
+delete from recipes where family_id = 'zztest';
+delete from ride_asks where family_id = 'zztest'; delete from ride_offers where family_id = 'zztest';   -- pickups go with the asks

@@ -1,0 +1,23 @@
+// Table of 7 Game Night Tournament scoring, proven (node table-of-7-backend/tests/tourney_score_test.mjs).
+import { readFileSync } from "node:fs";
+import { tnBoard, tnChampions } from "../supabase/functions/tourney/score.js";
+let fails = 0;
+const check = (name, ok, detail = "") => { if(!ok) fails++; console.log((ok ? "PASS " : "FAIL ") + name + (ok ? "" : `  -> ${JSON.stringify(detail)}`)); };
+const P = ["a", "b", "c", "d"];
+let b = tnBoard(P, [{ first: ["a"], second: ["b"] }, { first: ["c"], second: ["a"] }, { first: ["a", "b"] }]);
+check("1st = 3 points, 2nd = 1: a has 3 + 1 + 3 = 7", b.find(x => x.id === "a").points === 7, b);
+check("a team win gives each member the points", b.find(x => x.id === "b").points === 1 + 3, b);
+check("the leader is first on the board", b[0].id === "a" && b[0].place === 1, b);
+check("a player with no results has 0 and is still on the board", b.find(x => x.id === "d").points === 0 && b.length === 4, b);
+b = tnBoard(P, [{ first: ["a"] }, { first: ["b"] }]);
+check("equal points and equal wins share a place", b[0].place === 1 && b[1].place === 1 && b[2].place === 3, b);
+check("a tie is broken by more 1st places", tnBoard(P, [{ first: ["a"] }, { second: ["b"] }, { second: ["b"] }, { second: ["b"] }])[0].id === "a");
+check("co-champions when tied", JSON.stringify(tnChampions(P, [{ first: ["a"] }, { first: ["b"] }])) === '["a","b"]');
+check("no champion before any result", tnChampions(P, []).length === 0 && tnChampions(P, [null, {}]).length === 0);
+check("someone not in the tournament can't earn points", !tnBoard(P, [{ first: ["zz"] }]).some(x => x.id === "zz"));
+const html = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
+const m = html.match(/\/\* TOURNEY RULES START \*\/\n([\s\S]*?)\n\/\* TOURNEY RULES END \*\//);
+const src = readFileSync(new URL("../supabase/functions/tourney/score.js", import.meta.url), "utf8").replace(/^export /gm, "").trim();
+check("the app's copy of the tournament scoring matches the server's", !!m && m[1].trim() === src);
+console.log(fails ? `\n${fails} FAILED` : "\nALL PROOFS HOLD");
+process.exit(fails ? 1 : 0);
