@@ -131,6 +131,9 @@ nav.tabs .plan-btn span.disc{width:44px;height:44px;margin-top:-18px;border-radi
 .feature .actions .btn.ghost{background:transparent;color:#fbeff0;border-color:rgba(251,239,240,.4)}
 .feature .plate{position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(244,217,168,.35);box-shadow:inset 0 0 0 14px rgba(244,217,168,.06)}
 .alts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+.area{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 6px;display:grid;justify-items:center;gap:2px;text-align:center;min-width:0}
+.area b{font-size:14px}.area-ic{font-size:26px;line-height:1.2}
 .alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left;display:grid;gap:2px;min-width:0}
 .alt b{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.2}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);padding:9px 16px;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);white-space:nowrap}
@@ -569,6 +572,38 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .rcnote{border-radius:14px;padding:10px;background:rgba(180,82,28,.1);font-size:calc(15.5px*var(--gs));white-space:pre-wrap}
 .rccard .btn{background:rgba(58,31,5,.08);color:#3a1f05;border:1px solid rgba(58,31,5,.35);box-shadow:none}
 .rccard .btn.on{background:#ffcf4a;border-color:#b07a00}
+/* Memphis Live: a marquee look (stage red to midnight); each show is a ticket card */
+#sheet-wrap.stage.live .sheet{background:radial-gradient(120% 60% at 50% -10%,#e0453a 0%,#6a1442 40%,#140a24 100%) fixed}
+#sheet-wrap.stage.live .input{background:#24102a;border-color:rgba(255,190,200,.3)}
+.lvcard{display:grid;grid-template-columns:calc(84px*var(--gs)) minmax(0,1fr);gap:12px;align-items:start;border-radius:18px;padding:10px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,200,210,.22)}
+.lvimg{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px}
+.lvph{display:grid;place-items:center;font-size:calc(34px*var(--gs));background:linear-gradient(150deg,#e0453a,#4a1060)}
+.lvbody{display:grid;gap:3px;min-width:0}.lvbody .actions{margin-top:4px;flex-wrap:wrap}
+.lvtitle{font:800 calc(16px*var(--gs))/1.25 var(--f-display)}
+.lvbest{border-radius:14px;padding:10px 12px;background:rgba(255,226,150,.95);color:#3a2604;font-size:calc(15px*var(--gs))}
+.lvdates{display:flex;flex-wrap:wrap;gap:8px}
+/* Date Night: candlelight (rose to deep wine); Adventure Club: a treasure-map look (meadow to sky) */
+#sheet-wrap.stage.datenight .sheet{background:radial-gradient(120% 60% at 50% -10%,#f28aa0 0%,#8a1c3c 42%,#2a0816 100%) fixed}
+#sheet-wrap.stage.datenight .input{background:#3a0c1e;border-color:rgba(255,190,210,.3)}
+#sheet-wrap.stage.adventure .sheet{background:radial-gradient(120% 60% at 50% -10%,#ffd75e 0%,#2f8f6a 40%,#0d2f4a 100%) fixed}
+#sheet-wrap.stage.adventure .input{background:#0e3346;border-color:rgba(200,255,220,.3)}
+.dnmoods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dnmood,.acadv{display:grid;gap:3px;justify-items:start;text-align:left;border:0;border-radius:18px;padding:12px;background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,220,230,.25)}
+.dnmood[aria-pressed="true"]{background:rgba(255,236,190,.95);color:#4a0f24}.dnmood[aria-pressed="true"] small{color:#6a2a3c}
+.dnmood .ic,.acadv .ic{font-size:calc(28px*var(--gs))}.dnmood b,.acadv b{font:800 calc(15px*var(--gs))/1.2 var(--f-display)}.dnmood small{color:#ffd9e2;font-size:calc(12.5px*var(--gs))}
+.dnstop{display:grid;grid-template-columns:calc(70px*var(--gs)) minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 0;border-top:1px solid rgba(255,255,255,.15)}
+.dnstop .t{font:800 calc(13px*var(--gs)) var(--f-display);opacity:.9}
+.dncard{display:grid;gap:4px;border-radius:18px;padding:12px;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,220,230,.25)}
+.dncard.yes{box-shadow:inset 0 0 0 2px rgba(255,220,140,.8)}.dncard .actions{flex-wrap:wrap;margin-top:4px}
+.dntitle{font:800 calc(17px*var(--gs))/1.25 var(--f-display)}
+.acgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.acadv{justify-items:center;text-align:center;padding:12px 6px}
+.acpass{display:grid;gap:8px;border-radius:18px;padding:12px;background:rgba(255,248,225,.95);color:#163a2a}
+.acpass .lbl,.acpass .small{color:#2f5a44}
+.acstamps{display:flex;flex-wrap:wrap;gap:8px;min-height:calc(40px*var(--gs));align-items:center}
+.acstamp{display:grid;place-items:center;width:calc(44px*var(--gs));aspect-ratio:1;border-radius:50%;font-size:calc(24px*var(--gs));border:2px dashed #2f8f6a;transform:rotate(-8deg)}
+.wnsign{border-radius:16px;padding:12px 14px;background:color-mix(in srgb,var(--brass) 12%,transparent);font-size:15px}
+.wnsign p{margin:0 0 6px}.wnname{font-family:var(--f-display);text-align:right;margin:0}
 /* Rides: an evening-drive look (dusk blue to headlight amber) */
 #sheet-wrap.stage.rides .sheet{background:radial-gradient(120% 60% at 50% -10%,#f0a33a 0%,#3b3f8f 38%,#0b1230 100%) fixed}
 .rdchoose{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -823,7 +858,7 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 
 <div class="app" id="app" hidden>
   <header class="top">
-    <div class="brand">Table <i>of</i> 7</div>
+    <div class="brand">Table <i>of</i> 8</div>
     <button class="icon-btn bell" data-act="alerts" aria-label="Alerts" id="bell-btn"></button>
     <button class="icon-btn" data-act="tips" aria-label="Quick tip guide">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>
@@ -952,6 +987,87 @@ const RAW = [
  ["iris","Iris","Memphis",["Fine Dining","American"],"East Memphis","4550 Poplar Ave, Memphis, TN 38117",4,[],"Chef-driven dinner in East Memphis."],
  ["josephine-estelle","Josephine Estelle","Memphis",["Fine Dining","Italian","Southern"],"Germantown","6695 Poplar Ave, Germantown, TN 38138",3,[],"Southern and Italian plates for a dressed-up dinner."],
  ["catherine-mary","Catherine & Mary's","Memphis",["Italian","Fine Dining"],"Downtown","272 S Main St Ste 105-a, Memphis, TN 38103",3,[],"Italian dinner on South Main in a handsome downtown room."],
+ // 80 more Memphis-area tables, his order 2026-10-22 (35 downtown; Germantown, Collierville, Cordova, Bartlett). Every name and address from Google that day.
+ ["blues-city-cafe", "Blues City Cafe", "Memphis", ["Southern", "BBQ"], "Beale Street", "138 Beale St, Memphis, TN 38103", 2, [], "Ribs, tamales and catfish on Beale, with live blues next door."],
+ ["bb-kings", "B.B. King's Blues Club", "Memphis", ["Southern", "BBQ"], "Beale Street", "143 Beale St, Memphis, TN 38103", 2, [], "Dinner with a live band in the club named for the King of the Blues."],
+ ["rum-boogie", "Rum Boogie Cafe", "Memphis", ["Southern", "Casual"], "Beale Street", "182 Beale St, Memphis, TN 38103", 2, [], "Cajun-leaning Southern plates and a house band most nights."],
+ ["pig-on-beale", "The Pig On Beale", "Memphis", ["BBQ"], "Beale Street", "167 Beale St, Memphis, TN 38103", 2, [], "Pulled pork, ribs and wings right on Beale Street."],
+ ["kings-palace", "King's Palace Cafe", "Memphis", ["Creole", "Southern"], "Beale Street", "162 Beale St, Memphis, TN 38103", 2, [], "Gumbo, ribs and Southern plates on Beale Street."],
+ ["kooky-canuck", "Kooky Canuck", "Memphis", ["Burgers", "Casual"], "Downtown", "87 S 2nd St, Memphis, TN 38103", 2, [], "Giant burgers in a playful downtown room. The kids will love it."],
+ ["automatic-slims", "Automatic Slim's", "Memphis", ["Southern", "American"], "Downtown", "83 S 2nd St, Memphis, TN 38103", 2, [], "A downtown favorite for Southern-style dinners before a show."],
+ ["walt-rickys", "Walt and Ricky's Seafood Kitchen", "Memphis", ["Seafood"], "Downtown", "1 Doctor M.L.K. Jr Ave, Memphis, TN 38103", 2, [], "A seafood kitchen downtown, a short walk from the river."],
+ ["capriccio", "Capriccio Grill", "Memphis", ["Steak", "Italian"], "The Peabody", "149 Union Ave #10, Memphis, TN 38103", 3, [], "Steaks and Italian plates inside The Peabody, steps from the ducks."],
+ ["amelia-genes", "Amelia Gene’s", "Memphis", ["Fine Dining", "American"], "Downtown", "255 S Front St, Memphis, TN 38103", 4, [], "A polished downtown dining room for a dressed-up night."],
+ ["loflin-yard", "Loflin Yard", "Memphis", ["American", "Casual"], "South Main", "7 W Carolina Ave, Memphis, TN 38103", 2, [], "A big backyard with fire pits and room for everyone to spread out."],
+ ["aldos-downtown", "Aldo’s Pizza Pies", "Memphis", ["Italian", "Casual"], "Downtown", "100 S Main St Ste 101, Memphis, TN 38103", 2, [], "Big pies on Main Street. An easy yes for a big family table."],
+ ["blue-monkey", "The Blue Monkey", "Memphis", ["Casual", "American"], "South Main", "513 S Front St, Memphis, TN 38103", 2, [], "A neighborhood grill near South Main, relaxed and friendly."],
+ ["earnestine-hazels", "Earnestine & Hazel's", "Memphis", ["Burgers"], "South Main", "531 S Main St, Memphis, TN 38103", 1, [], "The famous Soul Burger in a South Main landmark."],
+ ["south-main-sushi", "South Main Sushi", "Memphis", ["Asian"], "South Main", "520 S Main St #4443, Memphis, TN 38103", 2, [], "Sushi rolls and Japanese plates on South Main."],
+ ["sage-main", "Sage Restaurant", "Memphis", ["Soul", "Southern"], "Downtown", "94 S Main St, Memphis, TN 38103", 2, [], "Soul food done up for a night out, on Main Street."],
+ ["mcewens", "McEwen's", "Memphis", ["Southern", "Fine Dining"], "Downtown", "120 Monroe Ave, Memphis, TN 38103", 3, [], "Southern cooking with a polished touch, a downtown standby."],
+ ["brass-door", "The Brass Door Irish Pub", "Memphis", ["Casual"], "Downtown", "152 Madison Ave, Memphis, TN 38103", 2, [], "Fish and chips and pub plates in a warm Irish room."],
+ ["tugs", "Tug's Casual Grill", "Memphis", ["Casual", "American"], "Harbor Town", "51 Harbor Town Square, Memphis, TN 38103", 2, [], "Burgers and baskets on Mud Island, with a river breeze."],
+ ["cocozza", "Cocozza American Italian", "Memphis", ["Italian"], "Harbor Town", "106 Harbor Town Square, Memphis, TN 38103", 2, [], "Red-sauce Italian favorites in Harbor Town."],
+ ["terrace-river-inn", "Terrace at The River Inn", "Memphis", ["American"], "Harbor Town", "50 Harbor Town Square, Memphis, TN 38103", 3, [], "A rooftop with a Mississippi River sunset. A date-night pick."],
+ ["lookout-pyramid", "The Lookout", "Memphis", ["American", "Seafood"], "Downtown", "1 Bass Pro Dr, Memphis, TN 38105", 3, [], "Dinner at the top of the Pyramid, with the whole river below."],
+ ["uncle-bucks", "Uncle Buck's Fish Bowl and Grill", "Memphis", ["Seafood", "Casual"], "Downtown", "1 Bass Pro Dr, Memphis, TN 38105", 2, [], "Inside the Pyramid, with giant aquariums. A family adventure."],
+ ["good-fortune", "Good Fortune Co.", "Memphis", ["Asian"], "South Main", "361 S Main St, Memphis, TN 38103", 2, [], "Ramen and Asian plates on South Main."],
+ ["kuya", "KUYA", "Memphis", ["Asian"], "South Main", "327 S Main St, Memphis, TN 38103", 2, [], "Filipino cooking on South Main. Something new for the table."],
+ ["fannie-lous", "Fannie Lou's Gourmet Chicken & Waffles", "Memphis", ["Soul", "Breakfast"], "Downtown", "500 Tennessee St #166, Memphis, TN 38103", 2, [], "Chicken and waffles downtown on Tennessee Street."],
+ ["little-italy-dt", "Little Italy Downtown", "Memphis", ["Italian", "Casual"], "Downtown", "106 GE Patterson Ave, Memphis, TN 38103", 1, [], "New York-style pizza by the slice near the FedExForum."],
+ ["los-comales-dt", "Los Comales Downtown", "Memphis", ["Mexican"], "Downtown", "345 Madison Ave, Memphis, TN 38103", 1, [], "Tacos and Mexican plates on Madison."],
+ ["lobbyist", "The Lobbyist", "Memphis", ["Fine Dining", "American"], "South Main", "272 S Main St Ste 101, Memphis, TN 38103", 3, [], "A chef's dining room on Main Street for a special night."],
+ ["willie-moores", "Willie Moore's Restaurant", "Memphis", ["Soul"], "Downtown", "109 N Main St, Memphis, TN 38103", 1, [], "Home-style soul food on North Main."],
+ ["sugashack", "SugaShack", "Memphis", ["Soul"], "Beale Street", "392 Beale St, Memphis, TN 38103", 2, [], "Soul food at the east end of Beale Street."],
+ ["green-beetle", "The Green Beetle", "Memphis", ["Casual"], "South Main", "325 S Main St, Memphis, TN 38103", 2, [], "A South Main tavern with burgers and pub plates."],
+ ["hustle-dough", "Hustle & Dough", "Memphis", ["Bakery & Dessert", "Breakfast"], "South Main", "477 S Main St, Memphis, TN 38103", 1, ["breakfast", "lunch", "nodinner"], "Pastries, biscuits and coffee on South Main."],
+ ["notes-provisions", "Notes & Provisions", "Memphis", ["American"], "The Pinch", "300 N 2nd St, Memphis, TN 38105", 3, [], "A stylish dining room in the Pinch District."],
+ ["slim-husky", "Slim & Husky's Pizza Beeria", "Memphis", ["Italian", "Casual"], "Downtown", "634 Union Ave, Memphis, TN 38103", 1, [], "Build-your-own pizzas with playful names. Fun with the kids."],
+ ["southern-social", "Southern Social", "Memphis", ["Southern"], "Germantown", "2285 S Germantown Rd, Germantown, TN 38138", 3, [], "A Southern supper room in Germantown."],
+ ["las-tortugas", "Las Tortugas", "Memphis", ["Mexican"], "Germantown", "1215 S Germantown Rd, Germantown, TN 38138", 2, [], "Fresh-made tacos. A Germantown favorite."],
+ ["stoney-river", "Stoney River Steakhouse and Grill", "Memphis", ["Steak"], "Germantown", "7515 Poplar Ave #101, Germantown, TN 38138", 3, [], "Steaks and a fireplace room on Poplar."],
+ ["city-silo-gtown", "City Silo Table + Pantry", "Memphis", ["American", "Casual"], "Germantown", "7605 W Farmington Blvd #2, Germantown, TN 38138", 2, [], "Fresh, wholesome plates for a lighter family meal."],
+ ["half-shell", "The Half Shell", "Memphis", ["Seafood"], "Germantown", "9091 Poplar Ave #101, Germantown, TN 38138", 2, [], "Oysters, seafood and Cajun plates on Poplar."],
+ ["toasted-yolk", "The Toasted Yolk Cafe", "Memphis", ["Breakfast"], "Germantown", "9087 Poplar Ave #111, Germantown, TN 38138", 2, ["breakfast", "lunch", "nodinner"], "Big breakfasts and brunch plates in Germantown."],
+ ["mantra", "Mantra Indian Grill", "Memphis", ["Indian"], "Germantown", "2095 Exeter Rd #30, Germantown, TN 38138", 2, [], "Indian curries and tandoori on Exeter."],
+ ["moondance", "Moondance Grill", "Memphis", ["Steak", "American"], "Germantown", "1730 S Germantown Rd Ste. 117, Germantown, TN 38138", 3, [], "Steaks and seafood in a cozy Germantown room."],
+ ["wolf-river-brisket", "Wolf River Brisket Co.", "Memphis", ["BBQ"], "Germantown", "9947 Wolf River Blvd #101, Germantown, TN 38139", 2, [], "Slow-smoked brisket off Wolf River Boulevard."],
+ ["sakura-gtown", "Sakura Japanese Restaurant", "Memphis", ["Asian", "Hibachi"], "Germantown", "2060 West St, Germantown, TN 38138", 2, [], "Sushi and Japanese plates on West Street."],
+ ["petra-cafe", "Petra Cafe", "Memphis", ["Mediterranean"], "Germantown", "1789 Kirby Pkwy #10, Germantown, TN 38138", 1, [], "Gyros, hummus and fresh Mediterranean plates."],
+ ["david-grisantis", "David Grisanti's On Main", "Memphis", ["Italian"], "Collierville", "148 N Main St, Collierville, TN 38017", 3, [], "Family-style Italian on the Collierville Square."],
+ ["silver-caboose", "Silver Caboose Restaurant & Soda Fountain", "Memphis", ["Casual", "Southern"], "Collierville", "132 E Mulberry St, Collierville, TN 38017", 1, [], "Lunch and milkshakes at a real soda fountain on the Square."],
+ ["cafe-piazza", "Cafe Piazza", "Memphis", ["Italian", "Casual"], "Collierville", "139 S Rowlett St, Collierville, TN 38017", 2, [], "Pizza and Italian plates just off the Square."],
+ ["ciao-baby", "Ciao Baby", "Memphis", ["Italian", "Casual"], "Collierville", "890 W Poplar Ave, Collierville, TN 38017", 2, [], "Wood-fired Neapolitan pizza on Poplar."],
+ ["orleans-ville", "The Orleans in the Ville", "Memphis", ["Creole", "Seafood"], "Collierville", "336 New Byhalia Rd, Collierville, TN 38017", 2, [], "New Orleans flavors (gumbo, po'boys, crawfish) in Collierville."],
+ ["bonefish-cville", "Bonefish Grill", "Memphis", ["Seafood"], "Collierville", "4680 Merchants Park Cir, Collierville, TN 38017", 3, [], "Wood-grilled fish and Bang Bang Shrimp."],
+ ["maeves", "Maeve's Tavern", "Memphis", ["Casual"], "Collierville", "78 N Main St, Collierville, TN 38017", 2, [], "An Irish tavern on Main Street by the Square."],
+ ["social-desiii", "Social Desiii Indian Cuisine & Bar", "Memphis", ["Indian"], "Collierville", "9959 Winchester Rd, Collierville, TN 38017", 2, [], "Indian dishes and a lively room in Collierville."],
+ ["paris-banh-mi", "Paris Banh Mi", "Memphis", ["Vietnamese", "Bakery & Dessert"], "Collierville", "255 New Byhalia Rd #116, Collierville, TN 38017", 1, [], "Banh mi sandwiches, pho and French pastries."],
+ ["captain-johns", "Captain John's Bar-B-Que", "Memphis", ["BBQ"], "Collierville", "106 US-72, Collierville, TN 38017", 1, [], "Old-school barbecue on Highway 72."],
+ ["mezzego", "MezzeGo", "Memphis", ["Mediterranean"], "Collierville", "622 W Poplar Ave, Collierville, TN 38017", 1, [], "Build-your-own Mediterranean bowls and pitas."],
+ ["jim-n-nicks", "Jim 'N Nick's Bar-B-Q", "Memphis", ["BBQ"], "Cordova", "2359 N Germantown Pkwy, Cordova, TN 38016", 2, [], "Smoked meats and their famous cheese biscuits."],
+ ["villa-castrioti", "Villa Castrioti", "Memphis", ["Italian"], "Cordova", "714 N Germantown Pkwy #15, Cordova, TN 38018", 2, [], "Italian classics and pizza on Germantown Parkway."],
+ ["crab-island", "Crab Island Seafood", "Memphis", ["Seafood"], "Cordova", "1028 N Germantown Pkwy, Cordova, TN 38018", 2, [], "Seafood boils by the pound. Bring a big appetite."],
+ ["j-alexanders", "J. Alexander's Restaurant", "Memphis", ["American", "Steak"], "Cordova", "2670 N Germantown Pkwy, Memphis, TN 38133", 3, [], "Prime rib and classic American plates near Wolfchase."],
+ ["shogun", "Shogun Japanese Steakhouse", "Memphis", ["Hibachi"], "Cordova", "2324 N Germantown Pkwy, Cordova, TN 38016", 2, [], "Hibachi chefs cooking at your table. A show for the kids."],
+ ["cheddars", "Cheddar's Scratch Kitchen", "Memphis", ["Casual", "American"], "Cordova", "2147 N Germantown Pkwy, Cordova, TN 38016", 1, [], "Scratch-made comfort food at friendly prices."],
+ ["leonards", "Leonard's Pit Barbecue", "Memphis", ["BBQ"], "Cordova", "1100 N Germantown Pkwy, Cordova, TN 38016", 1, [], "Leonard's has served Memphis barbecue since 1922."],
+ ["hq-korean", "HQ Korean BBQ & Hot Pot", "Memphis", ["Asian"], "Cordova", "2828 Wolf Creek Pkwy, Memphis, TN 38133", 3, [], "Grill-at-your-table Korean barbecue and hot pot."],
+ ["green-bamboo", "Green Bamboo Noodle House", "Memphis", ["Vietnamese"], "Cordova", "990 N Germantown Pkwy #104, Cordova, TN 38018", 1, [], "Pho and Vietnamese noodle bowls."],
+ ["osaka-cordova", "Osaka Japanese Cuisine", "Memphis", ["Asian", "Hibachi"], "Cordova", "2200 N Germantown Pkwy Ste 101, Cordova, TN 38016", 2, [], "Sushi and hibachi on Germantown Parkway."],
+ ["dave-busters", "Dave & Buster's", "Memphis", ["Casual", "American"], "Cordova", "2751 Wolf Creek Pkwy, Memphis, TN 38133", 2, [], "Dinner and a giant game room. A kids' night out."],
+ ["side-porch", "Side Porch Steakhouse", "Memphis", ["Steak"], "Bartlett", "5689 Stage Rd, Bartlett, TN 38134", 2, [], "A homey Bartlett steakhouse."],
+ ["pier-64", "Pier 64 Seafood & Bar", "Memphis", ["Seafood"], "Bartlett", "6105 Stage Rd, Bartlett, TN 38134", 2, [], "Seafood platters and boils on Stage Road."],
+ ["biscuits-jams", "Biscuits and Jams", "Memphis", ["Breakfast", "Southern"], "Bartlett", "5806 Stage Rd, Bartlett, TN 38134", 1, ["breakfast", "lunch", "nodinner"], "Homemade biscuits and country breakfast."],
+ ["sweetpeas", "Sweetpea's Southern Cookin'", "Memphis", ["Soul", "Southern"], "Bartlett", "5824 Stage Rd, Bartlett, TN 38134", 1, [], "Meat-and-three Southern cooking."],
+ ["angelos", "Angelo’s Little Italy", "Memphis", ["Italian"], "Bartlett", "7717 US-70, Bartlett, TN 38133", 2, [], "Family Italian on Highway 70."],
+ ["thai-bistro", "Thai Bistro", "Memphis", ["Thai"], "Bartlett", "7140 Stage Rd Ste 102, Bartlett, TN 38133", 2, [], "Curries, noodles and Thai favorites on Stage Road."],
+ ["tys-smokehouse", "Ty's Smokehouse", "Memphis", ["BBQ"], "Bartlett", "7174 Stage Rd #101, Bartlett, TN 38133", 1, [], "Smoked barbecue on Stage Road."],
+ ["pho-64", "Pho 64", "Memphis", ["Vietnamese"], "Bartlett", "6773 Stage Rd, Bartlett, TN 38134", 1, [], "Pho and Vietnamese plates."],
+ ["old-whitten", "Old Whitten Tavern", "Memphis", ["Casual", "American"], "Bartlett", "2465 Whitten Rd, Memphis, TN 38133", 2, [], "A neighborhood tavern with burgers and Southern plates."],
+ ["los-pilares", "Los Pilares Mexican", "Memphis", ["Mexican"], "Bartlett", "6249 Stage Rd, Bartlett, TN 38134", 1, [], "Mexican favorites on Stage Road."],
+ ["pops-comfort", "Pop's Comfort Kitchen", "Memphis", ["Soul", "Southern"], "Bartlett", "2990 Kirby Whitten Rd #107, Bartlett, TN 38134", 1, [], "Comfort food plates in Bartlett."],
+ ["tommys-burgers", "Tommy’s Burgers", "Memphis", ["Burgers"], "Bartlett", "2931 Kirby Whitten Rd, Bartlett, TN 38134", 1, [], "California-style burgers and fries."],
  ["husk-nash","Husk","Nashville",["Southern"],"Rutledge Hill","37 Rutledge St, Nashville, TN 37210",3,[],"Sean Brock's ingredient-driven Southern in a historic mansion."],
  ["kayne-prime","Kayne Prime","Nashville",["Steak"],"The Gulch","1103 McGavock St, Nashville, TN 37203",4,[],"Modern steakhouse with playful sides."],
  ["rolf","Rolf and Daughters","Nashville",["Italian"],"Germantown","700 Taylor St, Nashville, TN 37208",3,[],"Pasta-centric, communal tables, great energy."],
@@ -1103,7 +1219,7 @@ function gBlock(where){
   </section>`;
 }
 const CITIES = ["Memphis","Nashville","Atlanta","New Orleans","Chicago","New York","Dallas","Los Angeles"];
-const CUISINES = ["All","Steak","Italian","Hibachi","BBQ","Soul","Southern","Seafood","Breakfast","Burgers","Casual","Indian","French","Creole","Mediterranean","Fine Dining","Bakery & Dessert","Mexican","Thai","Vietnamese","American"];
+const CUISINES = ["All","Steak","Italian","Hibachi","BBQ","Soul","Southern","Seafood","Breakfast","Burgers","Casual","Indian","French","Creole","Mediterranean","Fine Dining","Bakery & Dessert","Mexican","Thai","Vietnamese","Asian","American"];
 // Which meals a place serves. Default is dinner; flags/sets below add breakfast & lunch.
 const BRUNCH = new Set(["libro","owen-brennans","interim","paulettes"]);
 const LUNCH = new Set(["central-bbq","gus","four-way","alcenias","cozy-corner","saigon-le","india-palace","bhan-thai","libro","second-line","majestic","colettas","rendezvous","beauty-shop","felicia"]);
@@ -1182,7 +1298,7 @@ const SB_URL = "https://vhonljdavmklymrocgiu.supabase.co";
 const SB_KEY = "sb_publishable_F-Wjwoek1ZzMLKl_aoxK2w_pF2ac_Qw";
 const sb = window.supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"t7.auth"}});
 let pinSet = {}, pinLocked = {};   // host view: which seats have set a PIN, and which are locked out (never the PIN itself)
-const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any"};
+const UI0 = {tab:"home",city:"Memphis",cuisine:"All",filter:"all",q:"",budget:"any",meal:"any",area:""};
 function seed(){
   const fam = [
     {id:"m1",name:"Richard Clark",color:COLORS[0],email:"",phone:""},
@@ -1327,7 +1443,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_events","live_asks","live_answers","dates"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -1385,6 +1501,11 @@ async function pull(){
     path:x.photo_path, photo:x.photo_path ? (urls[x.photo_path] || "") : "", favs:x.favorites || [], by:x.added_by, t:iso2ms(x.created_at)}));
   n.rideOffers = D.ride_offers.map(x => ({id:x.id, kind:x.kind, ref:x.ref_id, driver:x.driver, seats:x.seats, leaving:x.leaving || "", note:x.note || "", t:iso2ms(x.created_at)}));
   n.rideAsks = D.ride_asks.map(x => ({id:x.id, kind:x.kind, ref:x.ref_id, rider:x.rider, party:x.party, note:x.note || "", driver:x.driver, declined:x.declined || [], t:iso2ms(x.created_at)}));
+  n.liveEvents = D.live_events.map(x => ({id:x.id, src:x.source, title:x.title, t:Date.parse(x.starts_at), allDay:x.all_day, venue:x.venue || "", addr:x.address || "", cat:x.category,
+    price:x.price || "", free:x.free, ticket:x.ticket_url || "", info:x.info_url || "", img:x.image_url || ""}));
+  n.liveAsks = D.live_asks.map(x => ({id:x.id, ev:x.event_id, title:x.title, venue:x.venue || "", t:Date.parse(x.starts_at), ticket:x.ticket_url || "", by:x.by_member, note:x.note || "", at:iso2ms(x.created_at)}));
+  n.liveAnswers = D.live_answers.map(x => ({ask:x.ask_id, who:x.member_id, a:x.answer, picks:x.picks || [], note:x.note || ""}));
+  n.dates = D.dates.map(x => ({id:x.id, kind:x.kind, by:x.created_by, partner:x.partner, title:x.title, date:x.date, time:x.time || "", stops:Array.isArray(x.stops) ? x.stops : [], idea:x.idea || "", status:x.status, reply:x.reply || "", t:iso2ms(x.created_at)}));
   n.cards = D.cards.map(c => ({id:c.id, by:c.by, photoId:c.media_id, style:c.style, msg:c.message || "", eventId:c.event_id, rid:c.restaurant_id, to:c.recipients || [], status:c.status,
     t:iso2ms(c.at), uploadPath:c.upload_path, upload:c.upload_path ? (urls[c.upload_path] || "") : null}));
   const L = by(D.tab_lines, "event_id");
@@ -1433,7 +1554,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_asks","live_answers","dates"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1453,7 +1574,7 @@ function redraw(){
   if(inviteId && !ev(inviteId)) closeInvite();
   render();
   // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
-  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); saRedraw(); ouRedraw(); prRedraw(); tnRedraw(); rcRedraw(); rdRedraw(); }
+  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); saRedraw(); ouRedraw(); prRedraw(); tnRedraw(); rcRedraw(); rdRedraw(); lvRedraw(); dnRedraw(); }
   if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
@@ -1602,10 +1723,24 @@ function toggleWant(rid){
 }
 // the star is on the open restaurant page as well as the list behind it: redraw both
 function wantRedraw(rid){ const onSheet = wrap.classList.contains("open") && sheet.querySelector(`[data-act="want"][data-rid="${CSS.escape(rid)}"]`); render(); if(onSheet) sheetRest(rid); }
-function sundayPicks(target){
+// This Sunday rotates three times a week (his order, 2026-10-22): a fresh pick every Monday, Wednesday and Friday.
+// pickSlot counts those turns on the phone's own calendar; the top pick is never the same as the turn before.
+function pickSlot(d = new Date()){
+  const day = Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / DAY);   // local days since 1 Jan 1970 (a Thursday)
+  const dow = (day + 3) % 7;                                                      // Monday 0 … Sunday 6
+  return Math.floor((day + 3) / 7) * 3 + (dow >= 4 ? 2 : dow >= 2 ? 1 : 0);       // Mon–Tue · Wed–Thu · Fri–Sun
+}
+const pickHash = str => { let h = 2166136261; for(const c of str){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
+const slotLabel = () => ["Monday","Wednesday","Friday"][pickSlot() % 3];
+function sundayPicks(target, slot = pickSlot()){
+  const ranked = sundayRank(target, slot);
+  const before = sundayRank(target, slot - 1)[0];
+  if(ranked.length > 1 && before && ranked[0].r.id === before.r.id) [ranked[0], ranked[1]] = [ranked[1], ranked[0]];
+  return ranked.slice(0,3);
+}
+function sundayRank(target, slot){
   const t = iso(target);
-  const wk = Math.floor(target.getTime() / (7*DAY));
-  const pool = R.filter(r => r.city === "Memphis").map(r => {
+  return R.filter(r => r.city === "Memphis").map(r => {
     const rs = rotationState(r.id, t);
     if(rs.state === "resting" || !meals(r).dinner || isBlocked(r.id)) return null;
     const a = avgOf(r.id);
@@ -1614,11 +1749,21 @@ function sundayPicks(target){
     if(rs.state === "returning") s += 1.2;
     if(r.flags.includes("new")) s += .6;
     if(wantOf(r.id)) s += 6;   // Want to Try comes first (his order, 2026-10-17)
-    s += ((wk * 7919 + r.id.length * 104729 + r.name.charCodeAt(2)) % 97) / 97 * 1.4; // weekly shuffle
+    s += pickHash(r.id + ":" + slot) * 2.2;   // the Mon/Wed/Fri shuffle
     return {r, s, rs};
   }).filter(Boolean).sort((a,b) => b.s - a.s);
-  return pool.slice(0,3);
 }
+// "Don't miss out": the other Sunday ideas by part of town (his order, 2026-10-22)
+const AREAS = [
+  {k:"downtown", l:"Downtown", ic:"🏙️", hoods:["Downtown","Beale Street","South Main","Harbor Town","The Peabody","The Pinch","Pinch District","Uptown"]},
+  {k:"midtown", l:"Midtown & East", ic:"🌆", hoods:["Midtown","Overton Square","Cooper-Young","Broad Avenue","University District","East Memphis","Poplar Ave","Summer Ave"]},
+  {k:"germantown", l:"Germantown", ic:"🌳", hoods:["Germantown"]},
+  {k:"collierville", l:"Collierville", ic:"🏘️", hoods:["Collierville"]},
+  {k:"cordova", l:"Cordova", ic:"🛣️", hoods:["Cordova"]},
+  {k:"bartlett", l:"Bartlett", ic:"📍", hoods:["Bartlett"]},
+];
+const areaOf = r => (AREAS.find(a => a.hoods.includes(r.hood)) || {}).k || "";
+const areaDinners = k => R.filter(r => r.city === "Memphis" && areaOf(r) === k && meals(r).dinner && !isBlocked(r.id)).length;
 const pendingFor = id => {
   const out = [];
   st.events.filter(e => e.status !== "done" && inEvent(e, id)).forEach(e => {
@@ -1775,7 +1920,7 @@ function showGreeting(){
 gate.addEventListener("click", e => {
   if(gate.classList.contains("greeting")){ gate.hidden = true; openApp(); }
 });
-function openApp(){ if(!app.hidden) return; app.hidden = false; st.ui.tab = "home"; render(); }
+function openApp(){ if(!app.hidden) return; app.hidden = false; st.ui.tab = "home"; render(); wnMaybe(); }
 
 /* ================= Render ================= */
 const view = document.getElementById("view");
@@ -1826,6 +1971,8 @@ function vHome(){
   ${ouNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎉 Family Outing</h2></div>${ouNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="ou-open" data-id="${o.id}"><span class="ic">${OU_KINDS[o.kind].ic}</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${saNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎁 Secret Santa</h2></div>${saNeeds().slice(0, 3).map(([x, a, b2]) => `<button class="todo" data-act="sa-open" data-id="${x.id}"><span class="ic">🎁</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${tgNeeds().length ? `<section class="sec"><div class="sec-head"><h2>⛳ Topgolf</h2></div>${tgNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="tg-open" data-id="${o.id}"><span class="ic">⛳</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
+  ${lvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎟️ Who's in?</h2></div>${lvNeeds().slice(0, 3).map(a => `<button class="todo" data-act="lv-ask" data-id="${a.id}"><span class="ic">🙋</span><span><b>${esc(first(F(a.by).name))} asked: ${esc(a.title)}</b><small>${esc(lvDay(a.t))} · ${esc(a.venue)} · tap to answer</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
+  ${dnNeeds().length ? `<section class="sec"><div class="sec-head"><h2>💌 A date for you</h2></div>${dnNeeds().slice(0, 3).map(d => `<button class="todo" data-act="${d.kind === "couple" ? "datenight" : "adventure"}"><span class="ic">${d.kind === "couple" ? "💕" : "🧭"}</span><span><b>${esc(first(F(d.by).name))}: ${esc(d.title)}</b><small>${esc(fmtDate(d.date))}${d.time ? ` · ${esc(d.time)}` : ""} · tap to say yes</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${mvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎬 Movie night</h2></div>${mvNeeds().slice(0, 3).map(([n, a, b2]) => `<button class="todo" data-act="mv-open" data-id="${n.id}"><span class="ic">🎬</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
     ${todos.slice(0,4).map(t => { const [a,b] = todoLabel(t); return `<button class="todo" data-act="${t.kind==="rsvp"&&t.e.status==="set"?"invite-open":"event"}" data-id="${t.e.id}"><span class="ic">${t.kind==="guest"?I.hand:I.bell}</span><span><b>${a}</b><small>${esc(b)}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}
@@ -1848,6 +1995,7 @@ function vHome(){
 
   <section class="sec">
     <div class="sec-head"><h2>This Sunday</h2><span class="muted small">${fmtDate(iso(nextSunday))}</span></div>
+    <p class="small muted" style="margin:-4px 0 8px">✨ ${slotLabel()}'s pick · a fresh one every Monday, Wednesday and Friday</p>
     <div class="feature">
       <div class="plate" aria-hidden="true"></div>
       <div class="eyebrow">Concierge recommends</div>
@@ -1858,6 +2006,19 @@ function vHome(){
     </div>
     <div class="alts">${picks.slice(1).map(p => `<button class="alt" data-act="rest" data-rid="${p.r.id}"><span class="eyebrow" style="font-size:10px">Also consider</span><b>${esc(p.r.name)}</b><span class="muted small">${p.r.cuisine[0]} · ${$(p.r.price)}</span></button>`).join("")}</div>
   </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Don't miss out</h2></div>
+    <p class="small muted" style="margin:-4px 0 10px">Your other Sunday restaurant ideas, all over town. Pick a part of town and see every table worth the drive.</p>
+    <div class="areas">${AREAS.map(a => `<button class="area" data-act="sunday-area" data-a="${a.k}"><span class="area-ic" aria-hidden="true">${a.ic}</span><b>${a.l}</b><span class="muted small">${areaDinners(a.k)} places</span></button>`).join("")}
+      <button class="area" data-act="explore-filter" data-f="untried"><span class="area-ic" aria-hidden="true">✨</span><b>New to us</b><span class="muted small">Not tried yet</span></button></div>
+  </section>
+
+  <div class="grid2">
+    <button class="alt" data-act="memlive"><span class="eyebrow" style="font-size:10px">🎟️ Memphis Live</span><b>What's on in town</b><span class="muted small">Shows, games and free events, with tickets</span></button>
+    <button class="alt" data-act="datenight"><span class="eyebrow" style="font-size:10px">💕 Date Night</span><b>Plan an evening for two</b><span class="muted small">Dinner, something to do, dessert</span></button>
+  </div>
+  <button class="todo" data-act="adventure"><span class="ic">🧭</span><span><b>Adventure Club</b><small>Kids: pick an adventure and ask a grown-up for a date</small></span><span class="chev">${I.chev}</span></button>
 
   <section class="sec">
     <div class="sec-head"><h2>Coming up</h2><button class="link-btn" data-tab="feed">See feed</button></div>
@@ -1890,6 +2051,8 @@ function vExplore(){
   let list = R.filter(r => r.city === u.city);
   list = u.filter === "blocked" ? list.filter(r => isBlocked(r.id)) : list.filter(r => !isBlocked(r.id));
   if(u.cuisine !== "All") list = list.filter(r => r.cuisine.includes(u.cuisine));
+  const area = u.city === "Memphis" && AREAS.find(a => a.k === u.area);
+  if(area) list = list.filter(r => areaOf(r) === area.k);
   if(u.filter === "untried") list = list.filter(r => !lastVisit(r.id));
   if(u.filter === "new") list = list.filter(r => r.flags.includes("new"));
   if(u.filter === "favorites") list = list.filter(r => visitsOf(r.id).length >= 2);
@@ -1903,6 +2066,7 @@ function vExplore(){
   return `
   <section class="sec">
     <div class="sec-head"><h2>Explore</h2><span class="muted small num">${list.length} of ${total}</span></div>
+    ${area ? `<button class="chip" data-act="area-clear" aria-pressed="true" style="margin-bottom:8px">${area.ic} ${area.l} only ✕</button>` : ""}
     <div class="grid2">
       <div class="field"><label for="city">City</label><select class="input" id="city" data-change="city">${CITIES.map(c => `<option ${c===u.city?"selected":""}>${c}</option>`).join("")}</select></div>
       <div class="field"><label for="flt">Show</label><select class="input" id="flt" data-change="filter">
@@ -2230,6 +2394,9 @@ function vTable(){
   <button class="todo" data-act="movies"><span class="ic">🎬</span><span><b>Movie Night</b><small>${(() => { const k = mvNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a movie, read reviews, buy tickets, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="prayers"><span class="ic">🙏</span><span><b>Prayer Wall</b><small>${(() => { const n = (st.prayers || []).filter(x => x.status === "open").length; return n ? `${n} ${n === 1 ? "request" : "requests"} to pray for` : "Share a request, pray for each other, praise God for answers"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="recipes"><span class="ic">🍗</span><span><b>Family Recipe Book</b><small>${(() => { const n = (st.recipes || []).length; return n ? `${n} family ${n === 1 ? "recipe" : "recipes"} · search, star and cook` : "Save the dishes the family loves, with who made them and a photo"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="memlive"><span class="ic">🎟️</span><span><b>Memphis Live</b><small>${(() => { const k = lvNeeds().length; return k ? `${k} “Who's in?” ${k === 1 ? "question waits" : "questions wait"} for you` : "Concerts, comedy, shows, games and free events, with tickets"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="datenight"><span class="ic">💕</span><span><b>Date Night</b><small>${(() => { const k = dnNeeds().filter(d => d.kind === "couple").length; return k ? `${k} ${k === 1 ? "date asks" : "dates ask"} for your yes` : "Pick a mood: dinner, something to do and dessert, for two"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="adventure"><span class="ic">🧭</span><span><b>Adventure Club</b><small>${(() => { const k = dnNeeds().filter(d => d.kind === "kids").length; return k ? `${k} ${k === 1 ? "adventure asks" : "adventures ask"} for your yes` : "Kids: let's plan a date! Earn stamps for your passport"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="outings"><span class="ic">🎉</span><span><b>Family Outing</b><small>${(() => { const k = ouNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Tigers games, bowling, the zoo and more, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="santa"><span class="ic">🎁</span><span><b>Secret Santa</b><small>${(() => { const k = saNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Draw names, share wish lists, keep the secret"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="golf"><span class="ic">⛳</span><span><b>Topgolf Outing</b><small>${(() => { const k = tgNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Pick a day, book a bay, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
@@ -2275,7 +2442,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf|santa|outing|prayer|recipe|rides)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.toggle("santa", /data-santa[\s>=]/.test(html)); wrap.classList.toggle("outing", /data-outing[\s>=]/.test(html)); wrap.classList.toggle("prayer", /data-prayer[\s>=]/.test(html)); wrap.classList.toggle("recipe", /data-recipe[\s>=]/.test(html)); wrap.classList.toggle("rides", /data-rides[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf|santa|outing|prayer|recipe|rides|live|datenight|adventure)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.toggle("santa", /data-santa[\s>=]/.test(html)); wrap.classList.toggle("outing", /data-outing[\s>=]/.test(html)); wrap.classList.toggle("prayer", /data-prayer[\s>=]/.test(html)); wrap.classList.toggle("recipe", /data-recipe[\s>=]/.test(html)); wrap.classList.toggle("rides", /data-rides[\s>=]/.test(html)); wrap.classList.toggle("live", /data-live[\s>=]/.test(html)); wrap.classList.toggle("datenight", /data-datenight[\s>=]/.test(html)); wrap.classList.toggle("adventure", /data-adventure[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -2324,6 +2491,11 @@ function sheetTips(){
     ["Prayer Wall","Our Table → 🙏 Prayer Wall. Share a request (tick “Don't show my name” to keep it unnamed), tap 🙏 I prayed for others, and mark yours Answered with a praise report. The whole family sees every request."],
     ["Family Recipe Book","Our Table → 🍗 Family Recipe Book. Tap ＋ Add a family recipe: the name, whose recipe it is, the ingredients and the steps (one on each line), and a photo if you like. The family is told and the photo shows right away. Search by dish, ingredient or who made it; tap ☆ Favorite to star it; tick ingredients off while you cook."],
     ["Rides","On a dinner card, a Family Outing, a Movie Night or a Topgolf outing, tap 🚗 Rides. Have room? Tap I can drive and pick your seats. Need one? Tap I need a ride, say how many are riding and where to pick you up. The app matches you, tells you both, and only your driver sees your address."],
+    ["This Sunday, three times a week","Home → This Sunday shows a fresh pick every Monday, Wednesday and Friday (never the same top pick twice in a row). Under it, Don't miss out: tap Downtown, Midtown & East, Germantown, Collierville, Cordova or Bartlett to see every dinner spot there, or New to us for places we haven't tried."],
+    ["Memphis Live","Our Table → 🎟️ Memphis Live (or the tile on Home). Pick This week, Next 30 days or Everything, and a kind (Concerts, Comedy, Sports, Theater, Family, Outdoors, Free). 🎟️ Tickets opens the real seller. 🙋 Who's in? asks the whole family; each answers Yes, Maybe or No and ticks the dates that work, and the app shows the best night."],
+    ["Date Night","Our Table → 💕 Date Night. Pick a mood (Candlelight, Live music, Sunset & the river, Art & history, Sweet & simple, or Surprise me) and you get a whole evening: dinner, something to do, dessert. 🔀 Show me another changes it. 💌 Plan this date: pick your date, the day and times, and send. Only the two of you see it."],
+    ["Adventure Club","Our Table → 🧭 Adventure Club, for the kids. Tap an adventure (the Zoo, the Pink Palace, mini golf, skating…), pick your grown-up and a day, and tap 🧭 Ask for the date. After the day, tap 🏅 We went! to earn a stamp in your Adventure Passport: 1 makes you an Explorer, 3 an Adventurer, 5 a Trailblazer, 10 a Legend."],
+    ["What's new","After an update, the first time you sign in you'll see ✨ Fresh at the table with every new feature; tap one to open it. To see it again: tap your initial → ✨ What's new."],
     ["Game Night Tournament","Game Room → 🏆 Start a game night tournament. Pick the players and the games; after each game, record who came 1st (3 points) and 2nd (1 point). The leaderboard runs all night; Crown the champion at the end."],
     ["Wild Card","Game Room → 🌈 Wild Card: Uno's rules. Match the colour, the number or the symbol; a Wild lets you name the colour. Down to two cards? Tap 🔔 before you play, or anyone can tap 🚨 Catch and you draw 2. Play 1, 2 or 3 computers, or a family game of up to four, one round or first to 200."],
     ["Bid Whist","Game Room → ♣ Bid Whist: couples, partners across, jokers in. Bid 4 to 7 Uptown, Downtown or No Trump; the top bidder takes the kitty, puts back 6 and names trump. First to 7 wins, no trump counts double, and taking all 13 books (a Boston) wins outright."],
@@ -2389,6 +2561,11 @@ function guideBody(k){
     step(37, "Family Recipe Book", `Tap ${pic("Our Table")} → <b>🍗 Family Recipe Book</b>. <b>Adding one:</b> tap ${pic("＋ Add a family recipe","primary")}, type the <b>name of the dish</b>, <b>whose recipe it is</b> (Grandma, Rosa…), pick the kind (main dish, side, dessert, bread, breakfast, drink or other), how many it serves and how long it takes. Type the <b>ingredients</b> one on each line, then the <b>steps</b> one on each line, and any notes (the secret, the story). Tap ${pic("📷 Add a photo")} to pick a picture, then ${pic("🍗 Add it to the Recipe Book","primary")}. The whole family is told, and the photo shows right away (no approval). <b>Finding one:</b> type in <b>Search</b> (a dish, an ingredient like “pecans”, or who made it), or tap a chip: ${pic("All")}, ${pic("⭐ My favorites")} or a kind. Tap a recipe to open it. <b>Cooking:</b> tick each ingredient as you add it (only your phone sees the ticks), and tap ${pic("A+")} for bigger print. Tap ${pic("☆ Favorite")} to star it for yourself; you can see who else starred it. <b>Changing it:</b> the person who added it, or the host, taps ${pic("✏️ Change it")}, makes the change and taps ${pic("Save the changes","primary")}; ${pic("Take the photo off","ghost")} removes the picture, and ${pic("Remove")} takes the whole recipe and its photo out of the book.`),
     step(38, "Rides", `Every dinner card in the ${pic("Feed")}, and every Family Outing, Movie Night and Topgolf page, has a <b>🚗 Rides</b> strip; tap ${pic("Rides")}. <b>Driving:</b> tap ${pic("🚗 I can drive","primary")}, tap how many you can take (not counting you), add when you'll leave and a note if you like (“I have a car seat”), and tap ${pic("🚗 Offer my seats","primary")}. Anyone waiting who fits is put in your car at once. Under <b>You're driving</b> you see each rider, how many are with them, their note and <b>📍 where to pick them up</b>, with ${pic("🧭 Directions","primary")} and ${pic("📞 Call")} / ${pic("💬 Text")}. ${pic("I'll pick them up","primary")} takes someone waiting; ${pic("Let go","ghost")} hands them back to the list (you won't be matched with them again unless you tap I'll pick them up); ${pic("Change seats or time")} and ${pic("I can't drive after all","ghost")} do what they say, and your riders are told. <b>Riding:</b> tap ${pic("🙋 I need a ride","wine")}, tap how many are riding (you and anyone with you, such as a grandparent or the children), type where to pick you up and anything the driver should know there (the apartment, the gate code), and tap ${pic("🙋 Ask for a ride","primary")}. Next time the app fills in your last pickup address for you. The app puts you with the driver who has the most room, and never splits your group across two cars; if no car has room yet, you wait on the list and are told the moment one does. You'll see <b>who is driving you</b>, when they leave, and ${pic("Change")} or ${pic("I don't need a ride now","ghost")}. <b>Privacy:</b> where to pick you up is seen only by you and your own driver, never the rest of the family, and it never appears on a lock screen.`),
     step(39, "Sign-in emails, lockouts and PINs (host)", `${host} only. Tap your initial → ${pic("Host controls")} → <b>Family seats</b>. Each seat has a <b>Sign-in email</b> box: type that person's email and tap ${pic("Save")} (two seats can't share one). A seat with five wrong PINs shows ${pic("Locked out","wine")} and an ${pic("Unlock","primary")} button: tap it and they sign in again with the same PIN. If they forgot the PIN, tap ${pic("Reset PIN","ghost")} instead; next time they sign in they choose a new one. Nobody else can unlock a seat or reset a PIN.`),
+    step(40, "This Sunday, three times a week", `Home → <b>This Sunday</b>. The Concierge's pick changes every <b>Monday, Wednesday and Friday</b> (the line under the heading says whose day it is), and the new top pick is never the one just before it. Places someone saved to Want to Try still come first. Under it, <b>Don't miss out</b> has a tile for each part of town with how many dinner spots are there: tap ${pic("🏙️ Downtown")} (or Germantown, Collierville, Cordova, Bartlett, Midtown & East) and Explore opens showing only that part of town at dinner; tap ${pic("Downtown only ✕")} to see everything again. ${pic("✨ New to us")} shows the places the family hasn't tried.`),
+    step(41, "Memphis Live", `Tap ${pic("Our Table")} → <b>🎟️ Memphis Live</b>, or <b>What's on in town</b> on Home. Shows are grouped by day; each has its time, the place, the price if the venue gives one, and three buttons: ${pic("🎟️ Tickets","primary")} opens the real ticket seller (or ${pic("Event page")} when the venue sells at the door), ${pic("🙋 Who's in?","wine")} asks the family, and ${pic("📍 Directions","ghost")}. Use the chips for <b>This week</b>, <b>Next 30 days</b> or <b>Everything</b>, and for the kind of show. <b>Who's in?</b>: add a note if you like and tap ${pic("🙋 Ask the family","primary")}; everyone gets an alert. Each person taps ${pic("✅ In")}, ${pic("🤔 Maybe")} or ${pic("❌ Can't")}, ticks the dates and times that work when a show runs more than one night, adds other times in the note, and taps ${pic("Send my answer","primary")}. The asker is told each answer, and <b>⭐ Best night so far</b> shows the showing most of the family can make. The asker or ${host} can take a question down. The list comes from GPAC, the Overton Park Shell and Overton Park (with the Memphis Zoo), refreshed every 6 hours; once ${host} adds a Ticketmaster key it also lists the Landers Center, FedExForum, the Orpheum and more.`),
+    step(42, "Date Night", `Tap ${pic("Our Table")} → <b>💕 Date Night</b>. Tap a mood: <b>🕯️ Candlelight</b> (a dressed-up dinner and a river walk), <b>🎶 Live music</b>, <b>🌅 Sunset &amp; the river</b>, <b>🖼️ Art &amp; history</b>, <b>🍿 Sweet &amp; simple</b> or <b>🎁 Surprise me</b>. The app lays out three stops with times: dinner from our restaurant list, something to do (real Memphis places such as Big River Crossing, the Overton Park Shell, the Memphis Art Museum, Malco Paradiso), and dessert. ${pic("🔀 Show me another")} gives a different evening. Tap ${pic("💌 Plan this date","primary")}, pick your date, the day (Friday is filled in), the start time and each stop's time, and tap ${pic("💌 Send the invitation","primary")}. They get an alert and tap ${pic("💛 Yes!","primary")} or ${pic("Another time")} (with a note). You can ${pic("Change the day")} or ${pic("Call it off","ghost")}. After the night, tap ${pic("💛 We went","primary")} and it joins <b>Our date nights</b>. Only the two of you ever see a date, ${host} included.`),
+    step(43, "Adventure Club", `Tap ${pic("Our Table")} → <b>🧭 Adventure Club</b>. At the top is your <b>Adventure Passport</b> with a stamp for every adventure you've been on. Tap an adventure: 🐼 the Zoo, 🚀 the Pink Palace, 🧸 the Children's Museum, 🚲 Shelby Farms, 🐟 the Pyramid, 🐢 a nature hunt at Lichterman, ⛳ mini golf, ⛸️ skating, 🏌️ Topgolf, 🚋 a trolley ride, 🏹 Chucalissa or 🎬 a movie. A treat stop after is added for you. Pick who the date is with (a grown-up, or a kid if you're the grown-up), the day (Saturday is filled in) and times, and tap ${pic("🧭 Ask for the date","primary")}. They answer ${pic("💛 Yes!","primary")} or ${pic("Another time")}. After the day, tap ${pic("🏅 We went! Stamp it","primary")}: both of you get the stamp. Badges: 1 🧭 Explorer, 3 🗺️ Adventurer, 5 🏔️ Trailblazer, 10 👑 Legend.`),
+    step(44, "What's new", `The first time each person signs in after an update, <b>✨ Fresh at the table</b> opens by itself with every new feature, signed by ${esc(F(ADMIN).name)}. Tap a feature to go straight to it, or ${pic("Let's go","primary")}. It shows once per version on each phone; to see it again, tap your initial → ${pic("✨ What's new","ghost")}.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 8 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2422,6 +2599,10 @@ function guideBody(k){
     step("AC", "Rosa's pie, saved", `Jasmine opens ${pic("🍗 Family Recipe Book")}, taps ${pic("＋ Add a family recipe","primary")} and types “Sweet potato pie”, from “Rosa”, a dessert that serves 8. She types the ingredients and the steps line by line, adds a photo of the pie and taps ${pic("🍗 Add it to the Recipe Book","primary")}. Everyone's phone says she added it. At Thanksgiving Mario types “sweet potato” in Search, opens it, taps ${pic("A+")} and ticks the ingredients off as he goes.`),
     step("AD", "Grandma gets a ride", `Sunday Dinner is at Gus's. Mario opens the dinner card, taps ${pic("Rides")} → ${pic("🚗 I can drive","primary")}, picks 3 seats and “4:30 PM from Cordova”, and taps ${pic("🚗 Offer my seats","primary")}. Zoey taps ${pic("🙋 I need a ride","wine")}, picks 2 (she's bringing Grandma), types her address and “Grandma needs the front seat”, and taps ${pic("🙋 Ask for a ride","primary")}. Her screen says Mario is driving her; Mario's phone says he's driving Zoey and 1 more, and his Rides screen shows her address with ${pic("🧭 Directions","primary")}.`),
     step("AE", "Locked out on a Sunday", `Zoey types her PIN wrong five times and sees “Your seat is locked”. She texts ${host}. ${host} opens ${pic("Host controls")}, finds Zoey under Family seats marked ${pic("Locked out","wine")}, and taps ${pic("Unlock","primary")}. Zoey signs in with her email and her usual PIN.`),
+    step("AF", "The Robert Cray Band", `Mario opens ${pic("🎟️ Memphis Live")}, taps ${pic("🎵 Concerts")} and sees The Robert Cray Band at GPAC on Saturday at 8 PM. He taps ${pic("🙋 Who's in?","wine")}, types “Who wants to come?” and taps ${pic("🙋 Ask the family","primary")}. Rosa taps ${pic("✅ In")}; Jasmine taps ${pic("🤔 Maybe")} and writes “If I'm off work by 7”. Mario sees “2 in · 1 maybe” and taps ${pic("🎟️ Tickets","primary")} to buy them on GPAC's own ticket page.`),
+    step("AG", "Zoo Boo, which night?", `Zoo Boo runs several nights. Zoey asks ${pic("🙋 Who's in?","wine")}. Devonte taps ${pic("✅ In")} and ticks Friday and Saturday; Rosa ticks Saturday only. The screen shows <b>⭐ Best night so far: Saturday · 3 can go</b>.`),
+    step("AH", "An anniversary evening", `Devonte opens ${pic("💕 Date Night")}, taps <b>🕯️ Candlelight</b>, then ${pic("🔀 Show me another")} until he likes it: dinner at 6:30, Big River Crossing at 8:15, dessert at 9:45. He taps ${pic("💌 Plan this date","primary")}, picks Rosa and Friday, and sends it. Rosa's bell rings; she taps ${pic("💛 Yes!","primary")}. Only the two of them can see it.`),
+    step("AI", "Zoey's Zoo date", `Zoey opens ${pic("🧭 Adventure Club")}, taps <b>🐼 The Zoo</b>, picks Grandpa and Saturday at 10, and taps ${pic("🧭 Ask for the date","primary")}. Grandpa says ${pic("💛 Yes!","primary")}. That evening Zoey taps ${pic("🏅 We went! Stamp it","primary")}: a 🧭 stamp lands in her passport and she's an <b>Explorer</b>.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2514,15 +2695,24 @@ function guideBody(k){
     ["My pass & play game isn't in the standings", "Only family games (each on their own phone) count. Pass & play stays on one phone and isn't saved."],
     ["“Dessert stop removed”", "The plan's host tapped “No dessert stop”. The plan, invitation and dinner card go back to one stop."],
     ["A chain bakery asks “Which location?”", "Crumbl, Nothing Bundt Cakes and the other chains have several shops. Pick the one you mean so everyone goes to the same door."],
+    ["This Sunday's pick changed", "That's on purpose: a fresh pick comes every Monday, Wednesday and Friday. A vote you already started keeps the restaurants it was started with."],
+    ["Memphis Live says “Getting what's on around Memphis…”", "The list is being read from the venues' calendars (it does that at most every 6 hours). Close it and open it again in a minute."],
+    ["A big show isn't on Memphis Live", "The list comes from GPAC, the Overton Park Shell and Overton Park (with the Memphis Zoo). Shows at the Landers Center, FedExForum, the Orpheum and Minglewood appear once the host adds a Ticketmaster key. Until then, use the Tickets link on the venue's own site."],
+    ["The 🎟️ button opens an Event page, not tickets", "That venue didn't list a ticket seller for it (many free and pay-at-the-door events). The event page has the details."],
+    ["“Tick at least one date that works for you.”", "That show runs on more than one date. Tick the ones you can make, then send your answer."],
+    ["I can't see my partner's date in Date Night", "Only the two people in a date can see it. If you're not one of them, it won't show, even for the host."],
+    ["“Pick a day that hasn't passed.”", "Dates can only be planned for today or later. Pick a new day."],
+    ["The 🏅 We went button doesn't show", "It shows once the date has a yes and its day has come. Ask your date to tap 💛 Yes! first."],
+    ["The What's new card keeps coming back", "It shows once per version on each phone. If your phone clears website data, it may show again; tap Let's go."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 8 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers and Memphis Grizzlies home games from each team's official schedule, each game with its own real buy page (the Tigers box office, or Ticketmaster for the Grizzlies), bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Rotate This Sunday's pick every Monday, Wednesday and Friday, and show every part of town in one tap</li><li>List concerts, comedy, shows, family and free events around Memphis with real ticket links, and ask the family Who's in? with dates that work</li><li>Build a three-stop Date Night for two from a mood, private to the two of you</li><li>Plan a kids' Adventure Club date with a grown-up and keep a passport of stamps and badges</li><li>Show what's new after every update, once per person</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers and Memphis Grizzlies home games from each team's official schedule, each game with its own real buy page (the Tigers box office, or Ticketmaster for the Grizzlies), bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 8 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Read a recipe off a photo of a recipe card: you type it in</li><li>Let anyone but the host unlock a seat, reset a PIN or change a seat's sign-in email</li><li>Drive anyone, or show where a car is on the road</li><li>Keep an address book: each rider types where to be picked up, and only their own last one is filled in for them</li><li>Let anyone but the person who added a recipe (or the host) change or remove it</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Buy Tigers tickets or book a lane for you, or promise a game time: the booker uses the official ticket page, and times come from the Tigers' schedule</li><li>Show who wrote an unnamed prayer request, to anyone</li><li>Plan a Tigers away game: the planner lists home games at FedExForum</li><li>Show anyone who drew whom before the organizer reveals it, or buy the gifts for you</li><li>Undo a card or tile once it's played</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Buy tickets: 🎟️ opens the real seller; you buy there</li><li>List every show in Memphis until the host adds a Ticketmaster key (and some clubs and comedy rooms publish no calendar at all)</li><li>Book a date's restaurant or check its hours: you call or look</li><li>Show anyone else's date, the host's included</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -2530,6 +2720,7 @@ function sheetSeat(){
     <button class="btn primary block" data-act="app-lock">Lock the app</button>
     <button class="btn block" data-act="lock-switch">Sign in as someone else</button>
     <button class="btn ghost block" data-act="pin-change">Change my PIN</button>
+    <button class="btn ghost block" data-act="whatsnew">✨ What's new in version ${APP_VERSION}</button>
     <p class="small muted" style="margin:0">The app also locks itself after 10 minutes away.</p>
     <div class="card" style="gap:8px"><div class="lbl">NOTIFICATIONS ON THIS PHONE</div><div id="push-state" class="small muted">Checking…</div><div id="push-btns" class="actions"></div></div>`);
   pushPanel();
@@ -5787,6 +5978,284 @@ function sheetRides(kind, ref, keep){
   if(keep) sheet.scrollTop = y;
 }
 async function rdAct(body, okMsg){ const d = await ridesCall(body); if(!d.ok){ toast(rdWhy(d.code)); return null; } await refresh(true); if(okMsg) toast(okMsg); return d; }
+/* ===== Memphis Live (his order, 2026-10-22: "the major (minor too) events happening in All of Memphis … dates and
+   times, locations … ways to purchase tickets, and invite the family or send them a who's interested and they can send
+   their dates and times"). The list is read from the venues' own public calendars by functions/live (sources.js) and
+   kept on the server; opening this screen asks the server to re-read them when the list is more than 6 hours old.
+   "Who's in?" asks the whole family; each person answers Yes / Maybe / No and ticks the dates that work. ===== */
+const LV_CATS = [["all","✨","Everything"],["concert","🎵","Concerts"],["comedy","😂","Comedy"],["sports","🏀","Sports"],["theater","🎭","Theater"],["family","👨‍👩‍👧","Family"],["outdoor","🌳","Outdoors"],["free","🆓","Free"]];
+const LV_WHEN = [["week","This week"],["month","Next 30 days"],["all","Everything"]];
+const lvIc = c => (LV_CATS.find(x => x[0] === c) || LV_CATS[0])[1];
+let lvCat = "all", lvWhen = "month", lvAskId = null, lvNewFor = null, lvPick = null, lvBusy = false, lvChecked = 0;
+async function liveCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/live", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const lvWhy = c => ({no_event:"That show isn't listed any more.", over:"That show has already started.", no_ask:"That question was taken down.", not_yours:"Only the person who asked, or the host, can take it down.",
+  answer:"Tap Yes, Maybe or No.", not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+const lvDay = t => new Date(t).toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"});
+const lvTime = (t, all) => all ? "All day" : new Date(t).toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"});
+const lvMaps = a => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}`;
+const lvRun = e => (st.liveEvents || []).filter(x => x.title === e.title && x.venue === e.venue && x.t > Date.now() - 3*3600e3).sort((a, b) => a.t - b.t);
+const lvAskFor = e => (st.liveAsks || []).find(a => a.title === e.title && a.venue === e.venue && a.t > Date.now() - 864e5);
+const lvAnswers = id => (st.liveAnswers || []).filter(x => x.ask === id);
+function lvBest(ask){   // the showing most of the family can make (Yes counts 2, Maybe 1)
+  const n = {}; lvAnswers(ask.id).forEach(x => { if(x.a === "no") return; x.picks.forEach(p => n[p] = (n[p] || 0) + (x.a === "yes" ? 2 : 1)); });
+  const id = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; const e = (st.liveEvents || []).find(x => x.id === id);
+  return e ? {e, can:lvAnswers(ask.id).filter(x => x.a !== "no" && x.picks.includes(id)).length} : null;
+}
+const lvNeeds = () => (st.liveAsks || []).filter(a => a.t > Date.now() && a.by !== st.me && !lvAnswers(a.id).some(x => x.who === st.me));
+function lvList(){
+  const now = Date.now(), end = lvWhen === "week" ? now + 7*864e5 : lvWhen === "month" ? now + 30*864e5 : Infinity;
+  const seen = new Set(), out = [];
+  [...(st.liveEvents || [])].filter(e => e.t > now - 3*3600e3 && e.t < end).sort((a, b) => a.t - b.t).forEach(e => {
+    if(lvCat === "free" ? !e.free : lvCat !== "all" && e.cat !== lvCat) return;
+    const k = e.title + "|" + e.venue; if(seen.has(k)) return; seen.add(k); out.push(e); });
+  return out;
+}
+function lvRefresh(){
+  if(lvBusy || Date.now() - lvChecked < 10*60e3) return; lvBusy = true;
+  liveCall({action:"refresh"}).then(async d => { lvBusy = false; lvChecked = Date.now(); if(d.ok && !d.fresh){ await refresh(true); lvRedraw(); } });
+}
+function lvRedraw(){ if(!wrap.classList.contains("open")) return; if(sheet.querySelector("[data-livelist]")) sheetLive(true); else if(sheet.querySelector("[data-liveask]") && lvAskId) sheetLiveAsk(lvAskId, true); }
+function lvCard(e){
+  const run = lvRun(e), ask = lvAskFor(e), more = run.length - 1;
+  const buy = e.ticket ? `<a class="btn sm primary" href="${esc(e.ticket)}" target="_blank" rel="noopener">🎟️ Tickets</a>` : e.info ? `<a class="btn sm" href="${esc(e.info)}" target="_blank" rel="noopener">Event page</a>` : "";
+  const who = ask ? (() => { const a = lvAnswers(ask.id), y = a.filter(x => x.a === "yes").length, m = a.filter(x => x.a === "maybe").length;
+      return `<button class="btn sm wine" data-act="lv-ask" data-id="${ask.id}">🙋 ${y} in${m ? ` · ${m} maybe` : ""}</button>`; })()
+    : `<button class="btn sm wine" data-act="lv-new" data-id="${esc(e.id)}">🙋 Who's in?</button>`;
+  return `<article class="lvcard">${e.img ? `<img class="lvimg" src="${esc(e.img)}" alt="" loading="lazy">` : `<div class="lvimg lvph" aria-hidden="true">${lvIc(e.cat)}</div>`}
+    <div class="lvbody"><div class="eyebrow">${lvIc(e.cat)} ${esc(lvDay(e.t))} · ${esc(lvTime(e.t, e.allDay))}${more > 0 ? ` · +${more} more ${more === 1 ? "date" : "dates"}` : ""}</div>
+      <b class="lvtitle">${esc(e.title)}</b>
+      <span class="small">${esc(e.venue)}${e.free ? " · Free" : e.price ? ` · ${esc(e.price)}` : ""}</span>
+      <div class="actions">${buy}${who}${e.addr ? `<a class="btn sm ghost" href="${lvMaps(e.addr)}" target="_blank" rel="noopener">📍 Directions</a>` : ""}</div></div></article>`;
+}
+function sheetLive(keep){
+  const y = keep ? sheet.scrollTop : 0; lvAskId = null; lvNewFor = null;
+  const list = lvList(), asks = (st.liveAsks || []).filter(a => a.t > Date.now() - 3*3600e3).sort((a, b) => a.t - b.t);
+  let day = "", rows = "";
+  list.forEach(e => { const d = lvDay(e.t); if(d !== day){ day = d; rows += `<div class="lbl" style="margin-top:6px">${esc(d.toUpperCase())}</div>`; } rows += lvCard(e); });
+  const srcs = ["GPAC", "the Overton Park Shell", "Overton Park and the Memphis Zoo"].concat((st.liveEvents || []).some(e => e.src === "ticketmaster") ? ["Ticketmaster (Landers Center, FedExForum, the Orpheum and more)"] : []);
+  openSheet(`<div class="sheet-head" data-live data-livelist><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">What's on around Memphis</div><h2>🎟️ Memphis Live</h2></div>${gSzBtn()}</div>
+    ${asks.length ? `<div class="lbl">🙋 WHO'S IN? · ${asks.length}</div>${asks.map(a => { const b = lvBest(a), mine = lvAnswers(a.id).find(x => x.who === st.me);
+        return `<button class="todo" data-act="lv-ask" data-id="${a.id}"><span class="ic">🙋</span><span><b>${esc(a.title)}</b><small>${esc(first(F(a.by).name))} asked · ${b ? `best: ${esc(lvDay(b.e.t))}, ${b.can} can go` : esc(lvDay(a.t))}${mine ? "" : " · tap to answer"}</small></span><span class="chev">${I.chev}</span></button>`; }).join("")}` : ""}
+    <div class="chips" role="group" aria-label="When">${LV_WHEN.map(([k, l]) => `<button class="chip" data-act="lv-when" data-v="${k}" aria-pressed="${k === lvWhen}">${l}</button>`).join("")}</div>
+    <div class="chips" role="group" aria-label="Kind" style="flex-wrap:wrap">${LV_CATS.map(([k, ic, l]) => `<button class="chip" data-act="lv-cat" data-v="${k}" aria-pressed="${k === lvCat}">${ic} ${l}</button>`).join("")}</div>
+    ${rows || `<div class="empty">${(st.liveEvents || []).length ? "Nothing like that in this window. Try Everything, or a longer time." : lvBusy ? "Getting what's on around Memphis…" : "Getting what's on around Memphis… pull down or open this again in a moment."}</div>`}
+    <p class="small muted" style="margin:0;text-align:center">From the venues' own calendars: ${srcs.join(", ")}. Times and tickets can change; the 🎟️ button opens the real seller.</p>
+    ${isAdmin() ? `<button class="btn sm ghost" data-act="lv-status">Host: check where the list comes from</button><div id="lv-status" class="small"></div>` : ""}`);
+  if(keep) sheet.scrollTop = y;
+  lvRefresh();
+}
+function sheetLiveNew(eid){
+  const e = (st.liveEvents || []).find(x => x.id === eid); if(!e){ toast(lvWhy("no_event")); sheetLive(true); return; }
+  lvNewFor = eid; const run = lvRun(e);
+  openSheet(`<div class="sheet-head" data-live><button class="icon-btn" data-act="memlive" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🙋 Who's in?</div><h2>${esc(e.title)}</h2></div>${gSzBtn()}</div>
+    ${lvCard(e).replace(/<button class="btn sm wine"[^>]*>[^<]*<\/button>/, "")}
+    ${run.length > 1 ? `<div class="small">It's on ${run.length} dates; everyone will be able to tick the ones that work for them.</div>` : ""}
+    <div class="field"><label for="lv-note">A note for the family (optional)</label><input class="input" id="lv-note" maxlength="140" placeholder="e.g. My treat for the kids! Or: I'd love the Friday show"></div>
+    <div class="actions"><button class="btn primary" data-act="lv-send" data-id="${esc(e.id)}">🙋 Ask the family</button></div>
+    <p class="small muted" style="margin:0">Everyone gets an alert and answers Yes, Maybe or No, with the dates that work for them. You can see every answer here.</p>`);
+}
+function sheetLiveAsk(id, keep){
+  const a = (st.liveAsks || []).find(x => x.id === id); if(!a){ lvAskId = null; sheetLive(true); return; }
+  const y = keep ? sheet.scrollTop : 0; lvAskId = id;
+  const ev0 = (st.liveEvents || []).find(x => x.id === a.ev) || {title:a.title, venue:a.venue, t:a.t, ticket:a.ticket, cat:"concert"};
+  const run = lvRun(ev0).length ? lvRun(ev0) : [ev0], ans = lvAnswers(id), mine = ans.find(x => x.who === st.me);
+  if(!lvPick || lvPick.id !== id) lvPick = {id, a:mine?.a || "", picks:new Set(mine?.picks || (run.length === 1 && run[0].id ? [run[0].id] : [])), note:mine?.note || ""};
+  const best = lvBest(a), lbl = {yes:"✅ In", maybe:"🤔 Maybe", no:"❌ Can't"};
+  const people = st.fam.filter(f => f.status === "active").map(f => { const x = ans.find(z => z.who === f.id);
+    const days = x && x.a !== "no" ? x.picks.map(p => (st.liveEvents || []).find(e => e.id === p)).filter(Boolean).map(e => `${lvDay(e.t)} ${lvTime(e.t, e.allDay)}`) : [];
+    return `<div class="person">${av(f.id, "sm")}<span style="min-width:0"><b>${esc(first(f.name))}</b><small>${x ? lbl[x.a] : "No answer yet"}${days.length && run.length > 1 ? ` · ${esc(days.join(", "))}` : ""}</small>${x?.note ? `<small>“${esc(x.note)}”</small>` : ""}</span><span></span></div>`; }).join("");
+  openSheet(`<div class="sheet-head" data-live data-liveask><button class="icon-btn" data-act="memlive" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🙋 Who's in? · ${esc(first(F(a.by).name))} asked</div><h2>${esc(a.title)}</h2></div>${gSzBtn()}</div>
+    <div class="strip">📍 <span class="grow"><b>${esc(a.venue)}</b><br><span class="small">${esc(lvDay(a.t))} · ${esc(lvTime(a.t))}</span></span>${a.ticket ? `<a class="btn sm primary" href="${esc(a.ticket)}" target="_blank" rel="noopener">🎟️ Tickets</a>` : ""}</div>
+    ${a.note ? `<div class="card"><span class="small">${esc(first(F(a.by).name))}: “${esc(a.note)}”</span></div>` : ""}
+    ${best ? `<div class="lvbest">⭐ Best night so far: <b>${esc(lvDay(best.e.t))} · ${esc(lvTime(best.e.t, best.e.allDay))}</b> · ${best.can} can go</div>` : ""}
+    <div class="card"><div class="lbl">YOUR ANSWER</div>
+      <div class="mvwho">${["yes","maybe","no"].map(k => `<button class="chip" data-act="lv-a" data-v="${k}" aria-pressed="${lvPick.a === k}">${lbl[k]}</button>`).join("")}</div>
+      ${run.length > 1 && lvPick.a !== "no" ? `<div class="small">Which dates and times work for you?</div><div class="lvdates">${run.map(e => `<button class="chip" data-act="lv-d" data-id="${esc(e.id)}" aria-pressed="${lvPick.picks.has(e.id)}">${esc(lvDay(e.t))} · ${esc(lvTime(e.t, e.allDay))}</button>`).join("")}</div>` : ""}
+      <div class="field"><label for="lv-anote">Other times that work, or a note (optional)</label><input class="input" id="lv-anote" maxlength="140" placeholder="e.g. Any evening after 6, or: I'll bring the kids" value="${esc(lvPick.note)}"></div>
+      <div class="actions"><button class="btn primary" data-act="lv-save">${mine ? "Save my answer" : "Send my answer"}</button></div></div>
+    <div class="lbl">THE FAMILY · ${ans.filter(x => x.a === "yes").length} IN · ${ans.filter(x => x.a === "maybe").length} MAYBE</div>${people}
+    ${a.by === st.me || isAdmin() ? `<button class="btn sm ghost" data-act="lv-unask" data-id="${a.id}">Take this question down</button>` : ""}`);
+  if(keep) sheet.scrollTop = y;
+}
+
+/* ===== Date Night and Adventure Club (his order, 2026-10-22: "a couples section (Date Night), kids section let's plan
+   a date … romantic, fun places for the kids. Make each applicable and inviting"). Date Night builds a three-stop
+   evening for two from a mood; Adventure Club is a kid's date with a grown-up, with a stamp for every one that
+   happens. Every place below was checked on Google on 2026-10-22 (name, street address, open); restaurants come from
+   the app's own list. A date is between two people: only they see it. Writes go through functions/dates. ===== */
+const DN_PLACES = {
+  "big-river":   {n:"Big River Crossing", a:"Big River Crossing, Memphis, TN 38103", note:"Walk across the Mississippi together"},
+  "tom-lee":     {n:"Tom Lee Park", a:"422 Riverside Dr, Memphis, TN 38103", note:"A riverfront stroll at sunset"},
+  "mud-island":  {n:"Mud Island Park", a:"River Park, Mud Island, Memphis, TN 38103", note:"Watch the river from the island"},
+  "riverboats":  {n:"Memphis Riverboats", a:"45 Riverside Dr, Memphis, TN 38103", note:"A cruise on the river (check the sailing times)"},
+  "peabody-roof":{n:"The Peabody Rooftop", a:"118 S 2nd St, Memphis, TN 38103", note:"The view over downtown (check it's open that night)"},
+  "botanic":     {n:"Memphis Botanic Garden", a:"750 Cherry Rd, Memphis, TN 38117", note:"A walk through the gardens"},
+  "dixon":       {n:"Dixon Gallery & Gardens", a:"4339 Park Ave, Memphis, TN 38117", note:"Art and gardens, quiet and lovely"},
+  "art-museum":  {n:"Memphis Art Museum", a:"49 S Front St, Memphis, TN 38103", note:"The new art museum on the river"},
+  "orpheum":     {n:"Orpheum Theatre", a:"203 S Main St, Memphis, TN 38103", note:"A show at the Orpheum (see Memphis Live)"},
+  "shell":       {n:"Overton Park Shell", a:"1928 Poplar Ave, Memphis, TN 38104", note:"Music under the stars (see Memphis Live)"},
+  "beale":       {n:"Beale Street", a:"Beale St, Memphis, TN 38103", note:"Live blues, door to door"},
+  "sun-studio":  {n:"Sun Studio", a:"706 Union Ave, Memphis, TN 38103", note:"Where rock 'n' roll began"},
+  "overton-sq":  {n:"Overton Square", a:"2101 Madison Ave, Memphis, TN 38104", note:"Shops, lights and a stroll"},
+  "crosstown":   {n:"Crosstown Concourse", a:"1350 Concourse Ave, Memphis, TN 38104", note:"Wander the shops and the art"},
+  "paradiso":    {n:"Malco Paradiso", a:"584 S Mendenhall Rd, Memphis, TN 38117", note:"A movie, with popcorn to share"},
+  "hardwicks":   {n:"Billy Hardwick's All Star Lanes", a:"1576 S White Station Rd, Memphis, TN 38117", note:"Bowling, loser buys dessert"},
+  "zoo":         {n:"Memphis Zoo", a:"2000 Prentiss Pl, Memphis, TN 38112", note:"Pandas, polar bears and the big cats"},
+  "moshi":       {n:"Memphis Museum of Science & History", a:"3050 Central Ave, Memphis, TN 38111", note:"The Pink Palace: science, dinosaurs and the planetarium"},
+  "childrens":   {n:"Children's Museum of Memphis", a:"2525 Central Ave, Memphis, TN 38104", note:"Hands-on everything"},
+  "shelby":      {n:"Shelby Farms Park", a:"6903 Great View Dr N, Memphis, TN 38134", note:"Bikes, the lake, the buffalo and the playground"},
+  "pyramid":     {n:"Bass Pro Shops at the Pyramid", a:"1 Bass Pro Dr, Memphis, TN 38105", note:"Fish tanks, ducks and the lookout"},
+  "lichterman":  {n:"Lichterman Nature Center", a:"5992 Quince Rd, Memphis, TN 38119", note:"Trails, turtles and a nature hunt"},
+  "chucalissa":  {n:"C.H. Nash Museum at Chucalissa", a:"1987 Indian Village Dr, Memphis, TN 38109", note:"Native American history, outdoors"},
+  "putt":        {n:"Putt-Putt Golf & Games", a:"5484 Summer Ave, Memphis, TN 38134", note:"Mini golf and games"},
+  "skating":     {n:"Cordova Skating Center", a:"7970 Club Center Dr, Cordova, TN 38016", note:"Skating: hold hands on the first lap"},
+  "topgolf":     {n:"Topgolf Memphis", a:"3450 S Germantown Rd, Memphis, TN 38119", note:"Hit balls at the targets"},
+  "trolley":     {n:"Memphis Main Street Trolley", a:"547 N Main St, Memphis, TN 38105", note:"Ride the trolley down Main Street"},
+  "stax":        {n:"Stax Museum of American Soul Music", a:"926 E McLemore Ave, Memphis, TN 38106", note:"Soulsville: the music of Memphis"},
+};
+// a mood: what kind of dinner, what to do (one of these places, or a show on Memphis Live that day), and dessert
+const DN_MOODS = [
+  {k:"candle", ic:"🕯️", l:"Candlelight", sub:"A dressed-up dinner and a river walk", dine:r => r.price >= 3 || r.cuisine.includes("Fine Dining"), go:["big-river","tom-lee","peabody-roof"], order:"dine"},
+  {k:"music", ic:"🎶", l:"Live music", sub:"Dinner, then a band", dine:r => ["Beale Street","Downtown","South Main","Midtown","Overton Square"].includes(r.hood), go:["beale","shell","orpheum"], live:["concert","comedy","theater"], order:"dine"},
+  {k:"sunset", ic:"🌅", l:"Sunset & the river", sub:"The river at golden hour, then dinner", dine:r => ["Harbor Town","Downtown","South Main","The Peabody","Beale Street"].includes(r.hood), go:["riverboats","tom-lee","mud-island"], order:"go"},
+  {k:"culture", ic:"🖼️", l:"Art & history", sub:"A museum or garden, then dinner", dine:r => r.price >= 2, go:["art-museum","dixon","botanic","sun-studio","stax"], order:"go"},
+  {k:"simple", ic:"🍿", l:"Sweet & simple", sub:"Easy on the wallet, big on fun", dine:r => r.price <= 2, go:["paradiso","hardwicks","overton-sq","crosstown"], order:"go"},
+  {k:"surprise", ic:"🎁", l:"Surprise me", sub:"We'll pick a little of everything"},
+];
+const AC_ADV = [
+  {k:"zoo", ic:"🐼", l:"The Zoo"}, {k:"moshi", ic:"🚀", l:"Pink Palace"}, {k:"childrens", ic:"🧸", l:"Children's Museum"}, {k:"shelby", ic:"🚲", l:"Shelby Farms"},
+  {k:"pyramid", ic:"🐟", l:"The Pyramid"}, {k:"lichterman", ic:"🐢", l:"Nature hunt"}, {k:"putt", ic:"⛳", l:"Mini golf"}, {k:"skating", ic:"⛸️", l:"Skating"},
+  {k:"topgolf", ic:"🏌️", l:"Topgolf"}, {k:"trolley", ic:"🚋", l:"Trolley ride"}, {k:"chucalissa", ic:"🏹", l:"Chucalissa"}, {k:"paradiso", ic:"🎬", l:"A movie"},
+];
+const AC_BADGES = [[1,"🧭","Explorer"],[3,"🗺️","Adventurer"],[5,"🏔️","Trailblazer"],[10,"👑","Legend"]];
+let dnMood = null, dnSpin = 0, dnDraft = null, dnMoveId = null, acDraft = null;
+async function datesCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/dates", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const dnWhy = c => ({partner:"Pick who the date is with.", date:"Pick a day that hasn't passed.", title:"Give the date a name.", stops:"Add at least one stop.", not_invited:"Only the person invited can answer.",
+  not_yours:"Only the person who planned it can move it.", closed:"That date is already over or called off.", not_yes:"It needs a yes first.", early:"Mark it once the day comes.", no_date:"That date isn't there any more.",
+  not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+const dnPick = (arr, salt) => arr.length ? arr[Math.floor(pickHash(salt) * arr.length) % arr.length] : null;
+function dnBuild(moodK, spin, day){
+  const m0 = DN_MOODS.find(x => x.k === moodK); if(!m0) return null;
+  const m = m0.k === "surprise" ? dnPick(DN_MOODS.slice(0, 5), "s" + spin) : m0, salt = m.k + ":" + spin;
+  const dinners = R.filter(r => r.city === "Memphis" && meals(r).dinner && !isBlocked(r.id) && r.addr && !r.cuisine.includes("Bakery & Dessert") && m.dine(r));
+  // dessert: a sweet shop that keeps evening hours (never a breakfast or donut shop), near dinner when one is
+  const sweets = R.filter(r => r.city === "Memphis" && r.addr && !isBlocked(r.id) && (r.cuisine.includes("Bakery & Dessert") || r.flags.includes("dessert"))
+    && !r.flags.includes("breakfast") && !r.cuisine.includes("Breakfast"));
+  const r = dnPick(dinners, salt + "d"), near = r ? sweets.filter(x => areaOf(x) && areaOf(x) === areaOf(r)) : [], s = dnPick(near.length ? near : sweets, salt + "s");
+  const show = m.live && day ? (st.liveEvents || []).filter(e => m.live.includes(e.cat) && iso(new Date(e.t)) === day && new Date(e.t).getHours() >= 19).sort((a, b) => a.t - b.t)[0] : null;
+  const p = DN_PLACES[dnPick(m.go, salt + "g")];
+  const goStop = show ? {place:show.title, addr:show.addr, note:`At ${show.venue}${show.ticket ? " · tickets on Memphis Live" : ""}`, ev:show.id, time:lvTime(show.t)} : p ? {place:p.n, addr:p.a, note:p.note} : null;
+  const dine = r ? {place:r.name, addr:r.addr, rid:r.id, note:r.blurb} : null, sweet = s ? {place:s.name, addr:s.addr, rid:s.id, note:"Something sweet to finish"} : null;
+  const stops = (m.order === "go" ? [goStop, dine, sweet] : [dine, goStop, sweet]).filter(Boolean);
+  const times = m.order === "go" ? ["5:30 PM","7:00 PM","8:45 PM"] : ["6:30 PM","8:00 PM","9:00 PM"];
+  stops.forEach((x, i) => { x.time = x.time || times[i]; });
+  return {mood:m, stops};
+}
+const dnMine = kind => (st.dates || []).filter(d => d.kind === kind && [d.by, d.partner].includes(st.me));
+const dnNeeds = () => (st.dates || []).filter(d => d.partner === st.me && d.status === "asked");
+const dnOther = d => d.by === st.me ? d.partner : d.by;
+const dnStatus = d => ({asked:d.by === st.me ? `Waiting for ${first(F(d.partner).name)}` : "Asked you", yes:"✅ It's a date", other:d.by === st.me ? `${first(F(d.partner).name)} asked for another time` : "You asked for another time", done:"💛 We went", cancelled:"Called off"})[d.status];
+function dnRedraw(){ if(!wrap.classList.contains("open")) return; if(sheet.querySelector("[data-dnroom]")) sheetDateNight(true); else if(sheet.querySelector("[data-acroom]")) sheetAdventure(true); }
+function dnCard(d){
+  const k = d.kind, room = k === "couple" ? "dn" : "ac", past = parse(d.date) < today0, live = !["done","cancelled"].includes(d.status);
+  const stop = x => `<div class="dnstop"><span class="t">${esc(x.time || "")}</span><span style="min-width:0"><b>${esc(x.place)}</b>${x.note ? `<br><span class="small">${esc(x.note)}</span>` : ""}</span>${(x.rid && RBY[x.rid]?.addr) || dnAddr(x.place) ? `<a class="btn sm ghost" href="${lvMaps((x.rid && RBY[x.rid]?.addr) || dnAddr(x.place))}" target="_blank" rel="noopener" aria-label="Directions to ${esc(x.place)}">📍</a>` : ""}</div>`;
+  let act = "";
+  if(live && d.partner === st.me && ["asked","other"].includes(d.status)) act = `<button class="btn sm primary" data-act="dn-yes" data-id="${d.id}">💛 Yes!</button><button class="btn sm" data-act="dn-other" data-id="${d.id}">Another time</button>`;
+  if(live && d.by === st.me) act += `<button class="btn sm" data-act="dn-move" data-id="${d.id}">Change the day</button>`;
+  if(d.status === "yes" && !(parse(d.date) > today0)) act += `<button class="btn sm primary" data-act="dn-done" data-id="${d.id}">${k === "kids" ? "🏅 We went! Stamp it" : "💛 We went"}</button>`;
+  if(live) act += `<button class="btn sm ghost" data-act="dn-cancel" data-id="${d.id}">Call it off</button>`;
+  const mv = dnMoveId === d.id ? `<div class="grid2"><div class="field"><label for="dn-mdate">New day</label><input class="input" id="dn-mdate" type="date" min="${iso(today0)}" value="${d.date}"></div><div class="field"><label for="dn-mtime">Time</label><input class="input" id="dn-mtime" maxlength="12" value="${esc(d.time)}"></div></div><div class="actions"><button class="btn sm primary" data-act="dn-move-save" data-id="${d.id}">Send the new day</button></div>` : "";
+  return `<article class="dncard ${d.status}"><div class="eyebrow">${k === "couple" ? "💕" : "🧭"} ${esc(fmtDate(d.date))}${d.time ? ` · ${esc(d.time)}` : ""} · with ${esc(first(F(dnOther(d)).name))}</div>
+    <b class="dntitle">${esc(d.title)}</b><span class="small">${dnStatus(d)}${d.reply ? ` · “${esc(d.reply)}”` : ""}${past && live && d.status !== "yes" ? " · this day has passed" : ""}</span>
+    ${d.stops.map(stop).join("")}${act ? `<div class="actions">${act}</div>` : ""}${mv}</article>`;
+}
+const dnAddr = name => (Object.values(DN_PLACES).find(p => p.n === name) || {}).a || "";
+function dnPeople(sel){ return st.fam.filter(f => f.id !== st.me && f.status === "active").map(f => `<button class="chip" data-act="dn-who" data-id="${f.id}" aria-pressed="${sel === f.id}">${esc(first(f.name))}</button>`).join(""); }
+function dnForm(d, kind){
+  const room = kind === "couple" ? "Date Night" : "Adventure Club";
+  return `<div class="card dnform"><div class="lbl">${kind === "couple" ? "💕 PLAN IT" : "🧭 LET'S PLAN A DATE"}</div>
+    <div class="small">${kind === "couple" ? "Who's your date?" : "Who's the date with?"}</div><div class="mvwho">${dnPeople(d.partner)}</div>
+    <div class="field"><label for="dn-title">Name it</label><input class="input" id="dn-title" maxlength="80" value="${esc(d.title)}"></div>
+    <div class="grid2"><div class="field"><label for="dn-date">Day</label><input class="input" id="dn-date" type="date" min="${iso(today0)}" value="${esc(d.date)}"></div>
+      <div class="field"><label for="dn-time">Starts at</label><input class="input" id="dn-time" maxlength="12" value="${esc(d.time)}"></div></div>
+    ${d.stops.map((x, i) => `<div class="field"><label for="dn-s${i}">Stop ${i + 1} · ${esc(x.place)}</label><input class="input" id="dn-s${i}" maxlength="12" value="${esc(x.time)}" aria-label="Time for ${esc(x.place)}"></div>`).join("")}
+    <div class="actions"><button class="btn primary" data-act="dn-send" data-k="${kind}">${kind === "couple" ? "💌 Send the invitation" : "🧭 Ask for the date"}</button><button class="btn sm ghost" data-act="${kind === "couple" ? "datenight" : "adventure"}">Back</button></div>
+    <p class="small muted" style="margin:0">Only the two of you will see this ${kind === "couple" ? "date" : "adventure"}. They get an alert and answer in ${room}.</p></div>`;
+}
+function dnKeep(){ const d = dnDraft || acDraft; if(!d) return; const v = id => document.getElementById(id)?.value;
+  if(v("dn-title") !== undefined) d.title = v("dn-title"); if(v("dn-date") !== undefined) d.date = v("dn-date"); if(v("dn-time") !== undefined) d.time = v("dn-time");
+  d.stops.forEach((x, i) => { if(v("dn-s" + i) !== undefined) x.time = v("dn-s" + i); }); }
+function sheetDateNight(keep){
+  const y = keep ? sheet.scrollTop : 0;
+  const mine = dnMine("couple"), up = mine.filter(d => !["done","cancelled"].includes(d.status)).sort((a, b) => a.date.localeCompare(b.date)), went = mine.filter(d => d.status === "done");
+  let plan = "";
+  if(dnDraft) plan = dnForm(dnDraft, "couple");
+  else if(dnMood){ const b = dnBuild(dnMood, dnSpin, null);
+    plan = b && b.stops.length ? `<div class="card"><div class="lbl">${b.mood.ic} ${esc(b.mood.l.toUpperCase())} · YOUR EVENING</div>
+      ${b.stops.map(x => `<div class="dnstop"><span class="t">${esc(x.time)}</span><span style="min-width:0"><b>${esc(x.place)}</b><br><span class="small">${esc(x.note || "")}</span></span>${x.rid ? `<button class="btn sm ghost" data-act="rest" data-rid="${x.rid}" aria-label="About ${esc(x.place)}">ⓘ</button>` : ""}</div>`).join("")}
+      <div class="actions"><button class="btn primary" data-act="dn-plan">💌 Plan this date</button><button class="btn sm" data-act="dn-spin">🔀 Show me another</button></div></div>`
+      : `<div class="empty">Nothing to suggest for that mood yet. Try another.</div>`; }
+  openSheet(`<div class="sheet-head" data-datenight data-dnroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Just the two of you</div><h2>💕 Date Night</h2></div>${gSzBtn()}</div>
+    ${up.length ? `<div class="lbl">YOUR DATES · ${up.length}</div>${up.map(dnCard).join("")}` : ""}
+    ${dnDraft ? "" : `<div class="lbl">PICK A MOOD</div><div class="dnmoods">${DN_MOODS.map(m => `<button class="dnmood" data-act="dn-mood" data-v="${m.k}" aria-pressed="${dnMood === m.k}"><span class="ic">${m.ic}</span><b>${m.l}</b><small>${m.sub}</small></button>`).join("")}</div>`}
+    ${plan}
+    ${went.length ? `<div class="lbl">💛 OUR DATE NIGHTS · ${went.length}</div>${went.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12).map(d => `<div class="person"><span class="avatar sm" style="background:#8a1c3c">💕</span><span style="min-width:0"><b>${esc(d.title)}</b><small>${esc(fmtDate(d.date))} · with ${esc(first(F(dnOther(d)).name))}</small></span><span></span></div>`).join("")}` : ""}
+    <p class="small muted" style="margin:0;text-align:center">Only the two people in a date can see it. Every place here is a real Memphis place; check its hours before you go.</p>`);
+  if(keep) sheet.scrollTop = y;
+}
+function acStamps(id){ return (st.dates || []).filter(d => d.kind === "kids" && d.status === "done" && [d.by, d.partner].includes(id)); }
+function sheetAdventure(keep){
+  const y = keep ? sheet.scrollTop : 0;
+  const mine = dnMine("kids"), up = mine.filter(d => !["done","cancelled"].includes(d.status)).sort((a, b) => a.date.localeCompare(b.date));
+  const stamps = acStamps(st.me), n = stamps.length, badge = [...AC_BADGES].reverse().find(b => n >= b[0]), next = AC_BADGES.find(b => n < b[0]);
+  const icOf = d => (AC_ADV.find(a => a.k === d.idea) || {ic:"🧭"}).ic;
+  openSheet(`<div class="sheet-head" data-adventure data-acroom><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Kids · let's plan a date</div><h2>🧭 Adventure Club</h2></div>${gSzBtn()}</div>
+    <div class="acpass"><div class="lbl">MY ADVENTURE PASSPORT</div><div class="acstamps">${n ? stamps.slice(-12).map(d => `<span class="acstamp" title="${esc(d.title)}">${icOf(d)}</span>`).join("") : `<span class="small">No stamps yet. Every adventure you go on earns one.</span>`}</div>
+      <div class="small">${badge ? `${badge[1]} <b>${badge[2]}</b> · ` : ""}${n} ${n === 1 ? "adventure" : "adventures"}${next ? ` · ${next[0] - n} more to ${next[1]} ${next[2]}` : " · you're a legend!"}</div></div>
+    ${up.length ? `<div class="lbl">COMING UP · ${up.length}</div>${up.map(dnCard).join("")}` : ""}
+    ${acDraft ? dnForm(acDraft, "kids") : `<div class="lbl">PICK AN ADVENTURE</div><div class="acgrid">${AC_ADV.map(a => `<button class="acadv" data-act="ac-pick" data-v="${a.k}"><span class="ic">${a.ic}</span><b>${a.l}</b></button>`).join("")}</div>`}
+    <p class="small muted" style="margin:0;text-align:center">Pick an adventure, pick your grown-up (or your kid), pick a day. Add a treat stop after if you like. Only the two of you see it.</p>`);
+  if(keep) sheet.scrollTop = y;
+}
+function acStart(k){
+  const a = AC_ADV.find(x => x.k === k), p = DN_PLACES[k]; if(!a || !p) return;
+  const sweets = R.filter(r => r.city === "Memphis" && r.addr && !isBlocked(r.id) && (r.cuisine.includes("Bakery & Dessert") || r.flags.includes("dessert")) && !r.flags.includes("breakfast"));
+  const s = dnPick(sweets, "ac:" + k + ":" + pickSlot());
+  const sat = new Date(today0); sat.setDate(sat.getDate() + ((6 - sat.getDay() + 7) % 7 || 7));
+  acDraft = {kind:"kids", idea:k, partner:"", title:`${a.ic} ${a.l} adventure`, date:iso(sat), time:"10:00 AM",
+    stops:[{place:p.n, note:p.note, time:"10:00 AM"}, ...(s ? [{place:s.name, rid:s.id, note:"A treat after", time:"1:00 PM"}] : [])]};
+}
+async function dnAct(body, okMsg){ const d = await datesCall(body); if(!d.ok){ toast(dnWhy(d.code)); return null; } await refresh(true); if(okMsg) toast(okMsg); return d; }
+
+/* ===== What's New (his order, 2026-10-22: "a version update screen pop up automatically when they sign on after the
+   first time after an upgrade sharing the new feature and put my name in the end"). Shown once per person per version
+   on this phone, the first time they sign in after an update; Seat menu → What's new opens it again. ===== */
+const APP_VERSION = "8.1";
+const WHATS_NEW = [
+  ["🍽️", "80 more restaurants", "35 downtown, and new favorites in Germantown, Collierville, Cordova and Bartlett. Every one checked on Google.", "explore-filter", "untried"],
+  ["✨", "This Sunday, fresh three times a week", "A new pick every Monday, Wednesday and Friday, plus Don't miss out: every part of town, one tap away.", "tab-home", ""],
+  ["🎟️", "Memphis Live", "Concerts, comedy, shows, games, the Zoo and free outdoor events, with dates, times and real ticket links. Tap Who's in? to ask the family.", "memlive", ""],
+  ["💕", "Date Night", "Pick a mood and get a whole evening for two: dinner, something to do, and dessert. Send the invitation in one tap.", "datenight", ""],
+  ["🧭", "Adventure Club", "For the kids: pick an adventure, ask a grown-up for a date, and earn a stamp for your Adventure Passport.", "adventure", ""],
+];
+const wnKey = () => "t8-seen-" + (st.me || "");
+function wnMaybe(){ try { if(!st.me || localStorage.getItem(wnKey()) === APP_VERSION) return; } catch { return; } setTimeout(() => { if(!app.hidden && !wrap.classList.contains("open")) sheetWhatsNew(); }, 700); }
+function sheetWhatsNew(){
+  try { localStorage.setItem(wnKey(), APP_VERSION); } catch {}
+  openSheet(`<div class="sheet-head" data-whatsnew><div style="flex:1;min-width:0"><div class="eyebrow">Table of 8 · version ${APP_VERSION}</div><h2>✨ Fresh at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <p class="small" style="margin:0">Welcome back, ${esc(first(ME().name))}! Here's what's new since you were last here:</p>
+    ${WHATS_NEW.map(([ic, t, d, act, f]) => `<button class="todo" data-act="${act}" ${f ? `data-f="${f}"` : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small></span><span class="chev">${I.chev}</span></button>`).join("")}
+    <div class="wnsign"><p>Every one of these was made with you in mind. Enjoy them together.</p><p class="wnname">With love,<br><b>Dr. Bishop Richard G. Clark</b></p></div>
+    <button class="btn primary block" data-act="close">Let's go</button>`);
+}
 /* ===== Family Recipe Book (his order, 2026-10-18; photos show right away, no approval, his choice). Anyone adds a
    recipe with who it came from, ingredients, steps and a photo; anyone stars it; the person who added it (or the host)
    changes or removes it. The photo is uploaded into the family's own folder (<family>/recipes/…); writes go through
@@ -6273,6 +6742,53 @@ document.addEventListener("click", e => {
     case "mv-rcpt": mvShowRcpt = mvShowRcpt === b.dataset.m ? null : b.dataset.m; drawMovieNight(mvOpen); break;
     case "prayers": prAnswering = null; sheetPrayers(); break;
     case "recipes": rcDraft = null; sheetRecipes(); break;
+    case "memlive": lvPick = null; sheetLive(); break;
+    case "lv-when": lvWhen = b.dataset.v; sheetLive(true); break;
+    case "lv-cat": lvCat = b.dataset.v; sheetLive(true); break;
+    case "lv-new": { const e = (st.liveEvents || []).find(x => x.id === id), a = e && lvAskFor(e); if(a) sheetLiveAsk(a.id); else sheetLiveNew(id); break; }
+    case "lv-send": b.disabled = true; b.textContent = "Asking…";
+      liveCall({action:"ask", event_id:id, note:document.getElementById("lv-note")?.value || ""}).then(async r => {
+        if(!r.ok){ b.disabled = false; b.textContent = "🙋 Ask the family"; toast(lvWhy(r.code)); return; }
+        await refresh(true); lvPick = null; sheetLiveAsk(r.id); toast(r.already ? "Someone already asked. Here are the answers." : "Asked! Everyone's been told."); }); break;
+    case "lv-ask": lvPick = null; sheetLiveAsk(id); break;
+    case "lv-a": lvPick.note = document.getElementById("lv-anote")?.value ?? lvPick.note; lvPick.a = b.dataset.v; sheetLiveAsk(lvAskId, true); break;
+    case "lv-d": lvPick.note = document.getElementById("lv-anote")?.value ?? lvPick.note; lvPick.picks.has(id) ? lvPick.picks.delete(id) : lvPick.picks.add(id); sheetLiveAsk(lvAskId, true); break;
+    case "lv-save": { const P = lvPick; P.note = document.getElementById("lv-anote")?.value || ""; if(!P.a){ toast(lvWhy("answer")); break; }
+      const a = (st.liveAsks || []).find(x => x.id === lvAskId), run = a ? lvRun((st.liveEvents || []).find(e => e.id === a.ev) || {title:a.title, venue:a.venue}) : [];
+      if(P.a !== "no" && run.length > 1 && !P.picks.size){ toast("Tick at least one date that works for you."); break; }
+      const picks = P.a === "no" ? [] : P.picks.size ? [...P.picks] : run.map(e => e.id).slice(0, 1);
+      b.disabled = true; liveCall({action:"answer", ask_id:lvAskId, answer:P.a, picks, note:P.note}).then(async r => { b.disabled = false;
+        if(!r.ok){ toast(lvWhy(r.code)); return; } await refresh(true); lvPick = null; sheetLiveAsk(lvAskId, true); toast("Answer sent."); }); break; }
+    case "lv-unask": if(!confirm("Take this question down? Everyone's answers go with it.")) break;
+      liveCall({action:"unask", ask_id:id}).then(async r => { if(!r.ok){ toast(lvWhy(r.code)); return; } await refresh(true); sheetLive(); toast("Taken down."); }); break;
+    case "lv-status": liveCall({action:"status"}).then(r => { const el = document.getElementById("lv-status"); if(!el) return;
+      el.innerHTML = r.ok ? r.sources.map(x => `${x.ok ? "✅" : "⚠️"} <b>${esc(x.source)}</b>: ${x.ok ? `${x.count} events` : esc(x.note)} · ${esc(new Date(x.at).toLocaleString())}`).join("<br>") + `<br>${r.ticketmaster ? "✅ Ticketmaster is on" : "⏸️ Ticketmaster is off (no key in Supabase yet)"}` : esc(lvWhy(r.code)); }); break;
+    case "datenight": dnDraft = null; dnMoveId = null; sheetDateNight(); break;
+    case "adventure": acDraft = null; dnMoveId = null; sheetAdventure(); break;
+    case "dn-mood": dnMood = b.dataset.v; dnSpin = 0; sheetDateNight(true); break;
+    case "dn-spin": dnSpin++; sheetDateNight(true); break;
+    case "dn-plan": { const B = dnBuild(dnMood, dnSpin, null); if(!B) break; const fri = new Date(today0); fri.setDate(fri.getDate() + ((5 - fri.getDay() + 7) % 7 || 7));
+      dnDraft = {kind:"couple", idea:B.mood.k, partner:"", title:`${B.mood.ic} Date Night: ${B.mood.l}`, date:iso(fri), time:B.stops[0]?.time || "6:30 PM", stops:B.stops.map(x => ({place:x.place, rid:x.rid, note:x.note, time:x.time}))};
+      sheetDateNight(); break; }
+    case "dn-who": dnKeep(); (dnDraft || acDraft).partner = id; dnDraft ? sheetDateNight(true) : sheetAdventure(true); break;
+    case "dn-send": { dnKeep(); const d = dnDraft || acDraft; if(!d.partner){ toast(dnWhy("partner")); break; } if(!d.date || d.date < iso(today0)){ toast(dnWhy("date")); break; }
+      b.disabled = true; b.textContent = "Sending…";
+      datesCall({action:"plan", kind:d.kind, partner:d.partner, title:d.title, date:d.date, time:d.time, idea:d.idea, stops:d.stops.map(x => ({time:x.time, place:x.place, rid:x.rid, note:x.note}))}).then(async r => {
+        if(!r.ok){ b.disabled = false; b.textContent = "Send"; toast(dnWhy(r.code)); return; }
+        const kids = d.kind === "kids"; dnDraft = null; acDraft = null; await refresh(true); kids ? sheetAdventure() : sheetDateNight();
+        toast(`Sent! ${first(F(d.partner).name)} has been asked.`); }); break; }
+    case "dn-yes": dnAct({action:"reply", id, answer:"yes"}, "💛 It's a date! They've been told.").then(r => r && dnRedraw()); break;
+    case "dn-other": { const note = prompt("What day or time would work better? (optional)") ; if(note === null) break;
+      dnAct({action:"reply", id, answer:"other", note}, "Sent. They'll pick another day.").then(r => r && dnRedraw()); break; }
+    case "dn-move": dnMoveId = dnMoveId === id ? null : id; dnRedraw(); break;
+    case "dn-move-save": { const date = document.getElementById("dn-mdate")?.value, time = document.getElementById("dn-mtime")?.value || "";
+      if(!date || date < iso(today0)){ toast(dnWhy("date")); break; }
+      dnAct({action:"move", id, date, time}, "New day sent. They've been asked again.").then(r => { if(r){ dnMoveId = null; dnRedraw(); } }); break; }
+    case "dn-done": { const d = (st.dates || []).find(x => x.id === id); dnAct({action:"done", id}, d?.kind === "kids" ? "🏅 Stamped! Another adventure in the passport." : "💛 Saved to your date nights.").then(r => r && dnRedraw()); break; }
+    case "dn-cancel": if(!confirm("Call this date off? They'll be told.")) break; dnAct({action:"cancel", id}, "Called off. They've been told.").then(r => r && dnRedraw()); break;
+    case "ac-pick": acStart(b.dataset.v); sheetAdventure(); break;
+    case "whatsnew": sheetWhatsNew(); break;
+    case "tab-home": closeSheet(); go("home"); break;
     case "rides": sheetRides(b.dataset.k, id); break;
     case "rd-back": { const o = rdOpen; rdOpen = null; rdForm = null; if(!o || o.kind === "dinner") closeSheet(); else ({outing:drawOuting, movie:drawMovieNight, golf:drawGolf})[o.kind](o.ref); break; }
     case "rd-form": { const {offers, asks} = rdOf(rdOpen.kind, rdOpen.ref), myO = offers.find(o => o.driver === st.me), myA = asks.find(a => a.rider === st.me);
@@ -6526,7 +7042,9 @@ document.addEventListener("click", e => {
       gSave(pid, gSearch.city).then(ok => { if(!ok){ toast("Couldn't save that restaurant. Try again."); return; }
         if(draft.mode === "host") draft.options = [id]; else draft.options.push(id); render(); toast(`${RBY[id].name} added`); });
       break; }
-    case "explore-filter": st.ui.filter = b.dataset.f; st.ui.city = "Memphis"; go("explore"); break;
+    case "explore-filter": st.ui.filter = b.dataset.f; st.ui.city = "Memphis"; st.ui.area = ""; go("explore"); break;
+    case "sunday-area": Object.assign(st.ui, {city:"Memphis", area:b.dataset.a, filter:"all", cuisine:"All", budget:"any", meal:"dinner", q:""}); go("explore"); break;
+    case "area-clear": st.ui.area = ""; save(); render(); break;
     case "cuisine": st.ui.cuisine = b.dataset.c; save(); render(); break;
     case "plan-with": { const rid = b.dataset.rid, r = RBY[rid];
       if(needsBranch(r)){ sheetWhere(rid, "plan", {occ:b.dataset.occ || "sunday"}); break; }
