@@ -26,3 +26,5 @@ delete from prayers where family_id = 'zztest';   -- prayer_authors go with them
 delete from tournaments where family_id = 'zztest';
 delete from recipes where family_id = 'zztest';
 delete from ride_asks where family_id = 'zztest'; delete from ride_offers where family_id = 'zztest';   -- pickups go with the asks
+delete from live_asks where family_id = 'zztest';   -- answers go with them
+delete from dates where family_id = 'zztest';
