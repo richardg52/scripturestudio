@@ -115,8 +115,10 @@ Deno.serve(async (req) => {
         if (open?.length) return reply({ ok: false, code: "survey_open" }, 409);
         const { data: sv, error } = await admin.from("feud_surveys").insert({ family_id: me.family_id, prompts, created_by: me.id }).select().single();
         if (error) return reply({ ok: false, code: "server" }, 500);
+        // who is asked (his order, 2026-10-22: "always an option to send to individual members"); nobody picked = everyone
         const { data: fam } = await admin.from("members").select("id").eq("family_id", me.family_id).eq("status", "active").neq("id", me.id);
-        await alert((fam ?? []).map(m => m.id), `${first} started a Family Feud survey: ${prompts.length} quick ${prompts.length === 1 ? "question" : "questions"}. Your answers stay secret until the game.`);
+        const pick = new Set((Array.isArray(body.invited) ? body.invited : []).map(String));
+        await alert((fam ?? []).map(m => m.id).filter(id => !pick.size || pick.has(id)), `${first} started a Family Feud survey: ${prompts.length} quick ${prompts.length === 1 ? "question" : "questions"}. Your answers stay secret until the game.`);
         return reply({ ok: true, survey: sv });
       }
       const { data: sv } = await admin.from("feud_surveys").select("*").eq("id", String(body.id ?? "")).maybeSingle();
