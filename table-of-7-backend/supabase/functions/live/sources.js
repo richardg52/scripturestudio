@@ -19,6 +19,8 @@ export function ticketIn(html){
 const COMEDY = /comedy|comedian|improv|second city|stand-?up/i;
 const inWindow = (ms, now) => ms > now - 3 * 3600e3 && ms < now + DAYS_AHEAD * 864e5;
 // venues mark a called-off show in its title ("CANCELLED: …", "POSTPONED: …"): it is never listed as on
+// add-on listings that are not a show of their own (hotel packages, parking passes, suites)
+export const addOn = t => /hotel package|ticket \+ hotel|\bparking\b|suite rental|premium seating|vip package/i.test(String(t || ""));
 export const calledOff = t => /^\s*(cancel+ed|postponed|called off)\b/i.test(String(t || "").replace(/&amp;/g, "&"));
 
 // GPAC (Germantown Performing Arts Center): Squarespace event list, ?format=json → upcoming[]
@@ -84,7 +86,7 @@ export const tmUrl = (key, page, now = Date.now()) => "https://app.ticketmaster.
 export function tmParse(j, now = Date.now()){
   return (j?._embedded?.events ?? []).map(e => {
     const s = e?.dates?.start ?? {}; const ms = s.dateTime ? Date.parse(s.dateTime) : s.localDate ? Date.parse(s.localDate + "T18:00:00Z") : NaN;
-    if (!e?.name || calledOff(e.name) || !Number.isFinite(ms) || !inWindow(ms, now) || e?.dates?.status?.code === "cancelled") return null;
+    if (!e?.name || calledOff(e.name) || addOn(e.name) || !Number.isFinite(ms) || !inWindow(ms, now) || e?.dates?.status?.code === "cancelled") return null;
     const v = e._embedded?.venues?.[0] ?? {}, c = e.classifications?.[0] ?? {};
     const seg = c.segment?.name ?? "", gen = c.genre?.name ?? "";
     const category = seg === "Sports" ? "sports" : seg === "Music" ? "concert" : /comedy/i.test(gen) ? "comedy" : seg === "Arts & Theatre" ? "theater" : "family";
