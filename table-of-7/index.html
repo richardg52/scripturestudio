@@ -367,7 +367,7 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 /* Spades: a green felt table, real cards */
 .felt{position:relative;border-radius:34px;height:clamp(280px,calc(min(100vw,900px) * .9),600px);margin-inline:auto;width:100%;
   background:radial-gradient(ellipse at 50% 40%,#2fb164 0%,#178a45 45%,#0a5a2a 100%);box-shadow:inset 0 0 0 12px #6b3a17,inset 0 0 0 15px #a8692d,inset 0 0 50px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.6)}
-.felt::after{content:"T7";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 calc(54px*var(--gs)) var(--f-display);color:rgba(255,255,255,.07);letter-spacing:.1em;pointer-events:none}
+.felt::after{content:"T8";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 calc(54px*var(--gs)) var(--f-display);color:rgba(255,255,255,.07);letter-spacing:.1em;pointer-events:none}
 .seat{position:absolute;display:grid;justify-items:center;gap:3px;text-align:center;z-index:2}
 .seat .who{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);border-radius:999px;padding:4px 12px 4px 4px;font:800 calc(14px*var(--gs)) var(--f-display);color:#fff;border:2px solid transparent;white-space:nowrap}
 .seat .who i{width:calc(26px*var(--gs));height:calc(26px*var(--gs));border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff}
@@ -447,7 +447,7 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .mmc.up .in{transform:rotateY(180deg)}
 .mmc .back,.mmc .face{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;display:grid;place-items:center}
 .mmc .back{background:repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 6px,transparent 6px 14px),linear-gradient(150deg,#ff8a1f,#e3264f);box-shadow:0 5px 0 rgba(0,0,0,.35),inset 0 0 0 3px rgba(255,255,255,.4)}
-.mmc .back::after{content:"T7";font:900 calc(20px*var(--gs)) var(--f-display);color:rgba(255,255,255,.85)}
+.mmc .back::after{content:"T8";font:900 calc(20px*var(--gs)) var(--f-display);color:rgba(255,255,255,.85)}
 .mmc .face{transform:rotateY(180deg);background:#fffdf7;font-size:calc(min(11vw,58px)*var(--gs));box-shadow:0 5px 0 rgba(0,0,0,.25)}
 .mmc.done .face{background:#d9ffe8;box-shadow:0 0 0 4px #2fe08a,0 5px 0 rgba(0,0,0,.2)}
 .wgballoons{display:flex;justify-content:center;gap:6px;font-size:calc(38px*var(--gs))}
@@ -582,6 +582,8 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .lvtitle{font:800 calc(16px*var(--gs))/1.25 var(--f-display)}
 .lvbest{border-radius:14px;padding:10px 12px;background:rgba(255,226,150,.95);color:#3a2604;font-size:calc(15px*var(--gs))}
 .lvdates{display:flex;flex-wrap:wrap;gap:8px}
+.whobox{display:grid;gap:8px}.whochip{display:inline-flex;align-items:center;gap:6px}.whochip .avatar{width:20px;height:20px;font-size:10px}
+.whochip[aria-pressed="false"]{opacity:.55;text-decoration:line-through}
 /* Date Night: candlelight (rose to deep wine); Adventure Club: a treasure-map look (meadow to sky) */
 #sheet-wrap.stage.datenight .sheet{background:radial-gradient(120% 60% at 50% -10%,#f28aa0 0%,#8a1c3c 42%,#2a0816 100%) fixed}
 #sheet-wrap.stage.datenight .input{background:#3a0c1e;border-color:rgba(255,190,210,.3)}
@@ -604,6 +606,27 @@ body[data-gsize="xl"] #sheet-wrap.stage .sheet{--gs:1.25}
 .acstamp{display:grid;place-items:center;width:calc(44px*var(--gs));aspect-ratio:1;border-radius:50%;font-size:calc(24px*var(--gs));border:2px dashed #2f8f6a;transform:rotate(-8deg)}
 .wnsign{border-radius:16px;padding:12px 14px;background:color-mix(in srgb,var(--brass) 12%,transparent);font-size:15px}
 .wnsign p{margin:0 0 6px}.wnname{font-family:var(--f-display);text-align:right;margin:0}
+/* Big Game Night: a stadium look (field green to night navy); Netflix & Chill: a home-theater look (black and red) */
+#sheet-wrap.stage.gamenight .sheet{background:radial-gradient(120% 60% at 50% -10%,#3fae5a 0%,#123d2a 40%,#07121f 100%) fixed}
+#sheet-wrap.stage.gamenight .input{background:#0c2219;border-color:rgba(200,255,210,.3)}
+#sheet-wrap.stage.netflix .sheet{background:radial-gradient(120% 60% at 50% -10%,#b20710 0%,#3a0306 38%,#0b0b0b 100%) fixed}
+#sheet-wrap.stage.netflix .input{background:#1a0a0b;border-color:rgba(255,190,190,.3)}
+.wpgame{display:grid;gap:8px;border-radius:18px;padding:12px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(210,255,220,.2)}
+.wpmatch{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;text-align:center}
+.wpteam{display:grid;justify-items:center;gap:2px;min-width:0}.wpteam img{width:calc(64px*var(--gs));height:calc(64px*var(--gs));object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.wpteam b{font:800 calc(15px*var(--gs))/1.2 var(--f-display)}.wpteam small{opacity:.8}.wpabbr{font-size:calc(26px*var(--gs))!important}
+.wpmatch.small .wpteam img{width:calc(48px*var(--gs));height:calc(48px*var(--gs))}
+.wpat{display:grid;justify-items:center;font:800 calc(14px*var(--gs)) var(--f-display);opacity:.85}.wpscore{font-size:calc(22px*var(--gs))}
+.wpnets{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wpnet{display:inline-grid;place-items:center;height:calc(28px*var(--gs));padding:0 6px;border-radius:8px;background:#fff}.wpnet img{height:calc(22px*var(--gs));max-width:calc(70px*var(--gs));object-fit:contain;border-radius:4px}
+.wpnet.txt{color:#111;font-weight:700;font-size:12px}
+.wplogos{display:flex;flex:none}.wplogos img{width:30px;height:30px;object-fit:contain;margin-right:-6px}
+.wpthumb{width:40px;height:60px;object-fit:cover;border-radius:6px;flex:none}.wpthumb.big{width:calc(120px*var(--gs));height:auto;justify-self:center;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.6)}
+.wpneed{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid rgba(255,255,255,.12)}.wpneed .grow{flex:1;min-width:0}
+.nfgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nfposter{display:grid;gap:4px;border:0;background:none;color:inherit;padding:0;text-align:left;min-width:0}.nfposter img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.nfposter span{font-size:12px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.nfback{width:100%;border-radius:14px}.wpnflogo{height:1em;vertical-align:-.12em;border-radius:4px}
 /* Rides: an evening-drive look (dusk blue to headlight amber) */
 #sheet-wrap.stage.rides .sheet{background:radial-gradient(120% 60% at 50% -10%,#f0a33a 0%,#3b3f8f 38%,#0b1230 100%) fixed}
 .rdchoose{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -1443,7 +1466,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* server → st */
 async function pull(){
   const all = t => sb.from(t).select("*").limit(5000);
-  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_events","live_asks","live_answers","dates"];
+  const T = ["restaurants","members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_events","live_asks","live_answers","dates","watch_parties","watch_people"];
   const res = await Promise.all(T.map(t => t === "members" ? all(t).order("created_at").order("id") : t === "event_options" ? all(t).order("pos") : all(t)));
   const bad = res.find(r => r.error); if(bad) throw new Error(bad.error.message);
   const D = Object.fromEntries(T.map((t, i) => [t, res[i].data]));
@@ -1503,9 +1526,11 @@ async function pull(){
   n.rideAsks = D.ride_asks.map(x => ({id:x.id, kind:x.kind, ref:x.ref_id, rider:x.rider, party:x.party, note:x.note || "", driver:x.driver, declined:x.declined || [], t:iso2ms(x.created_at)}));
   n.liveEvents = D.live_events.map(x => ({id:x.id, src:x.source, title:x.title, t:Date.parse(x.starts_at), allDay:x.all_day ? (x.source === "ticketmaster" ? "tba" : true) : false, venue:x.venue || "", addr:x.address || "", cat:x.category,
     price:x.price || "", free:x.free, ticket:x.ticket_url || "", info:x.info_url || "", img:x.image_url || ""}));
-  n.liveAsks = D.live_asks.map(x => ({id:x.id, ev:x.event_id, title:x.title, venue:x.venue || "", t:Date.parse(x.starts_at), ticket:x.ticket_url || "", by:x.by_member, note:x.note || "", at:iso2ms(x.created_at)}));
+  n.liveAsks = D.live_asks.map(x => ({id:x.id, ev:x.event_id, invited:x.invited || [], title:x.title, venue:x.venue || "", t:Date.parse(x.starts_at), ticket:x.ticket_url || "", by:x.by_member, note:x.note || "", at:iso2ms(x.created_at)}));
   n.liveAnswers = D.live_answers.map(x => ({ask:x.ask_id, who:x.member_id, a:x.answer, picks:x.picks || [], note:x.note || ""}));
   n.dates = D.dates.map(x => ({id:x.id, kind:x.kind, by:x.created_by, partner:x.partner, title:x.title, date:x.date, time:x.time || "", stops:Array.isArray(x.stops) ? x.stops : [], idea:x.idea || "", status:x.status, reply:x.reply || "", t:iso2ms(x.created_at)}));
+  n.watch = D.watch_parties.map(x => ({id:x.id, kind:x.kind, ref:x.ref, title:x.title, info:x.info || {}, date:x.date, time:x.time || "", at:x.at_member, by:x.created_by, invited:x.invited || [], needs:x.needs || [], note:x.note || "", status:x.status}));
+  n.watchPeople = D.watch_people.map(x => ({party:x.party_id, who:x.member_id, rsvp:x.rsvp, bring:x.bring || []}));
   n.cards = D.cards.map(c => ({id:c.id, by:c.by, photoId:c.media_id, style:c.style, msg:c.message || "", eventId:c.event_id, rid:c.restaurant_id, to:c.recipients || [], status:c.status,
     t:iso2ms(c.at), uploadPath:c.upload_path, upload:c.upload_path ? (urls[c.upload_path] || "") : null}));
   const L = by(D.tab_lines, "event_id");
@@ -1554,7 +1579,7 @@ async function syncNow(){
 }
 
 /* live: anything another phone changes re-reads the table */
-const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_asks","live_answers","dates"];
+const LIVE = ["members","contacts","events","event_options","votes","rsvps","guests","guest_hands","reservations","arrivals","table_ready","visits","reviews","payments","notes","never_again","want_to_try","standing_dinners","standing_runs","games","feud_surveys","media","cards","tabs","tab_tickets","tab_lines","alerts","movie_nights","movie_people","golf_outings","golf_people","santa_exchanges","santa_wishes","outings","outing_people","prayers","tournaments","recipes","ride_offers","ride_asks","live_asks","live_answers","dates","watch_parties","watch_people"];
 let chan = null, pullTimer = null, redrawLater = false;
 function subscribe(){ unsubscribe(); chan = sb.channel("table-" + FAMILY); LIVE.forEach(t => chan.on("postgres_changes", {event:"*", schema:"public", table:t}, onRemote)); chan.subscribe(); }
 function unsubscribe(){ if(chan){ sb.removeChannel(chan); chan = null; } }
@@ -1574,7 +1599,7 @@ function redraw(){
   if(inviteId && !ev(inviteId)) closeInvite();
   render();
   // an open game, or the Game Room itself, follows the other phones (every game screen carries data-game, the room data-room)
-  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); saRedraw(); ouRedraw(); prRedraw(); tnRedraw(); rcRedraw(); rdRedraw(); lvRedraw(); dnRedraw(); }
+  if(!(document.activeElement && sheet.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))){ mvRedraw(); tgRedraw(); saRedraw(); ouRedraw(); prRedraw(); tnRedraw(); rcRedraw(); rdRedraw(); lvRedraw(); dnRedraw(); wpRedraw(); }
   if(wrap.classList.contains("open") && (gView ? sheet.querySelector("[data-game]") : sheet.querySelector("[data-room]"))){ const y = sheet.scrollTop; gView ? drawGame() : sheetGames(); sheet.scrollTop = y; } if(liveId) drawLive(); if(revealId) drawReveal(); if(tabId) drawTab(); if(!hostEl.hidden) drawHost(); if(!galleryEl.hidden) drawGallery(); if(inviteId) drawInvite();
 }
 document.addEventListener("focusout", () => { if(redrawLater){ redrawLater = false; setTimeout(redraw, 0); } });
@@ -1972,6 +1997,7 @@ function vHome(){
   ${saNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎁 Secret Santa</h2></div>${saNeeds().slice(0, 3).map(([x, a, b2]) => `<button class="todo" data-act="sa-open" data-id="${x.id}"><span class="ic">🎁</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${tgNeeds().length ? `<section class="sec"><div class="sec-head"><h2>⛳ Topgolf</h2></div>${tgNeeds().slice(0, 3).map(([o, a, b2]) => `<button class="todo" data-act="tg-open" data-id="${o.id}"><span class="ic">⛳</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${lvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎟️ Who's in?</h2></div>${lvNeeds().slice(0, 3).map(a => `<button class="todo" data-act="lv-ask" data-id="${a.id}"><span class="ic">🙋</span><span><b>${esc(first(F(a.by).name))} asked: ${esc(a.title)}</b><small>${esc(lvDay(a.t))} · ${esc(a.venue)} · tap to answer</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
+  ${wpNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🛋️ Watch parties</h2></div>${wpNeeds().slice(0, 3).map(p => `<button class="todo" data-act="wp-open" data-id="${p.id}"><span class="ic">${p.kind === "game" ? "🏈" : "🍿"}</span><span><b>${esc(first(F(p.by).name))}: ${esc(p.title)}</b><small>at ${esc(first(F(p.at).name))}'s · ${esc(fmtDate(p.date))}${p.time ? ` · ${esc(p.time)}` : ""} · tap to answer</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${dnNeeds().length ? `<section class="sec"><div class="sec-head"><h2>💌 A date for you</h2></div>${dnNeeds().slice(0, 3).map(d => `<button class="todo" data-act="${d.kind === "couple" ? "datenight" : "adventure"}"><span class="ic">${d.kind === "couple" ? "💕" : "🧭"}</span><span><b>${esc(first(F(d.by).name))}: ${esc(d.title)}</b><small>${esc(fmtDate(d.date))}${d.time ? ` · ${esc(d.time)}` : ""} · tap to say yes</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${mvNeeds().length ? `<section class="sec"><div class="sec-head"><h2>🎬 Movie night</h2></div>${mvNeeds().slice(0, 3).map(([n, a, b2]) => `<button class="todo" data-act="mv-open" data-id="${n.id}"><span class="ic">🎬</span><span><b>${esc(a)}</b><small>${esc(b2)}</small></span><span class="chev">${I.chev}</span></button>`).join("")}</section>` : ""}
   ${todos.length ? `<section class="sec"><div class="sec-head"><h2>Needs you</h2></div>
@@ -2017,6 +2043,10 @@ function vHome(){
   <div class="grid2">
     <button class="alt" data-act="memlive"><span class="eyebrow" style="font-size:10px">🎟️ Memphis Live</span><b>What's on in town</b><span class="muted small">Shows, games and free events, with tickets</span></button>
     <button class="alt" data-act="datenight"><span class="eyebrow" style="font-size:10px">💕 Date Night</span><b>Plan an evening for two</b><span class="muted small">Dinner, something to do, dessert</span></button>
+  </div>
+  <div class="grid2">
+    <button class="alt" data-act="gamenight"><span class="eyebrow" style="font-size:10px">🏈 Big Game Night</span><b>This week's big games</b><span class="muted small">Whose house, what we'll bring</span></button>
+    <button class="alt" data-act="netflix"><span class="eyebrow" style="font-size:10px">🍿 Netflix &amp; Chill</span><b>A night in</b><span class="muted small">Pick a movie or show, bring the snacks</span></button>
   </div>
   <button class="todo" data-act="adventure"><span class="ic">🧭</span><span><b>Adventure Club</b><small>Kids: pick an adventure and ask a grown-up for a date</small></span><span class="chev">${I.chev}</span></button>
 
@@ -2145,8 +2175,11 @@ let draft = null;
 function newDraft(occ="sunday", rid=null){
   const o = OCCASIONS.find(x => x.k === occ) || OCCASIONS[0];
   draft = {type:o.k, mode:o.mode, title:o.k==="birthday"?`${first(ME().name)}'s Birthday`:o.label, date: o.k==="sunday"?iso(nextSunday):iso(add(today0,7)), time:o.k==="sunday"?"17:30":"19:00",
-    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0, arrive:"", theme:"", gifts:"", adults:false, voteMin:10, dessert:""};
+    dress:o.k==="sunday"?"Smart casual":o.mode==="host"?"Cocktail attire":"Casual", options: rid?[rid]:[], note:"", guests:[], q:"", cap:0, arrive:"", theme:"", gifts:"", adults:false, voteMin:10, dessert:"", excluded:[]};
+  whoReset("plan");
 }
+// the dinner's guest list follows the picker: anyone not ticked is left off (alerts skip them; the database keeps them out)
+function draftWho(){ if(!draft) return; const s2 = whoSel.plan || new Set(); draft.excluded = whoOthers().map(f => f.id).filter(id => !s2.has(id)); }
 function vPlan(){
   if(!draft) newDraft();
   const d = draft; const isHost = d.mode === "host"; const max = isHost ? 1 : 3;
@@ -2202,6 +2235,7 @@ function vPlan(){
     ${dessertStrip(d, "draft")}
   </section>
   <section class="sec">
+    ${whoChips("plan", d.mode === "host" ? "WHO'S INVITED" : "WHO VOTES")}
     <div class="field"><label for="p-note">Personal note</label><textarea class="input" id="p-note" data-d="note" placeholder="${isHost?"A line for your invitation":"Anything the family should know"}">${esc(d.note)}</textarea></div>
     <div class="field"><span class="lbl">GUESTS (FAMILY APPROVES WITH A SHOW OF HANDS)</span>
       ${st.contacts.length ? `<div class="chips" style="flex-wrap:wrap">${st.contacts.filter(c => !c.banned).map(c => `<button class="chip" data-act="toggle-contact" data-cid="${c.id}" aria-pressed="${d.guests.some(g => g.contactId === c.id)}">${esc(c.name)}</button>`).join("")}</div>` : ""}
@@ -2232,7 +2266,7 @@ function inviteCard(e){
   const coming = st.fam.filter(f => e.rsvp?.[f.id] === "yes").length + (e.guests||[]).filter(guestApproved).length;
   const replyBy = iso(add(parse(e.date), -2));
   return `<div class="invite">
-    <div class="i-mono">T7</div>
+    <div class="i-mono">T8</div>
     <div class="i-caps">${esc(F(e.host).name)}<br>requests the pleasure of your company</div>
     <div class="i-script">${celebrate ? "to celebrate" : e.type === "personal" ? "for an evening of" : "at the table for"}</div>
     <div class="i-title">${esc(e.title || occ)}</div>
@@ -2274,7 +2308,7 @@ function calLink(e){
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.title + " · " + r.name)}&dates=${f(st0)}/${f(en)}&location=${encodeURIComponent(placeQ(r))}&details=${encodeURIComponent("Dress: " + e.dress + "\nMenu: " + menuLink(r) + (RBY[e.dessert] ? "\nDessert after: " + RBY[e.dessert].name + ", " + addrOf(RBY[e.dessert]) : ""))}`;
 }
 function envelope(e){
-  return `<div class="envelope"><div class="flap"></div><div class="seal">T7</div>
+  return `<div class="envelope"><div class="flap"></div><div class="seal">T8</div>
     <div class="from">An invitation from ${esc(F(e.host).name)}</div>
     <div class="t">${esc(e.title)}</div>
     <div class="d">${fmtLong(e.date)} · ${fmtTime(e.time)}</div>
@@ -2355,7 +2389,7 @@ function eventCard(e){
     ${e.status==="open"?`<button class="btn wine" data-act="live" data-id="${e.id}">${e.voteEnds?`<span class="dotlive"></span> Join live vote`:`Start ${voteMin(e)}-minute vote`}</button>`:""}
     <button class="btn sm" data-act="ask-guest" data-id="${e.id}">+ Ask to bring a guest</button>
     ${e.status==="set"?`<button class="btn sm" data-act="concierge" data-id="${e.id}">Concierge &amp; tip</button><button class="btn sm wine" data-act="wrap" data-id="${e.id}">We dined — wrap up</button>`:""}
-    ${isAdmin()?`<button class="btn sm ghost" data-act="ev-people" data-id="${e.id}">Who's invited</button>`:""}
+    ${isAdmin() || e.host === st.me ? `<button class="btn sm ghost" data-act="ev-people" data-id="${e.id}">Who's invited</button>` : ""}
     ${isHost?`<button class="btn sm ghost" data-act="cancel" data-id="${e.id}">Cancel</button>`:""}
   </div>`;
   return `<article class="event" id="ev-${e.id}">
@@ -2395,6 +2429,8 @@ function vTable(){
   <button class="todo" data-act="prayers"><span class="ic">🙏</span><span><b>Prayer Wall</b><small>${(() => { const n = (st.prayers || []).filter(x => x.status === "open").length; return n ? `${n} ${n === 1 ? "request" : "requests"} to pray for` : "Share a request, pray for each other, praise God for answers"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="recipes"><span class="ic">🍗</span><span><b>Family Recipe Book</b><small>${(() => { const n = (st.recipes || []).length; return n ? `${n} family ${n === 1 ? "recipe" : "recipes"} · search, star and cook` : "Save the dishes the family loves, with who made them and a photo"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="memlive"><span class="ic">🎟️</span><span><b>Memphis Live</b><small>${(() => { const k = lvNeeds().length; return k ? `${k} “Who's in?” ${k === 1 ? "question waits" : "questions wait"} for you` : "Concerts, comedy, shows, games and free events, with tickets"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="gamenight"><span class="ic">🏈</span><span><b>Big Game Night</b><small>${(() => { const k = wpNeeds().filter(p => p.kind === "game").length; return k ? `${k} watch ${k === 1 ? "party asks" : "parties ask"} for your answer` : "Thursday, Sunday and Monday night football: whose house, what we'll bring"; })()}</small></span><span class="chev">${I.chev}</span></button>
+  <button class="todo" data-act="netflix"><span class="ic">🍿</span><span><b>Netflix &amp; Chill</b><small>${(() => { const k = wpNeeds().filter(p => p.kind === "netflix").length; return k ? `${k} Netflix ${k === 1 ? "night asks" : "nights ask"} for your answer` : "Pick something on Netflix, pick a house, bring the snacks"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="datenight"><span class="ic">💕</span><span><b>Date Night</b><small>${(() => { const k = dnNeeds().filter(d => d.kind === "couple").length; return k ? `${k} ${k === 1 ? "date asks" : "dates ask"} for your yes` : "Pick a mood: dinner, something to do and dessert, for two"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="adventure"><span class="ic">🧭</span><span><b>Adventure Club</b><small>${(() => { const k = dnNeeds().filter(d => d.kind === "kids").length; return k ? `${k} ${k === 1 ? "adventure asks" : "adventures ask"} for your yes` : "Kids: let's plan a date! Earn stamps for your passport"; })()}</small></span><span class="chev">${I.chev}</span></button>
   <button class="todo" data-act="outings"><span class="ic">🎉</span><span><b>Family Outing</b><small>${(() => { const k = ouNeeds().length; return k ? `${k} ${k === 1 ? "thing needs" : "things need"} you` : "Tigers games, bowling, the zoo and more, settle up"; })()}</small></span><span class="chev">${I.chev}</span></button>
@@ -2442,7 +2478,7 @@ function personRow(kind, p){
 
 /* ---------- Sheets ---------- */
 const wrap = document.getElementById("sheet-wrap"), sheet = document.getElementById("sheet");
-function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf|santa|outing|prayer|recipe|rides|live|datenight|adventure)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.toggle("santa", /data-santa[\s>=]/.test(html)); wrap.classList.toggle("outing", /data-outing[\s>=]/.test(html)); wrap.classList.toggle("prayer", /data-prayer[\s>=]/.test(html)); wrap.classList.toggle("recipe", /data-recipe[\s>=]/.test(html)); wrap.classList.toggle("rides", /data-rides[\s>=]/.test(html)); wrap.classList.toggle("live", /data-live[\s>=]/.test(html)); wrap.classList.toggle("datenight", /data-datenight[\s>=]/.test(html)); wrap.classList.toggle("adventure", /data-adventure[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
+function openSheet(html){ sheet.innerHTML = `<div class="grab"></div>${html}`; wrap.classList.toggle("stage", /data-(game|room|gstage|cinema|golf|santa|outing|prayer|recipe|rides|live|datenight|adventure|gamenight|netflix)[\s>=]/.test(html)); wrap.classList.toggle("cinema", /data-cinema[\s>=]/.test(html)); wrap.classList.toggle("golf", /data-golf[\s>=]/.test(html)); wrap.classList.toggle("santa", /data-santa[\s>=]/.test(html)); wrap.classList.toggle("outing", /data-outing[\s>=]/.test(html)); wrap.classList.toggle("prayer", /data-prayer[\s>=]/.test(html)); wrap.classList.toggle("recipe", /data-recipe[\s>=]/.test(html)); wrap.classList.toggle("rides", /data-rides[\s>=]/.test(html)); wrap.classList.toggle("live", /data-live[\s>=]/.test(html)); wrap.classList.toggle("datenight", /data-datenight[\s>=]/.test(html)); wrap.classList.toggle("adventure", /data-adventure[\s>=]/.test(html)); wrap.classList.toggle("gamenight", /data-gamenight[\s>=]/.test(html)); wrap.classList.toggle("netflix", /data-netflix[\s>=]/.test(html)); wrap.classList.add("open"); wrap.setAttribute("aria-hidden","false"); sheet.scrollTop = 0; }
 function closeSheet(){ wrap.classList.remove("open"); wrap.setAttribute("aria-hidden","true"); }
 wrap.addEventListener("click", e => { if(e.target === wrap) closeSheet(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
@@ -2496,6 +2532,10 @@ function sheetTips(){
     ["Date Night","Our Table → 💕 Date Night. Pick a mood (Candlelight, Live music, Sunset & the river, Art & history, Sweet & simple, or Surprise me) and you get a whole evening: dinner, something to do, dessert. 🔀 Show me another changes it. 💌 Plan this date: pick your date, the day and times, and send. Only the two of you see it."],
     ["Adventure Club","Our Table → 🧭 Adventure Club, for the kids. Tap an adventure (the Zoo, the Pink Palace, mini golf, skating…), pick your grown-up and a day, and tap 🧭 Ask for the date. After the day, tap 🏅 We went! to earn a stamp in your Adventure Passport: 1 makes you an Explorer, 3 an Adventurer, 5 a Trailblazer, 10 a Legend."],
     ["What's new","After an update, the first time you sign in you'll see ✨ Fresh at the table with every new feature; tap one to open it. To see it again: tap your initial → ✨ What's new."],
+    ["Invite just who you want","Every invitation has a WHO'S INVITED (or WHO TO ASK) list: everyone starts ticked; tap a name to leave someone out, so nobody gets an invitation they don't need. It's on family dinners and votes, Who's in?, Secret Santa, Family Feud surveys and watch parties (Movie Night, Topgolf, Outings and Date Night already pick people)."],
+    ["Big Game Night","Our Table → 🏈 Big Game Night (or the tile on Home). This week's and the next two weeks' Thursday, Sunday-night and Monday-night games, with both teams' logos, the kickoff in Memphis time and the network. Tap 🏈 Host a watch party: pick whose house, the time, what we'll bring and who's invited."],
+    ["Netflix & Chill","Our Table → 🍿 Netflix & Chill. Pick Movies or Shows and a kind (Comedy, Family, Action…), tap a poster, then 🍿 Plan a Netflix night: whose house, when, the snack list and who's invited. Open in Netflix takes you to it on Netflix."],
+    ["What we'll bring","On a watch party, tap I'll bring it next to an item (one person each), or type something else and tap ＋ I'm bringing this. The planner sees each pick."],
     ["Game Night Tournament","Game Room → 🏆 Start a game night tournament. Pick the players and the games; after each game, record who came 1st (3 points) and 2nd (1 point). The leaderboard runs all night; Crown the champion at the end."],
     ["Wild Card","Game Room → 🌈 Wild Card: Uno's rules. Match the colour, the number or the symbol; a Wild lets you name the colour. Down to two cards? Tap 🔔 before you play, or anyone can tap 🚨 Catch and you draw 2. Play 1, 2 or 3 computers, or a family game of up to four, one round or first to 200."],
     ["Bid Whist","Game Room → ♣ Bid Whist: couples, partners across, jokers in. Bid 4 to 7 Uptown, Downtown or No Trump; the top bidder takes the kitty, puts back 6 and names trump. First to 7 wins, no trump counts double, and taking all 13 books (a Boston) wins outright."],
@@ -2566,6 +2606,9 @@ function guideBody(k){
     step(42, "Date Night", `Tap ${pic("Our Table")} → <b>💕 Date Night</b>. Tap a mood: <b>🕯️ Candlelight</b> (a dressed-up dinner and a river walk), <b>🎶 Live music</b>, <b>🌅 Sunset &amp; the river</b>, <b>🖼️ Art &amp; history</b>, <b>🍿 Sweet &amp; simple</b> or <b>🎁 Surprise me</b>. The app lays out three stops with times: dinner from our restaurant list, something to do (real Memphis places such as Big River Crossing, the Overton Park Shell, the Memphis Art Museum, Malco Paradiso), and dessert. ${pic("🔀 Show me another")} gives a different evening. Tap ${pic("💌 Plan this date","primary")}, pick your date, the day (Friday is filled in), the start time and each stop's time, and tap ${pic("💌 Send the invitation","primary")}. They get an alert and tap ${pic("💛 Yes!","primary")} or ${pic("Another time")} (with a note). You can ${pic("Change the day")} or ${pic("Call it off","ghost")}. After the night, tap ${pic("💛 We went","primary")} and it joins <b>Our date nights</b>. Only the two of you ever see a date, ${host} included.`),
     step(43, "Adventure Club", `Tap ${pic("Our Table")} → <b>🧭 Adventure Club</b>. At the top is your <b>Adventure Passport</b> with a stamp for every adventure you've been on. Tap an adventure: 🐼 the Zoo, 🚀 the Pink Palace, 🧸 the Children's Museum, 🚲 Shelby Farms, 🐟 the Pyramid, 🐢 a nature hunt at Lichterman, ⛳ mini golf, ⛸️ skating, 🏌️ Topgolf, 🚋 a trolley ride, 🏹 Chucalissa or 🎬 a movie. A treat stop after is added for you. Pick who the date is with (a grown-up, or a kid if you're the grown-up), the day (Saturday is filled in) and times, and tap ${pic("🧭 Ask for the date","primary")}. They answer ${pic("💛 Yes!","primary")} or ${pic("Another time")}. After the day, tap ${pic("🏅 We went! Stamp it","primary")}: both of you get the stamp. Badges: 1 🧭 Explorer, 3 🗺️ Adventurer, 5 🏔️ Trailblazer, 10 👑 Legend.`),
     step(44, "What's new", `The first time each person signs in after an update, <b>✨ Fresh at the table</b> opens by itself with every new feature, signed by ${esc(F(ADMIN).name)}. Tap a feature to go straight to it, or ${pic("Let's go","primary")}. It shows once per version on each phone; to see it again, tap your initial → ${pic("✨ What's new","ghost")}.`),
+    step(45, "Invite just who you want", `When you plan a family dinner (${pic("Start a family vote")} or ${pic("Send an invitation")}), the Plan screen has <b>WHO VOTES</b> or <b>WHO'S INVITED</b> with everyone ticked. Tap a name to leave that person out (it greys out and is crossed through); tap again to put them back; ${pic("Everyone","ghost")} ticks everybody and ${pic("No one yet","ghost")} clears the list. People left out get no alert and can't see the plan. After it's sent, the person who planned it (or ${host}) can tap ${pic("Who's invited","ghost")} on the dinner card to change it. The same list is on 🙋 Who's in? (WHO TO ASK: only they see the question and answer it; anyone else who taps Who's in? on that show joins it), 🎁 Secret Santa (WHO TO INVITE), Family Feud surveys (WHO TO ASK) and every watch party.`),
+    step(46, "Big Game Night", `Tap ${pic("Our Table")} → <b>🏈 Big Game Night</b>, or <b>This week's big games</b> on Home. Each game card shows the two teams' logos (away at home), the kickoff in Memphis time, the network's logo (Prime Video, NBC, ESPN, ABC…) and the stadium; once a game starts it shows the score. Only Thursday games, Sunday games from 6 PM, and Monday games are listed, this week and the next two. Tap ${pic("🏈 Host a watch party","primary")}: <b>🏠 Whose house?</b> (Mine, or someone else's: they're invited automatically), the name, the day and <b>Come over at</b> (30 minutes before kickoff is filled in), <b>🧺 What we'll bring</b> (Wings, Chips &amp; dip, Pizza, Drinks, Dessert, Ice: tap to take one off, or type and tap ${pic("＋ Add to the list")}), <b>WHO'S INVITED</b>, and a note. Tap ${pic("🏈 Send the invitation","primary")}. Everyone invited answers ${pic("✅ Coming")}, ${pic("🤔 Maybe")} or ${pic("❌ Can't")} and taps ${pic("I'll bring it","primary")} next to something on the list (one person per item) or adds their own. The planner can ${pic("Change who's invited")} or ${pic("Call it off","ghost")}. The schedule comes from ESPN on your phone; network logos come from TMDB.`),
+    step(47, "Netflix & Chill", `Tap ${pic("Our Table")} → <b>🍿 Netflix &amp; Chill</b>. Choose ${pic("🎬 Movies")} or ${pic("📺 Shows")} and a kind (Comedy, Action, Family, Drama, Romance, Thriller, Animation, Documentary, Reality); posters are what's on Netflix in the US right now, most popular first (${pic("More →")} for the next page). Tap a poster for the story and rating, then ${pic("🍿 Plan a Netflix night","primary")}: whose house, the day (Friday is filled in), the time (7:00 PM), the snack list (Popcorn, Candy, Drinks, Pizza, Blankets, Dessert) and who's invited. ${pic("Open in Netflix")} finds it on Netflix. Answers and “I'll bring it” work just like Big Game Night.`),
   ].join("");
   if(k === "voice") return `<div class="card"><b>Table of 8 has no voice commands.</b><p class="small" style="margin:0">Everything is a tap. Skylar and Blake are not connected to this app, and nothing you say is listened to here.</p></div>`;
   if(k === "talk") return [
@@ -2603,6 +2646,9 @@ function guideBody(k){
     step("AG", "Zoo Boo, which night?", `Zoo Boo runs several nights. Zoey asks ${pic("🙋 Who's in?","wine")}. Devonte taps ${pic("✅ In")} and ticks Friday and Saturday; Rosa ticks Saturday only. The screen shows <b>⭐ Best night so far: Saturday · 3 can go</b>.`),
     step("AH", "An anniversary evening", `Devonte opens ${pic("💕 Date Night")}, taps <b>🕯️ Candlelight</b>, then ${pic("🔀 Show me another")} until he likes it: dinner at 6:30, Big River Crossing at 8:15, dessert at 9:45. He taps ${pic("💌 Plan this date","primary")}, picks Rosa and Friday, and sends it. Rosa's bell rings; she taps ${pic("💛 Yes!","primary")}. Only the two of them can see it.`),
     step("AI", "Zoey's Zoo date", `Zoey opens ${pic("🧭 Adventure Club")}, taps <b>🐼 The Zoo</b>, picks Grandpa and Saturday at 10, and taps ${pic("🧭 Ask for the date","primary")}. Grandpa says ${pic("💛 Yes!","primary")}. That evening Zoey taps ${pic("🏅 We went! Stamp it","primary")}: a 🧭 stamp lands in her passport and she's an <b>Explorer</b>.`),
+    step("AJ", "Just the cousins", `Jasmine plans Sunday Dinner at Gus's but Grandpa is out of town, so under <b>WHO'S INVITED</b> she taps Grandpa's name to leave him out and sends it. Grandpa gets no alert; everyone else does. When he's back early, Jasmine taps ${pic("Who's invited","ghost")} on the dinner card and puts him back.`),
+    step("AK", "Sunday Night Football at Mario's", `Mario opens ${pic("🏈 Big Game Night")} and sees the Chiefs at the Seahawks, Sunday 7:20 PM on NBC. He taps ${pic("🏈 Host a watch party","primary")}, picks <b>Mine</b>, keeps Wings, Pizza and Drinks, adds “Paper plates”, ticks Devonte, Rosa and Zoey and sends it. Devonte taps ${pic("✅ Coming")} and ${pic("I'll bring it","primary")} next to Wings; Rosa takes Pizza; Mario's bell rings each time.`),
+    step("AL", "Friday movie night in", `Rosa opens ${pic("🍿 Netflix & Chill")}, taps ${pic("👨‍👩‍👧 Family")}, picks a movie and taps ${pic("🍿 Plan a Netflix night","primary")} at Jasmine's on Friday at 7. Zoey brings Popcorn; Mario brings Candy.`),
     step("K", "Booking the table", `Sunday Dinner is set for Char. Devonte taps ${pic("I'll book it")}; everyone sees “Devonte is calling Char now. Please don't book.” He taps ${pic("📞 Booking options","wine")}, then ${pic("Call (901) …")}, and the phone dials Char. Table for eight at 5:30, confirmation 4471. He taps ${pic("Mark booked","primary")}, types 4471, and the plan shows <b>Reserved · by Devonte · conf 4471 · party of 8</b>.`),
   ].join("");
   if(k === "fix") return [
@@ -2705,15 +2751,23 @@ function guideBody(k){
     ["“Pick a day that hasn't passed.”", "Dates can only be planned for today or later. Pick a new day."],
     ["The 🏅 We went button doesn't show", "It shows once the date has a yes and its day has come. Ask your date to tap 💛 Yes! first."],
     ["The What's new card keeps coming back", "It shows once per version on each phone. If your phone clears website data, it may show again; tap Let's go."],
+    ["Someone didn't get my invitation", "They were left out under WHO'S INVITED (their name is greyed and crossed through). The person who planned it, or the host, can put them back: on a dinner, Who's invited on the card; on a watch party, Change who's invited."],
+    ["“Pick at least one person to invite.”", "Everyone was taken off the list. Tap Everyone, or tap the names you want."],
+    ["“You weren't asked about this one.”", "Someone asked only certain people about that show. Tap 🙋 Who's in? on the show yourself to join in."],
+    ["Big Game Night says the schedule isn't answering", "Your phone reads the NFL schedule from ESPN. Check your signal, close the screen and open it again in a minute."],
+    ["A network shows as words instead of a logo", "TMDB has no logo for that network (for example CBS or NFL Network); its name shows instead."],
+    ["A game isn't on Big Game Night", "Only Thursday games, Sunday games from 6 PM and Monday games are listed, for this week and the next two. Afternoon Sunday games are left out on purpose."],
+    ["“Someone's already bringing that.”", "One person per item on the list. Pick something else, or type your own and tap ＋ I'm bringing this."],
+    ["A Netflix title isn't there", "The list is what's on Netflix in the US right now, most popular first. Try another kind or More →; titles come and go on Netflix."],
   ].map(([q, a2]) => `<div class="card" style="gap:4px"><b>${q}</b><span class="small">${a2}</span></div>`).join("");
   if(k === "can") return `<div class="card"><div class="lbl">✅ TABLE OF 8 CAN</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Run a live family vote with a clock you choose; a tie goes to the host</li><li>Send a formal invitation with RSVPs</li><li>Search every restaurant on Google in our cities, every chain location</li><li>Find bakeries, donut, cookie, candy and ice cream shops, in our list and on Google</li><li>Add a dessert stop after dinner, with its own directions for everyone</li><li>Keep a Want to Try list that shows who saved each place, and put it first in the Concierge's picks</li><li>Remember what you ordered, next to your score and on your next dinner card there</li><li>Bring a new conversation starter to every dinner, family- and faith-friendly</li><li>Open a standing dinner's vote by itself at 9 AM, never twice for the same date</li><li>Show our Year at the Table each December, and any year since</li><li>Open the restaurant's own website, phone and Google Maps from the plan, once you've claimed the booking</li><li>Play Tic-Tac-Toe, Connect Four and Checkers, on one phone or on everyone's own phone, couples as teams, with family standings</li><li>Run Trivia Night: ten questions on Music, TV &amp; Movies or the Bible, at the table on one phone or teams of up to four on their own phones, keeping the answer hidden until a team answers</li><li>Deal Spades for two couples with our Jokers &amp; deuces rules, each phone seeing only its own cards, with bids, nil, bags and the score kept for you</li><li>Run Family Feud from the family's own survey: answers kept secret, each worth one point for every person who gave it</li>
       <li>Stop double-booking (claim, then mark booked)</li><li>Show who's on the way, late or seated</li><li>Split one check into tickets and send receipts</li>
-      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Rotate This Sunday's pick every Monday, Wednesday and Friday, and show every part of town in one tap</li><li>List concerts, comedy, shows, family and free events around Memphis with real ticket links, and ask the family Who's in? with dates that work</li><li>Build a three-stop Date Night for two from a mood, private to the two of you</li><li>Plan a kids' Adventure Club date with a grown-up and keep a passport of stamps and badges</li><li>Show what's new after every update, once per person</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers and Memphis Grizzlies home games from each team's official schedule, each game with its own real buy page (the Tigers box office, or Ticketmaster for the Grizzlies), bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
+      <li>Run a Game Night Tournament across any games, in the app or at the table, with a live leaderboard and a champion in the Year at the Table</li><li>Invite just the people you pick on every invitation: dinners, votes, Who's in?, Secret Santa, Family Feud and watch parties</li><li>Host Big Game Night watch parties for Thursday, Sunday-night and Monday-night NFL games, with team and network logos</li><li>Plan Netflix &amp; Chill nights from what's on Netflix in the US, with posters</li><li>Keep a “what we'll bring” list where each person signs up for an item</li><li>Rotate This Sunday's pick every Monday, Wednesday and Friday, and show every part of town in one tap</li><li>List concerts, comedy, shows, family and free events around Memphis with real ticket links, and ask the family Who's in? with dates that work</li><li>Build a three-stop Date Night for two from a mood, private to the two of you</li><li>Plan a kids' Adventure Club date with a grown-up and keep a passport of stamps and badges</li><li>Show what's new after every update, once per person</li><li>Match rides to any dinner or outing: drivers offer seats, riders ask, groups are never split, a car is never overfilled, and only the driver sees where to pick someone up</li><li>Keep a Family Recipe Book: who made it, ingredients, steps and a photo; search, star favorites and tick ingredients off while you cook</li><li>Keep a family Prayer Wall: share requests with or without your name, pray for each other, and celebrate answered prayers</li><li>Plan a Family Outing: Memphis Tigers and Memphis Grizzlies home games from each team's official schedule, each game with its own real buy page (the Tigers box office, or Ticketmaster for the Grizzlies), bowling, mini golf, the zoo, escape rooms, skating, arcades, museums or anything else, with booking, paying back and a receipt each</li><li>Run a Secret Santa: draw names on the server so each person sees only their own, keep couples from drawing each other, share wish lists, and reveal at the end</li><li>Plan a Topgolf outing: find the Topgolf, invite the family, one person books the bay, everyone pays them back or pays their own way, with a receipt each</li><li>Play thirteen games full screen, with an A+ size button: Tic-Tac-Toe, Connect Four, Checkers (slide with a finger), Spades, Trivia Night (with a clock), Family Feud, Blackjack, Wild Card, Bid Whist, Dominoes, Memory Match, Word Guess and Solitaire</li><li>Play against the computer (Easy, Medium, Hard), with computers filling any empty seat in Spades, Wild Card, Bid Whist and Dominoes</li><li>Play sounds, if you turn them on</li><li>Plan a movie night: in theaters now, reviews, trailers, theaters, tickets bought by one, paid back by all, with receipts</li><li>Share photos and cards (${host} approves first)</li><li>Keep a Never Again list and a 90-day Sunday rotation</li><li>Reach your lock screen with notifications</li></ul></div>
     <div class="card"><div class="lbl">⛔ TABLE OF 8 CANNOT</div><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>Move money: you pay the payer yourself</li><li>Book a table at the restaurant: you call; the app only shows who is booking</li>
       <li>Change someone else's vote, ticket or profile</li><li>Show you a plan ${host} took you off</li><li>Take a vote after its clock ends</li><li>Pause or stop the Trivia clock</li><li>Use real money in Blackjack: chips are points only</li><li>Read a recipe off a photo of a recipe card: you type it in</li><li>Let anyone but the host unlock a seat, reset a PIN or change a seat's sign-in email</li><li>Drive anyone, or show where a car is on the road</li><li>Keep an address book: each rider types where to be picked up, and only their own last one is filled in for them</li><li>Let anyone but the person who added a recipe (or the host) change or remove it</li><li>Buy movie tickets or show showtimes itself: the buyer uses Fandango or the theater's site</li><li>Count computer games in the family standings</li><li>Play Memory Match, Word Guess or Solitaire across phones: they're one-phone games</li><li>Book a Topgolf bay, show its price, or take payment: the booker uses Topgolf's own site, and Topgolf's prices change by venue, day and time</li><li>Promise that every Solitaire deal can be won</li><li>Buy Tigers tickets or book a lane for you, or promise a game time: the booker uses the official ticket page, and times come from the Tigers' schedule</li><li>Show who wrote an unnamed prayer request, to anyone</li><li>Plan a Tigers away game: the planner lists home games at FedExForum</li><li>Show anyone who drew whom before the organizer reveals it, or buy the gifts for you</li><li>Undo a card or tile once it's played</li>
-      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Buy tickets: 🎟️ opens the real seller; you buy there</li><li>List shows sold only by small clubs, comedy rooms or at the door (some publish no calendar at all)</li><li>Book a date's restaurant or check its hours: you call or look</li><li>Show anyone else's date, the host's included</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
+      <li>Hold a table or order at the dessert shop: you walk in or call</li><li>Buy tickets: 🎟️ opens the real seller; you buy there</li><li>Play a game or a movie: the TV or Netflix does that</li><li>Show afternoon Sunday NFL games, or games more than three weeks ahead</li><li>Know anyone's home address: “whose house” is just a name</li><li>List shows sold only by small clubs, comedy rooms or at the door (some publish no calendar at all)</li><li>Book a date's restaurant or check its hours: you call or look</li><li>Show anyone else's date, the host's included</li><li>Take someone else's Want to Try star off (only they or the host can)</li><li>Show you the restaurant's menu prices or order for you</li><li>Let you write your own questions into the list yet</li><li>Start the vote's live clock on its own: someone still taps Start</li><li>Make a printed or emailed Year at the Table yet: take a screenshot to share it</li><li>Show anyone else's Spades cards, or let a card be taken back once played</li><li>Play Spades with fewer than four players, or blind nil</li><li>Make up survey numbers: a Family Feud board only counts real family answers</li><li>Show who gave which survey answer</li><li>Take a trivia answer back once it's tapped, or let you write your own trivia questions</li><li>Show a trivia answer before the team answers: it stays on the server</li><li>Save a pass &amp; play game: it lives on that phone only until you close it</li><li>Order a cake for you: you call the bakery</li><li>Work without the internet</li><li>Listen to voice commands</li><li>Keep family details on your phone after you lock it</li></ul></div>`;
   return "";
 }
 function sheetSeat(){
@@ -3287,8 +3341,8 @@ function sheetVerify(owner){
 function sheetPeople(id){
   const e = ev(id); e.excluded ||= [];
   openSheet(`<div class="sheet-head"><div style="flex:1"><div class="eyebrow">Who's invited</div><h2>${esc(e.title)}</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:0">Anyone you take off stops getting alerts for this event and can't see it, vote or RSVP. Only you can put them back.</p>
-    <div>${st.fam.filter(f => f.id !== ADMIN).map(f => { const off = e.excluded.includes(f.id);
+    <p class="small muted" style="margin:0">Anyone you take off stops getting alerts for this event and can't see it, vote or RSVP. Only the person who planned it, or the host, can put them back.</p>
+    <div>${st.fam.filter(f => f.id !== e.host && (f.id !== ADMIN || !isAdmin())).map(f => { const off = e.excluded.includes(f.id);
       return `<div class="person">${av(f.id)}<span style="min-width:0"><b>${esc(f.name)}</b><small>${off ? "Taken off this event" : "Invited"}</small></span><button class="btn sm ${off ? "primary" : "ghost"}" data-act="ev-people-toggle" data-id="${e.id}" data-m="${f.id}">${off ? "Put back" : "Take off"}</button></div>`; }).join("")}</div>
     ${e.guests.length ? `<div class="lbl">GUESTS</div><div>${e.guests.map(g => `<div class="person"><span class="avatar" style="background:var(--surface-2);color:var(--ink)">${esc(g.name[0])}</span><span style="min-width:0"><b>${esc(g.name)}</b><small>asked by ${esc(first(F(g.by).name))}</small></span><button class="btn sm ghost" data-act="ev-guest-del" data-id="${e.id}" data-g="${g.id}">Remove</button></div>`).join("")}</div>` : ""}`);
 }
@@ -3669,6 +3723,44 @@ function spBotPlay(st, hand, seat){
   const losers = legal.filter(c => !winsWith(c)); return low(losers.length ? losers.filter(c => spSuit(c) !== "S").length ? losers.filter(c => spSuit(c) !== "S") : losers : legal);
 }
 /* SPADES RULES END */
+/* NFL RULES START */
+// Table of 8 Big Game Night (his order, 2026-10-22: "NFL Thursday, Sunday evening and Monday night games only … use logos
+// where you can"). Reads ESPN's public NFL scoreboard on the phone itself (ESPN refuses data-centre servers with 403 but lets any web page
+// read it: Access-Control-Allow-Origin *; measured 2026-10-22) and keeps only the
+// prime-time games in Memphis time: every Thursday game, Sunday games starting 6 PM or later, and every Monday game.
+// Each game keeps both teams' official logos, the network(s), the stadium, and the score once it has started.
+// One copy: synced into the app between the NFL RULES markers (tests/sync_rules_copy.py) and proved by
+// tests/nfl_prime_test.mjs against a real ESPN reply.
+const ESPN_NOW = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+const espnWeek = (week, type = 2) => `${ESPN_NOW}?seasontype=${type}&week=${week}`;
+const nflHttps = u => /^https:\/\/[^\s"'<>]+$/.test(String(u || "")) ? String(u) : "";
+const nflClip = (x, k) => String(x ?? "").replace(/\s+/g, " ").trim().slice(0, k);
+// weekday and hour on a Memphis clock
+function memphisClock(ms){
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+  return { day: p.weekday, hour: Number(p.hour) };
+}
+function primeSlot(ms){
+  const { day, hour } = memphisClock(ms);
+  return day === "Thu" ? "Thursday Night Football" : day === "Mon" ? "Monday Night Football" : day === "Sun" && hour >= 18 ? "Sunday Night Football" : "";
+}
+const nflTeam = c => ({ name: nflClip(c?.team?.displayName, 60), short: nflClip(c?.team?.shortDisplayName || c?.team?.name, 30), abbr: nflClip(c?.team?.abbreviation, 6),
+  logo: nflHttps(c?.team?.logo), color: /^[0-9a-f]{6}$/i.test(c?.team?.color || "") ? c.team.color : "", record: nflClip(c?.records?.[0]?.summary, 12), score: c?.score ?? "" });
+function primeGames(j, now = Date.now()){
+  return (j?.events ?? []).map(e => {
+    const c = e?.competitions?.[0], ms = Date.parse(e?.date);
+    if (!c || !Number.isFinite(ms) || ms < now - 5 * 3600e3) return null;
+    const slot = primeSlot(ms); if (!slot) return null;
+    const home = (c.competitors ?? []).find(x => x.homeAway === "home"), away = (c.competitors ?? []).find(x => x.homeAway === "away");
+    if (!home || !away) return null;
+    const state = c.status?.type?.state ?? e.status?.type?.state ?? "pre";
+    return { id: nflClip(e.id, 20), slot, kickoff: new Date(ms).toISOString(), home: nflTeam(home), away: nflTeam(away),
+      networks: [...new Set((c.broadcasts ?? []).flatMap(b => b?.names ?? []).map(n => nflClip(n, 30)))].slice(0, 4),
+      venue: nflClip(c.venue?.fullName, 60), city: nflClip([c.venue?.address?.city, c.venue?.address?.state].filter(Boolean).join(", "), 40),
+      state, detail: nflClip(c.status?.type?.shortDetail, 40) };
+  }).filter(Boolean).sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff));
+}
+/* NFL RULES END */
 /* RIDES RULES START */
 // Table of 7 Rides matching (his order, 2026-10-18). ONE copy: the server (functions/rides) matches riders to drivers
 // with it, and the app carries the identical text (index.html, between the RIDES RULES markers) to show the seats left.
@@ -4401,7 +4493,7 @@ const PIPS = {
 function cardBack(){
   return `<svg class="card-svg" viewBox="0 0 250 350" aria-hidden="true"><rect x="2" y="2" width="246" height="346" rx="18" fill="#fdfbf5" stroke="#cfc8b6" stroke-width="2"/>
     <rect x="14" y="14" width="222" height="322" rx="12" fill="url(#bk)" stroke="#d7b45a" stroke-width="4"/>
-    <circle cx="125" cy="175" r="50" fill="#0e4a33" stroke="#d7b45a" stroke-width="5"/><text x="125" y="193" text-anchor="middle" font-family="Georgia,serif" font-size="50" font-weight="700" fill="#f2d27a">T7</text></svg>`;
+    <circle cx="125" cy="175" r="50" fill="#0e4a33" stroke="#d7b45a" stroke-width="5"/><text x="125" y="193" text-anchor="middle" font-family="Georgia,serif" font-size="50" font-weight="700" fill="#f2d27a">T8</text></svg>`;
 }
 /* a playing card, drawn like a real deck: corner index, pips, original court art, two jokers */
 function svgCard(c){
@@ -4505,8 +4597,8 @@ function gArt(k){
     <rect x="34" y="98" width="52" height="14" rx="7" fill="#ffd36b"/><text x="60" y="109" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="10" fill="#3a2200">A ♠ ♥ ♦ ♣</text>`);
   if(k === "memory") return S(`<g transform="rotate(-10 36 46)"><rect x="12" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="35" y="54" text-anchor="middle" font-size="30">🍕</text></g>
     <g transform="rotate(8 86 46)"><rect x="62" y="18" width="46" height="50" rx="9" fill="#fffdf7"/><text x="85" y="54" text-anchor="middle" font-size="30">🍕</text></g>
-    <rect x="16" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="36" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T7</text>
-    <rect x="64" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="84" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T7</text>
+    <rect x="16" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="36" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T8</text>
+    <rect x="64" y="72" width="40" height="40" rx="9" fill="#ffb15c" stroke="#fff" stroke-width="2.5"/><text x="84" y="99" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="15" fill="#fff">T8</text>
     <path d="M60 8L63 15L70 15L64 19L66 26L60 22L54 26L56 19L50 15L57 15Z" fill="#fff36b"/>`);
   if(k === "wordguess") return S(`${[["#ff3b5c", 26, 30], ["#ffd36b", 60, 20], ["#2fa8ff", 94, 32]].map(([c, x, y]) => `<path d="M${x} ${y + 22}Q${x - 2} ${y + 40} ${x + 4} ${y + 52}" stroke="#fff" stroke-width="1.5" fill="none"/><ellipse cx="${x}" cy="${y}" rx="14" ry="18" fill="${c}"/><ellipse cx="${x - 5}" cy="${y - 7}" rx="3.5" ry="5" fill="#fff" opacity=".55"/><path d="M${x - 3} ${y + 18}L${x + 3} ${y + 18}L${x} ${y + 23}Z" fill="${c}"/>`).join("")}
     ${["G", "O", "", "D"].map((ch, i) => `<rect x="${14 + i * 24}" y="86" width="20" height="26" rx="4" fill="#fff"/><text x="${24 + i * 24}" y="106" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="17" fill="#0b5f72">${ch}</text>`).join("")}`);
@@ -4821,11 +4913,13 @@ function feudRoom(){
 }
 function feudPick(n){ const a = [...FEUD_PROMPTS]; for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); }
 function sheetSurveyNew(){
+  if(!document.querySelector('[data-whobox="feud"]')) whoReset("feud");
   openSheet(`<div class="sheet-head" data-gstage><div style="flex:1;min-width:0"><div class="eyebrow">Family Feud</div><h2>📋 New survey</h2></div><button class="icon-btn" data-act="g-back" aria-label="Back">←</button></div>
     <p class="small muted" style="margin:0">Everyone gets these questions and answers them privately on their own phone. The game board is built from their real answers: an answer is worth one point for each person who gave it. Change any question, or leave one blank to skip it.</p>
     ${feudPick(5).map((q, i) => `<div class="field"><label for="fs-q${i}">Question ${i + 1}</label><input class="input" id="fs-q${i}" maxlength="120" value="${esc(q)}"></div>`).join("")}
     <div class="actions"><button class="btn" data-act="fs-new">🔀 Different questions</button></div>
-    <button class="btn primary block" data-act="fs-send">Send the survey to the family</button>`);
+    ${whoChips("feud", "WHO TO ASK")}
+    <button class="btn primary block" data-act="fs-send">Send the survey</button>`);
 }
 async function sheetSurveyAnswer(id){
   const sv = (st.surveys || []).find(x => x.id === id); if(!sv) return;
@@ -5650,13 +5744,14 @@ function sheetSanta(){
     ${past.length ? `<div class="lbl">PAST EXCHANGES</div><div class="mvlist">${past.map(row).join("")}</div>` : ""}`);
 }
 function sheetSantaNew(){
-  const y = today0.getFullYear(), dflt = `${y}-12-20`;
+  const y = today0.getFullYear(), dflt = `${y}-12-20`; whoReset("santa");
   openSheet(`<div class="sheet-head" data-santa data-sanew>${gBack("santa", "Back to Secret Santa")}<div style="flex:1;min-width:0"><div class="eyebrow">Secret Santa</div><h2>🎁 Start one</h2></div>${gSizeBtn()}</div>
     <div class="field"><label for="sa-name">Name</label><input class="input" id="sa-name" maxlength="60" value="Christmas ${y}"></div>
     <div class="grid2"><div class="field"><label for="sa-budget">Spending limit (optional)</label><input class="input num" id="sa-budget" inputmode="decimal" placeholder="$50"></div>
       <div class="field"><label for="sa-date">Gift exchange day</label><input class="input" type="date" id="sa-date" value="${dflt}" min="${iso(today0)}"></div></div>
     <div class="field"><label for="sa-note">A note (optional)</label><input class="input" id="sa-note" maxlength="300" placeholder="e.g. Gifts open after Christmas dinner"></div>
-    <button class="btn primary block" data-act="sa-start" style="min-height:calc(56px*var(--gs))">🎁 Start it and tell the family</button>
+    ${whoChips("santa", "WHO TO INVITE")}
+    <button class="btn primary block" data-act="sa-start" style="min-height:calc(56px*var(--gs))">🎁 Start it and invite them</button>
     <p class="small" style="margin:0;color:#ffe3e8">You join it yourself. Once people have joined, you mark the couples and draw the names.</p>`);
 }
 function saWishList(items){ return items.length ? `<ul class="sawish">${items.map(it => `<li><b>${esc(it.text)}</b>${it.size ? ` <span class="small">· ${esc(it.size)}</span>` : ""}${it.link ? `<br><a class="small" href="${esc(it.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">Open the link</a>` : ""}</li>`).join("")}</ul>` : `<p class="small" style="margin:0">No wish list yet.</p>`; }
@@ -5979,6 +6074,25 @@ function sheetRides(kind, ref, keep){
   if(keep) sheet.scrollTop = y;
 }
 async function rdAct(body, okMsg){ const d = await ridesCall(body); if(!d.ok){ toast(rdWhy(d.code)); return null; } await refresh(true); if(okMsg) toast(okMsg); return d; }
+/* ===== Who's invited (his order, 2026-10-22: "always an option to send to individual members and not everybody.
+   Sometimes members may already know or they are unavailable and inviting them would be a wasted invitation").
+   One picker on every invitation that would otherwise go to the whole family: everyone starts ticked; tap a name to
+   leave that person out. It changes in place, so nothing typed in the form is lost. ===== */
+const whoSel = {};
+const whoOthers = () => st.fam.filter(f => f.id !== st.me && f.status === "active");
+const whoPicked = k => [...(whoSel[k] || new Set(whoOthers().map(f => f.id)))].filter(id => whoOthers().some(f => f.id === id));
+function whoReset(k, ids){ whoSel[k] = new Set(ids || whoOthers().map(f => f.id)); }
+function whoChips(k, label = "WHO'S INVITED"){
+  const all = whoOthers(); if(!whoSel[k]) whoReset(k); const s = whoSel[k];
+  return `<div class="whobox" data-whobox="${k}"><div class="lbl">${label} · <span data-whocount="${k}">${[...s].filter(id => all.some(f => f.id === id)).length} of ${all.length}</span></div>
+    <div class="mvwho">${all.map(f => `<button class="chip whochip" data-act="who-tog" data-k="${k}" data-id="${f.id}" aria-pressed="${s.has(f.id)}">${av(f.id, "xs")}${esc(first(f.name))}</button>`).join("")}</div>
+    <div class="actions"><button class="btn sm ghost" data-act="who-all" data-k="${k}">Everyone</button><button class="btn sm ghost" data-act="who-none" data-k="${k}">No one yet</button></div>
+    <p class="small muted" style="margin:0">Tap a name to leave someone out: they won't be asked or alerted.</p></div>`;
+}
+function whoPaint(k){ const s = whoSel[k], all = whoOthers();
+  document.querySelectorAll(`[data-act="who-tog"][data-k="${k}"]`).forEach(c => c.setAttribute("aria-pressed", String(s.has(c.dataset.id))));
+  document.querySelectorAll(`[data-whocount="${k}"]`).forEach(c => c.textContent = `${[...s].filter(id => all.some(f => f.id === id)).length} of ${all.length}`); }
+
 /* ===== Memphis Live (his order, 2026-10-22: "the major (minor too) events happening in All of Memphis … dates and
    times, locations … ways to purchase tickets, and invite the family or send them a who's interested and they can send
    their dates and times"). The list is read from the venues' own public calendars by functions/live (sources.js) and
@@ -5993,7 +6107,7 @@ async function liveCall(body){
     const r = await fetch(SB_URL + "/functions/v1/live", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
     return await r.json(); } catch { return {ok:false, code:"offline"}; }
 }
-const lvWhy = c => ({no_event:"That show isn't listed any more.", over:"That show has already started.", no_ask:"That question was taken down.", not_yours:"Only the person who asked, or the host, can take it down.",
+const lvWhy = c => ({nobody:"Pick at least one person to ask.", not_asked:"You weren't asked about this one. Tap Who's in? on the show to join in.", no_event:"That show isn't listed any more.", over:"That show has already started.", no_ask:"That question was taken down.", not_yours:"Only the person who asked, or the host, can take it down.",
   answer:"Tap Yes, Maybe or No.", not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
 const lvDay = t => new Date(t).toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"});
 const lvTime = (t, all) => all === "tba" ? "Time TBA" : all ? "All day" : new Date(t).toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"});
@@ -6008,7 +6122,7 @@ function lvBest(ask){   // the showing most of the family can make (Yes counts 2
   const id = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; const e = (st.liveEvents || []).find(x => x.id === id);
   return e ? {e, can:lvAnswers(ask.id).filter(x => x.a !== "no" && x.picks.includes(id)).length} : null;
 }
-const lvNeeds = () => (st.liveAsks || []).filter(a => a.t > Date.now() && a.by !== st.me && !lvAnswers(a.id).some(x => x.who === st.me));
+const lvNeeds = () => (st.liveAsks || []).filter(a => a.t > Date.now() && a.by !== st.me && a.invited.includes(st.me) && !lvAnswers(a.id).some(x => x.who === st.me));
 function lvList(){
   const now = Date.now(), end = lvWhen === "week" ? now + 7*864e5 : lvWhen === "month" ? now + 30*864e5 : Infinity;
   const seen = new Set(), out = [];
@@ -6053,13 +6167,14 @@ function sheetLive(keep){
 }
 function sheetLiveNew(eid){
   const e = (st.liveEvents || []).find(x => x.id === eid); if(!e){ toast(lvWhy("no_event")); sheetLive(true); return; }
-  lvNewFor = eid; const run = lvRun(e);
+  lvNewFor = eid; const run = lvRun(e); whoReset("live");
   openSheet(`<div class="sheet-head" data-live><button class="icon-btn" data-act="memlive" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🙋 Who's in?</div><h2>${esc(e.title)}</h2></div>${gSzBtn()}</div>
     ${lvCard(e).replace(/<button class="btn sm wine"[^>]*>[^<]*<\/button>/, "")}
     ${run.length > 1 ? `<div class="small">It's on ${run.length} dates; everyone will be able to tick the ones that work for them.</div>` : ""}
     <div class="field"><label for="lv-note">A note for the family (optional)</label><input class="input" id="lv-note" maxlength="140" placeholder="e.g. My treat for the kids! Or: I'd love the Friday show"></div>
-    <div class="actions"><button class="btn primary" data-act="lv-send" data-id="${esc(e.id)}">🙋 Ask the family</button></div>
-    <p class="small muted" style="margin:0">Everyone gets an alert and answers Yes, Maybe or No, with the dates that work for them. You can see every answer here.</p>`);
+    ${whoChips("live", "WHO TO ASK")}
+    <div class="actions"><button class="btn primary" data-act="lv-send" data-id="${esc(e.id)}">🙋 Ask them</button></div>
+    <p class="small muted" style="margin:0">The people you ask get an alert and answer Yes, Maybe or No, with the dates that work for them. Only they see the question. You can see every answer here.</p>`);
 }
 function sheetLiveAsk(id, keep){
   const a = (st.liveAsks || []).find(x => x.id === id); if(!a){ lvAskId = null; sheetLive(true); return; }
@@ -6068,19 +6183,19 @@ function sheetLiveAsk(id, keep){
   const run = lvRun(ev0).length ? lvRun(ev0) : [ev0], ans = lvAnswers(id), mine = ans.find(x => x.who === st.me);
   if(!lvPick || lvPick.id !== id) lvPick = {id, a:mine?.a || "", picks:new Set(mine?.picks || (run.length === 1 && run[0].id ? [run[0].id] : [])), note:mine?.note || ""};
   const best = lvBest(a), lbl = {yes:"✅ In", maybe:"🤔 Maybe", no:"❌ Can't"};
-  const people = st.fam.filter(f => f.status === "active").map(f => { const x = ans.find(z => z.who === f.id);
+  const people = st.fam.filter(f => f.status === "active" && (a.invited.includes(f.id) || ans.some(z => z.who === f.id))).map(f => { const x = ans.find(z => z.who === f.id);
     const days = x && x.a !== "no" ? x.picks.map(p => (st.liveEvents || []).find(e => e.id === p)).filter(Boolean).map(e => `${lvDay(e.t)} ${lvTime(e.t, e.allDay)}`) : [];
     return `<div class="person">${av(f.id, "sm")}<span style="min-width:0"><b>${esc(first(f.name))}</b><small>${x ? lbl[x.a] : "No answer yet"}${days.length && run.length > 1 ? ` · ${esc(days.join(", "))}` : ""}</small>${x?.note ? `<small>“${esc(x.note)}”</small>` : ""}</span><span></span></div>`; }).join("");
   openSheet(`<div class="sheet-head" data-live data-liveask><button class="icon-btn" data-act="memlive" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🙋 Who's in? · ${esc(first(F(a.by).name))} asked</div><h2>${esc(a.title)}</h2></div>${gSzBtn()}</div>
     <div class="strip">📍 <span class="grow"><b>${esc(a.venue)}</b><br><span class="small">${esc(lvDay(a.t))} · ${esc(lvTime(a.t))}</span></span>${a.ticket ? `<a class="btn sm primary" href="${esc(a.ticket)}" target="_blank" rel="noopener">🎟️ Tickets</a>` : ""}</div>
     ${a.note ? `<div class="card"><span class="small">${esc(first(F(a.by).name))}: “${esc(a.note)}”</span></div>` : ""}
     ${best ? `<div class="lvbest">⭐ Best night so far: <b>${esc(lvDay(best.e.t))} · ${esc(lvTime(best.e.t, best.e.allDay))}</b> · ${best.can} can go</div>` : ""}
-    <div class="card"><div class="lbl">YOUR ANSWER</div>
+    ${a.invited.includes(st.me) ? `<div class="card"><div class="lbl">YOUR ANSWER</div>
       <div class="mvwho">${["yes","maybe","no"].map(k => `<button class="chip" data-act="lv-a" data-v="${k}" aria-pressed="${lvPick.a === k}">${lbl[k]}</button>`).join("")}</div>
       ${run.length > 1 && lvPick.a !== "no" ? `<div class="small">Which dates and times work for you?</div><div class="lvdates">${run.map(e => `<button class="chip" data-act="lv-d" data-id="${esc(e.id)}" aria-pressed="${lvPick.picks.has(e.id)}">${esc(lvDay(e.t))} · ${esc(lvTime(e.t, e.allDay))}</button>`).join("")}</div>` : ""}
       <div class="field"><label for="lv-anote">Other times that work, or a note (optional)</label><input class="input" id="lv-anote" maxlength="140" placeholder="e.g. Any evening after 6, or: I'll bring the kids" value="${esc(lvPick.note)}"></div>
-      <div class="actions"><button class="btn primary" data-act="lv-save">${mine ? "Save my answer" : "Send my answer"}</button></div></div>
-    <div class="lbl">THE FAMILY · ${ans.filter(x => x.a === "yes").length} IN · ${ans.filter(x => x.a === "maybe").length} MAYBE</div>${people}
+      <div class="actions"><button class="btn primary" data-act="lv-save">${mine ? "Save my answer" : "Send my answer"}</button></div></div>` : `<div class="card"><span class="small">You weren't asked about this one. Tap 🙋 Who's in? on the show to join in.</span></div>`}
+    <div class="lbl">ASKED · ${a.invited.length} · ${ans.filter(x => x.a === "yes").length} IN · ${ans.filter(x => x.a === "maybe").length} MAYBE</div>${people}
     ${a.by === st.me || isAdmin() ? `<button class="btn sm ghost" data-act="lv-unask" data-id="${a.id}">Take this question down</button>` : ""}`);
   if(keep) sheet.scrollTop = y;
 }
@@ -6241,24 +6356,182 @@ async function dnAct(body, okMsg){ const d = await datesCall(body); if(!d.ok){ t
 /* ===== What's New (his order, 2026-10-22: "a version update screen pop up automatically when they sign on after the
    first time after an upgrade sharing the new feature and put my name in the end"). Shown once per person per version
    on this phone, the first time they sign in after an update; Seat menu → What's new opens it again. ===== */
-const APP_VERSION = "8.1";
+const APP_VERSION = "8.2";
 const WHATS_NEW = [
-  ["🍽️", "80 more restaurants", "35 downtown, and new favorites in Germantown, Collierville, Cordova and Bartlett. Every one checked on Google.", "explore-filter", "untried"],
-  ["✨", "This Sunday, fresh three times a week", "A new pick every Monday, Wednesday and Friday, plus Don't miss out: every part of town, one tap away.", "tab-home", ""],
-  ["🎟️", "Memphis Live", "Concerts, comedy, shows, games, the Zoo and free outdoor events, with dates, times and real ticket links. Tap Who's in? to ask the family.", "memlive", ""],
-  ["💕", "Date Night", "Pick a mood and get a whole evening for two: dinner, something to do, and dessert. Send the invitation in one tap.", "datenight", ""],
-  ["🧭", "Adventure Club", "For the kids: pick an adventure, ask a grown-up for a date, and earn a stamp for your Adventure Passport.", "adventure", ""],
+  ["🏈", "Big Game Night", "Thursday, Sunday and Monday night football with the teams' logos and the network it's on. Host a watch party: whose house, who's invited, what everyone brings.", "gamenight", "", "8.2"],
+  ["🍿", "Netflix & Chill", "Browse what's on Netflix, pick a movie or show, pick a house, and everyone signs up for the snacks.", "netflix", "", "8.2"],
+  ["👥", "Invite just who you want", "Every invitation now lets you pick people, so nobody gets an invitation they don't need: dinners, votes, Who's in?, Secret Santa and Family Feud too.", "tab-home", "", "8.2"],
+  ["🍽️", "80 more restaurants", "35 downtown, and new favorites in Germantown, Collierville, Cordova and Bartlett. Every one checked on Google.", "explore-filter", "untried", "8.1"],
+  ["✨", "This Sunday, fresh three times a week", "A new pick every Monday, Wednesday and Friday, plus Don't miss out: every part of town, one tap away.", "tab-home", "", "8.1"],
+  ["🎟️", "Memphis Live", "Concerts, comedy, shows, games, the Zoo and free outdoor events, with dates, times and real ticket links. Tap Who's in? to ask the family.", "memlive", "", "8.1"],
+  ["💕", "Date Night", "Pick a mood and get a whole evening for two: dinner, something to do, and dessert. Send the invitation in one tap.", "datenight", "", "8.1"],
+  ["🧭", "Adventure Club", "For the kids: pick an adventure, ask a grown-up for a date, and earn a stamp for your Adventure Passport.", "adventure", "", "8.1"],
 ];
 const wnKey = () => "t8-seen-" + (st.me || "");
-function wnMaybe(){ try { if(!st.me || localStorage.getItem(wnKey()) === APP_VERSION) return; } catch { return; } setTimeout(() => { if(!app.hidden && !wrap.classList.contains("open")) sheetWhatsNew(); }, 700); }
-function sheetWhatsNew(){
+function wnMaybe(){ let seen = null; try { seen = localStorage.getItem(wnKey()); if(!st.me || seen === APP_VERSION) return; } catch { return; } setTimeout(() => { if(!app.hidden && !wrap.classList.contains("open")) sheetWhatsNew(seen); }, 700); }
+// after an update, only what's new since the version this person last saw (all of it from the seat menu, or the first time)
+function sheetWhatsNew(seen = null){
   try { localStorage.setItem(wnKey(), APP_VERSION); } catch {}
+  const items = WHATS_NEW.filter(x => !seen || x[5] > seen);
   openSheet(`<div class="sheet-head" data-whatsnew><div style="flex:1;min-width:0"><div class="eyebrow">Table of 8 · version ${APP_VERSION}</div><h2>✨ Fresh at the table</h2></div><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <p class="small" style="margin:0">Welcome back, ${esc(first(ME().name))}! Here's what's new since you were last here:</p>
-    ${WHATS_NEW.map(([ic, t, d, act, f]) => `<button class="todo" data-act="${act}" ${f ? `data-f="${f}"` : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small></span><span class="chev">${I.chev}</span></button>`).join("")}
+    ${items.map(([ic, t, d, act, f]) => `<button class="todo" data-act="${act}" ${f ? `data-f="${f}"` : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small></span><span class="chev">${I.chev}</span></button>`).join("")}
     <div class="wnsign"><p>Every one of these was made with you in mind. Enjoy them together.</p><p class="wnname">With love,<br><b>Dr. Bishop Richard G. Clark</b></p></div>
     <button class="btn primary block" data-act="close">Let's go</button>`);
 }
+/* ===== Netflix & Chill and Big Game Night (his order, 2026-10-22: "a section with Netflix and Chill and Big Game Night of
+   the week, NFL Thursday, Sunday evening and Monday night games only, who's house, what we will bring. Use logos where you
+   can"). Big Game Night reads this week's and the next two weeks' prime-time games straight from ESPN on this phone
+   (NFL RULES above; ESPN turns away data-centre servers but lets any web page read its scoreboard), with both teams'
+   official logos and the networks' logos (TMDB, via functions/watch). Netflix & Chill lists what's on Netflix in the
+   US (TMDB, via functions/watch). Either one becomes a watch party: whose house, when, who's invited, and the
+   "what we'll bring" list. Only the people invited see it. Writes go through functions/watch. ===== */
+const WP_NEEDS = {game:["Wings","Chips & dip","Pizza","Drinks","Dessert","Ice"], netflix:["Popcorn","Candy","Drinks","Pizza","Blankets","Dessert"]};
+// the network a game is on → the logo TMDB lists for it
+const WP_NET = {"Prime Video":"Amazon Prime Video","NBC":"NBC","ESPN":"ESPN","ABC":"ABC","Peacock":"Peacock Premium","Disney+":"Disney Plus","FOX":"FOX One","Netflix":"Netflix","YouTube":"YouTube"};
+const WP_GENRES = [["","All"],["comedy","😂 Comedy"],["action","💥 Action"],["family","👨‍👩‍👧 Family"],["drama","🎭 Drama"],["romance","💕 Romance"],["thriller","🔪 Thriller"],["animation","🧸 Animation"],["documentary","🎥 Documentary"],["reality","📺 Reality"]];
+let wpGames = null, wpGamesAt = 0, wpGamesErr = "", wpLogos = null, wpNf = {kind:"movie", genre:"", items:null, err:"", logo:"", page:1, more:false}, wpDraft = null, wpOpen = null, wpEditWho = false;
+async function watchCall(body){
+  try { const {data} = await sb.auth.getSession();
+    const r = await fetch(SB_URL + "/functions/v1/watch", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY, Authorization:"Bearer " + (data.session?.access_token || "")}, body:JSON.stringify(body)});
+    return await r.json(); } catch { return {ok:false, code:"offline"}; }
+}
+const wpWhy = c => ({nobody:"Pick at least one person to invite.", house:"Pick whose house it's at.", date:"Pick a day that hasn't passed.", title:"Give it a name.", taken:"Someone's already bringing that. Pick something else.",
+  not_coming:"Say you're coming first.", not_invited:"You're not invited to this one.", not_yours:"Only the person who planned it, or the host, can do that.", no_party:"That watch party isn't there any more.",
+  cancelled:"That watch party was called off.", tmdb:"Netflix's list isn't answering right now. Try again in a minute.", no_key:"The movie list isn't set up.", nfl:"The NFL schedule isn't answering right now.",
+  not_active:`Your seat is paused. Please talk to ${first(F(ADMIN)?.name || "the host")}.`, offline:"Can't reach the table right now."})[c] || "Couldn't do that. Try again.";
+const wpWhen = iso => new Date(iso).toLocaleString(undefined, {weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit"});
+const wpParties = kind => (st.watch || []).filter(p => p.kind === kind && p.status === "open" && parse(p.date) >= today0).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+const wpPeople = id => (st.watchPeople || []).filter(x => x.party === id);
+const wpNeeds = () => (st.watch || []).filter(p => p.status === "open" && parse(p.date) >= today0 && p.invited.includes(st.me) && p.by !== st.me && !wpPeople(p.id).some(x => x.who === st.me && x.rsvp));
+function wpRedraw(){ if(!wrap.classList.contains("open")) return;
+  if(sheet.querySelector("[data-wpparty]") && wpOpen && !wpEditWho) sheetWatchParty(wpOpen, true);
+  else if(sheet.querySelector("[data-wpgames]") && !wpDraft) sheetGameNight(true);
+  else if(sheet.querySelector("[data-wpnf]") && !wpDraft) sheetNetflix(true); }
+function wpNetPill(n){ const logo = wpLogos?.[WP_NET[n] || n]; return logo ? `<span class="wpnet"><img src="${esc(logo)}" alt="${esc(n)}" title="${esc(n)}"></span>` : `<span class="wpnet txt">${esc(n)}</span>`; }
+async function wpLoadLogos(){ if(wpLogos) return; const d = await watchCall({action:"logos"}); wpLogos = d.ok ? d.logos || {} : {}; wpRedraw(); }
+async function wpLoadGames(force){
+  if(!force && wpGames && Date.now() - wpGamesAt < 10*60e3) return;
+  try {
+    const get = async u => { const r = await fetch(u, {headers:{accept:"application/json"}}); if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); };
+    const now = await get(ESPN_NOW), wk = Number(now?.week?.number), type = Number(now?.season?.type ?? 2);
+    const all = [...primeGames(now)];
+    if(Number.isFinite(wk) && type === 2) for(const w of [wk + 1, wk + 2]) if(w <= 18) all.push(...primeGames(await get(espnWeek(w, 2))));
+    const seen = new Set(); wpGames = all.filter(g => !seen.has(g.id) && seen.add(g.id)); wpGamesAt = Date.now(); wpGamesErr = "";
+  } catch(e){ wpGamesErr = "nfl"; if(!wpGames) wpGames = []; }
+  wpRedraw();
+}
+function wpTeam(t){ return `<span class="wpteam">${t.logo ? `<img src="${esc(t.logo)}" alt="${esc(t.name || t.short)} logo">` : `<b class="wpabbr">${esc(t.abbr)}</b>`}<b>${esc(t.short)}</b>${t.record ? `<small>${esc(t.record)}</small>` : ""}</span>`; }
+function wpGameCard(g){
+  const live = g.state === "in", done = g.state === "post", party = wpParties("game").find(p => p.ref === g.id);
+  return `<article class="wpgame"><div class="eyebrow">🏈 ${esc(g.slot)} · ${esc(wpWhen(g.kickoff))}</div>
+    <div class="wpmatch">${wpTeam(g.away)}<span class="wpat">${live || done ? `<b class="wpscore">${esc(g.away.score)}–${esc(g.home.score)}</b><small>${esc(g.detail)}</small>` : "at"}</span>${wpTeam(g.home)}</div>
+    <div class="wpnets">${g.networks.map(wpNetPill).join("")}<span class="small">${esc(g.venue)}${g.city ? `, ${esc(g.city)}` : ""}</span></div>
+    ${done ? "" : party ? `<button class="btn sm wine" data-act="wp-open" data-id="${party.id}">🛋️ Watch party at ${esc(first(F(party.at).name))}'s</button>` : `<button class="btn sm primary" data-act="wp-host-game" data-id="${esc(g.id)}">🏈 Host a watch party</button>`}</article>`;
+}
+function wpPartyRow(p){
+  const ppl = wpPeople(p.id), yes = ppl.filter(x => x.rsvp === "yes").length, me2 = ppl.find(x => x.who === st.me);
+  const art = p.kind === "game" ? `<span class="wplogos">${p.info.away?.logo ? `<img src="${esc(p.info.away.logo)}" alt="">` : ""}${p.info.home?.logo ? `<img src="${esc(p.info.home.logo)}" alt="">` : ""}</span>` : p.info.poster ? `<img class="wpthumb" src="${esc(p.info.poster)}" alt="">` : `<span class="ic">🍿</span>`;
+  return `<button class="todo wprow" data-act="wp-open" data-id="${p.id}">${art}<span><b>${esc(p.title)}</b><small>at ${esc(first(F(p.at).name))}'s · ${esc(fmtDate(p.date))}${p.time ? ` · ${esc(p.time)}` : ""} · ${yes} coming${me2?.rsvp ? "" : p.by === st.me ? "" : " · tap to answer"}</small></span><span class="chev">${I.chev}</span></button>`;
+}
+function sheetGameNight(keep){
+  const y = keep ? sheet.scrollTop : 0; wpDraft = null; wpOpen = null;
+  const mine = wpParties("game"), games = wpGames || [];
+  let slot = "", list = "";
+  games.forEach(g => { const wk = new Date(g.kickoff); const key = `${g.slot}|${iso(wk)}`; if(key !== slot){ slot = key; } list += wpGameCard(g); });
+  openSheet(`<div class="sheet-head" data-gamenight data-wpgames><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">Thursday · Sunday night · Monday night</div><h2>🏈 Big Game Night</h2></div>${gSzBtn()}</div>
+    ${mine.length ? `<div class="lbl">🛋️ YOUR WATCH PARTIES · ${mine.length}</div>${mine.map(wpPartyRow).join("")}` : ""}
+    <div class="lbl">THE BIG GAMES · THIS WEEK AND THE NEXT TWO</div>
+    ${list || `<div class="empty">${wpGamesErr ? wpWhy("nfl") + " Close this and open it again in a minute." : wpGames ? "No prime-time games in the next three weeks." : "Getting the NFL schedule…"}</div>`}
+    <p class="small muted" style="margin:0;text-align:center">Schedule, times (Memphis time), networks and team logos from ESPN. Network logos from TMDB. Times can change; check the network on game day.</p>`);
+  if(keep) sheet.scrollTop = y;
+  wpLoadGames(); wpLoadLogos();
+}
+async function wpLoadNf(){
+  const k = wpNf.kind + "|" + wpNf.genre + "|" + wpNf.page; if(wpNf.key === k && wpNf.items) return; wpNf.key = k; wpNf.items = null; wpNf.err = "";
+  const d = await watchCall({action:"netflix", kind:wpNf.kind, genre:wpNf.genre, page:wpNf.page});
+  if(wpNf.key !== k) return;
+  if(!d.ok){ wpNf.err = d.code; wpNf.items = []; } else { wpNf.items = d.items; wpNf.logo = d.netflix || wpNf.logo; wpNf.more = d.more; }
+  wpRedraw();
+}
+function sheetNetflix(keep){
+  const y = keep ? sheet.scrollTop : 0; wpDraft = null; wpOpen = null;
+  const mine = wpParties("netflix"), it = wpNf.items;
+  openSheet(`<div class="sheet-head" data-netflix data-wpnf><button class="icon-btn" data-act="close" aria-label="Close">✕</button><div style="flex:1;min-width:0"><div class="eyebrow">A night in</div><h2>${wpNf.logo ? `<img class="wpnflogo" src="${esc(wpNf.logo)}" alt="Netflix"> ` : "🍿 "}Netflix &amp; Chill</h2></div>${gSzBtn()}</div>
+    ${mine.length ? `<div class="lbl">🛋️ YOUR NETFLIX NIGHTS · ${mine.length}</div>${mine.map(wpPartyRow).join("")}` : ""}
+    <div class="chips" role="group" aria-label="Movies or shows">${[["movie","🎬 Movies"],["tv","📺 Shows"]].map(([k, l]) => `<button class="chip" data-act="nf-kind" data-v="${k}" aria-pressed="${wpNf.kind === k}">${l}</button>`).join("")}</div>
+    <div class="chips" role="group" aria-label="Kind" style="flex-wrap:wrap">${WP_GENRES.filter(([g]) => !g || !(wpNf.kind === "movie" && g === "reality") && !(wpNf.kind === "tv" && g === "romance")).map(([g, l]) => `<button class="chip" data-act="nf-genre" data-v="${g}" aria-pressed="${wpNf.genre === g}">${l}</button>`).join("")}</div>
+    ${it ? (it.length ? `<div class="nfgrid">${it.map(x => `<button class="nfposter" data-act="nf-pick" data-id="${esc(x.id)}" aria-label="${esc(x.title)}"><img src="${esc(x.poster)}" alt="" loading="lazy"><span>${esc(x.title)}</span></button>`).join("")}</div>
+      ${wpNf.more || wpNf.page > 1 ? `<div class="actions">${wpNf.page > 1 ? `<button class="btn sm" data-act="nf-page" data-v="-1">← Back</button>` : ""}${wpNf.more ? `<button class="btn sm" data-act="nf-page" data-v="1">More →</button>` : ""}</div>` : ""}`
+      : `<div class="empty">${wpNf.err ? wpWhy(wpNf.err) : "Nothing on Netflix in that group right now."}</div>`) : `<div class="empty">Getting what's on Netflix…</div>`}
+    <p class="small muted" style="margin:0;text-align:center">What's on Netflix in the US, from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>`);
+  if(keep) sheet.scrollTop = y;
+  wpLoadNf();
+}
+function sheetNfTitle(id){
+  const x = (wpNf.items || []).find(z => z.id === id); if(!x){ sheetNetflix(); return; }
+  const party = wpParties("netflix").find(p => p.ref === x.id);
+  openSheet(`<div class="sheet-head" data-netflix><button class="icon-btn" data-act="netflix" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">${x.kind === "tv" ? "📺 Show" : "🎬 Movie"}${x.year ? ` · ${esc(x.year)}` : ""}${x.rating ? ` · ⭐ ${x.rating}/10` : ""}</div><h2>${esc(x.title)}</h2></div>${gSzBtn()}</div>
+    ${x.backdrop ? `<img class="nfback" src="${esc(x.backdrop)}" alt="">` : ""}
+    <p style="margin:0">${esc(x.overview || "No summary yet.")}</p>
+    <div class="actions">${party ? `<button class="btn primary" data-act="wp-open" data-id="${party.id}">🛋️ The Netflix night at ${esc(first(F(party.at).name))}'s</button>` : `<button class="btn primary" data-act="wp-host-nf" data-id="${esc(x.id)}">🍿 Plan a Netflix night</button>`}
+      <a class="btn" href="https://www.netflix.com/search?q=${encodeURIComponent(x.title)}" target="_blank" rel="noopener">Open in Netflix</a></div>`);
+}
+function wpStart(kind, src){
+  const fri = new Date(today0); fri.setDate(fri.getDate() + ((5 - fri.getDay() + 7) % 7 || 7));
+  if(kind === "game"){ const k = new Date(src.kickoff), pre = new Date(k.getTime() - 30*60e3);
+    wpDraft = {kind, ref:src.id, title:`${src.away.short} at ${src.home.short}`, info:{slot:src.slot, kickoff:src.kickoff, networks:src.networks, home:src.home, away:src.away},
+      date:iso(k), time:pre.toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"}), at:st.me, needs:[...WP_NEEDS.game], note:""}; }
+  else wpDraft = {kind, ref:src.id, title:src.title, info:{poster:src.poster, year:src.year, kind:src.kind, overview:src.overview}, date:iso(fri), time:"7:00 PM", at:st.me, needs:[...WP_NEEDS.netflix], note:""};
+  whoReset("watch"); sheetWatchForm();
+}
+function wpKeep(){ const d = wpDraft; if(!d) return; const v = id => document.getElementById(id)?.value;
+  for(const [k, id] of [["title","wp-title"],["date","wp-date"],["time","wp-time"],["note","wp-note"]]) if(v(id) !== undefined) d[k] = v(id); }
+function sheetWatchForm(){
+  const d = wpDraft, game = d.kind === "game", stage = game ? "data-gamenight" : "data-netflix";
+  const art = game ? `<div class="wpmatch small">${wpTeam(d.info.away)}<span class="wpat">at</span>${wpTeam(d.info.home)}</div><div class="wpnets">${(d.info.networks || []).map(wpNetPill).join("")}<span class="small">${esc(wpWhen(d.info.kickoff))} kickoff</span></div>`
+    : d.info.poster ? `<img class="wpthumb big" src="${esc(d.info.poster)}" alt="">` : "";
+  const extra = d.needs.filter(n => !WP_NEEDS[d.kind].includes(n));
+  openSheet(`<div class="sheet-head" ${stage} data-wpform><button class="icon-btn" data-act="${game ? "gamenight" : "netflix"}" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🛋️ Host a watch party</div><h2>${esc(d.title)}</h2></div>${gSzBtn()}</div>
+    ${art}
+    <div class="card"><div class="lbl">🏠 WHOSE HOUSE?</div><div class="mvwho">${st.fam.filter(f => f.status === "active").map(f => `<button class="chip whochip" data-act="wp-at" data-id="${f.id}" aria-pressed="${d.at === f.id}">${av(f.id, "xs")}${f.id === st.me ? "Mine" : esc(first(f.name)) + "'s"}</button>`).join("")}</div>
+      <div class="field"><label for="wp-title">Name it</label><input class="input" id="wp-title" maxlength="120" value="${esc(d.title)}"></div>
+      <div class="grid2"><div class="field"><label for="wp-date">Day</label><input class="input" id="wp-date" type="date" min="${iso(today0)}" value="${esc(d.date)}"></div>
+        <div class="field"><label for="wp-time">Come over at</label><input class="input" id="wp-time" maxlength="12" value="${esc(d.time)}"></div></div></div>
+    <div class="card"><div class="lbl">🧺 WHAT WE'LL BRING · ${d.needs.length}</div><p class="small" style="margin:0">Tap to take something off. Everyone picks what they'll bring.</p>
+      <div class="mvwho">${[...WP_NEEDS[d.kind], ...extra].map(n => `<button class="chip" data-act="wp-need" data-v="${esc(n)}" aria-pressed="${d.needs.includes(n)}">${esc(n)}</button>`).join("")}</div>
+      <div class="grid2"><input class="input" id="wp-addneed" maxlength="40" placeholder="Add: e.g. Paper plates"><button class="btn sm" data-act="wp-addneed">＋ Add to the list</button></div></div>
+    <div class="card">${whoChips("watch")}</div>
+    <div class="field"><label for="wp-note">A note (optional)</label><input class="input" id="wp-note" maxlength="300" placeholder="${game ? "e.g. Wear your team colors!" : "e.g. Bring a blanket and your comfy socks"}" value="${esc(d.note)}"></div>
+    <button class="btn primary block" data-act="wp-send">${game ? "🏈" : "🍿"} Send the invitation</button>
+    <p class="small muted" style="margin:0">Only the people you invite (and whoever's house it is) will see it.</p>`);
+}
+function sheetWatchParty(id, keep){
+  const p = (st.watch || []).find(x => x.id === id); if(!p){ wpOpen = null; closeSheet(); return; }
+  wpOpen = id; const y = keep ? sheet.scrollTop : 0, game = p.kind === "game", ppl = wpPeople(id), me2 = ppl.find(x => x.who === st.me), boss = p.by === st.me || isAdmin(), invited = p.invited.includes(st.me);
+  const bringer = item => ppl.find(x => (x.bring || []).some(b => b.toLowerCase() === item.toLowerCase()));
+  const extras = ppl.flatMap(x => (x.bring || []).filter(b => !p.needs.some(n => n.toLowerCase() === b.toLowerCase())).map(b => [x.who, b]));
+  const lbl = {yes:"✅ Coming", maybe:"🤔 Maybe", no:"❌ Can't"};
+  const art = game ? `<div class="wpmatch">${wpTeam(p.info.away || {})}<span class="wpat">at</span>${wpTeam(p.info.home || {})}</div><div class="wpnets">${(p.info.networks || []).map(wpNetPill).join("")}${p.info.kickoff ? `<span class="small">${esc(wpWhen(p.info.kickoff))} kickoff</span>` : ""}</div>`
+    : p.info.poster ? `<img class="wpthumb big" src="${esc(p.info.poster)}" alt="">` : "";
+  openSheet(`<div class="sheet-head" ${game ? "data-gamenight" : "data-netflix"} data-wpparty><button class="icon-btn" data-act="${game ? "gamenight" : "netflix"}" aria-label="Back">←</button><div style="flex:1;min-width:0"><div class="eyebrow">🛋️ ${game ? "Big Game Night" : "Netflix &amp; Chill"} · ${esc(first(F(p.by).name))} planned it</div><h2>${esc(p.title)}</h2></div>${gSzBtn()}</div>
+    ${art}
+    <div class="strip">🏠 <span class="grow"><b>At ${esc(first(F(p.at).name))}'s house</b><br><span class="small">${esc(fmtDate(p.date))}${p.time ? ` · come over at ${esc(p.time)}` : ""}</span></span></div>
+    ${p.note ? `<div class="card"><span class="small">${esc(first(F(p.by).name))}: “${esc(p.note)}”</span></div>` : ""}
+    ${invited && p.by !== st.me ? `<div class="card"><div class="lbl">ARE YOU COMING?</div><div class="mvwho">${["yes","maybe","no"].map(k => `<button class="chip" data-act="wp-rsvp" data-v="${k}" aria-pressed="${me2?.rsvp === k}">${lbl[k]}</button>`).join("")}</div></div>` : ""}
+    <div class="card"><div class="lbl">🧺 WHAT WE'LL BRING</div>
+      ${p.needs.map(n => { const b = bringer(n);
+        return `<div class="wpneed"><span class="grow"><b>${esc(n)}</b></span>${b ? `<span class="small">${b.who === st.me ? "You're bringing it" : esc(first(F(b.who).name))}</span>${b.who === st.me ? `<button class="btn sm ghost" data-act="wp-unbring" data-v="${esc(n)}">Undo</button>` : ""}`
+          : invited && me2?.rsvp !== "no" ? `<button class="btn sm primary" data-act="wp-bring" data-v="${esc(n)}">I'll bring it</button>` : `<span class="small muted">Nobody yet</span>`}</div>`; }).join("") || `<span class="small">No list for this one.</span>`}
+      ${extras.map(([w, b]) => `<div class="wpneed"><span class="grow"><b>${esc(b)}</b></span><span class="small">${w === st.me ? "You're bringing it" : esc(first(F(w).name))}</span>${w === st.me ? `<button class="btn sm ghost" data-act="wp-unbring" data-v="${esc(b)}">Undo</button>` : ""}</div>`).join("")}
+      ${invited && me2?.rsvp !== "no" ? `<div class="grid2"><input class="input" id="wp-mine" maxlength="40" placeholder="Something else? e.g. Deviled eggs"><button class="btn sm" data-act="wp-bring-mine">＋ I'm bringing this</button></div>` : ""}</div>
+    <div class="lbl">WHO'S INVITED · ${ppl.filter(x => x.rsvp === "yes").length} COMING</div>
+    ${p.invited.map(w => { const x = ppl.find(z => z.who === w); return `<div class="person">${av(w, "sm")}<span style="min-width:0"><b>${esc(first(F(w).name))}${w === p.at ? " 🏠" : ""}</b><small>${x?.rsvp ? lbl[x.rsvp] : w === p.by ? "Planned it" : "No answer yet"}${x?.bring?.length ? ` · bringing ${esc(x.bring.join(", "))}` : ""}</small></span><span></span></div>`; }).join("")}
+    ${boss ? (wpEditWho ? `<div class="card">${whoChips("wpedit", "WHO'S INVITED")}<div class="actions"><button class="btn sm primary" data-act="wp-who-save">Save who's invited</button><button class="btn sm ghost" data-act="wp-who-cancel">Back</button></div></div>`
+      : `<div class="actions"><button class="btn sm" data-act="wp-who-edit">Change who's invited</button><button class="btn sm ghost" data-act="wp-cancel">Call it off</button></div>`) : ""}`);
+  if(keep) sheet.scrollTop = y;
+}
+async function wpAct(body, okMsg){ const d = await watchCall(body); if(!d.ok){ toast(wpWhy(d.code)); return null; } await refresh(true); if(okMsg) toast(okMsg); return d; }
 /* ===== Family Recipe Book (his order, 2026-10-18; photos show right away, no approval, his choice). Anyone adds a
    recipe with who it came from, ingredients, steps and a photo; anyone stars it; the person who added it (or the host)
    changes or removes it. The photo is uploaded into the family's own folder (<family>/recipes/…); writes go through
@@ -6750,9 +7023,10 @@ document.addEventListener("click", e => {
     case "lv-cat": lvCat = b.dataset.v; sheetLive(true); break;
     case "lv-new": { const e = (st.liveEvents || []).find(x => x.id === id), a = e && lvAskFor(e); if(a) sheetLiveAsk(a.id); else sheetLiveNew(id); break; }
     case "lv-send": b.disabled = true; b.textContent = "Asking…";
-      liveCall({action:"ask", event_id:id, note:document.getElementById("lv-note")?.value || ""}).then(async r => {
-        if(!r.ok){ b.disabled = false; b.textContent = "🙋 Ask the family"; toast(lvWhy(r.code)); return; }
-        await refresh(true); lvPick = null; sheetLiveAsk(r.id); toast(r.already ? "Someone already asked. Here are the answers." : "Asked! Everyone's been told."); }); break;
+      if(!whoPicked("live").length){ b.disabled = false; b.textContent = "🙋 Ask them"; toast("Pick at least one person to ask."); break; }
+      liveCall({action:"ask", event_id:id, invited:whoPicked("live"), note:document.getElementById("lv-note")?.value || ""}).then(async r => {
+        if(!r.ok){ b.disabled = false; b.textContent = "🙋 Ask them"; toast(lvWhy(r.code)); return; }
+        await refresh(true); lvPick = null; sheetLiveAsk(r.id); toast(r.already ? "Someone already asked about this show: you're on it now, and anyone you picked has been asked." : `Asked ${whoPicked("live").length === whoOthers().length ? "everyone" : whoPicked("live").map(i2 => first(F(i2).name)).join(", ")}.`); }); break;
     case "lv-ask": lvPick = null; sheetLiveAsk(id); break;
     case "lv-a": lvPick.note = document.getElementById("lv-anote")?.value ?? lvPick.note; lvPick.a = b.dataset.v; sheetLiveAsk(lvAskId, true); break;
     case "lv-d": lvPick.note = document.getElementById("lv-anote")?.value ?? lvPick.note; lvPick.picks.has(id) ? lvPick.picks.delete(id) : lvPick.picks.add(id); sheetLiveAsk(lvAskId, true); break;
@@ -6790,7 +7064,39 @@ document.addEventListener("click", e => {
     case "dn-done": { const d = (st.dates || []).find(x => x.id === id); dnAct({action:"done", id}, d?.kind === "kids" ? "🏅 Stamped! Another adventure in the passport." : "💛 Saved to your date nights.").then(r => r && dnRedraw()); break; }
     case "dn-cancel": if(!confirm("Call this date off? They'll be told.")) break; dnAct({action:"cancel", id}, "Called off. They've been told.").then(r => r && dnRedraw()); break;
     case "ac-pick": acStart(b.dataset.v); sheetAdventure(); break;
-    case "whatsnew": sheetWhatsNew(); break;
+    case "whatsnew": sheetWhatsNew(null); break;
+    case "gamenight": wpDraft = null; wpEditWho = false; sheetGameNight(); break;
+    case "netflix": wpDraft = null; wpEditWho = false; sheetNetflix(); break;
+    case "nf-kind": wpNf.kind = b.dataset.v; wpNf.genre = ""; wpNf.page = 1; sheetNetflix(); break;
+    case "nf-genre": wpNf.genre = b.dataset.v; wpNf.page = 1; sheetNetflix(true); break;
+    case "nf-page": wpNf.page = Math.max(1, wpNf.page + Number(b.dataset.v)); sheetNetflix(); break;
+    case "nf-pick": sheetNfTitle(id); break;
+    case "wp-host-game": { const g = (wpGames || []).find(x => x.id === id); if(g) wpStart("game", g); break; }
+    case "wp-host-nf": { const x = (wpNf.items || []).find(z => z.id === id); if(x) wpStart("netflix", x); break; }
+    case "wp-at": wpKeep(); wpDraft.at = id; sheetWatchForm(); break;
+    case "wp-need": { wpKeep(); const v2 = b.dataset.v, i2 = wpDraft.needs.indexOf(v2); i2 >= 0 ? wpDraft.needs.splice(i2, 1) : wpDraft.needs.push(v2); sheetWatchForm(); break; }
+    case "wp-addneed": { wpKeep(); const v2 = (document.getElementById("wp-addneed")?.value || "").trim().slice(0, 40); if(!v2){ toast("Type what to add first."); break; }
+      if(!wpDraft.needs.some(n => n.toLowerCase() === v2.toLowerCase())) wpDraft.needs.push(v2); sheetWatchForm(); break; }
+    case "wp-send": { wpKeep(); const d = wpDraft; if(!whoPicked("watch").length && d.at === st.me){ toast(wpWhy("nobody")); break; }
+      if(!d.date || d.date < iso(today0)){ toast(wpWhy("date")); break; }
+      b.disabled = true; b.textContent = "Sending…";
+      watchCall({action:"new", kind:d.kind, ref:d.ref, title:d.title, info:d.info, date:d.date, time:d.time, at_member:d.at, invited:[...new Set([...whoPicked("watch"), ...(d.at !== st.me ? [d.at] : [])])], needs:d.needs, note:d.note}).then(async r => {
+        if(!r.ok){ b.disabled = false; b.textContent = "Send the invitation"; toast(wpWhy(r.code)); return; }
+        wpDraft = null; await refresh(true); sheetWatchParty(r.party.id); toast("Invitation sent! They've been told."); }); break; }
+    case "wp-open": wpEditWho = false; sheetWatchParty(id); break;
+    case "wp-rsvp": wpAct({action:"rsvp", id:wpOpen, ans:b.dataset.v}, b.dataset.v === "yes" ? "See you there! Pick something to bring." : "Got it. They've been told.").then(r => r && sheetWatchParty(wpOpen, true)); break;
+    case "wp-bring": wpAct({action:"bring", id:wpOpen, item:b.dataset.v, on:true}, `Thank you! You're bringing ${b.dataset.v}.`).then(r => r && sheetWatchParty(wpOpen, true)); break;
+    case "wp-unbring": wpAct({action:"bring", id:wpOpen, item:b.dataset.v, on:false}, "Taken off your list.").then(r => r && sheetWatchParty(wpOpen, true)); break;
+    case "wp-bring-mine": { const v2 = (document.getElementById("wp-mine")?.value || "").trim(); if(!v2){ toast("Type what you're bringing first."); break; }
+      wpAct({action:"bring", id:wpOpen, item:v2, on:true}, `Thank you! You're bringing ${v2}.`).then(r => r && sheetWatchParty(wpOpen, true)); break; }
+    case "wp-who-edit": { const p2 = (st.watch || []).find(x => x.id === wpOpen); whoReset("wpedit", p2 ? p2.invited.filter(w => w !== st.me) : []); wpEditWho = true; sheetWatchParty(wpOpen, true); break; }
+    case "wp-who-cancel": wpEditWho = false; sheetWatchParty(wpOpen, true); break;
+    case "wp-who-save": wpAct({action:"invite", id:wpOpen, invited:whoPicked("wpedit")}, "Saved. Anyone you added has been told.").then(r => { if(r){ wpEditWho = false; sheetWatchParty(wpOpen, true); } }); break;
+    case "wp-cancel": if(!confirm("Call off this watch party? Everyone invited will be told.")) break;
+      wpAct({action:"cancel", id:wpOpen}, "Called off. Everyone's been told.").then(r => { if(r){ const k2 = (st.watch || []).find(x => x.id === wpOpen)?.kind; wpOpen = null; k2 === "netflix" ? sheetNetflix() : sheetGameNight(); } }); break;
+    case "who-tog": { const k = b.dataset.k; if(!whoSel[k]) whoReset(k); const s2 = whoSel[k]; s2.has(id) ? s2.delete(id) : s2.add(id); whoPaint(k); if(k === "plan") draftWho(); break; }
+    case "who-all": whoReset(b.dataset.k); whoPaint(b.dataset.k); if(b.dataset.k === "plan") draftWho(); break;
+    case "who-none": whoSel[b.dataset.k] = new Set(); whoPaint(b.dataset.k); if(b.dataset.k === "plan") draftWho(); break;
     case "tab-home": closeSheet(); go("home"); break;
     case "rides": sheetRides(b.dataset.k, id); break;
     case "rd-back": { const o = rdOpen; rdOpen = null; rdForm = null; if(!o || o.kind === "dinner") closeSheet(); else ({outing:drawOuting, movie:drawMovieNight, golf:drawGolf})[o.kind](o.ref); break; }
@@ -6879,8 +7185,9 @@ document.addEventListener("click", e => {
     case "santa": sheetSanta(); break;
     case "sa-new": sheetSantaNew(); break;
     case "sa-start": { const v = x => document.getElementById(x)?.value || "", bud = parseFloat(v("sa-budget").replace(/[^\d.]/g, ""));
+      if(!whoPicked("santa").length){ toast("Pick at least one person to invite."); break; }
       b.disabled = true; b.textContent = "Starting…";
-      saAct({action:"new", name:v("sa-name"), budget:isNaN(bud) ? null : bud, date:v("sa-date") || null, note:v("sa-note")}, "Started! The family has been told.").then(r => { if(r) drawSanta(r.exchange.id); else { b.disabled = false; b.textContent = "🎁 Start it and tell the family"; } }); break; }
+      saAct({action:"new", name:v("sa-name"), budget:isNaN(bud) ? null : bud, date:v("sa-date") || null, note:v("sa-note"), invited:whoPicked("santa")}, "Started! The people you picked have been invited.").then(r => { if(r) drawSanta(r.exchange.id); else { b.disabled = false; b.textContent = "🎁 Start it and invite them"; } }); break; }
     case "sa-open": drawSanta(id); break;
     case "sa-join": saAct({action:"join", id:saOpen}, "You're in! Add your wish list.").then(ok => ok && drawSanta(saOpen)); break;
     case "sa-leave": saAct({action:"leave", id:saOpen}, "You've left this Secret Santa.").then(ok => ok && drawSanta(saOpen)); break;
@@ -6986,8 +7293,8 @@ document.addEventListener("click", e => {
       gamesCall({action:"new", kind:"spades", sideA:A, sideB:B, target:+v("sp-t")}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Deal Spades"; toast(gWhyNot(d.code)); return; }
         await refresh(true); gView = {id:d.game.id}; drawGame(); toast("Cards are dealt! Everyone's been told."); }); break; }
     case "fs-send": { const prompts = [0,1,2,3,4].map(i => document.getElementById("fs-q" + i).value.trim()).filter(Boolean);
-      if(!prompts.length){ toast(gWhyNot("prompts")); return; } b.disabled = true; b.textContent = "Sending…";
-      gamesCall({action:"survey_new", prompts}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Send the survey to the family"; toast(gWhyNot(d.code)); return; }
+      if(!prompts.length){ toast(gWhyNot("prompts")); return; } if(!whoPicked("feud").length){ toast("Pick at least one person to ask."); return; } b.disabled = true; b.textContent = "Sending…";
+      gamesCall({action:"survey_new", prompts, invited:whoPicked("feud")}).then(async d => { if(!d.ok){ b.disabled = false; b.textContent = "Send the survey"; toast(gWhyNot(d.code)); return; }
         await refresh(true); toast("Survey sent! Answer it yourself too."); sheetSurveyAnswer(d.survey.id); }); break; }
     case "fs-answer": sheetSurveyAnswer(id); break;
     case "fs-save": { const sv = (st.surveys || []).find(x => x.id === id); if(!sv) break; const answers = sv.prompts.map((_, i) => document.getElementById("fa-" + i).value.trim());
@@ -7075,14 +7382,16 @@ document.addEventListener("click", e => {
       const d = draft; if(!d.options.length) return;
       { const loose = d.options.find(o => needsBranch(RBY[o]) && !(d.anyLoc || []).includes(o));   // every route ends here: no plan goes out without a branch
         if(loose){ toast(`Choose which ${RBY[loose].name} first`); sheetWhere(loose, "draft"); return; } }
+      draftWho(); if(!whoPicked("plan").length){ toast("Pick at least one person to invite."); return; }
       const e2 = {id:uid("e"),type:d.type,mode:d.mode,voteMin:+d.voteMin||10,cap:+d.cap||0,arrive:d.arrive,theme:d.theme.trim(),gifts:d.gifts,adults:!!d.adults,host:st.me,title:d.title.trim()||"Dinner",date:d.date,time:d.time,dress:d.dress,options:[...d.options], dessert:d.dessert || "",
         chosen:d.mode==="host"?d.options[0]:null,votes:{},rsvp:{[st.me]:"yes"},guests:d.guests.map(g => ({id:uid("g"),name:g.name,email:g.email||"",contactId:g.contactId||null,by:st.me,hands:[st.me]})),
-        reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0)};
+        reservation:{status:"none",by:null,conf:""},note:d.note.trim(),status:d.mode==="host"?"set":"open",created:iso(today0),excluded:[...(d.excluded || [])]};
       st.events.push(e2);
       alertAll(d.mode==="host" ? `${first(ME().name)} invited you to ${e2.title} at ${RBY[e2.chosen].name}.` : `${first(ME().name)} started a vote for ${e2.title}.`, e2.id);
       e2.guests.forEach(g => alertAll(`${first(ME().name)} asked to bring ${g.name} to ${e2.title}. Raise a hand?`, e2.id));
       save(); draft = null; go("feed");
-      if(d.mode==="host") openInvite(e2.id, `Sent to ${st.fam.length-1} family members`); else toast("Vote sent — everyone's been alerted"); break; }
+      { const n2 = st.fam.filter(f => f.id !== st.me && inEvent(e2, f.id) && f.status !== "suspended").length;
+        if(d.mode==="host") openInvite(e2.id, `Sent to ${n2} ${n2 === 1 ? "person" : "people"}`); else toast(`Vote sent to ${n2} ${n2 === 1 ? "person" : "people"}`); } break; }
     case "invite-open": openInvite(id); break;
     case "invite-close": closeInvite(); break;
     case "invite-rsvp": { const e2 = ev(inviteId); e2.rsvp[st.me] = b.dataset.v; if(b.dataset.v !== "maybe") st.alerts.push({id:uid("a"),to:e2.host,text:`${first(ME().name)} ${b.dataset.v==="yes"?"accepted":"declined"} your invitation to ${e2.title}.`,eventId:e2.id,t:Date.now(),read:false}); save(); drawInvite(); toast(b.dataset.v==="yes" ? "Wonderful — see you there" : b.dataset.v==="no" ? "We'll miss you" : "Marked as maybe"); break; }
