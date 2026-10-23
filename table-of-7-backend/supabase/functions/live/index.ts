@@ -2,7 +2,8 @@
 // with dates and times locations … ways to purchase tickets and invite the family or send them a who interested and they
 // can send their dates and times"). The only road that writes Memphis Live.
 //   refresh               re-read the venue calendars when the list is more than 6 hours old (one phone at a time)
-//   ask {event_id, note?} "Who's in?": the family is asked about a show; the asker is a Yes for that showing
+//   ask {event_id, invited?, note?} "Who's in?": the people picked (everyone when none are picked) are asked about a
+//                         show; the asker is a Yes for that showing. Only the people asked can see it and answer.
 //   answer {ask_id, answer: yes|maybe|no, picks: [showing ids], note?}   my answer and the dates/times that work for me
 //   unask {ask_id}        the asker (or the Host) takes the question down
 //   status                Host only: when each source was last read, how many it gave, and whether Ticketmaster is on
@@ -103,30 +104,45 @@ Deno.serve(async (req) => {
       const { data: ev } = await admin.from("live_events").select("*").eq("id", String(body.event_id ?? "")).maybeSingle();
       if (!ev) return reply({ ok: false, code: "no_event" }, 404);
       if (Date.parse(ev.starts_at) < Date.now()) return reply({ ok: false, code: "over" }, 409);
-      const { data: was } = await admin.from("live_asks").select("id").eq("family_id", me.family_id).eq("event_id", ev.id).maybeSingle();
-      if (was) return reply({ ok: true, id: was.id, already: true });
       const note = clip(body.note, 140) || null;
+      // who to ask (his order, 2026-10-22: "always an option to send to individual members"): only active seats of this family
+      const { data: fam } = await admin.from("members").select("id").eq("family_id", me.family_id).eq("status", "active").neq("id", me.id);
+      const pick = new Set((Array.isArray(body.invited) ? body.invited : []).map(String));
+      const asked = (fam ?? []).map((f: any) => f.id).filter((id: string) => !pick.size || pick.has(id));
+      if (!asked.length) return reply({ ok: false, code: "nobody" }, 400);
+      const text = (who: string) => `🎟️ ${who} wants to go to ${ev.title} · ${when(ev.starts_at)}${ev.venue ? ` at ${ev.venue}` : ""}. Are you in? Open Memphis Live to answer${note ? `: "${note}"` : "."}`;
+      // someone already asked about this show: join that question (I'm in, and anyone I picked who wasn't asked is asked now)
+      const joinIn = async (was: any) => {
+        const add = [me.id, ...(pick.size ? asked : [])].filter(id => !(was.invited ?? []).includes(id));   // nobody picked: just me
+        if (add.length) await admin.from("live_asks").update({ invited: [...(was.invited ?? []), ...add] }).eq("id", was.id);
+        await admin.from("live_answers").upsert({ ask_id: was.id, member_id: me.id, family_id: me.family_id, answer: "yes", picks: [ev.id] });
+        const told = add.filter(id => id !== me.id && id !== was.by_member);
+        if (told.length) await admin.from("alerts").insert(told.map((id: string) => ({ to_member: id, text: text(first) })));
+        if (was.by_member !== me.id) await admin.from("alerts").insert({ to_member: was.by_member, text: `🎟️ ${first} is in for ${ev.title} too.` });
+        return reply({ ok: true, id: was.id, already: true });
+      };
+      const { data: was } = await admin.from("live_asks").select("id,invited,by_member").eq("family_id", me.family_id).eq("event_id", ev.id).maybeSingle();
+      if (was) return await joinIn(was);
       const { data: a, error } = await admin.from("live_asks").insert({ family_id: me.family_id, event_id: ev.id, title: ev.title, venue: ev.venue,
-        starts_at: ev.starts_at, ticket_url: ev.ticket_url || ev.info_url, by_member: me.id, note }).select("id").single();
+        starts_at: ev.starts_at, ticket_url: ev.ticket_url || ev.info_url, by_member: me.id, note, invited: [me.id, ...asked] }).select("id").single();
       if (error || !a) {   // asked by someone else a moment ago
-        const { data: again } = await admin.from("live_asks").select("id").eq("family_id", me.family_id).eq("event_id", ev.id).maybeSingle();
-        return again ? reply({ ok: true, id: again.id, already: true }) : reply({ ok: false, code: "server" }, 500);
+        const { data: again } = await admin.from("live_asks").select("id,invited,by_member").eq("family_id", me.family_id).eq("event_id", ev.id).maybeSingle();
+        return again ? await joinIn(again) : reply({ ok: false, code: "server" }, 500);
       }
       await admin.from("live_answers").insert({ ask_id: a.id, member_id: me.id, family_id: me.family_id, answer: "yes", picks: [ev.id] });
-      const { data: fam } = await admin.from("members").select("id").eq("family_id", me.family_id).eq("status", "active").neq("id", me.id);
-      const text = `🎟️ ${first} wants to go to ${ev.title} · ${when(ev.starts_at)}${ev.venue ? ` at ${ev.venue}` : ""}. Are you in? Open Memphis Live to answer${note ? `: "${note}"` : "."}`;
-      if (fam?.length) await admin.from("alerts").insert(fam.map(f => ({ to_member: f.id, text })));
+      await admin.from("alerts").insert(asked.map((id: string) => ({ to_member: id, text: text(first) })));
       return reply({ ok: true, id: a.id });
     }
 
     if (body.action === "answer" || body.action === "unask") {
       const { data: a } = await admin.from("live_asks").select("*").eq("id", String(body.ask_id ?? "")).maybeSingle();
-      if (!a || a.family_id !== me.family_id) return reply({ ok: false, code: "no_ask" }, 404);
+      if (!a || a.family_id !== me.family_id || !((a.invited ?? []).includes(me.id) || a.by_member === me.id || host)) return reply({ ok: false, code: "no_ask" }, 404);
       if (body.action === "unask") {
         if (a.by_member !== me.id && !host) return reply({ ok: false, code: "not_yours" }, 403);
         await admin.from("live_asks").delete().eq("id", a.id);
         return reply({ ok: true });
       }
+      if (!(a.invited ?? []).includes(me.id)) return reply({ ok: false, code: "not_asked" }, 403);
       const answer = String(body.answer ?? "");
       if (!["yes", "maybe", "no"].includes(answer)) return reply({ ok: false, code: "answer" }, 400);
       // the showings I can pick are the other dates and times of the same show at the same place
