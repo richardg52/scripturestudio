@@ -49,8 +49,10 @@ Deno.serve(async (req) => {
       const { data: x, error } = await admin.from("santa_exchanges").insert({ family_id: me.family_id, created_by: me.id, name, budget, exchange_date: date,
         note: clip(body.note, 300) || null, joined: [me.id] }).select().single();
       if (error) return reply({ ok: false, code: "server" }, 500);
+      // who is told (his order, 2026-10-22: "always an option to send to individual members"); nobody picked = everyone
       const { data: fam } = await admin.from("members").select("id").eq("family_id", me.family_id).eq("status", "active");
-      await alert((fam ?? []).map(m => m.id), `🎁 ${first} started ${name}. Open Secret Santa to join and add your wish list.`);
+      const pick = new Set((Array.isArray(body.invited) ? body.invited : []).map(String));
+      await alert((fam ?? []).map(m => m.id).filter(id => !pick.size || pick.has(id)), `🎁 ${first} started ${name}. Open Secret Santa to join and add your wish list.`);
       return reply({ ok: true, exchange: x });
     }
 
