@@ -1,0 +1,1102 @@
+{
+ "week": {
+  "number": 9
+ },
+ "events": [
+  {
+   "id": "401873037",
+   "date": "2026-11-06T01:15Z",
+   "name": "Jacksonville Jaguars at Baltimore Ravens",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Baltimore Ravens",
+        "shortDisplayName": "Ravens",
+        "name": "Ravens",
+        "abbreviation": "BAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/bal.png",
+        "color": "29126f"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Jacksonville Jaguars",
+        "shortDisplayName": "Jaguars",
+        "name": "Jaguars",
+        "abbreviation": "JAX",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/jax.png",
+        "color": "007487"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Prime Video"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "M&T Bank Stadium",
+      "address": {
+       "city": "Baltimore",
+       "state": "MD",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/5 - 8:15 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873038",
+   "date": "2026-11-08T14:30Z",
+   "name": "Cincinnati Bengals at Atlanta Falcons",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Atlanta Falcons",
+        "shortDisplayName": "Falcons",
+        "name": "Falcons",
+        "abbreviation": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+        "color": "a71930"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-2"
+        }
+       ],
+       "team": {
+        "displayName": "Cincinnati Bengals",
+        "shortDisplayName": "Bengals",
+        "name": "Bengals",
+        "abbreviation": "CIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
+        "color": "fb4f14"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "NFL Net"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Santiago Bernab\u00e9u",
+      "address": {
+       "city": "Madrid",
+       "country": "Spain"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 9:30 AM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873040",
+   "date": "2026-11-08T18:00Z",
+   "name": "Dallas Cowboys at Indianapolis Colts",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Indianapolis Colts",
+        "shortDisplayName": "Colts",
+        "name": "Colts",
+        "abbreviation": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png",
+        "color": "003b75"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Dallas Cowboys",
+        "shortDisplayName": "Cowboys",
+        "name": "Cowboys",
+        "abbreviation": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/dal.png",
+        "color": "002a5c"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Lucas Oil Stadium",
+      "address": {
+       "city": "Indianapolis",
+       "state": "IN",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873045",
+   "date": "2026-11-08T18:00Z",
+   "name": "New York Jets at Kansas City Chiefs",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "5-0"
+        }
+       ],
+       "team": {
+        "displayName": "Kansas City Chiefs",
+        "shortDisplayName": "Chiefs",
+        "name": "Chiefs",
+        "abbreviation": "KC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/kc.png",
+        "color": "e31837"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "New York Jets",
+        "shortDisplayName": "Jets",
+        "name": "Jets",
+        "abbreviation": "NYJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyj.png",
+        "color": "115740"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "CBS"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Arrowhead Stadium",
+      "address": {
+       "city": "Kansas City",
+       "state": "MO",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873042",
+   "date": "2026-11-08T18:00Z",
+   "name": "Detroit Lions at Miami Dolphins",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "0-5"
+        }
+       ],
+       "team": {
+        "displayName": "Miami Dolphins",
+        "shortDisplayName": "Dolphins",
+        "name": "Dolphins",
+        "abbreviation": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/mia.png",
+        "color": "008e97"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-2"
+        }
+       ],
+       "team": {
+        "displayName": "Detroit Lions",
+        "shortDisplayName": "Lions",
+        "name": "Lions",
+        "abbreviation": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/det.png",
+        "color": "0076b6"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Hard Rock Stadium",
+      "address": {
+       "city": "Miami Gardens",
+       "state": "FL",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873039",
+   "date": "2026-11-08T18:00Z",
+   "name": "Cleveland Browns at New Orleans Saints",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "New Orleans Saints",
+        "shortDisplayName": "Saints",
+        "name": "Saints",
+        "abbreviation": "NO",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+        "color": "d3bc8d"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Cleveland Browns",
+        "shortDisplayName": "Browns",
+        "name": "Browns",
+        "abbreviation": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cle.png",
+        "color": "472a08"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "CBS"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Caesars Superdome",
+      "address": {
+       "city": "New Orleans",
+       "state": "LA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873044",
+   "date": "2026-11-08T18:00Z",
+   "name": "New York Giants at Philadelphia Eagles",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Philadelphia Eagles",
+        "shortDisplayName": "Eagles",
+        "name": "Eagles",
+        "abbreviation": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/phi.png",
+        "color": "06424d"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-2-1"
+        }
+       ],
+       "team": {
+        "displayName": "New York Giants",
+        "shortDisplayName": "Giants",
+        "name": "Giants",
+        "abbreviation": "NYG",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nyg.png",
+        "color": "003c7f"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Lincoln Financial Field",
+      "address": {
+       "city": "Philadelphia",
+       "state": "PA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873043",
+   "date": "2026-11-08T18:00Z",
+   "name": "Los Angeles Rams at Washington Commanders",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "1-4-1"
+        }
+       ],
+       "team": {
+        "displayName": "Washington Commanders",
+        "shortDisplayName": "Commanders",
+        "name": "Commanders",
+        "abbreviation": "WSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+        "color": "5a1414"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Los Angeles Rams",
+        "shortDisplayName": "Rams",
+        "name": "Rams",
+        "abbreviation": "LAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lar.png",
+        "color": "003594"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Northwest Stadium",
+      "address": {
+       "city": "Landover",
+       "state": "MD",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873041",
+   "date": "2026-11-08T18:00Z",
+   "name": "Denver Broncos at Carolina Panthers",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-2"
+        }
+       ],
+       "team": {
+        "displayName": "Carolina Panthers",
+        "shortDisplayName": "Panthers",
+        "name": "Panthers",
+        "abbreviation": "CAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+        "color": "0085ca"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Denver Broncos",
+        "shortDisplayName": "Broncos",
+        "name": "Broncos",
+        "abbreviation": "DEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/den.png",
+        "color": "0a2343"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "CBS"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Bank of America Stadium",
+      "address": {
+       "city": "Charlotte",
+       "state": "NC",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 1:00 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873046",
+   "date": "2026-11-08T21:05Z",
+   "name": "Houston Texans at Los Angeles Chargers",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "0-6"
+        }
+       ],
+       "team": {
+        "displayName": "Los Angeles Chargers",
+        "shortDisplayName": "Chargers",
+        "name": "Chargers",
+        "abbreviation": "LAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lac.png",
+        "color": "0080c6"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Houston Texans",
+        "shortDisplayName": "Texans",
+        "name": "Texans",
+        "abbreviation": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/hou.png",
+        "color": "021018"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "CBS"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "SoFi Stadium",
+      "address": {
+       "city": "Inglewood",
+       "state": "CA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 4:05 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873047",
+   "date": "2026-11-08T21:05Z",
+   "name": "Las Vegas Raiders at San Francisco 49ers",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "6-0"
+        }
+       ],
+       "team": {
+        "displayName": "San Francisco 49ers",
+        "shortDisplayName": "49ers",
+        "name": "49ers",
+        "abbreviation": "SF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sf.png",
+        "color": "aa0000"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-3"
+        }
+       ],
+       "team": {
+        "displayName": "Las Vegas Raiders",
+        "shortDisplayName": "Raiders",
+        "name": "Raiders",
+        "abbreviation": "LV",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/lv.png",
+        "color": "000000"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "CBS"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Levi's Stadium",
+      "address": {
+       "city": "Santa Clara",
+       "state": "CA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 4:05 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873049",
+   "date": "2026-11-08T21:25Z",
+   "name": "Green Bay Packers at New England Patriots",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "New England Patriots",
+        "shortDisplayName": "Patriots",
+        "name": "Patriots",
+        "abbreviation": "NE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ne.png",
+        "color": "002a5c"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Green Bay Packers",
+        "shortDisplayName": "Packers",
+        "name": "Packers",
+        "abbreviation": "GB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/gb.png",
+        "color": "204e32"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Gillette Stadium",
+      "address": {
+       "city": "Foxborough",
+       "state": "MA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 4:25 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873048",
+   "date": "2026-11-08T21:25Z",
+   "name": "Arizona Cardinals at Seattle Seahawks",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "3-3"
+        }
+       ],
+       "team": {
+        "displayName": "Seattle Seahawks",
+        "shortDisplayName": "Seahawks",
+        "name": "Seahawks",
+        "abbreviation": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png",
+        "color": "002a5c"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "2-4"
+        }
+       ],
+       "team": {
+        "displayName": "Arizona Cardinals",
+        "shortDisplayName": "Cardinals",
+        "name": "Cardinals",
+        "abbreviation": "ARI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ari.png",
+        "color": "a40227"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "Fox"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Lumen Field",
+      "address": {
+       "city": "Seattle",
+       "state": "WA",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 4:25 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873050",
+   "date": "2026-11-09T01:20Z",
+   "name": "Tampa Bay Buccaneers at Chicago Bears",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "4-2"
+        }
+       ],
+       "team": {
+        "displayName": "Chicago Bears",
+        "shortDisplayName": "Bears",
+        "name": "Bears",
+        "abbreviation": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/chi.png",
+        "color": "0b1c3a"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "1-5"
+        }
+       ],
+       "team": {
+        "displayName": "Tampa Bay Buccaneers",
+        "shortDisplayName": "Buccaneers",
+        "name": "Buccaneers",
+        "abbreviation": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
+        "color": "bd1c36"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "NBC"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "Soldier Field",
+      "address": {
+       "city": "Chicago",
+       "state": "IL",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/8 - 8:20 PM EST"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "401873051",
+   "date": "2026-11-10T01:15Z",
+   "name": "Buffalo Bills at Minnesota Vikings",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "5-0"
+        }
+       ],
+       "team": {
+        "displayName": "Minnesota Vikings",
+        "shortDisplayName": "Vikings",
+        "name": "Vikings",
+        "abbreviation": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png",
+        "color": "4f2683"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "records": [
+        {
+         "name": "overall",
+         "abbreviation": "Any",
+         "type": "total",
+         "summary": "5-1"
+        }
+       ],
+       "team": {
+        "displayName": "Buffalo Bills",
+        "shortDisplayName": "Bills",
+        "name": "Bills",
+        "abbreviation": "BUF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png",
+        "color": "00338d"
+       }
+      }
+     ],
+     "broadcasts": [
+      {
+       "market": "national",
+       "names": [
+        "ESPN",
+        "ABC"
+       ]
+      }
+     ],
+     "venue": {
+      "fullName": "U.S. Bank Stadium",
+      "address": {
+       "city": "Minneapolis",
+       "state": "MN",
+       "country": "USA"
+      }
+     },
+     "status": {
+      "type": {
+       "state": "pre",
+       "shortDetail": "11/9 - 8:15 PM EST"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
