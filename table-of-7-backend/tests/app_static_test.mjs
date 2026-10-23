@@ -32,7 +32,7 @@ check("all 80 restaurants added on 2026-10-22 are in the app with the same name 
 const cases = [...html.matchAll(/case "([a-z0-9-]+)":/g)].map(m => m[1]);
 const dup = cases.filter((x, k) => cases.indexOf(x) !== k);
 check("no two click actions share a name", !dup.length, dup);
-for (const a of ["memlive", "lv-ask", "lv-save", "datenight", "dn-send", "adventure", "ac-pick", "whatsnew", "sunday-area"])
+for (const a of ["memlive", "lv-ask", "lv-save", "datenight", "dn-send", "adventure", "ac-pick", "whatsnew", "sunday-area", "gamenight", "netflix", "wp-send", "wp-bring", "who-tog", "who-all"])
   check(`the ${a} button has its own action`, cases.includes(a), a);
 
 // This Sunday rotation (the same function the app runs)

@@ -854,7 +854,7 @@ s2, b2, _ = rest("GET", "live_events?select=id", None); check("someone signed ou
 evx = b[0] if isinstance(b, list) and b else {}
 s, b, _ = call("POST", LV, {"action": "ask", "event_id": evx.get("id"), "note": "Proof: who's in?"}, tok_m); ask_id = b.get("id")
 check("Who's in? goes up", s == 200 and ask_id and not b.get("already"), (s, b))
-s, b, _ = call("POST", LV, {"action": "ask", "event_id": evx.get("id")}, tok_3); check("asking about the same show again finds the same question (no double alerts)", b.get("id") == ask_id and b.get("already"), b)
+s, b, _ = call("POST", LV, {"action": "ask", "event_id": evx.get("id")}, tok_3); check("asking about the same show again joins the same question (no second question)", b.get("id") == ask_id and b.get("already"), b)
 s, b, _ = call("POST", LV, {"action": "ask", "event_id": "gpac:no-such-show"}, tok_m); check("a show that isn't listed can't be asked about", s == 404 and b.get("code") == "no_event", (s, b))
 s, b, _ = rest("GET", "alerts?select=to_member,text&text=like." + quote("*Are you in?*"), tok_h); check("the family is asked (the host's bell rings)", isinstance(b, list) and len(b) == 1 and "Proof: who" in b[0]["text"], b)
 s, b, _ = call("POST", LV, {"action": "answer", "ask_id": ask_id, "answer": "yes", "picks": [evx.get("id"), "gpac:not-this-show"], "note": "Count me in"}, tok_h)
@@ -862,7 +862,7 @@ s2, b2, _ = rest("GET", "live_answers?select=picks&member_id=eq.z1", tok_h); che
 s, b, _ = call("POST", LV, {"action": "answer", "ask_id": ask_id, "answer": "no", "picks": [evx.get("id")]}, tok_3)
 s2, b2, _ = rest("GET", "live_answers?select=answer,picks&member_id=eq.z3", tok_3); check("a No carries no dates", b2 == [{"answer": "no", "picks": []}], b2)
 s, b, _ = call("POST", LV, {"action": "answer", "ask_id": ask_id, "answer": "sure"}, tok_3); check("only Yes, Maybe or No", s == 400, (s, b))
-s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Zed is in for*"), tok_m); check("the asker is told each answer", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*Count me in*"), tok_m); check("the asker is told each answer", isinstance(b, list) and len(b) == 1, b)
 s, b, _ = rest("POST", "live_asks", tok_m, {"family_id": "zztest", "event_id": "x", "title": "x", "starts_at": "2030-01-01T00:00:00Z", "by_member": "z2"}); check("a phone can't write a question itself", s in (401, 403), (s, b))
 s, b, _ = rest("PATCH", "live_answers?member_id=eq.z1", tok_m, {"answer": "no"}, "return=representation"); check("a phone can't change someone's answer", s in (401, 403) or b == [], (s, b))
 s, b, _ = rest("GET", "live_sync?select=*", tok_h); check("the source log is not readable from a phone", s in (401, 403), (s, b))
@@ -889,6 +889,61 @@ s, b, _ = call("POST", DT, {"action": "plan", "kind": "kids", "partner": "z1", "
 s, b, _ = rest("POST", "dates", tok_m, {"family_id": "zztest", "kind": "couple", "created_by": "z2", "partner": "z1", "title": "x", "date": soon}); check("a phone can't write a date itself", s in (401, 403), (s, b))
 s, b, _ = call("POST", DT, {"action": "cancel", "id": did}, tok_m); s2, b2, _ = call("POST", DT, {"action": "cancel", "id": did}, tok_m)
 check("either of the two calls it off, once", s == 200 and b2.get("code") == "closed", (b, b2))
+
+# --- Pick who (his order, 2026-10-22: "always an option to send to individual members and not everybody") ---
+# Memphis Live: ask only the people picked
+evy = (b0 := rest("GET", "live_events?select=id&order=starts_at&limit=1&offset=3&starts_at=gt." + quote(_time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime(_time.time() + 3600))), tok_m)[1]) and b0[0]["id"]
+s, b, _ = call("POST", LV, {"action": "ask", "event_id": evy, "invited": ["z1"]}, tok_m); ask2 = b.get("id"); check("Who's in? can ask one person", s == 200 and ask2, (s, b))
+s, b, _ = rest("GET", "live_asks?select=id,invited&id=eq." + str(ask2), tok_h); check("only the asker and the person picked are on it", isinstance(b, list) and len(b) == 1 and sorted(b[0]["invited"]) == ["z1", "z2"], b)
+s, b, _ = rest("GET", "live_asks?select=id&id=eq." + str(ask2), tok_3); check("someone not asked doesn't see the question", b == [], b)
+s, b, _ = rest("GET", "alerts?select=text&to_member=eq.z3&text=like." + quote("*Are you in?*"), tok_3); n3 = len(b) if isinstance(b, list) else -1
+s, b, _ = call("POST", LV, {"action": "answer", "ask_id": ask2, "answer": "yes"}, tok_3); check("someone not asked can't answer it", s == 404, (s, b))
+s, b, _ = call("POST", LV, {"action": "ask", "event_id": evy, "invited": []}, tok_m); s, b, _ = call("POST", LV, {"action": "ask", "event_id": evy, "invited": ["nobody-here"]}, tok_m)
+check("asking nobody is refused (a question needs someone to answer it)", b.get("code") == "nobody" or b.get("already"), b)
+s, b, _ = call("POST", LV, {"action": "ask", "event_id": evy}, tok_3); s2, b2, _ = rest("GET", "live_asks?select=invited&id=eq." + str(ask2), tok_3)
+check("someone not asked who taps Who's in? on the same show joins it (just them)", b.get("id") == ask2 and isinstance(b2, list) and sorted(b2[0]["invited"]) == ["z1", "z2", "z3"], (b, b2))
+evy_title = (rest("GET", "live_events?select=title&id=eq." + quote(str(evy)), tok_m)[1] or [{}])[0].get("title", "")
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*is in for " + evy_title + " too*"), tok_m); check("the asker is told they joined", isinstance(b, list) and len(b) == 1 and evy_title, (evy_title, b))
+call("POST", LV, {"action": "unask", "ask_id": ask2}, tok_m)
+# family dinners: the planner chooses who's invited before it goes out
+s, b, _ = rest("POST", "events", tok_m, {"id": "zz-pick", "family_id": "zztest", "type": "personal", "mode": "host", "host": "z2", "date": "2030-05-05", "time": "18:00", "chosen": "gus", "status": "set", "excluded": ["z3", "z2", "nobody"]}, "return=representation")
+check("a member's own invitation keeps the people they left out (never themselves, only real seats)", s in (200, 201) and isinstance(b, list) and b and b[0]["excluded"] == ["z3"], (s, b))
+s, b, _ = rest("GET", "events?select=id&id=eq.zz-pick", tok_3); check("someone left out can't see it", b == [], b)
+s, b, _ = rest("POST", "alerts", tok_m, [{"to_member": "z3", "text": "pick-test", "event_id": "zz-pick"}, {"to_member": "z1", "text": "pick-test", "event_id": "zz-pick"}])
+s, b, _ = rest("GET", "alerts?select=to_member&text=eq.pick-test", tok_h); s2, b2, _ = rest("GET", "alerts?select=to_member&text=eq.pick-test", tok_3)
+check("someone left out gets no alert for it; someone invited does", isinstance(b, list) and [x["to_member"] for x in b] == ["z1"] and b2 == [], (b, b2))
+s, b, _ = rest("PATCH", "events?id=eq.zz-pick", tok_m, {"excluded": ["z2"]}, "return=representation"); check("the planner can't leave themselves off", s >= 400, (s, b))
+s, b, _ = rest("PATCH", "events?id=eq.zz-pick", tok_m, {"excluded": []}, "return=representation"); check("the planner can put someone back", s == 200 and b and b[0]["excluded"] == [], (s, b))
+s, b, _ = rest("PATCH", "events?id=eq.zz-pick", tok_3, {"excluded": ["z1"]}, "return=representation"); check("someone else can't change who's invited", s >= 400 or b == [], (s, b))
+s, b, _ = rest("PATCH", "events?id=eq.zz-pick", tok_h, {"excluded": ["z3"]}, "return=representation"); check("the host still can", s == 200 and b and b[0]["excluded"] == ["z3"], (s, b))
+rest("DELETE", "events?id=eq.zz-pick", tok_h)
+
+# --- Netflix & Chill and Big Game Night watch parties (his order, 2026-10-22) ---
+WT = URL + "/functions/v1/watch"
+s, b, _ = call("POST", WT, {"action": "netflix", "kind": "movie"}, tok_m); check("Netflix & Chill lists real Netflix titles with posters", s == 200 and len(b.get("items", [])) >= 5 and all(x["poster"].startswith("https://image.tmdb.org/") for x in b["items"]), (s, str(b)[:200]))
+s, b, _ = call("POST", WT, {"action": "logos"}, tok_m); check("the networks' logos are there for the game cards (NBC, ESPN, Prime Video, Netflix)", s == 200 and all(k in b.get("logos", {}) for k in ("NBC", "ESPN", "Amazon Prime Video", "Netflix")), (s, list(b.get("logos", {}))[:10]))
+wday = _time.strftime("%Y-%m-%d", _time.localtime(_time.time() + 3 * 86400))
+s, b, _ = call("POST", WT, {"action": "new", "kind": "game", "ref": "401", "title": "Chiefs at Seahawks", "info": {"slot": "Sunday Night Football", "networks": ["NBC"], "home": {"short": "Seahawks", "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/sea.png"}, "away": {"short": "Chiefs", "logo": "javascript:alert(1)"}},
+  "date": wday, "time": "6:50 PM", "at_member": "z2", "invited": ["z1"], "needs": ["Wings", "Pizza", "wings"], "note": "Wear red"}, tok_m); pid = (b.get("party") or {}).get("id")
+check("a watch party at my house, inviting one person", s == 200 and pid, (s, b))
+s, b, _ = rest("GET", "watch_parties?select=invited,needs,info&id=eq." + str(pid), tok_m)
+check("only me and the person picked are invited; “wings” twice is one item on the list", isinstance(b, list) and b and sorted(b[0]["invited"]) == ["z1", "z2"] and b[0]["needs"] == ["Wings", "Pizza"], b)
+check("a logo that isn't an https link is dropped", isinstance(b, list) and b and b[0]["info"]["away"]["logo"] == "" and b[0]["info"]["home"]["logo"].startswith("https://"), b)
+s, b, _ = rest("GET", "watch_parties?select=id&id=eq." + str(pid), tok_3); check("someone not invited can't see it", b == [], b)
+s, b, _ = call("POST", WT, {"action": "rsvp", "id": pid, "ans": "yes"}, tok_3); check("someone not invited can't answer it", s == 404, (s, b))
+s, b, _ = call("POST", WT, {"action": "rsvp", "id": pid, "ans": "yes"}, tok_h); check("the person invited says they're coming", s == 200, (s, b))
+s, b, _ = call("POST", WT, {"action": "bring", "id": pid, "item": "Wings", "on": True}, tok_h); check("they sign up to bring the wings", s == 200, (s, b))
+s, b, _ = call("POST", WT, {"action": "bring", "id": pid, "item": "wings", "on": True}, tok_m); check("nobody else can take the wings once someone's bringing them", b.get("code") == "taken", b)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*is bringing Wings*"), tok_m); check("the planner is told who's bringing what", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = rest("GET", "alerts?select=text&text=like." + quote("*invited you to watch Chiefs at Seahawks at Zed's house*"), tok_h); check("the person invited was told whose house and when", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = call("POST", WT, {"action": "invite", "id": pid, "invited": ["z3"]}, tok_h); check("only the planner (or the host) changes who's invited", s == 200, (s, b))
+s, b, _ = call("POST", WT, {"action": "invite", "id": pid, "invited": ["z3"]}, tok_3); check("someone else can't change who's invited", s in (403, 404), (s, b))
+s, b, _ = rest("GET", "watch_parties?select=id&id=eq." + str(pid), tok_3); check("someone added can now see it", isinstance(b, list) and len(b) == 1, b)
+s, b, _ = rest("POST", "watch_parties", tok_m, {"family_id": "zztest", "kind": "game", "title": "x", "date": wday, "at_member": "z2", "created_by": "z2"}); check("a phone can't write a watch party itself", s in (401, 403), (s, b))
+s, b, _ = call("POST", WT, {"action": "new", "kind": "netflix", "title": "x", "date": "2020-01-01", "at_member": "z2", "invited": ["z1"]}, tok_m); check("no watch party in the past", b.get("code") == "date", b)
+s, b, _ = call("POST", WT, {"action": "new", "kind": "netflix", "title": "x", "date": wday, "at_member": "nobody", "invited": ["z1"]}, tok_m); check("whose house must be a real seat", b.get("code") == "house", b)
+s, b, _ = call("POST", WT, {"action": "cancel", "id": pid}, tok_m); s2, b2, _ = call("POST", WT, {"action": "rsvp", "id": pid, "ans": "no"}, tok_h)
+check("the planner calls it off, and it's closed", s == 200 and b2.get("code") == "cancelled", (b, b2))
 
 for z in ("z3", "z4"): rest("PATCH", "members?id=eq." + z, tok_h, {"status": "suspended"}, "return=representation")
 

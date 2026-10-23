@@ -28,3 +28,4 @@ delete from recipes where family_id = 'zztest';
 delete from ride_asks where family_id = 'zztest'; delete from ride_offers where family_id = 'zztest';   -- pickups go with the asks
 delete from live_asks where family_id = 'zztest';   -- answers go with them
 delete from dates where family_id = 'zztest';
+delete from watch_parties where family_id = 'zztest';   -- watch_people go with them
