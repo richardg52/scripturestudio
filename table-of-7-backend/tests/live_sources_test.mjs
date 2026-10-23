@@ -4,7 +4,7 @@
 //     node table-of-7-backend/tests/live_sources_test.mjs
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { gpacParse, shellParse, overtonParse, tmParse, tmUrl, geohash, ticketIn, calledOff } from "../supabase/functions/live/sources.js";
+import { gpacParse, shellParse, overtonParse, tmParse, tmUrl, geohash, ticketIn, calledOff, addOn } from "../supabase/functions/live/sources.js";
 const here = p => fileURLToPath(new URL(p, import.meta.url));
 const J = f => JSON.parse(fs.readFileSync(here("fixtures/live/" + f), "utf8"));
 let fails = 0;
@@ -53,6 +53,7 @@ check("Overton: 'Free' events are marked free", o.filter(e => /^free$/i.test(e.p
 // ticket links
 check("ticketIn: takes the first seller link and skips sponsors", ticketIn('<a href="https://www.bank.com/">x</a> <a href="https://ci.ovationtix.com/1/production/2">t</a>') === "https://ci.ovationtix.com/1/production/2");
 check("calledOff: CANCELLED / Canceled / POSTPONED titles are caught, ordinary titles are not", calledOff("CANCELLED: Orion Free Concert") && calledOff("Canceled - Jazz") && calledOff("POSTPONED: Gala") && !calledOff("Cancel Culture Comedy Tour") && !calledOff("Zoo Boo"));
+check("addOn: hotel packages and parking passes are not listed as shows (seen live 10/22: “Clutch | Official Caesars Ticket + Hotel Packages”)", addOn("Clutch | Official Caesars Ticket + Hotel Packages") && addOn("Parking: Grizzlies vs Kings") && !addOn("CLUTCH: US Fall Tour") && !addOn("Monty Python's Spamalot (Touring)"));
 check("ticketIn: never an http or javascript link", ticketIn('<a href="http://ci.ovationtix.com/1">t</a><a href="javascript:alert(1)">t</a>') === "");
 
 // Ticketmaster (only once his key is in): the query and the published response shape
