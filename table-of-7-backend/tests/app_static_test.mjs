@@ -32,8 +32,18 @@ check("all 80 restaurants added on 2026-10-22 are in the app with the same name 
 const cases = [...html.matchAll(/case "([a-z0-9-]+)":/g)].map(m => m[1]);
 const dup = cases.filter((x, k) => cases.indexOf(x) !== k);
 check("no two click actions share a name", !dup.length, dup);
-for (const a of ["memlive", "lv-ask", "lv-save", "datenight", "dn-send", "adventure", "ac-pick", "whatsnew", "sunday-area", "gamenight", "netflix", "wp-send", "wp-bring", "who-tog", "who-all"])
+for (const a of ["memlive", "lv-ask", "lv-save", "datenight", "dn-send", "adventure", "ac-pick", "whatsnew", "sunday-area", "gamenight", "netflix", "wp-send", "wp-bring", "who-tog", "who-all",
+  // 8.3 (2026-10-23)
+  "mail", "ml-new", "ml-send", "ml-ans", "ml-reply", "hangouts", "hg-new", "hg-send", "hg-after", "hg-eta", "hg-share", "wp-eta", "wp-addr", "getaways", "gw-city", "gw-save", "gw-invite", "gw-ev-add",
+  "hx-open", "hx-off", "hx-on", "hx-add", "ow-yes", "ow-no", "ow-new", "ow-fam-off", "family-new", "family-send", "cp-invite"])
   check(`the ${a} button has its own action`, cases.includes(a), a);
+
+// 8.3: every button the new rooms draw has a handler (an action with no case does nothing when tapped)
+{ const mod = html.slice(html.indexOf("/* ================= 8.3 ================= */"));
+  const drawn = [...new Set([...mod.matchAll(/data-act="([a-z0-9-]+)"/g)].map(m => m[1]))].filter(x => !x.includes("$"));
+  const orphan = drawn.filter(x => !cases.includes(x));
+  check("every button in the 8.3 rooms has its own action", drawn.length > 30 && !orphan.length, orphan); }
+check("the outside-invite page ships beside the app", (() => { try { const inv = fs.readFileSync(new URL("../../table-of-7/invite.html", import.meta.url), "utf8"); return /public_get/.test(inv) && /public_reply/.test(inv) && /noindex/.test(inv); } catch { return false; } })());
 
 // This Sunday rotation (the same function the app runs)
 const src = html.slice(html.indexOf("function pickSlot("), html.indexOf("const slotLabel"));
