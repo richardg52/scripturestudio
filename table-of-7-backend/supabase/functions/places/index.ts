@@ -50,6 +50,8 @@ const AREA: Record<string, number[]> = {
   Southaven: [34.93, -90.06, 35.00, -89.93], "Olive Branch": [34.92, -89.90, 35.01, -89.77],
   Nashville: [35.95, -87.05, 36.35, -86.50], Atlanta: [33.55, -84.65, 34.05, -84.15], "New Orleans": [29.85, -90.30, 30.10, -89.90], Chicago: [41.60, -87.95, 42.10, -87.50],
   "New York": [40.50, -74.30, 40.95, -73.70], Dallas: [32.60, -97.10, 33.10, -96.55], Houston: [29.50, -95.80, 30.10, -95.00], "Los Angeles": [33.70, -118.70, 34.35, -118.10],
+  // Getaways (his order, 2026-10-23): St. Louis, and Alabama's three stops
+  "St. Louis": [38.45, -90.55, 38.85, -90.10], Birmingham: [33.30, -87.05, 33.70, -86.55], Huntsville: [34.55, -86.85, 34.90, -86.40], "Gulf Shores": [30.18, -87.95, 30.40, -87.45],
 };
 const shape = (p: any) => ({ placeId: p.id, id: "g:" + p.id, name: p.displayName?.text ?? "", address: p.formattedAddress ?? "", short: p.shortFormattedAddress ?? "",
   type: p.primaryTypeDisplayName?.text ?? "Restaurant", status: p.businessStatus ?? "OPERATIONAL", mapsUri: p.googleMapsUri ?? "",
