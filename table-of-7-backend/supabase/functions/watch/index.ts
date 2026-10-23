@@ -8,6 +8,9 @@
 //   rsvp {id, ans: yes|maybe|no}         my answer
 //   bring {id, item, on: true|false}     "I'll bring it" (an item on the list, or something of my own)
 //   invite {id, invited[]}               the planner changes who's invited (people added are told)
+//   eta {id, plan?|way?|here?|clear?}    when I'll get there (his order, 2026-10-23: "show estimated arrival time for each member"):
+//                                        a planned time, "on my way, N minutes", or "I'm here"; the house is told on the way and on arrival
+//   address {id, address}                the house's address, for everyone's Directions button (the planner or whoever's house it is)
 //   cancel {id}                          the planner or the host
 // Only the people invited (and the planner, and the host) can see a party. TMDB: "This product uses the TMDB API but is
 // not endorsed or certified by TMDB." The token is the Supabase secret TMDB_TOKEN, the same one Movie Night uses.
@@ -115,7 +118,7 @@ Deno.serve(async (req) => {
         : { poster: https(i.poster), year: clip(i.year, 4), kind: i.kind === "tv" ? "tv" : "movie", overview: clip(i.overview, 400) };
       const all = [...new Set([me.id, at, ...invited])];
       const { data: p, error } = await admin.from("watch_parties").insert({ family_id: me.family_id, kind, ref: clip(body.ref, 40), title, info, date, time: clip(body.time, 12),
-        at_member: at, created_by: me.id, invited: all, needs, note: clip(body.note, 300) || null }).select("*").single();
+        at_member: at, created_by: me.id, invited: all, needs, note: clip(body.note, 300) || null, address: clip(body.address, 200) || null }).select("*").single();
       if (error || !p) return reply({ ok: false, code: "server" }, 500);
       await admin.from("watch_people").insert({ party_id: p.id, member_id: me.id, family_id: me.family_id, rsvp: "yes" });
       const atName = at === me.id ? `${first}'s` : `${await firstOf(at)}'s`;
@@ -148,6 +151,29 @@ Deno.serve(async (req) => {
       const bring = body.on === false ? (had?.bring ?? []).filter((b: string) => b.toLowerCase() !== item.toLowerCase()) : [...new Set([...(had?.bring ?? []), item])].slice(0, 8);
       await admin.from("watch_people").upsert({ party_id: p.id, member_id: me.id, family_id: me.family_id, rsvp: had?.rsvp ?? "yes", bring, updated_at: new Date().toISOString() });
       if (body.on !== false && p.created_by !== me.id) await alert([p.created_by], `${icon(p.kind)} ${first} is bringing ${item} to ${p.title}.`);
+      return reply({ ok: true });
+    }
+    if (body.action === "eta") {
+      if (!p.invited.includes(me.id)) return reply({ ok: false, code: "not_invited" }, 403);
+      const had = await mine(); if (had?.rsvp === "no") return reply({ ok: false, code: "not_coming" }, 409);
+      const now = new Date().toISOString(), patch: Record<string, unknown> = { party_id: p.id, member_id: me.id, family_id: me.family_id, rsvp: had?.rsvp ?? "yes", bring: had?.bring ?? [], updated_at: now };
+      let say = "";
+      if (body.clear) Object.assign(patch, { plan_at: null, way_min: null, way_at: null, here_at: null });
+      else if (body.here) { Object.assign(patch, { here_at: now, way_min: null, way_at: null }); say = `📍 ${first} is here for ${p.title}.`; }
+      else if (body.way != null) {
+        const m = Math.round(Number(body.way)); if (!(m >= 1 && m <= 240)) return reply({ ok: false, code: "eta" }, 400);
+        Object.assign(patch, { way_min: m, way_at: now, here_at: null }); say = `🚗 ${first} is on the way to ${p.title}, about ${m} min.`;
+      } else {
+        const plan = clip(body.plan, 12); if (!/^\d{1,2}(:\d{2})?\s?(AM|PM|am|pm)?$/.test(plan)) return reply({ ok: false, code: "eta" }, 400);
+        Object.assign(patch, { plan_at: plan });
+      }
+      await admin.from("watch_people").upsert(patch);
+      if (say) await alert([p.at_member, p.created_by], say);
+      return reply({ ok: true });
+    }
+    if (body.action === "address") {
+      if (!(p.created_by === me.id || p.at_member === me.id || host)) return reply({ ok: false, code: "not_yours" }, 403);
+      await admin.from("watch_parties").update({ address: clip(body.address, 200) || null, updated_at: new Date().toISOString() }).eq("id", p.id);
       return reply({ ok: true });
     }
     if (body.action === "invite") {
