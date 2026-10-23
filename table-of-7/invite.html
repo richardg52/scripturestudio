@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>You're invited · Table of 8</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+/* Table of 8 — the invite page for someone who isn't in the app (his order, 2026-10-23: "send an invitation to a friend
+   or family member out of the app … Place, Time, Dress, $Cost (estimates), Menu or event place and driving directions").
+   It reads ONE hangout by its link (functions/hangouts public_get) and takes a first name and Yes / Maybe / No
+   (public_reply); the person who sent the link gets an alert. No sign-in, nothing else about the family is shown. */
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#2a2118;--muted:#6f6355;--brass:#a77b2b;--wine:#7a1f35;--line:rgba(42,33,24,.14)}
+@media (prefers-color-scheme: dark){:root{--bg:#14110d;--card:#1f1a14;--ink:#f3ead9;--muted:#b7a993;--brass:#d5a75a;--wine:#c8566f;--line:rgba(243,234,217,.14)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:24px 16px 48px;display:grid;gap:14px}
+.brand{font-family:Georgia,serif;font-size:18px;color:var(--brass);text-align:center}.brand i{font-style:italic}
+h1{font-family:Georgia,serif;font-size:30px;line-height:1.15;margin:0}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.row{display:flex;gap:10px;align-items:baseline}.row b{min-width:70px;color:var(--muted);font-weight:600;font-size:14px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:10px 14px;font:inherit;font-size:15px;text-decoration:none;cursor:pointer}
+.btn.primary{background:var(--wine);border-color:var(--wine);color:#fff}
+.ans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ans .btn{justify-content:center}.ans .btn[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:#fff}
+input{width:100%;font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+label{font-size:14px;color:var(--muted)}
+.muted{color:var(--muted);font-size:14px}.err{color:var(--wine);min-height:1.2em;font-size:14px}
+.done{text-align:center;font-size:18px}
+</style>
+</head>
+<body>
+<main id="m"><div class="brand">Table <i>of</i> 8</div><p class="muted" style="text-align:center">Opening your invitation…</p></main>
+<script>
+(() => {
+const SB_URL = "https://vhonljdavmklymrocgiu.supabase.co", SB_KEY = "sb_publishable_F-Wjwoek1ZzMLKl_aoxK2w_pF2ac_Qw";
+const t = new URLSearchParams(location.search).get("t") || "", m = document.getElementById("m");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const https = u => /^https:\/\/[^\s"'<>]+$/.test(String(u || "")) ? String(u) : "";
+const call = body => fetch(SB_URL + "/functions/v1/hangouts", {method:"POST", headers:{"Content-Type":"application/json", apikey:SB_KEY}, body:JSON.stringify(body)}).then(r => r.json()).catch(() => ({ok:false, code:"offline"}));
+const why = c => ({link:"This invitation link isn't right. Ask the person who sent it for a new one.", closed:"This plan was called off or the link was turned off.", past:"This plan has already happened.",
+  form:"Type your first name and pick an answer.", slow:"Too many answers from this network. Try again in an hour.", full:"This invitation has all the answers it can take.", offline:"Can't connect right now. Check your signal and try again."})[c] || "Something went wrong. Try again.";
+// an .ics so they can add it to their own calendar (made on this phone; nothing is sent)
+function ics(x){
+  const d = x.date.replace(/-/g, ""), tm = /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i.exec(x.time || "");
+  let start = `DTSTART;VALUE=DATE:${d}`;
+  if(tm){ let h = +tm[1] % 12 + (/pm/i.test(tm[3] || "") ? 12 : 0); if(!tm[3] && +tm[1] < 12 && +tm[1] >= 1 && +tm[1] <= 7) h += 12; start = `DTSTART:${d}T${String(h).padStart(2,"0")}${tm[2] || "00"}00`; }
+  const lines = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Table of 8//Invite//EN","BEGIN:VEVENT",`UID:${t}@table-of-8`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z`,start,
+    `SUMMARY:${(x.title || "").replace(/[\n,;]/g," ")}`,`LOCATION:${[x.place?.name, x.place?.address].filter(Boolean).join(", ").replace(/[\n,;]/g," ")}`,"END:VEVENT","END:VCALENDAR"];
+  return "data:text/calendar;charset=utf-8," + encodeURIComponent(lines.join("\r\n"));
+}
+let pick = "";
+async function load(){
+  if(!t){ m.innerHTML = `<div class="brand">Table <i>of</i> 8</div><div class="card"><b>${esc(why("link"))}</b></div>`; return; }
+  const x = await call({action:"public_get", t});
+  if(!x.ok){ m.innerHTML = `<div class="brand">Table <i>of</i> 8</div><div class="card"><b>${esc(why(x.code))}</b></div>`; return; }
+  const p = x.place || {}, dir = p.address ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.address)}` : https(p.maps), apple = p.address ? `https://maps.apple.com/?daddr=${encodeURIComponent(p.address)}` : "";
+  document.title = `${x.title} · You're invited`;
+  m.innerHTML = `<div class="brand">Table <i>of</i> 8</div>
+    <div class="eyebrow">${esc(x.from)} invites you</div><h1>${esc(x.title)}</h1>
+    <div class="card">
+      <div class="row"><b>📍 Place</b><span><strong>${esc(p.name)}</strong>${p.address ? `<br><span class="muted">${esc(p.address)}</span>` : ""}</span></div>
+      <div class="row"><b>🗓️ When</b><span>${esc(x.day)}${x.time ? ` at ${esc(x.time)}` : ""}</span></div>
+      ${x.dress ? `<div class="row"><b>👔 Dress</b><span>${esc(x.dress)}</span></div>` : ""}
+      ${x.cost_pp != null ? `<div class="row"><b>💵 Cost</b><span>About $${esc(x.cost_pp)} a person <span class="muted">(an estimate)</span></span></div>` : ""}
+      ${x.note ? `<div class="row"><b>💬 Note</b><span>“${esc(x.note)}”</span></div>` : ""}
+      <div class="btns">${dir ? `<a class="btn" href="${esc(dir)}" target="_blank" rel="noopener">🧭 Google Maps</a>` : ""}${apple ? `<a class="btn" href="${esc(apple)}" target="_blank" rel="noopener">🗺️ Apple Maps</a>` : ""}
+        ${https(p.menu) ? `<a class="btn" href="${esc(p.menu)}" target="_blank" rel="noopener">📋 Menu / event</a>` : ""}${https(p.reviews) ? `<a class="btn" href="${esc(p.reviews)}" target="_blank" rel="noopener">⭐ Reviews</a>` : ""}
+        ${https(p.website) ? `<a class="btn" href="${esc(p.website)}" target="_blank" rel="noopener">🌐 Website</a>` : ""}<a class="btn" href="${ics(x)}" download="invitation.ics">📅 Add to my calendar</a></div>
+      ${x.yes ? `<span class="muted">${x.yes} ${x.yes === 1 ? "person has" : "people have"} said yes through this link.</span>` : ""}
+    </div>
+    <div class="card" id="rsvp"><b>Will you come?</b>
+      <label for="nm">Your first name</label><input id="nm" maxlength="60" autocomplete="given-name">
+      <div class="ans">${[["yes","✅ Yes"],["maybe","🤔 Maybe"],["no","❌ Can't"]].map(([k, l]) => `<button class="btn" type="button" data-a="${k}" aria-pressed="false">${l}</button>`).join("")}</div>
+      <label for="nt">A note for ${esc(x.from)} (optional)</label><input id="nt" maxlength="300">
+      <div class="err" id="er" role="alert"></div>
+      <button class="btn primary" type="button" id="go" style="justify-content:center">Send my answer</button>
+      <span class="muted">Only ${esc(x.from)} sees your answer and your first name.</span></div>`;
+}
+document.addEventListener("click", async e => {
+  const a = e.target.closest("[data-a]"); if(a){ pick = a.dataset.a; document.querySelectorAll("[data-a]").forEach(b => b.setAttribute("aria-pressed", String(b === a))); return; }
+  if(e.target.id !== "go") return;
+  const name = document.getElementById("nm").value.trim(), er = document.getElementById("er");
+  if(!name || !pick){ er.textContent = why("form"); return; }
+  e.target.disabled = true; er.textContent = "";
+  const r = await call({action:"public_reply", t, name, ans:pick, note:document.getElementById("nt").value.trim()});
+  e.target.disabled = false;
+  if(!r.ok){ er.textContent = why(r.code); return; }
+  document.getElementById("rsvp").innerHTML = `<p class="done">${pick === "yes" ? "🎉 See you there!" : pick === "maybe" ? "🤔 Got it. They know you're a maybe." : "💛 Thanks for letting them know."}</p>`;
+});
+load();
+})();
+</script>
+</body>
+</html>
