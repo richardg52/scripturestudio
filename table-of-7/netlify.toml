@@ -22,3 +22,20 @@
   [headers.values]
     Cache-Control = "no-cache"
     Content-Type = "application/javascript; charset=utf-8"
+
+# Table of 8 is sold (2026-10-23): the build notes in this folder are for the workshop, never the public.
+[[redirects]]
+  from = "/HANDOFF.md"
+  to = "/"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/README.md"
+  to = "/"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/"
+  status = 404
+  force = true
