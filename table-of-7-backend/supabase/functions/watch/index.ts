@@ -71,6 +71,10 @@ Deno.serve(async (req) => {
     if (!u?.user) return reply({ ok: false, code: "signed_out" }, 401);
     const { data: me } = await admin.from("members").select("id,family_id,status,name,role").eq("user_id", u.user.id).maybeSingle();
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
+    // licensed data (TMDB movie data, the NFL schedule and logos): only a table whose plan includes it (his decision 10/23:
+    // customers see "Coming soon" until the licences are in place; the owner's family keeps it)
+    { const { data: fam } = await admin.from("families").select("features").eq("id", me.family_id).maybeSingle();
+      if (!(fam?.features ?? []).some((f: string) => f === "all" || f === "watch")) return reply({ ok: false, code: "not_on_plan" }, 402); }
     const host = me.role === "host", first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
     const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
