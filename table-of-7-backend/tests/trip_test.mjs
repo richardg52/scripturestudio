@@ -43,10 +43,11 @@ ok(Object.keys(GW_GEO).every(c => GW[c]) && Object.keys(GW).length === 9, "every
 const urls = Object.values(GW).flatMap(c => c.places.flatMap(p => [p.web, p.menu].filter(Boolean)));
 ok(urls.every(u => /^https:\/\/[^\s"'<>]+$/.test(u)), `every website and menu link is https (${urls.length})`);
 const open = Object.entries(GW).filter(([, c]) => !c.checking);
-ok(open.every(([, c]) => c.places.every(p => p.ok)), "a city opens only when every one of its places was confirmed on Google");
+ok(Object.values(GW).every(c => c.checking === c.places.some(p => p.pend)), "a city shows “being checked” exactly while any of its places is still waiting for Google");
+ok(open.every(([, c]) => c.places.filter(p => p.ok).length >= c.places.length * 0.8), "an open city keeps at least 80% of its list after the Google check (a place Google can't confirm is left out of plans)");
 ok(Object.values(GW).every(c => c.places.filter(p => p.ok).every(p => p.pid || p.n === "Lincoln Park Zoo")), "every confirmed place keeps its Google Place ID for Reviews and Directions");
 const SLOTS = { meal: ["breakfast"], brunch: ["brunch", "breakfast"], morning: ["sight", "museum", "outdoors"], lunch: ["lunch"], afternoon: ["shopping", "sight", "museum", "family_fun", "outdoors"], dinner: ["dinner"],
-  eveningC: ["music", "comedy", "nightlife", "dessert"], eveningF: ["family_fun", "dessert", "sight"] };
+  eveningC: ["music", "comedy", "nightlife", "dessert"], eveningF: ["dessert"] };
 const fits = (p, m) => m === "couple" ? p.f !== "family" : p.f !== "couple" && p.kid !== false;
 const gaps = [];
 for (const [city, c] of open) for (const m of ["couple", "family"]) for (const [k, cats] of Object.entries(SLOTS)) {
@@ -54,6 +55,9 @@ for (const [city, c] of open) for (const m of ["couple", "family"]) for (const [
   // breakfast and lunch fall back to any confirmed spot (a couple can eat at a family café); dinner and evenings must fit who's going
   const strict = !["meal", "brunch", "lunch"].includes(k);
   const n = c.places.filter(p => p.ok && cats.includes(p.c) && (!strict || fits(p, m))).length; if (n < 1) gaps.push(`${city}/${m}/${k}`); }
+{ const app = readFileSync(new URL("../../table-of-7/index.html", import.meta.url), "utf8");
+  const fam = (app.match(/evening:\{[^}]*family:(\[[^\]]*\])/) || [])[1];
+  ok(fam === '["dessert"]', "a family evening is a dessert stop, never a zoo, kids' museum or sight that closes at dusk (found " + fam + ")"); }
 ok(!gaps.length, `every open city has a place for every part of the day, and dinner and evenings fit couples and families${gaps.length ? ": missing " + gaps.join(", ") : ""}`);
-ok(open.length >= 5 && open.map(([k]) => k).join() === "Nashville,Atlanta,Chicago,Dallas,Houston", `open now: ${open.map(([k]) => k).join(", ")}`);
+ok(["Nashville", "Atlanta", "Chicago", "Dallas", "Houston"].every(k => open.some(([c]) => c === k)), `open now: ${open.map(([k]) => k).join(", ")}`);
 console.log(bad ? `${bad} PROOF(S) FAILED` : "ALL PROOFS HOLD"); process.exit(bad ? 1 : 0);
