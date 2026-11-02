@@ -15,10 +15,15 @@ self.addEventListener("push", e => {
   }));
 });
 
+// A tapped notification opens what it is about (2026-11-01: it used to bring the app up on Home every time). The
+// server puts the target in the address as ?go=kind:id. An open app is sent a message to go there; a closed one is
+// opened at the address and goes there once it is signed in.
 self.addEventListener("notificationclick", e => {
   e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || "./";
+  let go = ""; try { go = new URL(url, self.location.href).searchParams.get("go") || ""; } catch {}
   e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(wins => {
-    for (const w of wins) if ("focus" in w) return w.focus();
-    return self.clients.openWindow(e.notification.data && e.notification.data.url || "./");
+    for (const w of wins) if ("focus" in w) { if (go) w.postMessage({ t8go: go }); return w.focus(); }
+    return self.clients.openWindow(url);
   }));
 });

@@ -1502,7 +1502,7 @@ function rowsOf(s){
       k.items.forEach(i => put("tab_lines", {id:i.id, event_id:eid, owner, category:i.cat, description:nz(i.desc), amount:+i.amount}));
     });
   });
-  s.alerts.forEach(a => put("alerts", {id:a.id, to_member:a.to, text:a.text, event_id:nz(a.eventId), read:!!a.read, at:ms2iso(a.t)}));
+  s.alerts.forEach(a => put("alerts", {id:a.id, to_member:a.to, text:a.text, event_id:nz(a.eventId), link:nz(a.link), read:!!a.read, at:ms2iso(a.t)}));
   return R;
 }
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -1594,7 +1594,7 @@ async function pull(){
   D.tab_tickets.forEach(k => { const t = n.tabs[k.event_id]; if(!t) return;
     t.tickets[k.owner] = {items:(L[k.event_id] || []).filter(i => i.owner === k.owner).map(i => ({id:i.id, cat:i.category, desc:i.description || "", amount:+i.amount})),
       covers:k.covers, tip:k.tip_pct, status:k.status, note:k.return_note || "", paidVia:k.paid_via, sentAt:iso2ms(k.sent_at), settledAt:iso2ms(k.settled_at), fromServer:true}; });
-  n.alerts = D.alerts.map(a => ({id:a.id, to:a.to_member, text:a.text, eventId:a.event_id, t:iso2ms(a.at), read:a.read}));
+  n.alerts = D.alerts.map(a => ({id:a.id, to:a.to_member, text:a.text, eventId:a.event_id, link:a.link || "", t:iso2ms(a.at), read:a.read}));
   Object.assign(st, n);
   snap = rowsOf(st);
   gFillNames();
@@ -1863,17 +1863,45 @@ const guestApproved = g => g.hands.length >= majority();
    vote or RSVP, and no one else can put them back. */
 const inEvent = (e, id) => !(e?.excluded || []).includes(id);
 const canSee = e => inEvent(e, st.me) || isAdmin();
-function alertAll(text, eventId = null, except = st.me){
+function alertAll(text, eventId = null, except = st.me, link = ""){
   const evx = eventId ? st.events.find(x => x.id === eventId) : null;
-  st.fam.forEach(f => { if(f.id !== except && inEvent(evx, f.id) && f.status !== "suspended") st.alerts.push({id:uid("a"), to:f.id, text, eventId, t:Date.now(), read:false}); });
+  st.fam.forEach(f => { if(f.id !== except && inEvent(evx, f.id) && f.status !== "suspended") st.alerts.push({id:uid("a"), to:f.id, text, eventId, link, t:Date.now(), read:false}); });
   if(st.alerts.length > 300) st.alerts = st.alerts.slice(-300);
 }
 const ago = t => { const m = Math.round((Date.now() - t)/60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m/60)} hr ago` : new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"}); };
+/* Where an alert goes when it is tapped (2026-11-01: alerts with no dinner went nowhere, and every phone notification
+   opened Home: Rosa's approved photo "nowhere", Candyce's mail "back to the home screen"). An alert carries a target,
+   "kind:id"; the bell and the phone notification (sw.js → ?go=… or a message) both come here. false = not handled. */
+function alertGo(link){
+  const [kind, ...rest] = String(link || "").split(":"), id = rest.join(":");
+  const has = (list, x) => (list || []).some(o => o.id === x);
+  const opener = {   // each opener returns true when it handled the target
+    mail: () => { closeSheet(); if(id && mlThreads().some(t => t.id === id)) sheetMailThread(id); else sheetMail(); return true; },
+    photo: () => { openGallery(); if(id && has(st.photos, id)) sheetPhoto(id); return true; },
+    gallery: () => { openGallery(); return true; },
+    approvals: () => { if(!isAdmin()) return false; closeSheet(); openHost(); return true; },
+    card: () => { closeSheet(); openCard({}); return true; },
+    movie: () => has(st.movies, id) && (drawMovieNight(id), true),
+    golf: () => has(st.golf, id) && (drawGolf(id), true),
+    santa: () => has(st.santa, id) && (drawSanta(id), true),
+    outing: () => has(st.outings, id) && (drawOuting(id), true),
+    tourney: () => has(st.tourneys, id) && (drawTourney(id), true),
+    hangout: () => has(st.hangouts, id) && (sheetHangout(id), true),
+    dinner: () => { if(!ev(id)) return false; closeSheet(); go("feed"); setTimeout(() => document.getElementById("ev-" + id)?.scrollIntoView({behavior:"smooth"}), 60); return true; },
+  }[kind];
+  return opener ? !!opener() : false;
+}
+// a notification tapped while the app is closed opens it with ?go=…; while it is open, the helper sends a message
+let pendingGo = (() => { try { return new URLSearchParams(location.search).get("go") || ""; } catch { return ""; } })();
+if(pendingGo){ try { history.replaceState(null, "", location.pathname); } catch {} }
+function runPendingGo(){ const g = pendingGo; pendingGo = ""; if(g && !app.hidden) alertGo(g); }
+{ const openApp1 = openApp; openApp = function(){ openApp1(); if(pendingGo) setTimeout(runPendingGo, 900); }; }
+if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { const g = e.data && e.data.t8go; if(!g) return; if(app.hidden) pendingGo = String(g); else alertGo(String(g)); });
 function sheetAlerts(){
   const mine = st.alerts.filter(a => a.to === st.me).sort((a,b) => b.t - a.t).slice(0,60);
   openSheet(`<div class="sheet-head"><h2>Alerts</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
     <p class="small muted" style="margin:0">Turn on notifications (tap your initial) and these reach ${esc(first(ME().name))}'s lock screen too.</p>
-    <div>${mine.map(a => `<button class="alert-row ${a.read?"":"unread"}" data-act="alert-go" data-id="${a.eventId||""}"><span class="ic" style="color:var(--brass)">${I.bell}</span><span><b style="font-weight:600">${esc(a.text)}</b><br><small>${ago(a.t)}</small></span></button>`).join("") || `<div class="empty">You're all caught up.</div>`}</div>`);
+    <div>${mine.map(a => `<button class="alert-row ${a.read?"":"unread"}" data-act="alert-go" data-id="${a.eventId||""}" data-link="${esc(a.link||"")}"><span class="ic" style="color:var(--brass)">${I.bell}</span><span><b style="font-weight:600">${esc(a.text)}</b><br><small>${ago(a.t)}</small></span></button>`).join("") || `<div class="empty">You're all caught up.</div>`}</div>`);
   mine.forEach(a => a.read = true); save(); renderTabs();
 }
 
@@ -2853,6 +2881,7 @@ function guideBody(k){
     ["“That email already has a seat at a table.”", "Each email can sit at only one table. Use a different email for the new family, or ask the owner."],
     ["Mail I sent says “not opened yet”", "They haven't opened the app since. It's waiting for them; they'll see “While you were away, you got mail.”"],
     ["The host can't see our mail", "That's on purpose. Family Mail is private to the people in it."],
+    ["I tapped an alert and it opened Home", "Alerts now open what they're about: a Family Mail alert opens that conversation, a photo alert opens the photo in Sights & Sounds, and a photo waiting for approval opens Host controls. That works from the bell and from a notification on your lock screen. Alerts sent before this change still just open the app."],
     ["My outside invite link says it's closed", "The planner turned the link off, called the hangout off, or the day has passed. Ask them for a new one."],
     ["“Pick someone from the family, or make a link…”", "A hangout needs someone to go to: tap a name under WHO'S INVITED, or tap 🔗 to make a link for someone outside the app."],
     ["A Getaway city says “being checked”", "Every Getaway place is checked on Google before it appears, so nobody drives to a closed door. That city opens as soon as its check is finished."],
@@ -3066,8 +3095,8 @@ async function savePhotos(){
       if(!save()){ st.photos.pop(); toast("This phone's storage is full. Remove a few photos first."); break; } added++; }
     catch { toast("One file couldn't be read as a photo"); }
   }
-  if(added && isAdmin()){ alertAll(`${first(ME().name)} shared ${added} photo${added>1?"s":""}${rid ? " from " + RBY[rid].name : ""}.`, d.eventId); save(); }
-  if(added && !isAdmin()){ alertAdmin(`${first(ME().name)} shared ${added} photo${added>1?"s":""}. They're waiting for your approval.`); save(); }
+  if(added && isAdmin()){ alertAll(`${first(ME().name)} shared ${added} photo${added>1?"s":""}${rid ? " from " + RBY[rid].name : ""}.`, d.eventId, st.me, "gallery"); save(); }
+  if(added && !isAdmin()){ alertAdmin(`${first(ME().name)} shared ${added} photo${added>1?"s":""}. They're waiting for your approval.`, "approvals"); save(); }
   closeSheet(); if(revealId) drawReveal(); if(!galleryEl.hidden) drawGallery(); render();
   if(added) toast(isAdmin() ? `${added} photo${added>1?"s":""} added to Sights & Sounds` : `Sent to ${first(F(ADMIN).name)} for approval`);
 }
@@ -3187,7 +3216,7 @@ function drawHost(){
   </div>`;
 }
 const personName = id => st.fam.find(f => f.id === id)?.name || st.contacts.find(c => c.id === id)?.name || "Someone";
-function alertAdmin(text){ st.alerts.push({id:uid("a"), to:ADMIN, text, eventId:null, t:Date.now(), read:false}); }
+function alertAdmin(text, link = ""){ st.alerts.push({id:uid("a"), to:ADMIN, text, eventId:null, link, t:Date.now(), read:false}); }
 
 /* ================= Send a card (picture + note) to anyone ================= */
 const cardEl = document.getElementById("cardov"); let cardDraft = null, cardTimer = null;
@@ -7616,12 +7645,12 @@ document.addEventListener("click", e => {
     case "ev-guest-del": { const e2 = ev(id); e2.guests = e2.guests.filter(g => g.id !== b.dataset.g); save(); sheetPeople(id); render(); toast("Guest removed"); break; }
     case "host-close": closeHost(); break;
     case "mod-photo": { const ph = st.photos.find(x => x.id === id); if(!ph) break;
-      if(b.dataset.v === "ok"){ ph.status = "approved"; st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} approved your photo. It's in Sights & Sounds.`,eventId:ph.eventId,t:Date.now(),read:false}); alertAll(`New in Sights & Sounds: ${ph.caption || pcat(ph.cat)}.`, ph.eventId, ph.by); }
+      if(b.dataset.v === "ok"){ ph.status = "approved"; st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} approved your photo. It's in Sights & Sounds.`,eventId:ph.eventId,link:`photo:${ph.id}`,t:Date.now(),read:false}); alertAll(`New in Sights & Sounds: ${ph.caption || pcat(ph.cat)}.`, ph.eventId, ph.by, `photo:${ph.id}`); }
       else { st.photos = st.photos.filter(x => x.id !== id); st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} didn't approve one of your photos.`,eventId:null,t:Date.now(),read:false}); }
       save(); drawHost(); break; }
     case "mod-card": { const c = st.cards.find(x => x.id === id); if(!c) break;
       c.status = b.dataset.v === "ok" ? "approved" : "declined";
-      st.alerts.push({id:uid("a"),to:c.by,text:b.dataset.v === "ok" ? `${first(ME().name)} approved your card. Open Send a card to send it.` : `${first(ME().name)} didn't approve your card.`,eventId:null,t:Date.now(),read:false});
+      st.alerts.push({id:uid("a"),to:c.by,text:b.dataset.v === "ok" ? `${first(ME().name)} approved your card. Open Send a card to send it.` : `${first(ME().name)} didn't approve your card.`,eventId:null,link:b.dataset.v === "ok" ? "card" : "",t:Date.now(),read:false});
       save(); drawHost(); break; }
     case "mod-post": { const list = b.dataset.k === "note" ? "notes" : "reviews"; const x = st[list].find(y => y.id === id); if(!x) break;
       if(b.dataset.v === "ok") x.status = "ok"; else st[list] = st[list].filter(y => y.id !== id);
@@ -7695,7 +7724,7 @@ document.addEventListener("click", e => {
     case "block-go": { const rid = b.dataset.rid; st.blocked[rid] = {by:st.me, reason:document.getElementById("bl-reason").value.trim(), date:iso(today0)}; alertAll(`${first(ME().name)} added ${RBY[rid].name} to the Never Again list.`); save(); closeSheet(); render(); toast(`${RBY[rid].name} is on the Never Again list`); break; }
     case "unblock": { const rid = b.dataset.rid; delete st.blocked[rid]; save(); closeSheet(); render(); toast(`${RBY[rid].name} is back in the mix`); break; }
     case "plan-bday": { const f = F(id); newDraft("birthday"); draft.title = `${first(f.name)}'s Birthday`; const fav = radarList().find(x => x.f.id === id)?.favs[0]; if(fav) draft.options = [fav[0]]; go("plan"); break; }
-    case "alert-go": closeSheet(); if(id){ const e2 = ev(id); if(e2 && e2.status === "set" && e2.rsvp[st.me] === undefined) openInvite(id); else { go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth"}), 60); } } break;
+    case "alert-go": closeSheet(); if(b.dataset.link && alertGo(b.dataset.link)) break; if(id){ const e2 = ev(id); if(e2 && e2.status === "set" && e2.rsvp[st.me] === undefined) openInvite(id); else { go("feed"); setTimeout(() => document.getElementById("ev-"+id)?.scrollIntoView({behavior:"smooth"}), 60); } } break;
     // feed
     case "vote": { const e2 = ev(id); if(e2.status !== "open") return; e2.votes[st.me] = b.dataset.rid; save(); render(); toast(`Voted for ${RBY[b.dataset.rid].name}`); break; }
     case "lock": { const e2 = ev(id); lockEvent(e2).then(ok => { if(ok){ render(); openReveal(id); } }); break; }
