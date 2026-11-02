@@ -34,4 +34,11 @@ ok("the router names each target once", names.length > 20 && names.length === ne
 ok("golf and santa open the one named, else the room", /    golf: \(\) => \{ if\(id && has\(st\.golf, id\)\)\{ drawGolf\(id\); return true; \}/.test(app) && /    santa: \(\) => \{ if\(id && has\(st\.santa, id\)\)\{ drawSanta\(id\); return true; \}/.test(app));
 // the dinner-vote alerts are written by the database with their dinner but no link: their notification opens that dinner
 ok("a notification about a dinner opens that dinner", /const go = a\.link \|\| \(a\.event_id \? "dinner:" \+ a\.event_id : ""\)/.test(push) && /\?go=" \+ encodeURIComponent\(go\)/.test(push));
+// 2026-11-02 (Candyce: "It still won't let me open my notifications"): a tap on a phone away over 10 minutes went to its
+// target first and was then wiped by the 10-minute lock, so after the PIN it was Home. The target now waits for the lock.
+ok("a tapped notification waits until the phone is awake and past the lock", /pendingGo = String\(g\); goWhenAwake\(\);/.test(app) && /function goWhenAwake\(\)\{ if\(document\.hidden \|\| app\.hidden \|\| awayTooLong\(\)\) return; runPendingGo\(\); \}/.test(app));
+ok("coming back runs a waiting target, or locks and keeps it for after the PIN", /const long = awayTooLong\(\); awayAt = 0; if\(long && !app\.hidden\) lockFresh\("Locked after 10 minutes away\. Sign in again\."\); else goWhenAwake\(\);/.test(app));
+ok("the 10-minute lock loads a fresh copy, keeping the target and the message", /function lockFresh\(msg\)\{ lockApp\(msg\);/.test(app) && /"\?go=" \+ encodeURIComponent\(pendingGo\)/.test(app) && /location\.replace\(to\)/.test(app) && /showSignIn\(lockMsg\)/.test(app));
+ok("a waiting target is not thrown away while the app is locked", /function runPendingGo\(\)\{ if\(app\.hidden\) return; const g = pendingGo; pendingGo = ""; if\(g\) alertGo\(g\); \}/.test(app));
+ok("a photo that wasn't approved opens the album", /didn't approve one of your photos\.`,eventId:null,link:"gallery"/.test(app));
 console.log(fails ? `\n${fails} FAILED` : "\nALL PROOFS HOLD"); process.exit(fails ? 1 : 0);

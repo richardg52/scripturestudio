@@ -1909,9 +1909,11 @@ function alertGo(link){
 // a notification tapped while the app is closed opens it with ?go=…; while it is open, the helper sends a message
 let pendingGo = (() => { try { return new URLSearchParams(location.search).get("go") || ""; } catch { return ""; } })();
 if(pendingGo){ try { history.replaceState(null, "", location.pathname); } catch {} }
-function runPendingGo(){ const g = pendingGo; pendingGo = ""; if(g && !app.hidden) alertGo(g); }
+function runPendingGo(){ if(app.hidden) return; const g = pendingGo; pendingGo = ""; if(g) alertGo(g); }
+// a phone away over 10 minutes is about to lock: a target run now would be wiped, and after the PIN it would be Home (2026-11-02)
+function goWhenAwake(){ if(document.hidden || app.hidden || awayTooLong()) return; runPendingGo(); }
 { const openApp1 = openApp; openApp = function(){ openApp1(); if(pendingGo) setTimeout(runPendingGo, 900); }; }
-if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { const g = e.data && e.data.t8go; if(!g) return; if(app.hidden) pendingGo = String(g); else alertGo(String(g)); });
+if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { const g = e.data && e.data.t8go; if(!g) return; pendingGo = String(g); goWhenAwake(); });
 function sheetAlerts(){
   const mine = st.alerts.filter(a => a.to === st.me).sort((a,b) => b.t - a.t).slice(0,60);
   openSheet(`<div class="sheet-head"><h2>Alerts</h2><button class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
@@ -1950,7 +1952,8 @@ function endSplash(){
   if(splashDone) return; splashDone = true;
   splash.classList.add("out");
   setTimeout(() => { splash.hidden = true; }, 700);
-  showSignIn();
+  let lockMsg = ""; try { lockMsg = sessionStorage.getItem("t8.lockmsg") || ""; sessionStorage.removeItem("t8.lockmsg"); } catch {}
+  showSignIn(lockMsg);
 }
 splash.addEventListener("click", endSplash);
 splash.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ") endSplash(); });
@@ -2034,7 +2037,11 @@ function lockApp(msg){ sb.auth.signOut({scope:"local"}).catch(() => {}); unsubsc
   { const ui = st.ui, ln = st.lastName, lf = st.lastFam, lh = st.lastHost; st = seed(); st.ui = ui; st.lastName = ln; st.lastFam = lf; st.lastHost = lh; st.cards = []; st.tabs = {}; } closeSheet(); clearInterval(liveTimer); ["live","reveal","gallery","host","cardov","tab","invite"].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; }); document.body.style.overflow = ""; liveId = null; revealId = null; tabId = null; showSignIn(msg); }
 /* Lock again after 10 minutes away from the app */
 let awayAt = 0;
-document.addEventListener("visibilitychange", () => { if(document.hidden) awayAt = Date.now(); else if(awayAt && Date.now() - awayAt > 10*60000 && !app.hidden) lockApp("Locked after 10 minutes away. Sign in again."); });
+const awayTooLong = () => !!awayAt && Date.now() - awayAt > 10*60000;
+document.addEventListener("visibilitychange", () => { if(document.hidden){ awayAt = Date.now(); return; } const long = awayTooLong(); awayAt = 0; if(long && !app.hidden) lockFresh("Locked after 10 minutes away. Sign in again."); else goWhenAwake(); });
+// an iPhone can keep the app asleep for days, still running the code it opened with: the lock loads a fresh copy and carries
+// a tapped notification's target across (every fresh start asks for the PIN, so this opens nothing) (2026-11-02)
+function lockFresh(msg){ lockApp(msg); try { sessionStorage.setItem("t8.lockmsg", msg); } catch {} const to = location.pathname + (pendingGo ? "?go=" + encodeURIComponent(pendingGo) : ""); setTimeout(() => location.replace(to), 400); }
 function showGreeting(){
   gate.hidden = false; gate.className = "greeting";
   const p = pendingFor(st.me).length;
@@ -2896,7 +2903,7 @@ function guideBody(k){
     ["“That email already has a seat at a table.”", "Each email can sit at only one table. Use a different email for the new family, or ask the owner."],
     ["Mail I sent says “not opened yet”", "They haven't opened the app since. It's waiting for them; they'll see “While you were away, you got mail.”"],
     ["The host can't see our mail", "That's on purpose. Family Mail is private to the people in it."],
-    ["I tapped an alert and it opened Home", "Alerts now open what they're about: a Family Mail alert opens that conversation, a photo alert opens the photo in Sights & Sounds, a photo waiting for approval opens Host controls, a game alert opens that game, a dinner alert opens that dinner, and every other room's alert (movies, Topgolf, outings, Secret Santa, prayers, recipes, hangouts, getaways, watch nights, date nights, Memphis Live, rides) opens its room. That works from the bell and from a notification on your lock screen. Alerts sent before this change still just open the app."],
+    ["I tapped an alert and it opened Home", "Alerts now open what they're about: a Family Mail alert opens that conversation, a photo alert opens the photo in Sights & Sounds, a photo waiting for approval opens Host controls, a game alert opens that game, a dinner alert opens that dinner, and every other room's alert (movies, Topgolf, outings, Secret Santa, prayers, recipes, hangouts, getaways, watch nights, date nights, Memphis Live, rides) opens its room. That works from the bell and from a notification on your lock screen, even if the app asks for your PIN first. A notification that reached your phone before this fix can only open the app: tap the bell at the top instead, and it opens from there."],
     ["My outside invite link says it's closed", "The planner turned the link off, called the hangout off, or the day has passed. Ask them for a new one."],
     ["“Pick someone from the family, or make a link…”", "A hangout needs someone to go to: tap a name under WHO'S INVITED, or tap 🔗 to make a link for someone outside the app."],
     ["A Getaway city says “being checked”", "Every Getaway place is checked on Google before it appears, so nobody drives to a closed door. That city opens as soon as its check is finished."],
@@ -7661,7 +7668,7 @@ document.addEventListener("click", e => {
     case "host-close": closeHost(); break;
     case "mod-photo": { const ph = st.photos.find(x => x.id === id); if(!ph) break;
       if(b.dataset.v === "ok"){ ph.status = "approved"; st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} approved your photo. It's in Sights & Sounds.`,eventId:ph.eventId,link:`photo:${ph.id}`,t:Date.now(),read:false}); alertAll(`New in Sights & Sounds: ${ph.caption || pcat(ph.cat)}.`, ph.eventId, ph.by, `photo:${ph.id}`); }
-      else { st.photos = st.photos.filter(x => x.id !== id); st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} didn't approve one of your photos.`,eventId:null,t:Date.now(),read:false}); }
+      else { st.photos = st.photos.filter(x => x.id !== id); st.alerts.push({id:uid("a"),to:ph.by,text:`${first(ME().name)} didn't approve one of your photos.`,eventId:null,link:"gallery",t:Date.now(),read:false}); }
       save(); drawHost(); break; }
     case "mod-card": { const c = st.cards.find(x => x.id === id); if(!c) break;
       c.status = b.dataset.v === "ok" ? "approved" : "declined";
