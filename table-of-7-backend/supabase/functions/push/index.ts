@@ -34,11 +34,12 @@ Deno.serve(async (req) => {
 
     if (body.action === "send") {
       if (req.headers.get("x-t7-token") !== cfg.token) return reply({ ok: false }, 403);
-      const { data: a } = await admin.from("alerts").select("id,to_member,text,event_id").eq("id", String(body.alert_id ?? "")).maybeSingle();
+      const { data: a } = await admin.from("alerts").select("id,to_member,text,event_id,link").eq("id", String(body.alert_id ?? "")).maybeSingle();
       if (!a) return reply({ ok: true, sent: 0 });
       const { data: subs } = await admin.from("push_subscriptions").select("endpoint,keys").eq("member_id", a.to_member);
       webpush.setVapidDetails("https://table-of-8.netlify.app", cfg.pub!, cfg.priv!);
-      const payload = JSON.stringify({ title: "Table of 8", body: a.text, tag: a.event_id || a.id, url: "https://table-of-8.netlify.app/" });   // absolute: phones still holding the old table-of-7 helper open the new address
+      // a tapped notification opens what it is about (?go=kind:id; sw.js hands it to the app), not just Home (2026-11-01)
+      const payload = JSON.stringify({ title: "Table of 8", body: a.text, tag: a.event_id || a.id, url: "https://table-of-8.netlify.app/" + (a.link ? "?go=" + encodeURIComponent(a.link) : "") });   // absolute: phones still holding the old table-of-7 helper open the new address
       let sent = 0;
       for (const s of subs ?? []) {
         try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload, { TTL: 60 * 60 * 24 }); sent++; }
