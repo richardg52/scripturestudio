@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
       if (error) { console.error("mail send", error.message); return reply({ ok: false, code: "server" }, 500); }
       await admin.from("mail_box").insert(live.map(x => ({ mail_id: m.id, member_id: x, family_id: me.family_id })));
       const say = kind === "request" ? `📬 ${first} sent you a private request` : kind === "hug" ? `💛 ${first} is thinking of you` : `📬 Family Mail from ${first}`;
-      await admin.from("alerts").insert(live.map(x => ({ to_member: x, text: say })));
+      await admin.from("alerts").insert(live.map(x => ({ to_member: x, text: say, link: `mail:${thread ?? m.id}` })));   // tapping it opens this conversation
       return reply({ ok: true, id: m.id, sent: live.length, skipped: to.length - live.length });
     }
 
@@ -72,12 +72,12 @@ Deno.serve(async (req) => {
     if (body.action === "answer") {
       const ans = body.ans === "yes" ? "yes" : body.ans === "no" ? "no" : null;
       if (!ans) return reply({ ok: false, code: "answer" });
-      const { data: m } = await admin.from("mail").select("id,kind,from_member,subject").eq("id", String(body.id ?? "")).maybeSingle();
+      const { data: m } = await admin.from("mail").select("id,kind,from_member,subject,thread").eq("id", String(body.id ?? "")).maybeSingle();
       if (!m || m.kind !== "request") return reply({ ok: false, code: "no_mail" });
       const { data: b } = await admin.from("mail_box").update({ answer: ans, answer_note: clip(body.note, 500) || null, answered_at: new Date().toISOString(), read_at: new Date().toISOString() })
         .eq("mail_id", m.id).eq("member_id", me.id).select("mail_id").maybeSingle();
       if (!b) return reply({ ok: false, code: "no_mail" });
-      await admin.from("alerts").insert({ to_member: m.from_member, text: `📬 ${first} answered your request${m.subject ? ` “${clip(m.subject, 60)}”` : ""}: ${ans === "yes" ? "Yes ✅" : "No ❌"}` });
+      await admin.from("alerts").insert({ to_member: m.from_member, text: `📬 ${first} answered your request${m.subject ? ` “${clip(m.subject, 60)}”` : ""}: ${ans === "yes" ? "Yes ✅" : "No ❌"}`, link: `mail:${m.thread ?? m.id}` });
       return reply({ ok: true });
     }
 
