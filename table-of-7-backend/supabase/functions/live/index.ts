@@ -117,8 +117,8 @@ Deno.serve(async (req) => {
         if (add.length) await admin.from("live_asks").update({ invited: [...(was.invited ?? []), ...add] }).eq("id", was.id);
         await admin.from("live_answers").upsert({ ask_id: was.id, member_id: me.id, family_id: me.family_id, answer: "yes", picks: [ev.id] });
         const told = add.filter(id => id !== me.id && id !== was.by_member);
-        if (told.length) await admin.from("alerts").insert(told.map((id: string) => ({ to_member: id, text: text(first) })));
-        if (was.by_member !== me.id) await admin.from("alerts").insert({ to_member: was.by_member, text: `🎟️ ${first} is in for ${ev.title} too.` });
+        if (told.length) await admin.from("alerts").insert(told.map((id: string) => ({ to_member: id, text: text(first), link: "memphislive" })));
+        if (was.by_member !== me.id) await admin.from("alerts").insert({ to_member: was.by_member, text: `🎟️ ${first} is in for ${ev.title} too.`, link: "memphislive" });
         return reply({ ok: true, id: was.id, already: true });
       };
       const { data: was } = await admin.from("live_asks").select("id,invited,by_member").eq("family_id", me.family_id).eq("event_id", ev.id).maybeSingle();
@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
         return again ? await joinIn(again) : reply({ ok: false, code: "server" }, 500);
       }
       await admin.from("live_answers").insert({ ask_id: a.id, member_id: me.id, family_id: me.family_id, answer: "yes", picks: [ev.id] });
-      await admin.from("alerts").insert(asked.map((id: string) => ({ to_member: id, text: text(first) })));
+      await admin.from("alerts").insert(asked.map((id: string) => ({ to_member: id, text: text(first), link: "memphislive" })));
       return reply({ ok: true, id: a.id });
     }
 
@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
       if (error) return reply({ ok: false, code: "server" }, 500);
       if (a.by_member !== me.id && had?.answer !== answer) {
         const say = answer === "yes" ? "is in" : answer === "maybe" ? "is a maybe" : "can't make it";
-        await admin.from("alerts").insert({ to_member: a.by_member, text: `🎟️ ${first} ${say} for ${a.title}${picks.length > 1 ? ` (${picks.length} dates work)` : ""}${note ? `: "${note}"` : "."}` });
+        await admin.from("alerts").insert({ to_member: a.by_member, link: "memphislive", text: `🎟️ ${first} ${say} for ${a.title}${picks.length > 1 ? ` (${picks.length} dates work)` : ""}${note ? `: "${note}"` : "."}` });
       }
       return reply({ ok: true });
     }

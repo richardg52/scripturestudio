@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const tell = async (to: string, text: string) => { if (to && to !== me.id) await admin.from("alerts").insert({ to_member: to, text }); };
+    const tell = async (to: string, text: string) => { if (to && to !== me.id) await admin.from("alerts").insert({ to_member: to, text, link: text.startsWith(HEART.kids) ? "adventure" : "datenight" }); };   // tapping it opens its room (2026-11-01)
 
     if (body.action === "plan") {
       const kind = String(body.kind ?? "");

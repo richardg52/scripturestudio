@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
       if ((guests ?? 0) >= 40) return reply({ ok: false, code: "full" });
       await admin.from("rate_hits").insert({ k: "invite:" + ip });
       await admin.from("hangout_guests").insert({ hangout_id: x.id, name, rsvp: ans, note: clip(body.note, 300) || null });
-      await admin.from("alerts").insert({ to_member: x.created_by, text: `📨 ${name} ${ans === "yes" ? "said yes ✅" : ans === "maybe" ? "said maybe 🤔" : "can't make it ❌"} to ${clip(x.title, 60)} (through your invite link)` });
+      await admin.from("alerts").insert({ to_member: x.created_by, link: "hangouts", text: `📨 ${name} ${ans === "yes" ? "said yes ✅" : ans === "maybe" ? "said maybe 🤔" : "can't make it ❌"} to ${clip(x.title, 60)} (through your invite link)` });
       return reply({ ok: true });
     }
 
@@ -77,7 +77,8 @@ Deno.serve(async (req) => {
     const { data: me } = await admin.from("members").select("id,family_id,status,name,role").eq("user_id", u.user.id).maybeSingle();
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const host = me.role === "host", first = String(me.name).split(" ")[0];
-    const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
+    const alert = async (to: string[], text: string, link = "hangouts") =>   // tapping it opens hangouts (2026-11-01)
+      { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text, link }))); };
     const seatsOk = async (ids: string[]) => {
       const { data } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", ids.length ? ids : ["-"]);
       return (data ?? []).length === ids.length && (data ?? []).every(s => s.status === "active");

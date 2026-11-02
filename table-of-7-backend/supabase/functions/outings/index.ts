@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
+    const alert = async (to: string[], text: string, link = "outings") =>   // tapping it opens outings (2026-11-01)
+      { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text, link }))); };
 
     if (body.action === "tigers") {
       const games = await schedule(admin); if (!games) return reply({ ok: false, code: "feed" });

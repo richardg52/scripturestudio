@@ -77,7 +77,8 @@ Deno.serve(async (req) => {
       if (!(fam?.features ?? []).some((f: string) => f === "all" || f === "watch")) return reply({ ok: false, code: "not_on_plan" }, 402); }
     const host = me.role === "host", first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
+    const alert = async (to: string[], text: string, kind = "") =>   // tapping it opens its room (2026-11-01)
+      { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text, link: (kind ? kind === "game" : text.startsWith("🏈")) ? "gamenight" : "netflix" }))); };
     const firstOf = async (id: string) => { const { data } = await admin.from("members").select("name").eq("id", id).maybeSingle(); return String(data?.name ?? "Someone").split(" ")[0]; };
     const room = (k: string) => k === "game" ? "Big Game Night" : "Netflix & Chill";
     const icon = (k: string) => k === "game" ? "🏈" : "🍿";
@@ -172,7 +173,7 @@ Deno.serve(async (req) => {
         Object.assign(patch, { plan_at: plan });
       }
       await admin.from("watch_people").upsert(patch);
-      if (say) await alert([p.at_member, p.created_by], say);
+      if (say) await alert([p.at_member, p.created_by], say, p.kind);
       return reply({ ok: true });
     }
     if (body.action === "address") {

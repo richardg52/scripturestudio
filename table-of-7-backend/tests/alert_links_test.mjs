@@ -16,6 +16,22 @@ ok("a photo waiting for approval points the host to approvals", /They're waiting
 ok("an approved photo's alerts point at that photo", (app.match(/`photo:\$\{ph\.id\}`/g) || []).length >= 2);
 ok("a notification opened with ?go= waits through sign-in and then opens it", /get\("go"\)/.test(app) && /runPendingGo/.test(app) && /openApp1\(\); if\(pendingGo\)/.test(app));
 ok("an already-open app is told where to go", /t8go/.test(app) && /postMessage\(\{ t8go: go \}\)/.test(sw));
-ok("the push sender puts the target in the address", /select\("id,to_member,text,event_id,link"\)/.test(push) && /\?go=" \+ encodeURIComponent\(a\.link\)/.test(push));
+ok("the push sender puts the target in the address", /select\("id,to_member,text,event_id,link"\)/.test(push) && /const go = a\.link \|\|/.test(push));
 ok("Family Mail alerts point at their conversation", (mail.match(/link: `mail:\$\{/g) || []).length === 2);
+const F = n => R(`../supabase/functions/${n}/index.ts`);
+const rooms = {movies:"movies", golf:"golf", outings:"outings", santa:"santa", prayer:"prayers", tourney:"games", recipes:"recipes", getaways:"getaways", hangouts:"hangouts"};
+for (const [fn, room] of Object.entries(rooms)) ok(`${fn}: its alerts open ${room}`, F(fn).includes(`link = "${room}"`) && new RegExp(`\\n    ${room}: \\(\\) =>`).test(app));
+ok("watch: alerts open Big Game Night or Netflix & Chill", /"gamenight" : "netflix"/.test(F("watch")) && /    gamenight: \(\) =>/.test(app) && /    netflix: \(\) =>/.test(app));
+ok("dates: alerts open Date Night or Adventure Club", /"adventure" : "datenight"/.test(F("dates")) && /    datenight: \(\) =>/.test(app) && /    adventure: \(\) =>/.test(app));
+ok("rides: alerts open the plan the ride is for", /rideLink = `\$\{kind === "dinner" \? "dinner" : kind\}:\$\{ref\}`/.test(F("rides")) && /link: rideLink/.test(F("rides")));
+ok("Memphis Live: all four alerts open it", (F("live").match(/link: "memphislive"/g) || []).length === 4 && /    memphislive: \(\) =>/.test(app));
+ok("games: a game's alerts open that game", (F("games").match(/`game:\$\{g\.id\}`/g) || []).length === 3 && /    game: \(\) =>/.test(app));
+ok("family: a new family request opens the owner desk", /link: "owner"/.test(F("family")) && /    owner: \(\) =>/.test(app));
+// a name written twice in the router: the second silently replaces the first (golf and santa did: a ride's "golf:<id>"
+// opened the room list instead of that outing). Every name appears once.
+const table = (app.match(/const opener = \{([\s\S]*?)\n  \}\[kind\];/) || [])[1] || "", names = [...table.matchAll(/\n    (\w+): \(\) =>/g)].map(m => m[1]);
+ok("the router names each target once", names.length > 20 && names.length === new Set(names).size);
+ok("golf and santa open the one named, else the room", /    golf: \(\) => \{ if\(id && has\(st\.golf, id\)\)\{ drawGolf\(id\); return true; \}/.test(app) && /    santa: \(\) => \{ if\(id && has\(st\.santa, id\)\)\{ drawSanta\(id\); return true; \}/.test(app));
+// the dinner-vote alerts are written by the database with their dinner but no link: their notification opens that dinner
+ok("a notification about a dinner opens that dinner", /const go = a\.link \|\| \(a\.event_id \? "dinner:" \+ a\.event_id : ""\)/.test(push) && /\?go=" \+ encodeURIComponent\(go\)/.test(push));
 console.log(fails ? `\n${fails} FAILED` : "\nALL PROOFS HOLD"); process.exit(fails ? 1 : 0);

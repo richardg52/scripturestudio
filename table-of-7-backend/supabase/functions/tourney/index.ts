@@ -30,7 +30,8 @@ Deno.serve(async (req) => {
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
+    const alert = async (to: string[], text: string, link = "games") =>   // tapping it opens games (2026-11-01)
+      { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text, link }))); };
     const nameOf = async (ids: string[]) => { const { data } = await admin.from("members").select("id,name").in("id", ids); return (data ?? []).map(m => String(m.name).split(" ")[0]).join(" & "); };
 
     if (body.action === "new") {

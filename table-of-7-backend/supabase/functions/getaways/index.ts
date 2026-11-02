@@ -41,7 +41,8 @@ Deno.serve(async (req) => {
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const host = me.role === "host", first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const alert = async (to: string[], text: string) => { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text }))); };
+    const alert = async (to: string[], text: string, link = "getaways") =>   // tapping it opens getaways (2026-11-01)
+      { const t = [...new Set(to)].filter(x => x && x !== me.id); if (t.length) await admin.from("alerts").insert(t.map(x => ({ to_member: x, text, link }))); };
     const seatsOk = async (ids: string[]) => {
       const { data } = await admin.from("members").select("id,status").eq("family_id", me.family_id).in("id", ids.length ? ids : ["-"]);
       return (data ?? []).length === ids.length && (data ?? []).every(s => s.status === "active");

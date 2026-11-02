@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     if (!me || me.status !== "active") return reply({ ok: false, code: "not_active" }, 403);
     const first = String(me.name).split(" ")[0];
     const body = await req.json().catch(() => ({}));
-    const alert = async (to: string[], text: string) => { if (to.length) await admin.from("alerts").insert(to.map(t => ({ to_member: t, text }))); };
+    const alert = async (to: string[], text: string, link = "games") => { if (to.length) await admin.from("alerts").insert(to.map(t => ({ to_member: t, text, link }))); };   // tapping it opens the game, else the Game Room (2026-11-01)
 
     // ---- Family Feud survey: questions are public to the family, answers never leave the server ----
     if (String(body.action ?? "").startsWith("survey_")) {
@@ -192,7 +192,7 @@ Deno.serve(async (req) => {
       const { data: g, error } = await admin.from("games").insert({ family_id: me.family_id, kind, side_a: A, side_b: B, state, created_by: me.id }).select().single();
       if (error) return reply({ ok: false, code: "server" }, 500);
       if (secret) await admin.from("game_secrets").insert({ game_id: g.id, data: secret });
-      if (!table) await alert(people.filter(x => x !== me.id), kind === "feud" ? `${first} is judging Family Feud, built from the family's own survey. Open the Game Room to watch the board.` : `${first} started ${LABEL[kind]} with you. Open the Game Room to play.`);
+      if (!table) await alert(people.filter(x => x !== me.id), kind === "feud" ? `${first} is judging Family Feud, built from the family's own survey. Open the Game Room to watch the board.` : `${first} started ${LABEL[kind]} with you. Open the Game Room to play.`, `game:${g.id}`);
       return reply({ ok: true, game: g });
     }
 
@@ -226,7 +226,7 @@ Deno.serve(async (req) => {
       if (isTable) return;
       const label = LABEL[g.kind];
       const text = (g.kind === "wildcard" || g.kind === "dominoes") ? `${label}: ${why}.` : g.kind === "blackjack" ? `The Blackjack table closed. Final stacks: ${why}.` : winner === 2 ? `${label} ended in a draw (${why}).` : `${await sideNames(winner)} won ${label} (${why}).`;
-      await alert([...new Set([...g.side_a, ...g.side_b, ...(isFeud && g.created_by ? [g.created_by] : [])])].filter(x => !isBot(x)), text);
+      await alert([...new Set([...g.side_a, ...g.side_b, ...(isFeud && g.created_by ? [g.created_by] : [])])].filter(x => !isBot(x)), text, `game:${g.id}`);
     };
 
     // Trivia time's up may come from any player's phone (the answering phone may be closed); the server checks the clock
@@ -311,7 +311,7 @@ Deno.serve(async (req) => {
         await finish(2, await bjStacks(g.state)); return reply({ ok: true }); }
       if (isTable || isFeud) { await admin.from("games").update({ status: "done", winner: 2, why: "stopped", updated_at: new Date().toISOString() }).eq("id", g.id); return reply({ ok: true }); }
       if (g.kind === "wildcard" || g.kind === "dominoes") { await admin.from("games").update({ status: "done", winner: 2, why: "stopped", updated_at: new Date().toISOString() }).eq("id", g.id).eq("status", "live");
-        await alert([...new Set(g.side_a)].filter(x => !isBot(x) && x !== me.id), `${first} stopped the game of ${LABEL[g.kind]}.`); return reply({ ok: true }); }
+        await alert([...new Set(g.side_a)].filter(x => !isBot(x) && x !== me.id), `${first} stopped the game of ${LABEL[g.kind]}.`, `game:${g.id}`); return reply({ ok: true }); }
       const { data: done } = await admin.from("games").update({ status: "done", winner: 1 - mySide, why: `${first} resigned`, updated_at: new Date().toISOString() })
         .eq("id", g.id).eq("status", "live").select("id");
       if (!done?.length) return reply({ ok: false, code: "stale" }, 409);

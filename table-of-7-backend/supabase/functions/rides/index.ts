@@ -39,7 +39,8 @@ Deno.serve(async (req) => {
     const host = me.role === "host";
     const body = await req.json().catch(() => ({}));
     const firstOf = async (id: string) => { const { data } = await admin.from("members").select("name").eq("id", id).maybeSingle(); return String(data?.name ?? "Someone").split(" ")[0]; };
-    const alert = async (to: string, text: string) => { if (to && to !== me.id) await admin.from("alerts").insert({ to_member: to, text }); };
+    let rideLink: string | null = null;   // the plan this request is about: tapping a ride alert opens it (2026-11-01)
+    const alert = async (to: string, text: string) => { if (to && to !== me.id) await admin.from("alerts").insert({ to_member: to, text, link: rideLink }); };
 
     // the plan this ride belongs to, if I may ride or drive to it
     const planOf = async (kind: string, ref: string): Promise<{ p?: any; what?: string; code?: string }> => {
@@ -52,6 +53,7 @@ Deno.serve(async (req) => {
       if (["done", "cancelled"].includes(p.status) || String(p.date) < today) return { code: "over" };
       const what = kind === "dinner" ? clip(p.title, 60) || "the family dinner" : kind === "outing" ? clip(p.title, 60) || OUTING[p.kind] || "the outing"
         : kind === "movie" ? clip(p.movie?.title, 60) || "the movie" : "Topgolf";
+      rideLink = `${kind === "dinner" ? "dinner" : kind}:${ref}`;
       return { p, what: `${what} on ${dayOf(String(p.date))}` };
     };
     // match every waiting rider who fits a car; both sides are told (the one who tapped sees it on screen instead)

@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
     const { data: owners } = await admin.from("app_owners").select("member_id");
     const by = asker ? ` (asked by ${asker.name.split(" ")[0]})` : "";
     // a reserved test address (.invalid can never be a real inbox) never pages the owner's phone
-    if (owners?.length && !email.endsWith(".invalid")) await admin.from("alerts").insert(owners.map(o => ({ to_member: o.member_id, text: `🏡 New family request: ${family}, for ${name}${by}. Host controls → Owner desk.` })));
+    if (owners?.length && !email.endsWith(".invalid")) await admin.from("alerts").insert(owners.map(o => ({ to_member: o.member_id, link: "owner", text: `🏡 New family request: ${family}, for ${name}${by}. Host controls → Owner desk.` })));
     return reply({ ok: true });
   } catch (e) {
     console.error("family", (e as Error).message);
